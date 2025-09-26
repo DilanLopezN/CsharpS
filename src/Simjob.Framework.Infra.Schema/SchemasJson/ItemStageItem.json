@@ -1,0 +1,72 @@
+{
+  "title": "ItemStageItem",
+  "icon": "mdi-format-align-justify",
+  "description": "Item do Estágio",
+  "type": "object",
+  "module": "Items",
+  "group": "Items",
+  "principal": false,
+  "descriptor": "description",
+  "searchFields": "description",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "Input",
+        "Output"
+      ]
+    },
+    "itemId": {
+      "type": "string",
+      "relationSchema": "Item"
+    },
+    "description": {
+      "type": "string",
+      "mirror": "itemId.description"
+    },
+    "instruction": {
+      "type": "string"
+    },
+    "valueMin": {
+      "type": "number"
+    },
+    "valueMax": {
+      "type": "number"
+    },
+    "valueEst": {
+      "type": "number"
+    }
+  },
+  "form": {
+    "properties": {
+      "type": {
+        "label": "Tipo",
+        "order": 0
+      },
+      "itemId": {
+        "label": "Item",
+        "order": 1
+      },
+      "valueMin": {
+        "label": "Valor Min",
+        "order": 2
+      },
+      "valueMax": {
+        "label": "Valor Max",
+        "order": 3
+      },
+      "valueEst": {
+        "label": "Valor Estimado",
+        "order": 4
+      },
+      "instruction": {
+        "label": "Instrução",
+        "order": 5
+      },
+      "description": {
+        "label": "Descrição",
+        "order": 6
+      }
+    }
+  }
+}

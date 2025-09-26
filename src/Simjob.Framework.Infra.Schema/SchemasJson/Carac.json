@@ -1,0 +1,31 @@
+{
+  "title": "Carac",
+  "icon": "mdi-format-align-justify",
+  "description": "Caracteristica",
+  "type": "object",
+  "module": "Items",
+  "group": "Carac",
+  "principal": true,
+  "descriptor": "description",
+  "searchFields": "type,description",
+  "properties": {
+    "type": {
+      "type": "string",
+      "default": "Texto",
+      "enum": [ "Numero", "Texto", "Combo" ]
+    },
+    "description": { "type": "string" }
+  },
+  "form": {
+    "properties": {
+      "type": {
+        "label": "Tipo",
+        "order": 1
+      },
+      "description": {
+        "label": "Descrição",
+        "order": 2
+      }
+    }
+  }
+}

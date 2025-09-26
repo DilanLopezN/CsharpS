@@ -1,0 +1,3 @@
+26/02/2024 10:17:56: entity -deltaducon.Schemas.PurchaseOrder
+26/02/2024 12:17:28: entity -prevent.Schemas.StockVolCont
+26/02/2024 12:17:29: entity -prevent.Schemas.StockOperation

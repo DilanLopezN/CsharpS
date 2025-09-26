@@ -1,0 +1,6 @@
+09/10/2023 11:14:25: entity -deltaducon.Schemas.OrdemDePagamento
+09/10/2023 11:18:17: entity -deltaducon.Schemas.OrdemDePagamento
+09/10/2023 11:39:57: entity -deltaducon.Schemas.OrdemDePagamento
+09/10/2023 11:40:40: entity -deltaducon.Schemas.OrdemDePagamento
+09/10/2023 11:58:57: entity -deltaducon.Schemas.OrdemDePagamento
+09/10/2023 11:59:22: entity -deltaducon.Schemas.OrdemDePagamento

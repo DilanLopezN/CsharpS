@@ -1,0 +1,7 @@
+04/08/2023 14:13:10: fileFieldsCount1
+04/08/2023 14:14:19: fileFieldsCount1
+04/08/2023 14:29:55: entity -deltaducon.Schemas.OrdemDePagamento
+04/08/2023 14:30:40: entity -deltaducon.Schemas.OrdemDePagamento
+04/08/2023 14:53:32: fileFieldsCount1
+04/08/2023 15:00:54: fileFieldsCount1
+04/08/2023 17:18:18: entity -deltaducon.Schemas.OrdemDePagamento

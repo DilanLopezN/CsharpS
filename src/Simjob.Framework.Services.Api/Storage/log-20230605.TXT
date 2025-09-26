@@ -1,0 +1,17 @@
+05/06/2023 18:46:52: fileFieldsCount2
+05/06/2023 18:46:56: [StorageService] - Index was outside the bounds of the array.
+05/06/2023 18:46:56: [EntityService] - Required property 'planilha' expects a non-null value. Path '', line 1, position 144.
+05/06/2023 18:47:15: fileFieldsCount2
+05/06/2023 18:52:18: fileFieldsCount2
+05/06/2023 18:52:22: [StorageService] - Index was outside the bounds of the array.
+05/06/2023 18:52:28: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+05/06/2023 18:52:28: [EntityService] - Required property 'planilha' expects a non-null value. Path '', line 1, position 255.
+05/06/2023 18:52:51: fileFieldsCount2
+05/06/2023 18:52:51: [StorageService] - Index was outside the bounds of the array.
+05/06/2023 18:52:52: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+05/06/2023 18:52:52: [EntityService] - Required property 'planilha' expects a non-null value. Path '', line 1, position 255.
+05/06/2023 18:53:23: fileFieldsCount2
+05/06/2023 18:53:23: [StorageService] - Index was outside the bounds of the array.
+05/06/2023 18:53:24: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+05/06/2023 18:53:24: [EntityService] - Required property 'planilha' expects a non-null value. Path '', line 1, position 254.
+05/06/2023 19:01:18: fileFieldsCount1

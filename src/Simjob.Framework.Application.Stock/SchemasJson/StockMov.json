@@ -1,0 +1,75 @@
+{
+  "title": "StockMov",
+  "icon": "mdi-format-align-justify",
+  "description": "Movimentação de Estoque",
+  "type": "object",
+  "module": "Stock",
+  "group": "StockOperationType",
+  "principal": false,
+  "descriptor": "description",
+  "searchFields": "description,type,code",
+  "properties": {
+    "stockLotId": {
+      "type": "string",
+      "relationSchema": "StockLot"
+    },
+    "stockOperationTypeId": {
+      "type": "string",
+      "relationSchema": "StockOperationType"
+    },
+    "stockOperationId": {
+      "type": "string",
+      "relationSchema": "StockOperation"
+    },
+    "itemDescription": {
+      "type": "string",
+      "mirror": "itemId.description"
+    },
+    "isReal": { "type": "boolean" },
+    "amount": { "type": "number" },
+    "unitValue": { "type": "number" },
+    "totalValue": { "type": "number" },
+    "date": { "type": "date" },
+    "itemId": {
+      "type": "string",
+      "relationSchema": "Item"
+    },
+    "stockLocalId": {
+      "type": "string",
+      "relationSchema": "StockLocal"
+    },
+    "code": {
+      "type": "string",
+      "autoInc": true,
+      "mask": "000000"
+    }
+  },
+  "form": {
+    "properties": {
+      "code": {
+        "label": "Código Movimento",
+        "order": 0
+      },
+      "itemId": {
+        "label": "Item",
+        "order": 2
+      },
+      "stockLotId": {
+        "label": "Lote",
+        "order": 3
+      },
+      "amount": {
+        "label": "Volume",
+        "order": 4
+      },
+      "totalValue": {
+        "label": "Saldo Disp.",
+        "order": 5
+      },
+      "unitValue": {
+        "label": "Custo Unit.",
+        "order": 5
+      }
+    }
+  }
+}

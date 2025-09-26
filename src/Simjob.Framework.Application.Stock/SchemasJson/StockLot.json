@@ -1,0 +1,21 @@
+{
+  "title": "StockLot",
+  "icon": "mdi-format-align-justify",
+  "description": "Lote de Estoque",
+  "type": "object",
+  "module": "Stock",
+  "group": "StockLot",
+  "principal": true,
+  "descriptor": "code",
+  "searchFields": "code",
+  "properties": {
+    "code": { "type": "string" },
+    "codeExternal": { "type": "string" },
+    "stockOperationOriginId": {
+      "type": "string",
+      "relationSchema": "StockOperation"
+    },
+    "expirateDate": { "type": "date" },
+    "manufacturingDate": { "type": "date" }
+  }
+}

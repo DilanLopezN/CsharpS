@@ -1,0 +1,9 @@
+10/07/2023 09:42:55: entity -deltaducon.Schemas.DocumentNumber
+10/07/2023 10:00:52: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+10/07/2023 10:00:54: entity -deltaducon.Schemas.DocumentNumber
+10/07/2023 10:02:47: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+10/07/2023 10:04:04: entity -deltaducon.Schemas.DocumentNumber
+10/07/2023 10:13:25: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+10/07/2023 10:13:28: entity -deltaducon.Schemas.DocumentNumber
+10/07/2023 10:14:19: entity -deltaducon.Schemas.DocumentNumber
+10/07/2023 10:15:25: entity -deltaducon.Schemas.DocumentNumber

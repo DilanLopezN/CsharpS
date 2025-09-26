@@ -1,0 +1,32 @@
+{
+  "title": "Account",
+  "icon": "mdi-account-box",
+  "description": "Contas",
+  "type": "object",
+  "module": "Contas",
+  "group": "Contas",
+  "principal": true,
+  "descriptor": "name",
+  "properties": {
+    "code": {
+      "autoInc": true,
+      "mask": "000000",
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    }
+  },
+  "form": {
+    "properties": {
+      "code": {
+        "label": "Código",
+        "order": 0
+      },
+      "name": {
+        "label": "Nome",
+        "order": 1
+      }
+    }
+  }
+}

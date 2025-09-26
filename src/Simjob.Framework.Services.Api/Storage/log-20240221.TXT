@@ -1,0 +1,1 @@
+21/02/2024 14:31:31: [EntityService] - Unable to cast object of type 'System.Collections.Generic.List`1[deltaducon.Schemas.Account]' to type 'System.Collections.Generic.List`1[Simjob.Framework.Domain.Core.Entities.Entity]'.

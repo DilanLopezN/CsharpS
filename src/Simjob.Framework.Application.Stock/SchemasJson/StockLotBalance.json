@@ -1,0 +1,38 @@
+{
+  "title": "StockLotBalance",
+  "icon": "mdi-format-align-justify",
+  "description": "Saldo de Estoque de Lote",
+  "type": "object",
+  "module": "Stock",
+  "group": "StockLotBalance",
+  "principal": true,
+  "descriptor": "stockLotCode",
+  "searchFields": "itemDescription,stockLotCode",
+  "properties": {
+    "itemDescription": {
+      "type": "string",
+      "mirror": "itemId.description"
+    },
+    "stockLotCode": {
+      "type": "string",
+      "mirror": "stockLotId.code"
+    },
+    "itemId": {
+      "type": "string",
+      "relationSchema": "Item"
+    },
+    "stockLotId": {
+      "type": "string",
+      "relationSchema": "StockLot"
+    },
+    "date": { "type": "date" },
+    "qtAvailable": { "type": "number" },
+    "qtTotal": { "type": "number" },
+    "qtReserved": { "type": "number" },
+    "qtCommitted": { "type": "number" },
+    "valueAvailable": { "type": "number" },
+    "valueTotal": { "type": "number" },
+    "valueReserved": { "type": "number" },
+    "valueCommitted": { "type": "number" }
+  }
+}

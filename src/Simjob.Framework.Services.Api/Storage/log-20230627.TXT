@@ -1,0 +1,27 @@
+27/06/2023 15:29:46: entity -deltaducon.Schemas.OrdemDePagamento
+27/06/2023 15:30:43: entity -deltaducon.Schemas.OrdemDePagamento
+27/06/2023 15:31:56: entity -deltaducon.Schemas.OrdemDePagamento
+27/06/2023 15:33:29: entity -deltaducon.Schemas.OrdemDePagamento
+27/06/2023 15:43:58: fileFieldsCount1
+27/06/2023 15:50:15: fileFieldsCount1
+27/06/2023 16:00:08: fileFieldsCount1
+27/06/2023 16:44:45: entity -deltaducon.Schemas.OrdemDePagamento
+27/06/2023 16:45:25: entity -deltaducon.Schemas.OrdemDePagamento
+27/06/2023 16:48:25: entity -deltaducon.Schemas.OrdemDePagamento
+27/06/2023 16:50:49: entity -deltaducon.Schemas.OrdemDePagamento
+27/06/2023 16:52:51: entity -deltaducon.Schemas.OrdemDePagamento
+27/06/2023 16:53:23: entity -deltaducon.Schemas.OrdemDePagamento
+27/06/2023 16:54:48: entity -deltaducon.Schemas.OrdemDePagamento
+27/06/2023 16:57:09: entity -deltaducon.Schemas.OrdemDePagamento
+27/06/2023 16:58:47: entity -deltaducon.Schemas.OrdemDePagamento
+27/06/2023 17:00:32: entity -deltaducon.Schemas.OrdemDePagamento
+27/06/2023 17:06:23: entity -deltaducon.Schemas.OrdemDePagamento
+27/06/2023 17:09:02: entity -deltaducon.Schemas.OrdemDePagamento
+27/06/2023 17:11:14: entity -deltaducon.Schemas.OrdemDePagamento
+27/06/2023 17:13:19: fileFieldsCount1
+27/06/2023 17:14:05: fileFieldsCount1
+27/06/2023 17:15:35: fileFieldsCount1
+27/06/2023 17:15:57: fileFieldsCount1
+27/06/2023 17:17:10: fileFieldsCount1
+27/06/2023 17:19:38: fileFieldsCount1
+27/06/2023 17:25:11: fileFieldsCount1

@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="9.0.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageReference Include="NJsonSchema" Version="10.4.4" />
+    <PackageReference Include="NJsonSchema.CodeGeneration.CSharp" Version="10.4.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Simjob.Framework.Domain.Core\Simjob.Framework.Domain.Core.csproj" />
+    <ProjectReference Include="..\Simjob.Framework.Infra.Bus\Simjob.Framework.Infra.Bus.csproj" />
+    <ProjectReference Include="..\Simjob.Framework.Infra.Data\Simjob.Framework.Infra.Data.csproj" />
+    <ProjectReference Include="..\Simjob.Framework.Infra.Identity\Simjob.Framework.Infra.Identity.csproj" />
+    <ProjectReference Include="..\Simjob.Framework.Infra.Schema\Simjob.Framework.Infra.Schemas.csproj" />
+  </ItemGroup>
+
+</Project>

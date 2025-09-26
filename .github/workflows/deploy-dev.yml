@@ -1,0 +1,96 @@
+name: Deploy da API .NET
+
+on:
+  push:
+    branches: [dev]
+
+env:
+  IMAGE_NAME: dev-frm-api-dotnet
+  MAX_VERSIONS: 5
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⏬ Checkout do código
+        uses: actions/checkout@v3
+
+      - name: 🔢 Definir tag da imagem
+        run: echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+
+      - name: ⚙️ Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x' # ou a versão que você usa
+
+      - name: 📝 Gerar arquivo Environment.ini
+        run: |
+          cat <<EOF > Environment.ini
+          [Security]
+          TOP_LEVEL_SALT=${{ secrets.TOP_LEVEL_SALT }}
+
+          [Actions]
+          ACTION_BACKEND_URL=https://action.simjob.net:2083
+          EOF
+          
+      - name: 📄 Copiar appsettings de Development
+        run: cp src/Simjob.Framework.Services.Api/appsettings.Development.json src/Simjob.Framework.Services.Api/appsettings.json
+    
+      - name: 🐳 Build da imagem Docker
+        run: |
+          echo "Buildando imagem $IMAGE_NAME:$IMAGE_TAG"
+          docker build --build-arg PORT=2086 -t $IMAGE_NAME:$IMAGE_TAG .
+
+      - name: 📦 Salvar imagem Docker como tar
+        run: |
+          docker save $IMAGE_NAME:$IMAGE_TAG -o $IMAGE_NAME-$IMAGE_TAG.tar
+          chmod 644 $IMAGE_NAME-$IMAGE_TAG.tar
+
+      - name: 📋 Verificar arquivo gerado
+        run: |
+          ls -lh
+          file $IMAGE_NAME-$IMAGE_TAG.tar
+
+      - name: 📤 Enviar imagem Docker para a VM
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEV_HOST }}
+          username: ${{ secrets.DEV_USER }}
+          key: ${{ secrets.DEV_SSH_KEY }}
+          source: "${{ env.IMAGE_NAME }}-${{ env.IMAGE_TAG }}.tar"
+          target: "/home/deploy/frm-api-dotnet/dev/"
+
+      - name: 🚀 Deploy na VM via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.DEV_HOST }}
+          username: ${{ secrets.DEV_USER }}
+          key: ${{ secrets.DEV_SSH_KEY }}
+          script: |
+            IMAGE_NAME=${{ env.IMAGE_NAME }}
+            IMAGE_TAG=${{ env.IMAGE_TAG }}
+            MAX_VERSIONS=${{ env.MAX_VERSIONS }}
+
+            mkdir -p /home/deploy/frm-api-dotnet/dev
+            cd /home/deploy/frm-api-dotnet/dev
+
+            docker stop $IMAGE_NAME || true
+            docker rm $IMAGE_NAME || true
+
+            docker load -i $IMAGE_NAME-$IMAGE_TAG.tar
+
+            docker run -d --name $IMAGE_NAME --network dev-frm -e ASPNETCORE_ENVIRONMENT=Development -p 2086:2086 $IMAGE_NAME:$IMAGE_TAG
+
+            # Verifica se o container está rodando
+            if ! docker ps --filter "name=$IMAGE_NAME" --filter "status=running" | grep $IMAGE_NAME; then
+              echo "❌ Erro: o container $IMAGE_NAME não está rodando!"
+              docker logs $IMAGE_NAME
+              exit 1
+            fi
+
+            echo "🧹 Limpeza de versões antigas"
+            ls -1t $IMAGE_NAME*.tar | tail -n +$((MAX_VERSIONS + 1)) | xargs rm -f || true
+
+            echo "✅ Deploy da API concluído com sucesso!"
+            

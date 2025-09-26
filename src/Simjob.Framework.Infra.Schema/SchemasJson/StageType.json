@@ -1,0 +1,20 @@
+{
+  "title": "StageType",
+  "icon": "mdi-format-align-justify",
+  "description": "Tipo de Estágio",
+  "type": "object",
+  "module": "StageType",
+  "group": "StageType",
+  "principal": true,
+  "descriptor": "description",
+  "searchFields": "description",
+  "properties": { "description": { "type": "string" } },
+  "form": {
+    "properties": {
+      "description": {
+        "label": "Descrição",
+        "order": 1
+      }
+    }
+  }
+}

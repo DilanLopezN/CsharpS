@@ -1,0 +1,20 @@
+{
+  "title": "ItemClass",
+  "icon": "mdi-format-align-justify",
+  "description": "Classificação de Item",
+  "type": "object",
+  "module": "Item",
+  "group": "ItemClass",
+  "principal": true,
+  "descriptor": "description",
+  "searchFields": "description",
+  "properties": { "description": { "type": "string" } },
+  "form": {
+    "properties": {
+      "description": {
+        "label": "Descrição",
+        "order": 1
+      }
+    }
+  }
+}

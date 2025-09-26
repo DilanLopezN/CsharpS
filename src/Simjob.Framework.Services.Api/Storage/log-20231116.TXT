@@ -1,0 +1,89 @@
+16/11/2023 09:42:01: fileFieldsCount1
+16/11/2023 09:42:03: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+16/11/2023 09:46:12: fileFieldsCount1
+16/11/2023 09:46:14: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+16/11/2023 09:48:09: fileFieldsCount1
+16/11/2023 09:48:10: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+16/11/2023 09:50:11: fileFieldsCount1
+16/11/2023 09:50:13: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+16/11/2023 09:52:37: fileFieldsCount1
+16/11/2023 09:52:38: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+16/11/2023 09:54:24: fileFieldsCount1
+16/11/2023 09:54:25: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+16/11/2023 09:55:37: fileFieldsCount1
+16/11/2023 09:55:39: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+16/11/2023 09:55:51: fileFieldsCount1
+16/11/2023 09:55:52: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+16/11/2023 09:56:12: fileFieldsCount1
+16/11/2023 09:56:13: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+16/11/2023 10:04:15: fileFieldsCount1
+16/11/2023 10:04:16: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+16/11/2023 10:04:36: fileFieldsCount1
+16/11/2023 10:04:37: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+16/11/2023 10:04:57: fileFieldsCount1
+16/11/2023 10:04:59: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+16/11/2023 10:11:58: fileFieldsCount1
+16/11/2023 10:12:00: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+16/11/2023 10:12:55: fileFieldsCount1
+16/11/2023 10:12:56: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+16/11/2023 10:15:53: [EntityService] - Exception has been thrown by the target of an invocation.
+16/11/2023 10:17:19: [EntityService] - Exception has been thrown by the target of an invocation.
+16/11/2023 10:18:31: [EntityService] - Exception has been thrown by the target of an invocation.
+16/11/2023 10:30:34: fileFieldsCount1
+16/11/2023 10:38:51: fileFieldsCount1
+16/11/2023 10:38:53: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 10:42:02: fileFieldsCount1
+16/11/2023 10:42:04: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 10:43:00: fileFieldsCount1
+16/11/2023 10:43:02: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 10:47:12: fileFieldsCount1
+16/11/2023 10:47:13: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 10:47:31: fileFieldsCount1
+16/11/2023 10:47:32: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 10:48:32: fileFieldsCount1
+16/11/2023 10:48:34: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 10:58:22: fileFieldsCount1
+16/11/2023 10:58:32: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 10:59:35: fileFieldsCount1
+16/11/2023 10:59:58: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 11:00:20: fileFieldsCount1
+16/11/2023 11:00:35: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 11:05:54: fileFieldsCount1
+16/11/2023 11:05:59: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 11:06:02: [EntityService] - Exception has been thrown by the target of an invocation.
+16/11/2023 11:06:40: fileFieldsCount1
+16/11/2023 11:08:52: fileFieldsCount1
+16/11/2023 11:08:53: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 11:08:56: [EntityService] - Exception has been thrown by the target of an invocation.
+16/11/2023 11:11:28: fileFieldsCount1
+16/11/2023 11:11:30: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 11:11:50: fileFieldsCount1
+16/11/2023 11:11:52: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 11:12:45: fileFieldsCount1
+16/11/2023 11:12:47: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 11:14:40: fileFieldsCount1
+16/11/2023 11:14:41: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 11:15:40: fileFieldsCount1
+16/11/2023 11:15:42: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 11:15:52: fileFieldsCount1
+16/11/2023 11:15:53: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 11:19:50: fileFieldsCount1
+16/11/2023 11:19:52: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 11:20:05: fileFieldsCount1
+16/11/2023 11:20:06: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 11:48:17: fileFieldsCount1
+16/11/2023 11:48:19: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 11:48:44: fileFieldsCount1
+16/11/2023 11:48:46: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 11:49:10: fileFieldsCount1
+16/11/2023 11:49:11: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 16:56:33: fileFieldsCount1
+16/11/2023 16:56:35: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 16:57:00: fileFieldsCount1
+16/11/2023 16:57:01: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 17:31:26: fileFieldsCount1
+16/11/2023 17:31:28: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 17:34:37: fileFieldsCount1
+16/11/2023 17:34:39: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf
+16/11/2023 17:37:09: fileFieldsCount1
+16/11/2023 17:37:10: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf

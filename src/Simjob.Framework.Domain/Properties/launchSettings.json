@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "Simjob.Framework.Domain": {
+      "commandName": "Executable"
+    }
+  }
+}

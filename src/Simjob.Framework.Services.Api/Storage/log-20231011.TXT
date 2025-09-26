@@ -1,0 +1,5 @@
+11/10/2023 14:30:17: [SchemaController] - Exception has been thrown by the target of an invocation.
+11/10/2023 14:36:35: [SchemaController] - Exception has been thrown by the target of an invocation.
+11/10/2023 14:38:08: [SchemaController] - Exception has been thrown by the target of an invocation.
+11/10/2023 16:50:13: [SchemaController] - Exception has been thrown by the target of an invocation.
+11/10/2023 16:52:30: [SchemaController] - Exception has been thrown by the target of an invocation.

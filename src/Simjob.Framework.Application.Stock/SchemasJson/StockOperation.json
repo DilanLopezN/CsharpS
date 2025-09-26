@@ -1,0 +1,125 @@
+{
+  "title": "StockOperation",
+  "icon": "mdi-format-align-justify",
+  "description": "Operação de Estoque",
+  "type": "object",
+  "module": "Stock",
+  "group": "StockOperationType",
+  "principal": true,
+  "descriptor": "description",
+  "searchFields": "description,type,code",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "ELAB",
+        "EMP",
+        "RES",
+        "PROC",
+        "CANC"
+      ]
+    },
+    "code": {
+      "type": "string",
+      "autoinc": true,
+      "mask": "000000"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "NFE",
+        "NFS",
+        "JOBI",
+        "JOBO",
+        "AV",
+        "SO",
+        "ES"
+      ]
+    },
+    "origin": {
+      "type": "string",
+      "enum": [
+        "DOCFIS",
+        "AV",
+        "JOB"
+      ]
+    },
+    "stockOperationTypeId": {
+      "type": "string",
+      "relationSchema": "StockOperationType"
+    },
+    "description": {
+      "type": "string"
+    },
+    "dateReal": {
+      "type": "Date"
+    },
+    "stockLocalFromId": {
+      "type": "string",
+      "relationSchema": "StockLocal"
+    },
+    "stockLocalToId": {
+      "type": "string",
+      "relationSchema": "StockLocal"
+    },
+    "refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "stockOperationId": {
+      "type": "string",
+      "relationSchema": "StockOperation"
+    },
+    "stockOperationTypeReversalId": {
+      "type": "string",
+      "relationSchema": "StockOperationType"
+    },
+    "stockMovIds": {
+      "relationSchema": "StockMov",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "form": {
+    "properties": {
+      "status": {
+        "label": "Status",
+        "order": 0
+      },
+      "code": {
+        "label": "Código",
+        "order": 2
+      },
+      "type": {
+        "label": "Tipo",
+        "order": 3
+      },
+      "origin": {
+        "label": "Local Origem",
+        "order": 4
+      },
+      "stockLocalToId": {
+        "label": "Local Destino",
+        "order": 5
+      },
+      "stockLocalFromId": {
+        "tab": "Origem"
+      },
+      "stockMovIds": {
+        "tab": "Movimentos"
+      }
+    }
+  }
+}

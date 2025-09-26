@@ -1,0 +1,18 @@
+04/07/2023 12:39:09: entity -prevent.Schemas.StockVolCont
+04/07/2023 12:39:10: entity -prevent.Schemas.StockOperation
+04/07/2023 17:46:50: fileFieldsCount2
+04/07/2023 17:47:22: fileFieldsCount2
+04/07/2023 17:49:55: fileFieldsCount2
+04/07/2023 17:52:36: fileFieldsCount2
+04/07/2023 17:52:56: [StorageService] - 'Newtonsoft.Json.Linq.JValue' does not contain a definition for 'Split'
+04/07/2023 17:53:07: [EntityService] - Required property 'planilha' expects a non-null value. Path '', line 1, position 124.
+04/07/2023 17:53:36: fileFieldsCount2
+04/07/2023 17:54:41: [EntityService] - Object reference not set to an instance of an object.
+04/07/2023 17:54:51: fileFieldsCount2
+04/07/2023 17:55:39: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+04/07/2023 17:55:49: fileFieldsCount2
+04/07/2023 17:56:46: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+04/07/2023 17:57:04: fileFieldsCount2
+04/07/2023 17:58:46: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+04/07/2023 17:59:06: fileFieldsCount2
+04/07/2023 17:59:11: Urls uploadAttach - System.Collections.Generic.List`1[System.String]

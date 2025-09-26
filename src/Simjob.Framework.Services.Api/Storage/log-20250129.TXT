@@ -1,0 +1,3 @@
+29/01/2025 11:08:29: fileFieldsCount1
+29/01/2025 11:28:19: fileFieldsCount1
+29/01/2025 11:28:46: Urls uploadAttach - https://simjobstore.blob.core.windows.net/prevent/capa_desktop.jpg

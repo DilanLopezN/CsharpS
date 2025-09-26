@@ -1,0 +1,55 @@
+{
+  "title": "ItemGroup",
+  "icon": "mdi-format-align-justify",
+  "description": "Grupo de Item",
+  "type": "object",
+  "module": "Items",
+  "group": "ItemGroup",
+  "principal": true,
+  "descriptor": "description",
+  "searchFields": "code,description",
+  "properties": {
+    "seg": {
+      "type": "string",
+      "default": "Material",
+      "enum": [
+        "Material",
+        "Produto Acabado"
+      ]
+    },
+    "code": {
+      "autoInc": true,
+      "mask": "000000",
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "itemGroupCaracIds": {
+      "relationSchema": "ItemGroupCarac",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "form": {
+    "properties": {
+      "seg": {
+        "label": "Tipo",
+        "order": 0
+      },
+      "code": {
+        "label": "Código",
+        "order": 1
+      },
+      "description": {
+        "label": "Descrição",
+        "order": 2
+      },
+      "itemGroupCaracIds": {
+        "tab": "Caracteristicas"
+      }
+    }
+  }
+}

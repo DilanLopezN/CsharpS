@@ -1,0 +1,2 @@
+27/11/2023 12:24:04: fileFieldsCount1
+27/11/2023 12:24:06: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/LicenseAuthorizedCertificate20231005010748570_1.pdf

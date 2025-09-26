@@ -1,0 +1,48 @@
+{
+  "title": "StockOperationType",
+  "icon": "mdi-format-align-justify",
+  "description": "Tipo de Operação de Estoque",
+  "type": "object",
+  "module": "Stock",
+  "group": "StockOperationType",
+  "principal": true,
+  "descriptor": "description",
+  "searchFields": "description,type,code",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [ "Input", "Output", "Transfer" ]
+    },
+    "origin": {
+      "type": "string",
+      "enum": [ "DOCFIS", "AV", "JOB" ]
+    },
+    "code": {
+      "type": "string",
+      "autoinc": true,
+      "mask": "000000"
+    },
+    "description": { "type": "string" }
+  },
+  "required": [ "type", "origin", "description" ],
+  "form": {
+    "properties": {
+      "code": {
+        "label": "Código",
+        "order": 0
+      },
+      "type": {
+        "label": "Tipo",
+        "order": 1
+      },
+      "origin": {
+        "label": "Origem",
+        "order": 2
+      },
+      "description": {
+        "label": "Descrição",
+        "order": 4
+      }
+    }
+  }
+}

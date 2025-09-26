@@ -1,0 +1,71 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <StartupObject>Simjob.Framework.Services.Api.Program</StartupObject>
+	<Version>2025.07.15.1</Version>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <UserSecretsId>3c8c6671-bf83-4b14-91e3-bc498d549557</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="NovaPasta1\**" />
+    <Content Remove="NovaPasta1\**" />
+    <EmbeddedResource Remove="NovaPasta1\**" />
+    <None Remove="NovaPasta1\**" />
+  </ItemGroup>
+	
+
+
+  <ItemGroup>
+    <Compile Remove="wwwroot.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\images\accist\background.png" />
+    <Content Remove="wwwroot\images\accist\backgroundlogon.jpg" />
+    <Content Remove="wwwroot\images\accist\backgroundlogon.png" />
+    <Content Remove="wwwroot\images\accist\baixados.png" />
+    <Content Remove="wwwroot\images\accist\logo.jpg" />
+    <Content Remove="wwwroot\images\accist\logo.png" />
+    <Content Remove="wwwroot\images\accist\placeholder.png" />
+    <Content Remove="wwwroot\images\baixados.png" />
+    <Content Remove="wwwroot\images\placeholder.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DocX" Version="4.0.25105.5786" />
+    <PackageReference Include="EPPlus" Version="8.0.5" />
+    <PackageReference Include="Flurl" Version="4.0.0" />
+    <PackageReference Include="Flurl.Http" Version="4.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OAuth" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.6" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.19.0" />
+    <PackageReference Include="MySqlConnector" Version="2.4.0" />
+    <PackageReference Include="Quartz" Version="3.13.1" />
+    <PackageReference Include="SendGrid" Version="9.27.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
+    <PackageReference Include="Twilio" Version="6.18.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Simjob.Framework.Application\Simjob.Framework.Application.csproj" />
+    <ProjectReference Include="..\Simjob.Framework.Domain.Core\Simjob.Framework.Domain.Core.csproj" />
+    <ProjectReference Include="..\Simjob.Framework.Domain\Simjob.Framework.Domain.csproj" />
+    <ProjectReference Include="..\Simjob.Framework.Infra.Environment\EnviromentSettings\Simjob.Framework.Infra.Environment.csproj" />
+    <ProjectReference Include="..\Simjob.Framework.Infra.Identity\Simjob.Framework.Infra.Identity.csproj" />
+    <ProjectReference Include="..\Simjob.Framework.Infra.IoC\Simjob.Framework.Infra.IoC.csproj" />
+    <ProjectReference Include="..\Simjob.Framework.Infra.Schema\Simjob.Framework.Infra.Schemas.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+    <Folder Include="wwwroot\images\accist\" />
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
+</Project>

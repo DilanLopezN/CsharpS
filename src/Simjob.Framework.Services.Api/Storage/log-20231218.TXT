@@ -1,0 +1,6 @@
+18/12/2023 15:35:05: entity -prevent2.Schemas.StockVolCont
+18/12/2023 15:35:06: entity -prevent2.Schemas.StockOperation
+18/12/2023 15:36:21: entity -prevent2.Schemas.StockVolCont
+18/12/2023 15:36:21: entity -prevent2.Schemas.StockOperation
+18/12/2023 15:39:19: entity -prevent2.Schemas.StockVolCont
+18/12/2023 15:39:20: entity -prevent2.Schemas.StockOperation

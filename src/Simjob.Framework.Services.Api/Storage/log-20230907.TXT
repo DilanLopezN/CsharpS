@@ -1,0 +1,1 @@
+07/09/2023 17:35:17: entity -deltaducon.Schemas.OrdemDePagamento

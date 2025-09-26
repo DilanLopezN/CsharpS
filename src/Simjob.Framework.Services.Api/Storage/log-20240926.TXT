@@ -1,0 +1,7 @@
+26/09/2024 08:58:34: [EntityService] - Unable to cast object of type 'System.Collections.Generic.List`1[prevent.Schemas.StockMov]' to type 'System.Collections.Generic.List`1[Simjob.Framework.Domain.Core.Entities.Entity]'.
+26/09/2024 08:59:45: [EntityService] - Unable to cast object of type 'System.Collections.Generic.List`1[prevent.Schemas.StockMov]' to type 'System.Collections.Generic.List`1[Simjob.Framework.Domain.Core.Entities.Entity]'.
+26/09/2024 09:02:11: [EntityService] - Unable to cast object of type 'System.Collections.Generic.List`1[prevent.Schemas.StockMov]' to type 'System.Collections.Generic.List`1[Simjob.Framework.Domain.Core.Entities.Entity]'.
+26/09/2024 09:09:19: [EntityService] - Unable to cast object of type 'System.Collections.Generic.List`1[prevent.Schemas.StockMov]' to type 'System.Collections.Generic.List`1[Simjob.Framework.Domain.Core.Entities.Entity]'.
+26/09/2024 09:15:13: [EntityService] - Unable to cast object of type 'System.Collections.Generic.List`1[prevent.Schemas.StockMov]' to type 'System.Collections.Generic.List`1[Simjob.Framework.Domain.Core.Entities.Entity]'.
+26/09/2024 09:20:08: [EntityService] - Unable to cast object of type 'System.Collections.Generic.List`1[prevent.Schemas.StockMov]' to type 'System.Collections.Generic.List`1[Simjob.Framework.Domain.Core.Entities.Entity]'.
+26/09/2024 10:33:37: [EntityService] - Unable to cast object of type 'System.Collections.Generic.List`1[prevent.Schemas.StockMov]' to type 'System.Collections.Generic.List`1[Simjob.Framework.Domain.Core.Entities.Entity]'.

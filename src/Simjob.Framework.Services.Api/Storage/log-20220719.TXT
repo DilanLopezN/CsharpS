@@ -1,0 +1,5 @@
+19/07/2022 13:29:05: [EntityService] - Could not convert string to double: 0a3db71d-acb9-4b84-ad68-6bac4fe3776f. Path 'id', line 1, position 174.
+19/07/2022 13:30:47: [EntityService] - Could not convert string to double: c195bd7d-e651-4a7e-85c8-3297548a9e93. Path 'id', line 1, position 174.
+19/07/2022 13:34:55: [EntityService] - Could not convert string to double: ec8f68de-5b24-46bd-a736-38fe3dff0f3d. Path 'id', line 1, position 174.
+19/07/2022 13:35:07: [EntityService] - Could not convert string to double: 8282ffa5-1e39-4782-9abf-a1fc8c0457a6. Path 'id', line 1, position 174.
+19/07/2022 13:35:20: [EntityService] - Could not convert string to double: 2bb9c450-42df-4afa-9644-4286c38a1d78. Path 'id', line 1, position 174.

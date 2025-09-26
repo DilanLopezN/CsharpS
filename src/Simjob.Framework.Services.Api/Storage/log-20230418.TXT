@@ -1,0 +1,8 @@
+18/04/2023 11:01:50: [EntityService] - Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'accist.Schemas.OccurrenceFields' because the type requires a JSON object (e.g. {"name":"value"}) to deserialize correctly.
+To fix this error either change the JSON to a JSON object (e.g. {"name":"value"}) or change the deserialized type to an array or a type that implements a collection interface (e.g. ICollection, IList) like List<T> that can be deserialized from a JSON array. JsonArrayAttribute can also be added to the type to force it to deserialize from a JSON array.
+Path '', line 1, position 1.
+18/04/2023 11:38:44: [EntityService] - Object of type 'System.Collections.Generic.List`1[System.Object]' cannot be converted to type 'System.Collections.Generic.List`1[accist.Schemas.OccurrenceFields]'.
+18/04/2023 11:42:57: [EntityService] - Object of type 'System.Collections.Generic.List`1[System.Object]' cannot be converted to type 'System.Collections.Generic.List`1[accist.Schemas.OccurrenceFields]'.
+18/04/2023 11:55:31: [EntityService] - Object of type 'System.Collections.Generic.List`1[System.Object]' cannot be converted to type 'System.Collections.Generic.List`1[accist.Schemas.OccurrenceFields]'.
+18/04/2023 12:11:55: [EntityService] - Object of type 'System.Collections.Generic.List`1[System.Object]' cannot be converted to type 'System.Collections.Generic.List`1[accist.Schemas.OccurrenceFields]'.
+18/04/2023 12:12:04: [EntityService] - Object of type 'System.Collections.Generic.List`1[System.Object]' cannot be converted to type 'System.Collections.Generic.List`1[accist.Schemas.OccurrenceFields]'.

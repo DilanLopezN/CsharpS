@@ -1,0 +1,64 @@
+{
+  "title": "ItemStage",
+  "icon": "mdi-format-align-justify",
+  "description": "Estágio de Item",
+  "type": "object",
+  "module": "Items",
+  "group": "Items",
+  "principal": false,
+  "descriptor": "description",
+  "searchFields": "description",
+  "properties": {
+    "seq": {
+      "type": "numeric"
+    },
+    "description": {
+      "type": "string"
+    },
+    "stageTypeId": {
+      "type": "string",
+      "relationSchema": "StageType"
+    },
+    "resourceId": {
+      "type": "string",
+      "relationSchema": "Resource"
+    },
+    "itemStageItemIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "relationSchema": "ItemStageItem"
+    },
+    "instruction": {
+      "type": "string"
+    }
+  },
+  "form": {
+    "properties": {
+      "description": {
+        "label": "Descrição",
+        "order": 0
+      },
+      "seq": {
+        "label": "Sequência",
+        "order": 1
+      },
+      "stageTypeId": {
+        "label": "Tipo de Estágio",
+        "order": 2
+      },
+      "resourceId": {
+        "label": "Recurso",
+        "order": 3
+      },
+      "instruction": {
+        "label": "Instrução",
+        "order": 4
+      },
+      "itemStageItemIds": {
+        "tab": "Itens"
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "title": "Resource",
+  "icon": "mdi-format-align-justify",
+  "description": "Recurso",
+  "type": "object",
+  "module": "Resource",
+  "group": "Resource",
+  "principal": true,
+  "descriptor": "description",
+  "searchFields": "description,code",
+  "properties": {
+    "code": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "stageTypeId": {
+      "type": "string",
+      "relationSchema": "StageType"
+    },
+    "type": {
+      "type": "string"
+    }
+  },
+  "form": {
+    "properties": {
+      "code": {
+        "label": "Código",
+        "order": 0
+      },
+      "description": {
+        "label": "Descrição",
+        "order": 1
+      },
+      "type": {
+        "label": "Tipo",
+        "order": 3
+      },
+      "stageTypeId": {
+        "label": "Tipo de Estágio",
+        "order": 4
+      }
+    }
+  }
+}

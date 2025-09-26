@@ -1,0 +1,2 @@
+21/06/2022 14:57:35: [TwoFactorAuthService] - An invalid request URI was provided. The request URI must either be an absolute URI or BaseAddress must be set.
+21/06/2022 14:57:47: [TwoFactorAuthService] - An invalid request URI was provided. The request URI must either be an absolute URI or BaseAddress must be set.

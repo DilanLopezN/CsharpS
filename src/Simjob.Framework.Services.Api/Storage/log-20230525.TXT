@@ -1,0 +1,100 @@
+25/05/2023 09:26:29: fileFieldsCount2
+25/05/2023 09:26:29: data[field.Key]System.Collections.Generic.List`1[System.Object]
+25/05/2023 09:28:35: fileFieldsCount2
+25/05/2023 09:28:40: data[field.Key]System.Collections.Generic.List`1[System.Object]
+25/05/2023 09:30:17: fileFieldsCount2
+25/05/2023 09:30:20: data[field.Key]System.Collections.Generic.List`1[System.Object]
+25/05/2023 09:32:10: fileFieldsCount2
+25/05/2023 09:32:16: data[field.Key]System.Collections.Generic.List`1[System.Object]
+25/05/2023 09:33:56: fileFieldsCount2
+25/05/2023 09:33:59: data[field.Key]System.Collections.Generic.List`1[System.Object]
+25/05/2023 09:38:27: fileFieldsCount2
+25/05/2023 09:38:28: data[field.Key]System.Collections.Generic.List`1[System.Object]
+25/05/2023 09:38:37: data[field.Key]System.Collections.Generic.List`1[System.Object]
+25/05/2023 09:52:25: fileFieldsCount2
+25/05/2023 09:52:25: data[field.Key]System.Collections.Generic.List`1[System.String]
+25/05/2023 09:52:25: data[field.Key]System.Collections.Generic.List`1[System.String]
+25/05/2023 10:00:25: fileFieldsCount2
+25/05/2023 10:02:13: fileFieldsCount2
+25/05/2023 10:03:46: fileFieldsCount2
+25/05/2023 10:04:15: data[field.Key]System.Collections.Generic.List`1[System.String]
+25/05/2023 10:04:33: data[field.Key]System.Collections.Generic.List`1[System.String]
+25/05/2023 10:15:42: fileFieldsCount2
+25/05/2023 10:15:54: data[field.Key]System.Collections.Generic.List`1[System.String]
+25/05/2023 10:16:12: [StorageService] - Index was outside the bounds of the array.
+25/05/2023 10:23:25: fileFieldsCount2
+25/05/2023 10:23:26: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 10:41:15: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 10:41:15: json -{"code":"105","descricao":"Estou editando este","owners":["23e308ed-4f67-4394-9a77-7228d2992dc3"],"id":"cf3f1635-96de-4145-ac31-dec7134ce44c","isDeleted":false,"planilha":["https://simjobstore.blob.core.windows.net/deltaducon/c20c9202-1430-42c0-9cb0-84d39da78020.xls"],"rem":["https://simjobstore.blob.core.windows.net/deltaducon/af61c27b-8c27-4b1e-814a-ef96258d115a.xls"]}
+25/05/2023 10:41:15: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 10:41:15: entity - deltaducon.Schemas.FolhaDePagamento
+25/05/2023 11:04:31: json -{"code":"104","descricao":"Estou editando este","owners":["23e308ed-4f67-4394-9a77-7228d2992dc3"],"id":"1a693229-484d-4fbe-98c8-98f14065cfb2","createAt":"2023-05-18T19:14:35.409Z","createBy":"admin@admin.com","isDeleted":false,"planilha":[""]}
+25/05/2023 11:04:31: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 11:04:31: entity - deltaducon.Schemas.FolhaDePagamento
+25/05/2023 11:32:05: json -{"code":"121","descricao":"Estou editando este","owners":["23e308ed-4f67-4394-9a77-7228d2992dc3"],"id":"ffebed2c-46d0-4f17-8855-da58d8bda49f","createAt":"2023-05-18T19:14:35.409Z","createBy":"admin@admin.com","isDeleted":false,"planilha":[""]}
+25/05/2023 11:32:05: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 11:32:05: entity - deltaducon.Schemas.FolhaDePagamento
+25/05/2023 11:33:55: fileFieldsCount2
+25/05/2023 11:33:56: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 11:37:44: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 11:37:47: json -{"code":"100","descricao":"update","owners":["23e308ed-4f67-4394-9a77-7228d2992dc3"],"id":"d612bf22-0196-4d5c-be3e-7f43088a5de3","planilha":["https://simjobstore.blob.core.windows.net/deltaducon/01191c30-ff1a-424e-938d-2c0038614266.xls"],"rem":["https://simjobstore.blob.core.windows.net/deltaducon/dfcf46c8-30f3-4842-83fc-e1bb0bba410b.xls"]}
+25/05/2023 11:37:47: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 11:37:47: entity - deltaducon.Schemas.FolhaDePagamento
+25/05/2023 11:57:21: fileFieldsCount2
+25/05/2023 11:58:49: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 11:58:49: json -{"code":"100","descricao":"Estou editando este","owners":["23e308ed-4f67-4394-9a77-7228d2992dc3"],"id":"050c900f-2aca-4181-b2d3-32feb6e7b76e","planilha":["https://simjobstore.blob.core.windows.net/deltaducon/6a60793d-b119-4caf-b230-fefef5aa4831.xls"]}
+25/05/2023 11:58:49: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 11:58:49: entity - deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:00:36: fileFieldsCount2
+25/05/2023 12:01:32: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 12:02:03: json -{"code":"100","descricao":"Estou editando este","owners":["23e308ed-4f67-4394-9a77-7228d2992dc3"],"id":"c38c9848-faa6-45e5-8a06-3c3b4e8c1288","planilha":["https://simjobstore.blob.core.windows.net/deltaducon/00210e24-e9aa-45b5-b9f4-717601b84a92.xls"],"rem":[""]}
+25/05/2023 12:02:03: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:02:03: entity - deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:03:16: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 12:04:02: json -{"code":"100","descricao":"Estou editando este","owners":["23e308ed-4f67-4394-9a77-7228d2992dc3"],"id":"c38c9848-faa6-45e5-8a06-3c3b4e8c1288","planilha":["https://simjobstore.blob.core.windows.net/deltaducon/f443f8d4-0088-4bb1-b2ec-517b0165b7b8.xls"],"rem":[""]}
+25/05/2023 12:04:02: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:04:02: entity - deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:04:48: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 12:05:00: json -{"code":"100","descricao":"Estou editando este","owners":["23e308ed-4f67-4394-9a77-7228d2992dc3"],"id":"c38c9848-faa6-45e5-8a06-3c3b4e8c1288","planilha":["https://simjobstore.blob.core.windows.net/deltaducon/9de65236-7bd2-439d-afa8-b9bc6c278de4.xls"],"rem":[""]}
+25/05/2023 12:05:02: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:05:05: entity - deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:05:57: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 12:05:57: json -{"code":"100","descricao":"Estou editando este","owners":["23e308ed-4f67-4394-9a77-7228d2992dc3"],"id":"c38c9848-faa6-45e5-8a06-3c3b4e8c1288","planilha":["https://simjobstore.blob.core.windows.net/deltaducon/60c9cbb5-7a52-4c67-861d-6c23be1ab109.xls"],"rem":[""]}
+25/05/2023 12:05:57: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:05:57: entity - deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:26:30: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 12:26:30: json -{"code":"127","descricao":"Teste 01","planilha":["https://simjobstore.blob.core.windows.net/deltaducon/cdcdef9d-5d99-4291-b365-3d53c5378593.xlsx"],"rem":[""],"owners":["23e308ed-4f67-4394-9a77-7228d2992dc3"],"id":"4311b001-4e81-4a59-a1b5-febd4f784f54","createAt":"2023-05-25T15:14:56.18Z","createBy":"admin@admin.com","isDeleted":false}
+25/05/2023 12:26:30: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:26:30: entity - deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:28:01: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 12:28:01: json -{"code":"127","descricao":"Teste 01","planilha":["https://simjobstore.blob.core.windows.net/deltaducon/705aee7a-0ea7-4465-b0e4-95505a7800cb.xlsx"],"rem":[""],"owners":["23e308ed-4f67-4394-9a77-7228d2992dc3"],"id":"4311b001-4e81-4a59-a1b5-febd4f784f54","createAt":"2023-05-25T15:14:56.18Z","createBy":"admin@admin.com","isDeleted":false}
+25/05/2023 12:28:01: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:28:01: entity - deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:28:39: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 12:28:39: json -{"code":"127","descricao":"Teste 01","planilha":["https://simjobstore.blob.core.windows.net/deltaducon/164cb2fb-5e89-40ca-9fea-4751e6f6bd96.xlsx"],"rem":[""],"owners":["23e308ed-4f67-4394-9a77-7228d2992dc3"],"id":"4311b001-4e81-4a59-a1b5-febd4f784f54","createAt":"2023-05-25T15:14:56.18Z","createBy":"admin@admin.com","isDeleted":false}
+25/05/2023 12:28:39: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:28:39: entity - deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:29:44: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 12:31:04: json -{"code":"127","descricao":"Teste 01","planilha":["https://simjobstore.blob.core.windows.net/deltaducon/12a9fc4d-2971-4077-a74e-2f2eeaabc0de.xlsx"],"rem":[""],"owners":["23e308ed-4f67-4394-9a77-7228d2992dc3"],"id":"4311b001-4e81-4a59-a1b5-febd4f784f54","createAt":"2023-05-25T15:14:56.18Z","createBy":"admin@admin.com","isDeleted":false}
+25/05/2023 12:31:04: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:31:04: entity - deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:31:28: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 12:31:31: json -{"code":"127","descricao":"Teste 01","planilha":["","https://simjobstore.blob.core.windows.net/deltaducon/40c3450a-d945-4d85-81cd-e663c381d665.xlsx"],"rem":[""],"owners":["23e308ed-4f67-4394-9a77-7228d2992dc3"],"id":"4311b001-4e81-4a59-a1b5-febd4f784f54","createAt":"2023-05-25T15:14:56.18Z","createBy":"admin@admin.com","isDeleted":false}
+25/05/2023 12:31:31: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:31:31: entity - deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:56:08: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 12:56:08: json -{"code":"130","descricao":"Teste","planilha":["","https://simjobstore.blob.core.windows.net/deltaducon/0e62f73e-7174-449c-87cc-c280d3c98c72.xlsx"],"rem":[""],"owners":["23e308ed-4f67-4394-9a77-7228d2992dc3"],"id":"e7e04d5f-4181-4181-ba8c-04d068d2ad6f","createAt":"2023-05-25T15:49:54.879Z","createBy":"admin@admin.com","isDeleted":false}
+25/05/2023 12:56:08: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 12:56:08: entity - deltaducon.Schemas.FolhaDePagamento
+25/05/2023 15:29:00: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 15:29:00: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 15:30:53: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 15:30:53: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 15:31:57: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 15:31:57: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 15:41:41: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 15:41:41: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 15:46:41: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 15:46:41: entity -deltaducon.Schemas.FolhaDePagamento
+25/05/2023 15:48:20: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+25/05/2023 15:48:20: entity -deltaducon.Schemas.FolhaDePagamento

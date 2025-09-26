@@ -1,0 +1,30 @@
+{
+  "title": "StockItemBalance",
+  "icon": "mdi-format-align-justify",
+  "description": "Saldo de Estoque de Item",
+  "type": "object",
+  "module": "Stock",
+  "group": "StockItemBalance",
+  "principal": true,
+  "descriptor": "itemDescription",
+  "searchFields": "itemDescription",
+  "properties": {
+    "itemDescription": {
+      "type": "string",
+      "mirror": "itemId.description"
+    },
+    "itemId": {
+      "type": "string",
+      "relationSchema": "Item"
+    },
+    "date": { "type": "date" },
+    "qtAvailable": { "type": "number" },
+    "qtTotal": { "type": "number" },
+    "qtReserved": { "type": "number" },
+    "qtCommitted": { "type": "number" },
+    "valueAvailable": { "type": "number" },
+    "valueTotal": { "type": "number" },
+    "valueReserved": { "type": "number" },
+    "valueCommitted": { "type": "number" }
+  }
+}

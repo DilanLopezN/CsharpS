@@ -1,0 +1,2 @@
+29/02/2024 10:55:38: entity -prevent.Schemas.StockVolCont
+29/02/2024 10:55:39: entity -prevent.Schemas.StockOperation

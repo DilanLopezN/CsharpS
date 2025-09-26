@@ -1,0 +1,38 @@
+{
+  "title": "ItemCarac",
+  "icon": "mdi-format-align-justify",
+  "description": "Caracteristica de Item",
+  "type": "object",
+  "module": "Item",
+  "group": "ItemCarac",
+  "principal": false,
+  "descriptor": "description",
+  "searchFields": "description",
+  "properties": {
+    "itemGroupCaracId": {
+      "type": "string",
+      "relationSchema": "ItemGroupCarac"
+    },
+    "description": {
+      "type": "string",
+      "mirror": "itemGroupCaracId.description"
+    },
+    "value": { "type": "string" }
+  },
+  "form": {
+    "properties": {
+      "caracId": {
+        "label": "Caracteristica",
+        "order": 1
+      },
+      "description": {
+        "label": "Descrição",
+        "order": 2
+      },
+      "value": {
+        "label": "Valor",
+        "order": 2
+      }
+    }
+  }
+}

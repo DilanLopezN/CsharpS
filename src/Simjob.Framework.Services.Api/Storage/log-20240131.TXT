@@ -1,0 +1,7 @@
+31/01/2024 09:32:26: entity -prevent.Schemas.StockMov
+31/01/2024 09:44:03: entity -prevent.Schemas.FisDocRecItem
+31/01/2024 09:44:39: entity -prevent.Schemas.StockBalance
+31/01/2024 09:44:50: entity -prevent.Schemas.StockMov
+31/01/2024 15:36:30: entity -prevent.Schemas.StockBalance
+31/01/2024 15:36:33: entity -prevent.Schemas.StockMov
+31/01/2024 15:36:34: entity -prevent.Schemas.StockOperation

@@ -1,0 +1,18 @@
+02/01/2024 16:12:53: fileFieldsCount1
+02/01/2024 16:12:55: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/teste.pdf
+02/01/2024 16:34:29: fileFieldsCount1
+02/01/2024 16:34:46: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/3317.zip
+02/01/2024 16:35:18: fileFieldsCount1
+02/01/2024 16:35:41: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/3317.zip
+02/01/2024 16:38:42: fileFieldsCount1
+02/01/2024 16:38:52: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/3317.zip
+02/01/2024 16:42:32: fileFieldsCount1
+02/01/2024 16:42:49: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/3317.zip
+02/01/2024 16:46:22: fileFieldsCount1
+02/01/2024 16:46:32: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/3317.zip
+02/01/2024 16:53:00: fileFieldsCount1
+02/01/2024 16:53:12: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/3317.zip
+02/01/2024 17:02:14: fileFieldsCount1
+02/01/2024 17:02:28: Urls uploadAttach - https://simjobstore.blob.core.windows.net/agora/3317.zip
+02/01/2024 17:30:29: [EntityService] - Exception has been thrown by the target of an invocation.
+02/01/2024 17:32:57: [EntityService] - Exception has been thrown by the target of an invocation.

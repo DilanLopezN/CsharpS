@@ -1,0 +1,27 @@
+{
+  "title": "Unit",
+  "icon": "mdi-format-align-justify",
+  "description": "Unidade",
+  "type": "object",
+  "module": "Item",
+  "group": "Unit",
+  "principal": true,
+  "descriptor": "description",
+  "searchFields": "description,code",
+  "properties": {
+    "code": { "type": "string" },
+    "description": { "type": "string" }
+  },
+  "form": {
+    "properties": {
+      "code": {
+        "label": "Código",
+        "order": 0
+      },
+      "description": {
+        "label": "Descrição",
+        "order": 1
+      }
+    }
+  }
+}

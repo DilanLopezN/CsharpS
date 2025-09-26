@@ -1,0 +1,40 @@
+{
+  "title": "ItemGroupCarac",
+  "icon": "mdi-format-align-justify",
+  "description": "Caracteristica do Grupo de Item",
+  "type": "object",
+  "module": "Items",
+  "group": "ItemGroup",
+  "principal": false,
+  "descriptor": "description",
+  "searchFields": "description",
+  "properties": {
+    "caracId": {
+      "type": "string",
+      "relationSchema": "Carac"
+    },
+    "description": {
+      "type": "string",
+      "mirror": "caracId.description"
+    },
+    "valueDefault": {
+      "type": "string"
+    }
+  },
+  "form": {
+    "properties": {
+      "caracId": {
+        "label": "Caracteristica",
+        "order": 1
+      },
+      "description": {
+        "label": "Descrição",
+        "order": 2
+      },
+      "valueDefault": {
+        "label": "Valor Padrão",
+        "order": 3
+      }
+    }
+  }
+}

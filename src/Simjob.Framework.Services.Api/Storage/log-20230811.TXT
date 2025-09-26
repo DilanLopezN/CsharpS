@@ -1,0 +1,2 @@
+11/08/2023 13:22:47: Urls uploadAttach - System.Collections.Generic.List`1[System.String]
+11/08/2023 13:22:58: entity -deltaducon.Schemas.Collaborator

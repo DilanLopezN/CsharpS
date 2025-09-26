@@ -1,0 +1,4 @@
+14/02/2024 14:05:11: entity -prevent.Schemas.StockVolCont
+14/02/2024 14:05:14: entity -prevent.Schemas.StockMov
+14/02/2024 14:05:15: entity -prevent.Schemas.StockBalance
+14/02/2024 14:05:16: entity -prevent.Schemas.StockOperation

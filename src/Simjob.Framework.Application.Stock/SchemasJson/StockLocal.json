@@ -1,0 +1,42 @@
+{
+  "title": "StockLocal",
+  "icon": "mdi-format-align-justify",
+  "description": "Local de Estoque",
+  "type": "object",
+  "module": "Stock",
+  "group": "StockLocal",
+  "principal": true,
+  "descriptor": "description",
+  "searchFields": "description",
+  "properties": {
+    "code": {
+      "type": "string",
+      "autoinc": true,
+      "mask": "000000"
+    },
+    "description": { "type": "string" },
+    "isAvailable": { "type": "boolean" },
+    "isMovLocked": { "type": "boolean" }
+  },
+  "required": [ "description" ],
+  "form": {
+    "properties": {
+      "code": {
+        "label": "Código",
+        "order": 0
+      },
+      "description": {
+        "label": "Descrição",
+        "order": 1
+      },
+      "isAvailable": {
+        "label": "Disponivel",
+        "order": 2
+      },
+      "isMovLocked": {
+        "label": "Movimentação Bloqueada",
+        "order": 3
+      }
+    }
+  }
+}

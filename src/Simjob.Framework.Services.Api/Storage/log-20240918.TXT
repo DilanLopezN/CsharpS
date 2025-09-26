@@ -1,0 +1,2 @@
+18/09/2024 09:29:31: [EntityService] - Unable to cast object of type 'System.Collections.Generic.List`1[prevent.Schemas.StockBalance]' to type 'System.Collections.Generic.List`1[Simjob.Framework.Domain.Core.Entities.Entity]'.
+18/09/2024 09:52:25: [EntityService] - Unable to cast object of type 'System.Collections.Generic.List`1[prevent.Schemas.StockBalance]' to type 'System.Collections.Generic.List`1[Simjob.Framework.Domain.Core.Entities.Entity]'.

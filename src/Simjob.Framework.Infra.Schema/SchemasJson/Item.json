@@ -1,0 +1,109 @@
+{
+
+  "title": "Item",
+  "icon": "mdi-format-align-justify",
+  "description": "Items",
+  "type": "object",
+  "module": "Items",
+  "group": "Items",
+  "principal": true,
+  "descriptor": "description",
+  "searchFields": "code,codeExt,description",
+  "properties": {
+    "seg": {
+      "type": "string",
+      "default": "Material",
+      "enum": [ "Material", "Produto Acabado" ]
+    },
+    "code": {
+      "type": "string",
+      "autoinc": true,
+      "mask": "000000"
+    },
+    "codeExt": { "type": "string" },
+    "unitId": {
+      "type": "string",
+      "relationSchema": "Unit"
+    },
+    "itemGroupId": {
+      "type": "string",
+      "relationSchema": "ItemGroup"
+    },
+    "itemClassId": {
+      "type": "string",
+      "relationSchema": "ItemClass"
+    },
+    "isActive": { "type": "boolean" },
+    "manuFacAccountId": {
+      "type": "string",
+      "relationSchema": "Account"
+    },
+    "propAccountId": {
+      "type": "string",
+      "relationSchema": "Account"
+    },
+    "description": { "type": "string" },
+    "itemStageIds": {
+      "type": "array",
+      "items": { "type": "string" },
+      "relationSchema": "ItemStage"
+    },
+    "itemCaracIds": {
+      "type": "array",
+      "items": { "type": "string" },
+      "relationSchema": "ItemCarac"
+    }
+  },
+  "form": {
+    "properties": {
+      "seg": {
+        "label": "Seg",
+        "order": 1
+      },
+      "code": {
+        "label": "C�digo",
+        "order": 2
+      },
+      "codeExt": {
+        "label": "C�digo Externo",
+        "order": 3
+      },
+      "description": {
+        "label": "Descri��o",
+        "order": 4
+      },
+      "itemGroupId": {
+        "label": "Grupo",
+        "order": 5
+      },
+      "itemClassId": {
+        "label": "Classifica��o",
+        "order": 6
+      },
+      "unitId": {
+        "label": "Unidade",
+        "order": 7
+      },
+      "isActive": {
+        "label": "Ativo",
+        "order": 8
+      },
+      "manuFacAccountId": {
+        "label": "Fabricante",
+        "order": 9
+      },
+      "propAccountId": {
+        "label": "Propriet�rio",
+        "order": 10
+      },
+      "itemStageIds": {
+        "tab": "Est�gios",
+        "view": "item-stage-tree-edit"
+      },
+      "itemCaracIds": {
+        "tab": "Caracteristicas",
+        "view": "item-carac-edit"
+      }
+    }
+  }
+}
