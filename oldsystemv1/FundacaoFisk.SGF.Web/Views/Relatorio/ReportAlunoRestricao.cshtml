@@ -1,0 +1,96 @@
+﻿@{
+    ViewBag.Title = "Relatório de Restrição";
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+
+
+@section scriptsBody{
+    @Scripts.Render("~/bundles/reportAlunoRestricao")
+
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Restrição";
+
+        //**** Requerires para a Tabulação ****\\
+        require([
+                "dojo",
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager",
+                "dijit/form/RadioButton",
+                "dojo/data/ObjectStore",
+                "dijit/form/FilteringSelect",
+                "dijit/form/DateTextBox",
+                "dijit/Dialog",
+                "dojo/parser"
+        ]);
+
+        montarMetodosEstoque();
+    </script>
+}
+
+<div class="apresentadorMensagem" id="apresentadorMensagem" style="display: none;"></div>
+<div>
+    <div class="EspacoCaixa caixaPesquisa">
+        <form data-dojo-type="dojox/form/Manager" id="formRptEstoque" data-dojo-id="formRptContaCorrente" enctype="multipart/form-data" class="Formulario">
+            <table class="Table">
+                <tr>
+                    <td style="width: 95%;">
+                        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Filtros'" id="panePesqGeral" open="true">
+                            <table class="Table">
+                                <tr>
+                                    <td class="tdRight nowrap" style="width: 10%;">
+                                        <label>Órgao Financeiro:</label>
+                                    </td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 20%;">
+                                        <select id="cbOrgao" name="cbOrgao" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;"></select>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Período'" id="paneDataInicial" open="true">
+                            <table class="Table">
+                                <tr>
+                                    <td class="tdRight nowrap" style="width: 10%;">
+                                        <label for="dtInicial">Data Inicial:</label>
+                                    </td>
+                                    <td style="width: 25%;" class="dojoTextBoxIECorrect">
+                                        <input type="text" id="dtInicial" name="dtInicial" class="alignDojoData" data-dojo-type="dijit.form.DateTextBox" onkeypress="mascaraDataHora(event, this)" style="width: 100%;" />
+                                    </td>
+                                    <td class="tdRight" style="width: 5%;">
+                                        <label for="dtFinal">Data Final:</label>
+                                    </td>
+                                    <td style="width: 25%;" class="dojoTextBoxIECorrect">
+                                        <input type="text" id="dtFinal" name="dtFinal" class="alignDojoData" data-dojo-type="dijit.form.DateTextBox" onkeypress="mascaraDataHora(event, this)" style="width: 100%;" />
+                                    </td>
+                                    <td class="tdRight nowrap" style="width: 5%;">
+                                        <label>Tipo de Período:</label>
+                                    </td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 20%;">
+                                        <select id="tipoPeriodo" name="tipoPeriodo" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;"></select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div style="padding-top: 10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%" class="Alinhamento">
+            <tr style="width: 100%">
+                <td style="text-align: center; width: 50%">
+                    <input type="button" id="relatorio" title="Relatório" />
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+</div>

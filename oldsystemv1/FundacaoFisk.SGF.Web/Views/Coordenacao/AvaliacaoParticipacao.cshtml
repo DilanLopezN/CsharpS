@@ -1,0 +1,220 @@
+﻿@{
+    ViewBag.Title = "Avaliação Participação";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/avaliacaoParticipacao")
+    <script src="~/Scripts/formatDate.js"></script>
+    <script src="~/Scripts/jquery.maskedinput-1.3.js"></script>
+}
+
+
+@section scriptsBody{
+    <script type="text/javascript">
+        //Titulo do Formulário
+        document.getElementById("labelTitulos").innerHTML = "Avaliação Participação";
+        require([
+               "dojo/NodeList-traverse",
+               "dojo/_base/event",
+               "dojox/validate/web",
+               "dojox/validate/check",
+               "dijit/form/NumberTextBox",
+               "dijit/form/ValidationTextBox",
+               "dijit/form/Form",
+               "dojox/form/Manager",
+        ]);
+
+        //*** Segurança do Formulário ***\\
+        montarCadastroAvalicaoParticipacao();
+
+
+    </script>
+}
+<div id="container">
+    <input type="hidden" id="link" value="" />
+    <div class="apresentadorMsg" id="apresentadorMensagem" style="display: none;"></div>
+    <script type="text/javascript">
+        showCarregando();
+    </script>
+
+    @*Inicio da crição da grade de Avaliação*@
+    <div id="div 1">
+        <div class="EspacoCaixa caixaPesquisa">
+            <table class="Table">
+                <tr>
+                    <td style="width: 95%;">
+                        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Pesquisa'" id="panePesqGeral" open="true">
+                            <table class="Table">
+                                <tr>
+                                    <td class="Pesquisa tdRight" style="width: 5%">
+                                        <label for="cbNomes" class="AlinhaDireita">Nome:</label>
+                                    </td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 35%;">
+                                        <input id="cbNomesAval" name="cbNomesAval" data-dojo-type="dijit/form/FilteringSelect" required="false" class="alignDojoData" style="width: 100%;">
+                                    </td>
+                                    <td class="tdRight" style="width: 7%;">
+                                        <label>Participação:</label>
+                                    </td>
+                                    <td class="dojoTextBoxIECorrect">
+                                        <select id="pesParticipacao" name="pesParticipacao" required="false" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;"></select>
+                                    </td>
+                                    <td class="tdRight" style="width: 15%">
+                                        <label for="statusAvaliacaoPart" class="AlinhaDireita;">Status:</label>
+                                    </td>
+                                    <td style="width: 15%;" class="dojoTextBoxIECorrect">
+                                        <input id="statusAvaliacaoPart">
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td class="Pesquisa tdRight" style="width: 5%">
+                                        <label for="cbProduto" class="AlinhaDireita">Produto:</label>
+                                    </td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 35%;">
+                                        <input id="cbProduto" data-dojo-type="dijit/form/FilteringSelect" required="true" class="alignDojoData" style="width: 100%;">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="width: 5%; text-align: center">
+                        <input id="pesquisarAvaliacaoPart" title="Pesquisar" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div style="padding-top: 10px">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <div>
+                <table style="width: 100%">
+                    <tr style="width: 100%">
+                        <td style="text-align: left; width: 25%">
+                            <div class="linkAcoes" id="linkAcoes"></div>
+                        </td>
+                        <td style="text-align: center; width: 50%;">
+                            <input id="novaAvaliacaoPart" title="Novo" />
+                            <input id="relatorioAvaliacaoPart" title="Relatório" />
+                        </td>
+                        <td style="text-align: right; width: 25%">
+                            <span class="linkSelecionados" id="linkSelecionados"></span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+        <div data-dojo-type="dijit/layout/ContentPane" id="ContentGridAvaliacaoPart" style="padding-left: 0px; padding-right: 0px;">
+            <div class="gridCadBasic">
+                <div id="gridAvaliacaoPart"></div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+        @*fim da grade*@
+
+<div id="cadAvaliacaoPart" data-dojo-type="dijit.Dialog" title="Avaliação Participação" class="Dialogo">
+    <input id="cd_avaliacao_participacao" type="hidden" value="0" />
+    <div class="apresentadorMsg" id="apresentadorMensagemAvaliacaoPart" style="display: none;"></div>
+    <div class="corpo_interno">
+        <div style="min-height: 400px; max-height: 450px; height: 100%;" class="scroll">
+            <div data-dojo-type="dijit/layout/ContentPane" id="tabPrincipalTipo" title="Principal">
+                <form name="formAvaliacaoPart" id="formAvaliacaoPart" data-dojo-type="dojox/form/Manager" style="width: 100%">
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Nome da Avaliação de Participação'" id="avaliacao" open="true">
+                        <table class="Table">
+                            <tr>
+                                <td class="tdRight">
+                                    <label for="cbNomesCad" class="AlinhaDireita">Nome:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 35%;">
+                                    <input id="cbNomesCad" data-dojo-type="dijit/form/FilteringSelect" required="true" class="alignDojoData" style="width: 100%;">
+                                </td>
+                                <td class="tdRight">
+                                    <label for="cbProdutoCad" class="AlinhaDireita">Produto:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 35%;">
+                                    <input id="cbProdutoCad" data-dojo-type="dijit/form/FilteringSelect" required="true" class="alignDojoData" style="width: 100%;">
+                                </td>
+                                @*<td class="tdRight nowrap">Ativo:</td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input type="checkbox" checked="checked" data-dojo-type="dijit/form/CheckBox" id="id_ativo_cad" name="id_ativo_cad" />
+                                </td>*@
+                            </tr>
+                        </table>
+                    </div>
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Participações'" id="criterios" open="true">
+                        <div style="padding-top: 1px">
+                            <div class="linha_acoes" style="width: 100%"></div>
+                            <div>
+                                <table style="width: 100%">
+                                    <tr style="width: 100%">
+                                        <td style="text-align: left; width: 25%;">
+                                            <div class="linkAcoes" id="linkAcoesPart"></div>
+                                        </td>
+                                        <td style="text-align: center; width: 50%;">
+                                            <input id="incluirPartFK" />
+                                        </td>
+                                        <td style="text-align: right; width: 25%;"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="linha_acoes" style="width: 100%"></div>
+                        </div>
+                        <div class="gridCadBasic" style="width: 640px; height: 250px">
+                            <div data-dojo-type="dijit/layout/ContentPane" id="contentGridParticipacao" style="width: 100%; height: 100%; padding-left: 0px; padding-right: 0px;">
+                                <div id="gridParticipacaoAval" style=" height: 230px"></div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="CaixaAcao">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <div class="Alinhamento">
+                <span id="divAvaliacaoPartCima">
+                    <input type="button" id="subir" title="Subir" style="width: 60px" /></span>
+                <span id="divAvaliacaoPartBaixo">
+                    <input type="button" id="descer" title="Decer" style="width: 60px" /></span>
+                <span id="divIncluirAvaliacaoPart">
+                    <input id="incluirAvaliacaoPart" title="incluir" /></span>
+                <span id="divAlterarAvaliacaoPart">
+                    <button id="alterarAvaliacaoPart" title="Alterar">Salvar</button>
+                </span>
+                <span id="divExcluirAvaliacaoPart">
+                    <input type="button" id="deleteAvaliacaoPart" title="Excluir" /></span>
+                <span id="divLimparAvaliacaoPart">
+                    <input id="limparAvaliacaoPart" title="Limpar" /></span>
+                <span id="divCancelarAvaliacaoPart">
+                    <input type="button" id="cancelarAvaliacaoPart" title="Cancelar" /></span>
+                <span id="divFecharAvaliacaoPart">
+                    <input type="button" id="fecharAvaliacaoPart" title="Fechar" />
+                </span>
+            </div>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+    </div>
+</div>
+<div id="PartFK" data-dojo-type="dijit/Dialog" title="Participações" style="width: 700px;">
+    <div class="corpo_interno">
+        <div style="padding-top: 5px; width: 100%">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <table style="width: 100%">
+                <tr style="width: 100%">
+                    <td style="text-align: center; width: 100%;">
+                        <input type="button" id="selecionaPartFK" />&nbsp;
+                        <input type="button" id="fecharPartFK" title="Fechar" />&nbsp;
+                    </td>
+                </tr>
+            </table>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+        <div style="width: 100%; height: 315px">
+            <div data-dojo-type="dijit/layout/ContentPane" id="panelPartFK" style="width: 100%; height: 300px; padding-top: 5px; padding-left: 0px">
+                <div id="gridParticipacao"></div>
+            </div>
+        </div>
+    </div>
+</div>

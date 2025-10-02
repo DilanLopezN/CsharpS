@@ -1,0 +1,6 @@
+
+[*]
+
+# ReSharper properties
+resharper_align_linq_query=true
+resharper_allow_comment_after_lbrace=true

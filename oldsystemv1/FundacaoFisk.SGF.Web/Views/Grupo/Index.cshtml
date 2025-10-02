@@ -1,0 +1,214 @@
+@{
+    ViewBag.Title = "";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/grupo")
+    @Scripts.Render("~/bundles/pessoaFK")
+    @Scripts.Render("~/bundles/usuarioFK")
+}
+
+@section scriptsBody{
+    <script type="text/javascript">
+
+        //**** Requerires para a Tabulação ****\\
+        require([
+                "dojo/NodeList-traverse",
+                "dijit/form/TextBox",
+                "dijit/Dialog",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager",
+                "dojox/grid/LazyTreeGrid",
+                "dijit/tree/ForestStoreModel",
+                "dojo/data/ItemFileWriteStore"
+        ]);
+
+        configurarGrupo();
+
+
+        //montarCadastroGrupo();
+    </script>
+}
+
+
+<div style="width: 100%;">
+    <input type="hidden" id="link" value="" />
+    <div class="apresentadorMsg" id="apresentadorMensagem"  style="display:none;"></div>
+    <script type="text/javascript">
+        showCarregando();
+    </script>
+    <div id="painelPesquisa">
+        <div title="Grupo de Permissões" id="Grupo">
+            <div class="EspacoCaixa caixaPesquisa">
+					<table class="Table">
+						<tr>
+							<td class="Pesquisa">
+								<label for="pesquisaGrupo">Descrição: </label>
+								<input id="pesquisaGrupo" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width:59%">
+								<label class="AlinhaDireita;" for="inicioDescGrupo">Início:</label>
+								<input type="checkbox" id="inicioDescGrupo" data-dojo-type="dijit/form/CheckBox"  class="margemCampoEsq" />
+							</td>
+							<td>
+								<input id="pesquisarGrupo" title="Pesquisar" />
+							</td>
+						</tr>
+					</table>
+				</div>
+                <div style="padding-top:10px">
+					<div class="linha_acoes" style="width: 100%"></div>
+					<div>
+						<table style="width:100%">
+							<tr style="width:100%">
+                                <td style="text-align:left; width:25%">
+									<div class="linkAcoes" id="linkAcoes"></div>
+								</td>
+								<td style="text-align:center; width:50%;">
+									<input id="novoGrupo" title="Novo" />
+									<input id="relatorioGrupo" title="Relatório" />
+								</td>
+                                <td style="text-align:right; width:25%">
+									<span class="linkSelecionados" id="linkSelecionados"></span>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<div class="linha_acoes" style="width: 100%"></div>
+				</div>
+
+            <div class="gridCadBasic">
+                <div id="gridGrupo"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="cadGrupo" data-dojo-type="dijit.Dialog" title="" class="Dialogo">
+    
+    <div class="sessao_form" style="margin-left: -8px;">
+        <span id="counter_form">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    <div class="corpo_interno" style="max-width: 675px;">
+        <form class="Formulario" id="formGrupo" data-dojo-id="formGrupo" enctype="multipart/form-data">
+            <div class="apresentadorMsg" id="apresentadorMensagemGrupo"  style="display:none;"></div>
+            <div data-dojo-type="dijit/layout/TabContainer" id="tabContainer" class="Abas" onclick="selecionaTab" style="min-height: 450px; max-height: 800px; height: 100%;">
+                <div data-dojo-type="dijit/layout/ContentPane" title="Cadastro" class="ContentPane" data-dojo-props="selected:true" id="tabCadastro">
+                    <input id="cd_grupo" name="cd_grupo" type="hidden" value="0" />
+                    <div style="padding-bottom: 6px; width: 100%; padding-top: 0; height: 28px; vertical-align: middle">
+                        <table class="Table">
+                            <tr>
+                                <td class="tdRight" style="width: 5%">
+                                    <label for="no_grupo">Grupo:</label></td>
+                                <td class="dojoTextBoxIECorrect" style="width: 50%">
+                                    <input name="no_grupo"
+                                        type="text"
+                                        id="no_grupo"
+                                        maxlength="32"
+                                        style="width: 100%;"
+                                        size="34"
+                                        data-dojo-type="dijit/form/ValidationTextBox" required="required" />
+                                </td>
+                                <td class="tdRight" style="width: 35%" id="decAtualizar">
+                                    <label for="ckIdAtualizarGrupo">Atualizar grupo pela fundação:</label></td>
+                                <td class="dojoTextBoxIECorrect" style="width: 14%" id="ckAtualizar">
+                                    <input name="no_grupo" type="checkbox"
+                                        id="ckIdAtualizarGrupo"
+                                        style="width: 25%;"
+                                        data-dojo-type="dijit/form/CheckBox" />
+                                </td>
+                            </tr>
+                        </table>
+                        <div id="paiGridUsuarioGrupo" style="width: 100%;padding-top:5px;" data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Usúarios'" open="true">
+                            <div id="grupoAcoesUsuarioGrupo">
+                                <div class="linha_acoes" style="width: 100%"></div>
+                                <table style="width: 100%" class="Alinhamento" id=" ">
+                                    <tr style="width: 100%">
+                                        <td style="text-align: left; width: 25%">
+                                            <div class="linkAcoes" id="linkAcoesUsuario"></div>
+                                        </td>
+                                        <td style="text-align: center; width: 50%">
+                                            <input id="incluirUsuarioFK" />
+                                        </td>
+                                        <td style="text-align: center; width: 25%">
+                                            <div style="text-align: right; width: 25%;"></div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div class="linha_acoes" style="width: 100%"></div>
+                            </div>
+                            <div data-dojo-type="dijit/layout/ContentPane" id="panelUsuarioFK" style="width: 100%; height: 272px; padding-left: 0px; padding: 0px; padding-top: 3px;">
+                                <div id="gridUsuarioGrupo" style="height: 320px; width: 60%;"></div>
+                            </div>                     
+                        </div>
+
+                        <div id="paiGridEscolaMaster" style="width: 100%; height: 370px; padding-top: 8px;" data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Escolas'" open="true">
+                            <div id="grupoAcoesProf">
+                                <div class="linha_acoes" style="width: 100%"></div>
+                                <table style="width: 100%" class="Alinhamento" id=" ">
+                                    <tr style="width: 100%">
+                                        <td style="text-align: left; width: 25%">
+                                            <div class="linkAcoes" id="linkAcoesEscola"></div>
+                                        </td>
+                                        <td style="text-align: center; width: 50%">
+                                            <input id="incluirEscolaFK" />
+                                        </td>
+                                        <td style="text-align: center; width: 25%">
+                                            <div style="text-align: right; width: 25%;"></div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div class="linha_acoes" style="width: 100%"></div>
+                            </div>
+                            @*<div id="paiGridEscolas" style="height: 275px;">*@
+                            <div data-dojo-type="dijit/layout/ContentPane" id="panelEscolasFK" style="width: 100%; height: 272px;padding-left: 0px;padding:0px;padding-top:3px;">
+                                <div id="gridEscolas"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" title="Permissões" id="tabPermissoes" class="ContentPane">
+                    <div id="paiGridPermissoes">
+                        <div id="gridPermissoes" style="height: 390px; top: 10px; width: 100%; margin-top: 5px;"></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="containerCrud" style="padding-top:5px;">
+                <div>
+                    <div class="linha_acoes"></div>
+                    <div style="text-align: center">
+                        <span id="divIncluirGrupo">
+                            <input id="incluirGrupo" title="Salvar" /></span>
+                        <span id="divAlterarGrupo">
+                            <input id="alterarGrupo" title="Salvar" /></span>
+                        <span id="divExcluirGrupo">
+                            <input type="button" id="deleteGrupo" title="Apagar" /></span>
+                        <span id="divLimparGrupo">
+                            <input id="limparGrupo" title="Limpar" /></span>
+                        <span id="divCancelarGrupo">
+                            <input id="cancelarGrupo" title="Cancelar" /></span>
+                        <span id="divFecharGrupo">
+                            <input id="fecharGrupo" title="Fechar" /></span>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+            </div>
+    </div>
+</div>
+
+<div id="fkPessoaPesq" data-dojo-type="dijit.Dialog" title="Pesquisar Pessoa" style="display: none; width: 800px; height: 590px;">
+   <div style="height:590px;width:780px">
+        @Html.Partial("../Pessoa/PessoaFK")
+    </div>
+</div>
+
+
+<div id="proUsuario" data-dojo-type="dijit.Dialog" title="Pesquisar Usuário" style="display: none; width: 705px; height: 590px;">
+     <div style="width: 690px;height: 590px;">
+        @Html.Partial("../Usuario/UsuarioFK")
+    </div>
+</div>

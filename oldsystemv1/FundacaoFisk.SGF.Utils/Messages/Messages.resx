@@ -1,0 +1,1855 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="msgAuthenticationError" xml:space="preserve">
+    <value>Erro na autenticação.</value>
+  </data>
+  <data name="msgCritError" xml:space="preserve">
+    <value>Falha crítica.</value>
+  </data>
+  <data name="msgDeleteSucess" xml:space="preserve">
+    <value>Registro(s) removido(s) com sucesso.</value>
+  </data>
+  <data name="msgEmissaoRelatorioError" xml:space="preserve">
+    <value>Erro ao emitir o relatório.</value>
+  </data>
+  <data name="msgErroItemNaoEncontrado" xml:space="preserve">
+    <value>Selecione algum item do tipo Material Didático para relacioná-lo ao curso.</value>
+  </data>
+  <data name="msgErroRelatorio" xml:space="preserve">
+    <value>Não foi possível emitir o relatório.</value>
+  </data>
+  <data name="msgErroRenderizarRelatorio" xml:space="preserve">
+    <value>Erro ao renderizar o relatório.</value>
+  </data>
+  <data name="msgHorarioAcessoUsuario" xml:space="preserve">
+    <value>Esta operação está sendo realizada fora do horário de acesso do usuário.</value>
+  </data>
+  <data name="msgIncludSucess" xml:space="preserve">
+    <value>Registro incluído com sucesso.</value>
+  </data>
+  <data name="msgNotDeletedReg" xml:space="preserve">
+    <value>Não foi possível excluir o registro.</value>
+  </data>
+  <data name="msgNotIncludReg" xml:space="preserve">
+    <value>Não foi possível incluir o registro.</value>
+  </data>
+  <data name="msgNotUploadImage" xml:space="preserve">
+    <value>Não foi possível fazer upload da imagem.</value>
+  </data>
+  <data name="msgNotUpReg" xml:space="preserve">
+    <value>Não foi possível alterar o registro.</value>
+  </data>
+  <data name="msgPasswordNotValid" xml:space="preserve">
+    <value>Usuário e senha inválidos.</value>
+  </data>
+  <data name="msgQtdEstagioSuportadaError" xml:space="preserve">
+    <value>Número de estágios extrapolou a quantidade suportada.</value>
+  </data>
+  <data name="msgRegBuscError" xml:space="preserve">
+    <value>Erro ao buscar os registros.</value>
+  </data>
+  <data name="msgRegCritError" xml:space="preserve">
+    <value>Ocorreu um erro, por favor tente novamente ou contacte o administrador do sistema.</value>
+  </data>
+  <data name="msgRegNotEnc" xml:space="preserve">
+    <value>Nenhum registro encontrado.</value>
+  </data>
+  <data name="msgUpdateAllSucess" xml:space="preserve">
+    <value>Registro(s) alterado(s) com sucesso.</value>
+  </data>
+  <data name="msgUpdateSucess" xml:space="preserve">
+    <value>Registro alterado com sucesso.</value>
+  </data>
+  <data name="msgUserNotValid" xml:space="preserve">
+    <value>Usuário não possui uma escola vinculada a ele. Favor contatar o administrador do sistema.</value>
+  </data>
+  <data name="msgSomatoriaMaximaError" xml:space="preserve">
+    <value>Somatória das notas de todas as avaliações deste tipo ultrapassou o valor máximo definido neste.</value>
+  </data>
+  <data name="msgRegNotPersist" xml:space="preserve">
+    <value>Não foi possível persistir o registro.</value>
+  </data>
+  <data name="msgErrorMenu" xml:space="preserve">
+    <value>Erro ao buscar os menus.</value>
+  </data>
+  <data name="msgExistFuncionarioForCpf" xml:space="preserve">
+    <value>Funcionário '{0}' já cadastrado com este CPF.</value>
+  </data>
+  <data name="msgFuncExistReturnData" xml:space="preserve">
+    <value>Pessoa '{0}' já existe com este CPF, deseja cadastrá-la como Funcionário? &lt;br/&gt;Os dados desta pessoa serão preenchidos automaticamente.</value>
+  </data>
+  <data name="msgExistAlunoForCPf" xml:space="preserve">
+    <value>Aluno '{0}' já cadastrado com este CPF.</value>
+  </data>
+  <data name="msgAlunocExistReturnData" xml:space="preserve">
+    <value>Pessoa '{0}' já existe com este CPF, deseja cadastrá-la como Aluno? &lt;br/&gt;Os dados desta pessoa serão preenchidos automaticamente.</value>
+  </data>
+  <data name="msgExisteCNPJEscola" xml:space="preserve">
+    <value>Já existe cnpj para a escola</value>
+  </data>
+  <data name="msgRedeFisk" xml:space="preserve">
+    <value>Rede Fisk</value>
+  </data>
+  <data name="msgNotaAvalCurso" xml:space="preserve">
+    <value>Nota do Tipo de Avaliação maior que a nota do Curso.</value>
+  </data>
+  <data name="msgExistsEmailProspect" xml:space="preserve">
+    <value>Prospect '{0}' já cadastrado com este e-mail.</value>
+  </data>
+  <data name="msgExistsEmailAluno" xml:space="preserve">
+    <value>Aluno '{0}' já cadastrado com este e-mail.</value>
+  </data>
+  <data name="msgExistsEmailPessoa" xml:space="preserve">
+    <value>Pessoa '{0}' já cadastrado com este e-mail.</value>
+  </data>
+  <data name="msgPessoaExistByEmail" xml:space="preserve">
+    <value>, deseja cadastrá-la como Aluno? Os dados desta pessoa serão preenchidos automaticamente.</value>
+  </data>
+  <data name="msgSalaNaoExistenteHorarios" xml:space="preserve">
+    <value>Não existe sala para os horários alocados para essa turma.</value>
+  </data>
+  <data name="msgProgramacaoSemHorario" xml:space="preserve">
+    <value>Não é possível incluir a programação sem data de início e/ou horário.</value>
+  </data>
+  <data name="msgNotExitsAlunoTurma" xml:space="preserve">
+    <value>Não existe aluno cadastrado para essa turma.</value>
+  </data>
+  <data name="msgNotExistAvaliacaoTurma" xml:space="preserve">
+    <value>Não existe avaliação cadastrada para essa turma.</value>
+  </data>
+  <data name="msgFeriadoInvalido" xml:space="preserve">
+    <value>A data inicial do feriado deve ser menor ou igual a data final do feriado.</value>
+  </data>
+  <data name="msgErroMenu" xml:space="preserve">
+    <value>Erro ao buscar os menus.</value>
+  </data>
+  <data name="msgExistsDiarioAulaLancado" xml:space="preserve">
+    <value>Não é possível excluir o aluno, pois existe Diário de Aula lançado na turma.</value>
+  </data>
+  <data name="msgNotDeletedProgTurmaDiarioAula" xml:space="preserve">
+    <value>Não é possível excluir programação turma pois existe Diário de Aula lançado.</value>
+  </data>
+  <data name="msgErroDispHorarioAluno" xml:space="preserve">
+    <value>Os horários pretendidos do aluno devem sobrepor todos os horários da(s) turma(s) em que ele está alocado.</value>
+  </data>
+  <data name="msgErroNaoEhProfessorNemFuncionario" xml:space="preserve">
+    <value>Usuário deve ser um funcionário ou professor para atribuir notas de alunos.</value>
+  </data>
+  <data name="msgExistNotaLancadaParaTurma" xml:space="preserve">
+    <value>Não é possível alterar a avaliação, pois existe nota lançada para turma.</value>
+  </data>
+  <data name="msgAlunoHorarioDisponivel" xml:space="preserve">
+    <value>Existe(m) aluno(s) que não possue(m) disponibilidade nesse horário.</value>
+  </data>
+  <data name="msgErroDispHorarioProf" xml:space="preserve">
+    <value>Os horários de disponibilidade do professor devem sobrepor todos os horários da(s) turma(s) em que ele está alocado.</value>
+  </data>
+  <data name="msgProfHorarioDisponivel" xml:space="preserve">
+    <value>Existe(m) professor(es) que não possue(m) disponibilidade nesse horário.</value>
+  </data>
+  <data name="msgNotSalaDisponivelHorario" xml:space="preserve">
+    <value>A sala selecionada não possui disponibilidade para esse horário. Selecione outra sala.</value>
+  </data>
+  <data name="msgCrudProgramacaoEfetuada" xml:space="preserve">
+    <value>Não é permitido incluir, alterar ou deletar um horário com diário de aula efetuado.</value>
+  </data>
+  <data name="msgExistAlunoAtivoEsc" xml:space="preserve">
+    <value>Não foi possível inativar a escola, pois existe(m) aluno(s) ativo(s) na mesma.</value>
+  </data>
+  <data name="msgErroInativarTurma" xml:space="preserve">
+    <value>Não é possível inativar a turma, pois existe(m) turma(s) filha(s) que ainda não foram encerradas.</value>
+  </data>
+  <data name="msgNotPermissaoSalario" xml:space="preserve">
+    <value>Usuário não tem permissão para incluir e/ou alterar o campo "Salário".</value>
+  </data>
+  <data name="msgAlunosComAtividadeExtra" xml:space="preserve">
+    <value>Não é permitido excluir atividade extra com alunos.</value>
+  </data>
+  <data name="msgNaoExisteCurso" xml:space="preserve">
+    <value>Selecione um curso, duração e regime para gerar as programações automáticas.</value>
+  </data>
+  <data name="msgNumeroVagas" xml:space="preserve">
+    <value>O número de alunos excedeu o número de vagas do(a) {0}</value>
+  </data>
+  <data name="msgErroNaoPossuiProgramacaoCurso" xml:space="preserve">
+    <value>Não existe programação de curso para a duração e curso dessa(s) turma(s).</value>
+  </data>
+  <data name="msgProgramacaoTurmaSucess" xml:space="preserve">
+    <value>Programação(ões) gerada(s) com sucesso.</value>
+  </data>
+  <data name="msgNotUpdateParametro" xml:space="preserve">
+    <value>Não é permitido alterar o nível de plano de contas, pois já existe plano de contas cadastro para a escola {0}.</value>
+  </data>
+  <data name="msgProgramacoesRefeitasPeloHorario" xml:space="preserve">
+    <value>Ao alterar os horários, as programações da turma serão refeitas.</value>
+  </data>
+  <data name="msgProgramacoesRefeitasPeloFeriado" xml:space="preserve">
+    <value>As programações de turma foram atualizadas para contemplar a(s) modificação(ões) (inclusão, alteração ou exclusão) deste(s) feriado(s).</value>
+  </data>
+  <data name="msgErroModificarDesconsideraFeriadoAulaEfetivada" xml:space="preserve">
+    <value>Não é possível incluir ou alterar o feriado desconsiderado com aula efetivada.</value>
+  </data>
+  <data name="msgDataAvaliacaoTurmaObrigatoria" xml:space="preserve">
+    <value>A data de avaliação da turma é obrigatória.</value>
+  </data>
+  <data name="msgIntersecaoHorariosFilhasPPT" xml:space="preserve">
+    <value>O(s) horário(s) das turmas filhas deve(m) estar contidos no(s) horário(s) da turma PPT.</value>
+  </data>
+  <data name="msgProgramacoesRefeitasPeloDesconsideraFeriado" xml:space="preserve">
+    <value>Ao alterar os feriados desconsiderados, as programações da turma serão refeitas.</value>
+  </data>
+  <data name="msgCrudProgramacaoEfetuadaFilhaPPT" xml:space="preserve">
+    <value>Não é permitido incluir, alterar ou deletar um horário com diário de aula efetuado na(s) turma(s) filha(s).</value>
+  </data>
+  <data name="msgNotEditDeleteFeriado" xml:space="preserve">
+    <value>Não é permitido alterar/deletar feriado que são de todas as escolas. Feriado - {0}</value>
+  </data>
+  <data name="msgRemoveProfDiarioAula" xml:space="preserve">
+    <value>Não é permitido deletar um professor com diário de aula efetuado.</value>
+  </data>
+  <data name="msgRemoveProfDiarioAulaFilhasPPT" xml:space="preserve">
+    <value>Não é permitido deletar um professor com diário de aula efetuado na(s) turma(s) filha(s).</value>
+  </data>
+  <data name="msgNotDeletedAlunoContrato" xml:space="preserve">
+    <value>Não é possível excluir a matrícula, pois existe turma.</value>
+  </data>
+  <data name="msgInvalidoDiasParametros" xml:space="preserve">
+    <value>O dia de vencimento não pode ser menor ou igual a 0(zero) ou maior que 28(vinte e oito). Dia {0}</value>
+  </data>
+  <data name="msgErroIncluirTurma" xml:space="preserve">
+    <value>Só é possível incluir uma Turma para o Aluno.</value>
+  </data>
+  <data name="msgErrorTurmaEncerrado" xml:space="preserve">
+    <value>Não é possível alterar turma encerrada.</value>
+  </data>
+  <data name="msgArqContratoNaoEncontrado" xml:space="preserve">
+    <value>O arquivo de contrato não foi encontrado. Contacte o administrador do sistema.</value>
+  </data>
+  <data name="msgAvisoNaoexisteLayoutNomeContrato" xml:space="preserve">
+    <value>Não existe arquivo cadastrado para este layout de contrato.</value>
+  </data>
+  <data name="msgSemPemissaoDeletarNoCont" xml:space="preserve">
+    <value>O usuario logado não tem permissão para deletar ou alterar este registro. Favor contactar o administrador do sistema.</value>
+  </data>
+  <data name="msgNotExcluirAlunoTurmaMatOuRematriculado" xml:space="preserve">
+    <value>Não é possível excluir o aluno com situação matriculado ou rematriculado na turma.</value>
+  </data>
+  <data name="msgParametroNaoEsperado" xml:space="preserve">
+    <value>Configuração de parâmetro não esperado no relatório de contrato {0}. Contacte o administrador do sistema.</value>
+  </data>
+  <data name="msgValorContratoMenorZero" xml:space="preserve">
+    <value>O valor do contrato não pode ser menor ou igual a 0 (zero).</value>
+  </data>
+  <data name="msgValorTaxaMatricula" xml:space="preserve">
+    <value>O valor da taxa de matricula deve ser maior que 0(zero).</value>
+  </data>
+  <data name="msgValorCursoMenorLiquido" xml:space="preserve">
+    <value>Valor da parcela informado ultrapassa o Valor do Curso.</value>
+  </data>
+  <data name="msgValorParcelaMaiorPrimeira" xml:space="preserve">
+    <value>Valor do desconto da primeira parcela é maior que o valor da primeira parcela.</value>
+  </data>
+  <data name="msgNoLayoutJaCadastrado" xml:space="preserve">
+    <value>Já existe um arquivo cadastrado com esse nome.</value>
+  </data>
+  <data name="msgUsuaioNotEspecializarNoCont" xml:space="preserve">
+    <value>Seu usuário não tem permissão para especializar layout de contrato.</value>
+  </data>
+  <data name="msgNotExistLayoutNoCont" xml:space="preserve">
+    <value>Não existe layout de contrato cadastrado para essa matrícula.</value>
+  </data>
+  <data name="msgErroValorTitulo" xml:space="preserve">
+    <value>Soma dos valores dos títulos de mensalidade não bate com o valor líquido.</value>
+  </data>
+  <data name="msgErroValorTaxaMatricula" xml:space="preserve">
+    <value>Soma dos valores dos títulos de matrícula não bate com o valor da taxa de matrícula.</value>
+  </data>
+  <data name="msgErroDiaVencDescAditaNaoInformado" xml:space="preserve">
+    <value>O campo 'Dia Venc Desc' nas 'Opções de Impressão/Aditamento' é obrigatório para emitir o contrato.</value>
+  </data>
+  <data name="msgNotExcTituloComBaixa" xml:space="preserve">
+    <value>Não é possível excluir o título com baixa efetuada.</value>
+  </data>
+  <data name="msgIntersecaoHorariosDiarioAula" xml:space="preserve">
+    <value>Não é possível inserir diário de aula, pois já existe outro diário de aula ou uma programação agendada nesse dia com o mesmo horário.</value>
+  </data>
+  <data name="msgRegCanSucess" xml:space="preserve">
+    <value>Registro cancelado com sucesso.</value>
+  </data>
+  <data name="msgRegNotCanSucess" xml:space="preserve">
+    <value>Não foi possível cancelar o registro.</value>
+  </data>
+  <data name="msgNotCancelDiarioCancelado" xml:space="preserve">
+    <value>Não é possível cancelar um diário de aula que já está cancelado.</value>
+  </data>
+  <data name="msgNotRemoveDiarioAulaCancelado" xml:space="preserve">
+    <value>Não é possível remover um diário de aula cancelado.</value>
+  </data>
+  <data name="msgNotUpdateDiarioCancelado" xml:space="preserve">
+    <value>Não é possível alterar um diário de aula cancelado.</value>
+  </data>
+  <data name="msgExistDiarioParaEssaProgramacao" xml:space="preserve">
+    <value>Já existe um diário de aula efetivado para essa programação. Feche e tente novamene.</value>
+  </data>
+  <data name="msgErroSaldoNegativo" xml:space="preserve">
+    <value>O título não pode ficar com valor negativo.</value>
+  </data>
+  <data name="msgErroMudancaExisteAval" xml:space="preserve">
+    <value>Não é permitido o cancelamento do histórico, pois foi lançada avaliação para o Aluno na turma atual.</value>
+  </data>
+  <data name="msgErroMudancaExisteEfento" xml:space="preserve">
+    <value>Não é permitido o cancelamento do histórico, pois foi lançado evento para o Aluno na turma atual.</value>
+  </data>
+  <data name="msgAlunoOcupadoHorario" xml:space="preserve">
+    <value>O aluno já está ocupado no horário desta turma ou não possui horário disponível.</value>
+  </data>
+  <data name="msgErroVagasTurma" xml:space="preserve">
+    <value>Número de alunos não pode exceder o número de vagas.</value>
+  </data>
+  <data name="msgNaoMudarAlunoMsmTurma" xml:space="preserve">
+    <value>Não é possível mover o(s) aluno(s) para uma turma em que ele(s) já esteja(m).</value>
+  </data>
+  <data name="msgErroRetornarAlunoMatricula" xml:space="preserve">
+    <value>Não é possível retornar um aluno que possui nova matrícula na turma atual.</value>
+  </data>
+  <data name="msgDeleteSucessTrans" xml:space="preserve">
+    <value>Transação removida com sucesso.</value>
+  </data>
+  <data name="msgNotDeletedTrans" xml:space="preserve">
+    <value>Não é possível possível excluir a transação.</value>
+  </data>
+  <data name="msgNotExistNotaLancada" xml:space="preserve">
+    <value>Usuário master não pode lançar nota para a turma/aluno.</value>
+  </data>
+  <data name="msgAlunoNaoDesistente" xml:space="preserve">
+    <value>Não é possivél cancelar a desistência do aluno pois o status deste esta ativo.</value>
+  </data>
+  <data name="msgAlunoCancelado" xml:space="preserve">
+    <value>O aluno já possui cancelamento para esta turma.</value>
+  </data>
+  <data name="msgAlunoDesistente" xml:space="preserve">
+    <value>O aluno já possui desistência para esta turma.</value>
+  </data>
+  <data name="msgDataMenorDesistencia" xml:space="preserve">
+    <value>A data da desistência deve ser maior que</value>
+  </data>
+  <data name="msgNotExistLocalMvtoEscola" xml:space="preserve">
+    <value>Não existe local de movimento cadastrado para a escola.</value>
+  </data>
+  <data name="msgDataDesistenciaForaIntervalo" xml:space="preserve">
+    <value>A data não corresponde a um intervalo válido.</value>
+  </data>
+  <data name="msgErroEscolaSemPlanoContas" xml:space="preserve">
+    <value>Não é possivel montar plano de contas sem que a escola possua nível de plano contas.</value>
+  </data>
+  <data name="msgExisteDesistencia" xml:space="preserve">
+    <value>O aluno já possui desistência na turma de origem.</value>
+  </data>
+  <data name="msgNaoExiteAlunoAvaliacao" xml:space="preserve">
+    <value>Não existe alunos na turma para serem avaliados.</value>
+  </data>
+  <data name="msgExisteAvaliacaoAlunoData" xml:space="preserve">
+    <value>Não é possivel fazer uma desistência pois o aluno possui avaliações.</value>
+  </data>
+  <data name="msgNotExcAlunoTurmaAguardMovido" xml:space="preserve">
+    <value>Não é possível excluir o aluno da turma, pois ele foi movido de outra turma. Favor retornar pela tela de "Mudanças Internas".</value>
+  </data>
+  <data name="msgExisteDiarioAluno" xml:space="preserve">
+    <value>Não é possivél cadastrar desistência, pois existe diario de aula para o aluno nesta data.</value>
+  </data>
+  <data name="msgErroFeriadoPeriodo" xml:space="preserve">
+    <value>Já existe um feriado nesse período.</value>
+  </data>
+  <data name="msgInfoSessaoRelatExp" xml:space="preserve">
+    <value>Sessão do relatório expirada.</value>
+  </data>
+  <data name="msgInfoTrocarSenha" xml:space="preserve">
+    <value>Favor trocar a senha para prosseguir com o acesso.</value>
+  </data>
+  <data name="msgInfSenhaExpirada" xml:space="preserve">
+    <value>Senha expirada, Favor '{0}' trocar a senha para prosseguir com o acesso.</value>
+  </data>
+  <data name="msgEmailEnviado" xml:space="preserve">
+    <value>E-mail enviado com sucesso.</value>
+  </data>
+  <data name="msgNotEmailEnviado" xml:space="preserve">
+    <value>Não foi possível enviar e-mail.</value>
+  </data>
+  <data name="msgErroDesativarAluno" xml:space="preserve">
+    <value>Não é possível desativar um aluno que esteja ativo ou rematriculado em uma turma.</value>
+  </data>
+  <data name="msgExistDesistenciaPosterior" xml:space="preserve">
+    <value>Não se pode inserir/alterar/excluir uma desistência se houver uma posterior.</value>
+  </data>
+  <data name="msgErrorDataDevolucaoMenorEmprestimo" xml:space="preserve">
+    <value>A data de devolução não pode ser menor que a data de empréstimo.</value>
+  </data>
+  <data name="msgErroSumPolCom" xml:space="preserve">
+    <value>A soma dos percentuais das parcelas não pode ser diferente de 100%.</value>
+  </data>
+  <data name="msgErroIncluirPacDif" xml:space="preserve">
+    <value>É obrigatório incluir “Parcelas Diferentes”.</value>
+  </data>
+  <data name="msgContaCorrenteBaixaFinan" xml:space="preserve">
+    <value>Não se pode alterar/excluir registros provenientes de baixa financeira.</value>
+  </data>
+  <data name="msgErroUpdateTituloBaixa" xml:space="preserve">
+    <value>Não é possível alterar o título com baixa efetuada.</value>
+  </data>
+  <data name="msgEstoqueNegativoItemMovimento" xml:space="preserve">
+    <value>Estoque insuficiente para efetuar a venda.</value>
+  </data>
+  <data name="msgNotDeletedAlunoTurmaFilhaPPTExisteContrato" xml:space="preserve">
+    <value>Não é possível excluir a turma, pois existe aluno com contrato.</value>
+  </data>
+  <data name="msgNotDeletedAlunoTurmaExisteContrato" xml:space="preserve">
+    <value>Não é possível excluir a turma, pois existe(m) aluno(s) com contrato.</value>
+  </data>
+  <data name="msgNotExcAlunoTurmaMat" xml:space="preserve">
+    <value>Não é possível excluir o(s) aluno(s) da turma, pois existe(m) matrícula(s).</value>
+  </data>
+  <data name="msgErroTituloAnteriorAberto" xml:space="preserve">
+    <value>Existe(m)  título(s) anterior(es) em aberto.</value>
+  </data>
+  <data name="msgErrorDataPrevDevolucaoMenorEmprestimo" xml:space="preserve">
+    <value>A data de previsão de devolução não pode ser menor que a data de empréstimo.</value>
+  </data>
+  <data name="msgSalaDisponivelHorario" xml:space="preserve">
+    <value>Não existe sala disponível para esse horário.</value>
+  </data>
+  <data name="msgFuncionarioDeletarNota" xml:space="preserve">
+    <value>Somente funcionário/professor pode deletar a nota.</value>
+  </data>
+  <data name="msgErroEscolaSemPlanoContas2" xml:space="preserve">
+    <value>Número de níveis do plano de contas não configurado nos parâmetros da escola.</value>
+  </data>
+  <data name="msgErroEdicaoFundacao" xml:space="preserve">
+    <value>Alteração poderá ser feita somente pela Fundação.</value>
+  </data>
+  <data name="msgErroInclusaoFundacao" xml:space="preserve">
+    <value>Inclusão poderá ser feita somente pela Fundação.</value>
+  </data>
+  <data name="msgExclusaoFundacao" xml:space="preserve">
+    <value>Exclusão poderá ser feita somente pela Fundação.</value>
+  </data>
+  <data name="msgUsuarioSemPermissao" xml:space="preserve">
+    <value>O usuário logado não tem permissão para esse procedimento.</value>
+  </data>
+  <data name="msgErroContratoNulo" xml:space="preserve">
+    <value>O número do contrato ou da matrícula não foi informado. Feche a tela de cadastro e tente novamente.</value>
+  </data>
+  <data name="msgContaCorrenteDataNula" xml:space="preserve">
+    <value>A data da conta corrente não pode ser nula.</value>
+  </data>
+  <data name="msgMovimentarContaCorrenteRetroativa" xml:space="preserve">
+    <value>Não é possível realizar movimentos financeiros com data retroativa à {0}</value>
+  </data>
+  <data name="msgErroGrupoItemPrivado" xml:space="preserve">
+    <value>Alterações do grupo de itens da categoria “Privada” poderão ser feitas apenas pela Fundação.</value>
+  </data>
+  <data name="msgCategoriaItemZero" xml:space="preserve">
+    <value>A categoria de item deve ser "Pública" ou "Privada".</value>
+  </data>
+  <data name="msgHorarioOcupadoEscola" xml:space="preserve">
+    <value>Não é possível alterar o registro pois horário já esta sendo utilizado {0}</value>
+  </data>
+  <data name="msgNotPersistirContaSegura" xml:space="preserve">
+    <value>O usuário não tem permissão para cadastrar/deletar plano de contas - conta segura.</value>
+  </data>
+  <data name="msgErroFechamentoExistente" xml:space="preserve">
+    <value>Não se pode efetuar um fechamento de estoque anterior a um já existente.</value>
+  </data>
+  <data name="msgErroAlterarFechamento" xml:space="preserve">
+    <value>Não é possível alterar fechamento pois existe itens.</value>
+  </data>
+  <data name="msgErroFechamentoSup" xml:space="preserve">
+    <value>Existe um fechamento com data superior.</value>
+  </data>
+  <data name="msgErroFechamentoSemItem" xml:space="preserve">
+    <value>Selecione pelo menos um item para realizar o fechamento de estoque.</value>
+  </data>
+  <data name="msgErroFechamentoConcorrencia" xml:space="preserve">
+    <value>Alguém incluiu novo movimento para algum item do seu fechamento enquanto você estava fazendo a inclusão. Favor fechar a tela de cadastro e tentar novamente."</value>
+  </data>
+  <data name="msgErroCodigoFranquiaInexistente" xml:space="preserve">
+    <value>Código da franquia inexistente. Contacte o administrador do sistema.</value>
+  </data>
+  <data name="msgNotExistMov" xml:space="preserve">
+    <value>Não Existem Movimentos Nesse Período: </value>
+  </data>
+  <data name="msgErroInclMvtoFech" xml:space="preserve">
+    <value>Não é possível incluir movimento com data retroativa a um fechamento de estoque.</value>
+  </data>
+  <data name="msgErroInclMvtoFechBalanco" xml:space="preserve">
+    <value>Não é possível incluir movimento com data retroativa a um fechamento de balanço.</value>
+  </data>
+  <data name="msgErroDelBibliFech" xml:space="preserve">
+    <value>Não é possível alterar movimento com data retroativa a um fechamento de estoque.</value>
+  </data>
+  <data name="msgErroDelBibliFechBalanco" xml:space="preserve">
+    <value>Não é possível excluir biblioteca com data retroativa a um fechamento de balanço.</value>
+  </data>
+  <data name="msgErroDelMvtoFech" xml:space="preserve">
+    <value>Não é possível alterar movimento com data retroativa a um fechamento de estoque.</value>
+  </data>
+  <data name="msgErroDelMvtoFechBalanco" xml:space="preserve">
+    <value>Não é possível excluir movimento com data retroativa a um fechamento de balanço.</value>
+  </data>
+  <data name="msgErroInclBibliFech" xml:space="preserve">
+    <value>Não é possível incluir biblioteca com data retroativa a um fechamento de estoque.</value>
+  </data>
+  <data name="msgErroInclBibliFechBalanco" xml:space="preserve">
+    <value>Não é possível incluir biblioteca com data retroativa a um fechamento de balanço.</value>
+  </data>
+  <data name="msgErroUpdateBibliFech" xml:space="preserve">
+    <value>Não é possível alterar biblioteca com data retroativa a um fechamento de estoque.</value>
+  </data>
+  <data name="msgErroUpdateBibliFechBalanco" xml:space="preserve">
+    <value>Não é possível alterar biblioteca com data retroativa a um fechamento de balanço.</value>
+  </data>
+  <data name="msgErroUpdateMvtoFech" xml:space="preserve">
+    <value>Não é possível alterar movimento com data retroativa a um fechamento de estoque.</value>
+  </data>
+  <data name="msgErroUpdateMvtoFechBalanco" xml:space="preserve">
+    <value>Não é possível alterar movimento com data retroativa a um fechamento de balanço.</value>
+  </data>
+  <data name="msgErroHorariosDisponiveisTurmaSala" xml:space="preserve">
+    <value>A sala não está disponível para os horários da turma. Favor escolher outra sala.</value>
+  </data>
+  <data name="msgPoliticaComercialInconsistente" xml:space="preserve">
+    <value>Política comercial inconsistente.</value>
+  </data>
+  <data name="msgErroNrDiasPolComNull" xml:space="preserve">
+    <value>É obrigatório informar o número de dias nos itens de parcelas diferentes.</value>
+  </data>
+  <data name="msgErroMatTurmaEnc" xml:space="preserve">
+    <value>Não é possui matricular o aluno em uma turma encerrada.</value>
+  </data>
+  <data name="msgNotAlunoMatriculado" xml:space="preserve">
+    <value>Não é possível lançar diário de aula para Turma sem aluno.</value>
+  </data>
+  <data name="msgPessoaExistenteProspect" xml:space="preserve">
+    <value>{0} já existe com o telefone ou celular informado para este prospect.</value>
+  </data>
+  <data name="msgErroLocalMovimentoAusentePreMatricula" xml:space="preserve">
+    <value>O local de movimento é obrigatório no parâmetro da escola para geração da pré-matrícula.</value>
+  </data>
+  <data name="msgErroReciboSemBaixa" xml:space="preserve">
+    <value>Somente é possível gerar recibo para prospect que possui baixa.</value>
+  </data>
+  <data name="msgErroExcluiTituloBaixa" xml:space="preserve">
+    <value>Não é possível excluir o título com baixa efetuada.</value>
+  </data>
+  <data name="msgTituloBaixado" xml:space="preserve">
+    <value>Título que possui baixa financeira não pode ser alterado ou excluído.</value>
+  </data>
+  <data name="msgMasterPersistirPrivado" xml:space="preserve">
+    <value>O usuário master pode cadastrar, editar ou deletar somente itens privados.</value>
+  </data>
+  <data name="msgErroImprimirBoletos" xml:space="preserve">
+    <value>Erro ao imprimir boletos.</value>
+  </data>
+  <data name="msgErroCarteiraUsadaCnab" xml:space="preserve">
+    <value>Não se pode alterar a carteira de um local que já foi emitido CNAB.</value>
+  </data>
+  <data name="msgErroSaldoBiblioteca" xml:space="preserve">
+    <value>O livro {0} não está disponível para empréstimo.</value>
+  </data>
+  <data name="msgErroGerarRemessa" xml:space="preserve">
+    <value>Erro ao gerar arquivo de remessa.</value>
+  </data>
+  <data name="msgErroNaoGerouCnab" xml:space="preserve">
+    <value>Esta operação somente pode ser realizada após a ação de gerar CNAB.</value>
+  </data>
+  <data name="msgErroCnabJaGerado" xml:space="preserve">
+    <value>CNAB já gerado (Fechado).</value>
+  </data>
+  <data name="msgErroNossoNumeroNaoConfigurado" xml:space="preserve">
+    <value>Sequência do nosso número obrigatório e não informado no local de movimento deste CNAB.</value>
+  </data>
+  <data name="msgCnabSucess" xml:space="preserve">
+    <value>CNAB gerado com sucesso.</value>
+  </data>
+  <data name="msgCnabError" xml:space="preserve">
+    <value>Erro ao gerar CNAB</value>
+  </data>
+  <data name="msgErroTpDesc" xml:space="preserve">
+    <value>Não é possível excluir um tipo de desconto com mais de uma escola vinculada a ele.</value>
+  </data>
+  <data name="msgErroTpDescEscola" xml:space="preserve">
+    <value>Esse tipo de desconto não está vinculado a escola logada.</value>
+  </data>
+  <data name="msgErroGerarRemessaCarteiraSemRegistro" xml:space="preserve">
+    <value>Somente é possível gerar remessa de CNAB com carteira registrada.</value>
+  </data>
+  <data name="msgNotExcludeCnabFechado" xml:space="preserve">
+    <value>CNAB já gerado (Fechado) não pode ser excluído.</value>
+  </data>
+  <data name="msgVencFinalMenorDataIni" xml:space="preserve">
+    <value>Data Final do Período de Vencimento não poderá ser menor que a inicial.</value>
+  </data>
+  <data name="msgVenciIniMenorDataAtual" xml:space="preserve">
+    <value>Não é permitido gerar cnab com data inicial de vencimento anterior a de hoje, pois pode ser que títulos já vencidos sejam selecionados.</value>
+  </data>
+  <data name="msgEnvioBoleto" xml:space="preserve">
+    <value>Boleto(s) referênte ao(s) título(s): {0}, enviado(s) com sucesso.</value>
+  </data>
+  <data name="msgErroCamposBancoObrigatorios" xml:space="preserve">
+    <value>O código do cliente na tela de local de movimento é obrigatório para efetuar esta operação e não foi preenchido.</value>
+  </data>
+  <data name="msgErroEnvioBoleto" xml:space="preserve">
+    <value>Não existe e-mail cadastrado para a pessoa: {0}.</value>
+  </data>
+  <data name="msgErroCnabFechadoNotAlterado" xml:space="preserve">
+    <value>CNAB já gerado (Fechado) não pode ser alterado</value>
+  </data>
+  <data name="msgErroCnabSemPessoaBancoCNPJ" xml:space="preserve">
+    <value>O local de movimento utilizado não possui o campo 'Pessoa Banco'.</value>
+  </data>
+  <data name="msgErroCnabSemAgencia" xml:space="preserve">
+    <value>O local de movimento utilizado não possui agência.</value>
+  </data>
+  <data name="msgErroCnabSemContaCorrente" xml:space="preserve">
+    <value>O local de movimento utilizado não possui conta corrente.</value>
+  </data>
+  <data name="msgErroCnabSemDigito" xml:space="preserve">
+    <value>O local de movimento utilizado não possui dígito.</value>
+  </data>
+  <data name="msgErroCnabSemNroBanco" xml:space="preserve">
+    <value>O banco no local de movimento utilizado não possui número.</value>
+  </data>
+  <data name="msgErrorTituloCnabExitente" xml:space="preserve">
+    <value>já Existe(em) título(s) cadastrados em um CNAB de status Aberto com o mesmo tipo {0}.</value>
+  </data>
+  <data name="msgTituloStatusDiferenteIncial" xml:space="preserve">
+    <value>Não é possível gerar CNAB para títulos com status diferente de "Inicial".</value>
+  </data>
+  <data name="msgCancelamentoCnabCarteiraReg" xml:space="preserve">
+    <value>Cancelamento somente para carteiras não registradas. Use o pedido de baixa.</value>
+  </data>
+  <data name="msgErroGerarCancelamentoCnab" xml:space="preserve">
+    <value>Cancelamento CNAB já gerado (Fechado).</value>
+  </data>
+  <data name="msgPedidoBaixaSoCarteiraRegistrada" xml:space="preserve">
+    <value>Pedido de baixa somente para carteiras registradas.</value>
+  </data>
+  <data name="msgErroPedidoBaixaGerado" xml:space="preserve">
+    <value>Pedido de baixa já gerado (Fechado).</value>
+  </data>
+  <data name="msgErroConexaoRelatorioBoleto" xml:space="preserve">
+    <value>Não foi possível conectar com o servidor de relatórios do SGF, para emissão de boletos ou processamento de retorno.</value>
+  </data>
+  <data name="msgErroEnvioEmailBoletoAluno" xml:space="preserve">
+    <value>Não foi possível enviar e-mail com o boleto para o aluno {0}.</value>
+  </data>
+  <data name="msgErroSaldoAbertura" xml:space="preserve">
+    <value>Data do saldo encontrada: {0}. Não pode existir saldo de abertura lançado com data maior à data inicial pedida.</value>
+  </data>
+  <data name="msgNotUpdateCursoTurma" xml:space="preserve">
+    <value>Não é possível alterar produto do curso pois já faz referencia a uma turma.</value>
+  </data>
+  <data name="msgEscolaInvalida" xml:space="preserve">
+    <value>Opção de escola inválida.</value>
+  </data>
+  <data name="msgImagemInvalida" xml:space="preserve">
+    <value>Favor selecionar uma imagem válida.</value>
+  </data>
+  <data name="msgPoliticaComBaixa" xml:space="preserve">
+    <value>O desconto por antecipação possui um título com baixa financeira realizada e não pode ser alterado ou excluído. Nesta situação, você pode criar outra política ou excluir a baixa financeira.</value>
+  </data>
+  <data name="msgErroFuncionarioObrigatorio" xml:space="preserve">
+    <value>É obrigatório informar o avaliador quando se atribui nota para o aluno.</value>
+  </data>
+  <data name="msgAvisoNaoexisteRetorno" xml:space="preserve">
+    <value>Não existe arquivo cadastrado para este retorno.</value>
+  </data>
+  <data name="msgErroNomeRetExistente" xml:space="preserve">
+    <value>Já existe um arquivo de retorno cadastrado com esse nome.</value>
+  </data>
+  <data name="msgNotProcessReg" xml:space="preserve">
+    <value>Erro ao processar o item. </value>
+  </data>
+  <data name="msgProcessSucess" xml:space="preserve">
+    <value>Item processado com sucesso.</value>
+  </data>
+  <data name="msgRetornoCNABGerado" xml:space="preserve">
+    <value>Retorno CNAB já gerado (Fechado).</value>
+  </data>
+  <data name="msgErroCorrespondenciaBanco" xml:space="preserve">
+    <value>O arquivo de retorno escolhido não corresponde ao banco da carteira escolhida.</value>
+  </data>
+  <data name="msgArquivoRetornoProcessado" xml:space="preserve">
+    <value>Arquivo de retorno processado com sucesso.</value>
+  </data>
+  <data name="msgErroArquivoRetornoNaoProcessado" xml:space="preserve">
+    <value>Arquivo de retorno não processado.</value>
+  </data>
+  <data name="msgErroAlterarRetorno" xml:space="preserve">
+    <value>Retorno CNAB já processado (Fechado), não pode ser alterado.</value>
+  </data>
+  <data name="msgErroValorBaixaMenorTitulo" xml:space="preserve">
+    <value>Valor da baixa não confere com os valores dos juros e/ou da multa informada.</value>
+  </data>
+  <data name="msgBaixaAutomaticaCNAB" xml:space="preserve">
+    <value>Baixa gerada automaticamente pelo CNAB.</value>
+  </data>
+  <data name="msgAvisoTituloCNAB" xml:space="preserve">
+    <value>Houve um erro no processamento do título com o nosso número: {0}. </value>
+  </data>
+  <data name="msgNotExcludeRetornoCnabFechado" xml:space="preserve">
+    <value>Retorno CNAB já gerado (Fechado), não pode ser excluído.</value>
+  </data>
+  <data name="msgErroTituloNaoEncot" xml:space="preserve">
+    <value>Título com nosso numero {0} não encontrado. Deveria ter a ação de {1}.</value>
+  </data>
+  <data name="msgErroAlunoMatProd" xml:space="preserve">
+    <value>Não é possível incluir matrícula, pois o aluno já está matriculado nesse produto.</value>
+  </data>
+  <data name="msgErroValorTituloAditivo" xml:space="preserve">
+    <value>Soma dos valores dos títulos de mensalidade não bate com o valor do aditivo.</value>
+  </data>
+  <data name="msgErroDesistenciaTurmaEnc" xml:space="preserve">
+    <value>Não é permitido desisitir aluno com data maior que data da turma encerrada. Turma  encerrada em  {0}.</value>
+  </data>
+  <data name="msgErroDiarioTurmaEnc" xml:space="preserve">
+    <value>Não é permitido lançar diário de aula com data maior que a data da turma. Turma encerra em {0}.</value>
+  </data>
+  <data name="msgErrorProgramacaoTurmaEncerrada" xml:space="preserve">
+    <value>Não é possível fazer programação automática para turma encerrada.</value>
+  </data>
+  <data name="msgErroItemSubgrupoIguais" xml:space="preserve">
+    <value>Não podem existir subgrupos de contas iguais para o mesmo item.</value>
+  </data>
+  <data name="msgErroItemTipoSubgrupoIguais" xml:space="preserve">
+    <value>Não podem existir tipos de movimentos iguais para o mesmo item.</value>
+  </data>
+  <data name="msgDiferencaValorCursoValorTotaTitulos" xml:space="preserve">
+    <value>A diferença entre a soma dos títulos de mensalidade com aditamento e o valor do aditivo, não poderá ser maior que R$ 1,00, com ajuste manual ou não.</value>
+  </data>
+  <data name="msgNotGeraRemessaSemEnd" xml:space="preserve">
+    <value>Não é possível emitir {0}. Favor preencher {1} do responsável {2} corretamente.</value>
+  </data>
+  <data name="msgExistAlunoInaticoForCPf" xml:space="preserve">
+    <value>Aluno '{0}' já cadastrado com este CPF.O aluno consta como inativo.</value>
+  </data>
+  <data name="msgNotUpdateTituloEnviadoCNAB" xml:space="preserve">
+    <value>Título(s) processado(s) pelo CNAB não pode(m) mais ser alterado(s)/excluído(s).</value>
+  </data>
+  <data name="msgErroDiarioSemProf" xml:space="preserve">
+    <value>Não é possível incluir ou alterar diário de aula sem professor ou substituto.</value>
+  </data>
+  <data name="msgNaoInformadoConfigSMTP" xml:space="preserve">
+    <value>Não foi informada a configuração de e-mail do sistema.Favor contatar o administrador do sistema.</value>
+  </data>
+  <data name="msgErroTpDescContrato" xml:space="preserve">
+    <value>Não é possível excluir escola do tipo de desconto, pois existe contrato utilizando o mesmo.</value>
+  </data>
+  <data name="msgErroContratoExisteAlunoTurma" xml:space="preserve">
+    <value>Não é possível matricular o aluno {0}. O mesmo já se encontra matrículado na turma {1}.</value>
+  </data>
+  <data name="msgErroCidadeDadosNF" xml:space="preserve">
+    <value>Já existe dados de NF cadastrado com essa cidade.</value>
+  </data>
+  <data name="msgErroProcessamentoProgramacoesFeriado" xml:space="preserve">
+    <value>Esta operação consiste em um processamento de vários registros e deve ser realizado fora do horário de trabalho, antes das 7:00 ou após as 22:00. Favor executar novamente no horário apropriado.</value>
+  </data>
+  <data name="msgErroProxCurso" xml:space="preserve">
+    <value>Não é possível gerar nova turma, pois não exite próximo curso cadastrado.</value>
+  </data>
+  <data name="msgErroAlterarDadosICMSNF" xml:space="preserve">
+    <value>Não é possível alterar o registro, pois já existe nota fiscal utilizando esses dados.</value>
+  </data>
+  <data name="msgErroAlterarTpNFUtilizado" xml:space="preserve">
+    <value>Não é possível alterar o tipo de nota fiscal, pois existe parâmetro e/ou nota fiscal utilizando esse tipo.</value>
+  </data>
+  <data name="msgErroExcluirDadosICMSNF" xml:space="preserve">
+    <value>Não é possível excluir o registro, pois já existe nota fiscal utilizando esses dados.</value>
+  </data>
+  <data name="msgErroExcluirTpNFUtilizado" xml:space="preserve">
+    <value>Não é possível excluir o tipo de nota fiscal, pois existe parâmetro e/ou nota fiscal utilizando esse tipo.</value>
+  </data>
+  <data name="msgErroMinDateContrato" xml:space="preserve">
+    <value>A data de matrícula e/ou data inical e/ou data final do contrato  deve ser igual ou superior à 01/01/1900.</value>
+  </data>
+  <data name="msgErroImagemExcedeuLimte" xml:space="preserve">
+    <value>O tamanho máximo da imagem e de 400 KB. Contate o suporte técnico para auxiliá-lo no redimensionamento da O tamanho máximo da imagem e de 400 KB. Contate o suporte técnico para auxiliá-lo no redimensionamento da imagem.</value>
+  </data>
+  <data name="msgErroLimiteArquivoExcedido" xml:space="preserve">
+    <value>Tamanho máximo de 500KB excedido. Contate o suporte técnico.</value>
+  </data>
+  <data name="msgErroExtesaoLayoutNaoValida" xml:space="preserve">
+    <value>Extensão diferente de arquivo suportado pelo sistema, favor escolher um arquivo com a extensão '.dotx'.</value>
+  </data>
+  <data name="msgErroExtensaoNaoSuportadaRetorno" xml:space="preserve">
+    <value>Extensão diferente de arquivo suportado pelo sistema, favor escolher um arquivo com a extensão '.txt' ou '.ret' ou '.dat'.</value>
+  </data>
+  <data name="msgErroExtensaoImagemNaoSuportada" xml:space="preserve">
+    <value>Extensão diferente de arquivo suportado pelo sistema, favor escolher um arquivo com uma das seguintes extensões : '.jpg', '.jpeg', '.gif', '.png', '.bmp'.</value>
+  </data>
+  <data name="msgErroLocalMovtoObrigatorioParametroEscola" xml:space="preserve">
+    <value>O local de movimento é obrigatório no parâmetro da escola para criação dos títulos.</value>
+  </data>
+  <data name="msgErroCaractInvalidosNomeArquivo" xml:space="preserve">
+    <value>Caracteres invalidos, não utilizar os seguintes caracteres no nome do arquivo:" + "\"&lt;&gt;|\\0 \\a\\b\\t\\n\\v\\f\\r *?\\\\/. Descrição do layout :</value>
+  </data>
+  <data name="msgErroCaractInvalidosPathArquivo" xml:space="preserve">
+    <value>"Caracteres invalidos, não utilizar os seguintes caracteres no caminho do arquivo :" + "\"&lt;&gt;|\\0 \\a\\b\\t\\n\\v\\f\\r. Descrição do layout :"</value>
+  </data>
+  <data name="msgErroDataErroMinDateAlunoBolsa" xml:space="preserve">
+    <value>A data "Data Início" ou "Data Comunicado"  ou "Data de Cancelamento Bolsa" deve ser igual ou superior à 01/01/1900.</value>
+  </data>
+  <data name="msgErrorProccessNF" xml:space="preserve">
+    <value>Erro ao processar a nota fiscal.</value>
+  </data>
+  <data name="msgProccessNFSucess" xml:space="preserve">
+    <value>Nota fiscal gerada com sucesso.</value>
+  </data>
+  <data name="msgCancelNFSucess" xml:space="preserve">
+    <value>Nota fiscal cancelada com sucesso.</value>
+  </data>
+  <data name="msgErroDtaEmisTituloInf" xml:space="preserve">
+    <value>A data de emissão do título deve ser inferior à 06/06/2079.</value>
+  </data>
+  <data name="msgErroDtaEmisTituloSuperior" xml:space="preserve">
+    <value>A data de emissão do título deve ser superior à 01/01/1900.</value>
+  </data>
+  <data name="msgErroDtaVencTituloInf" xml:space="preserve">
+    <value>A data de vencimento do título deve ser inferior à 06/06/2079.</value>
+  </data>
+  <data name="msgErroDtaVencTituloSuperior" xml:space="preserve">
+    <value>A data de vencimento do título deve ser superior à 01/01/1900.</value>
+  </data>
+  <data name="msgNaoPossivelMudarNivelSubGrupo" xml:space="preserve">
+    <value>Não é possível mudar o nível do subgrupo.</value>
+  </data>
+  <data name="msgErrorCancelarNF" xml:space="preserve">
+    <value>Erro ao cancelar a nota fiscal.</value>
+  </data>
+  <data name="msgErroMovimentoNotNF" xml:space="preserve">
+    <value>Este movimento não foi configurado para emitir nota fiscal. Operação inválida.</value>
+  </data>
+  <data name="msgErroAlterarExcluirBiblioComTaxa" xml:space="preserve">
+    <value>Não é possível {0} devolução de biblioteca, pois já existe taxa de biblioteca lançada.</value>
+  </data>
+  <data name="msgErroProcessarNFAberto" xml:space="preserve">
+    <value>Não é possível processar a nota fiscal. Nota {0}.</value>
+  </data>
+  <data name="msgErroEmitirNFAberto" xml:space="preserve">
+    <value>Não é possível gerar XML para nota fiscal aberta.</value>
+  </data>
+  <data name="msgErroEstadoEscPessoa" xml:space="preserve">
+    <value>Não é possível gerar nota fiscal. Não existe estado cadastrado para a escola e/ou pessoa da nota fiscal.</value>
+  </data>
+  <data name="msgErroNFTaxaParametro" xml:space="preserve">
+    <value>Não é possível emitir nota fiscal. Preencher nos parâmetros as informações: Item Taxa Matrícula e Tipo de NF Taxa/Mensalidade.</value>
+  </data>
+  <data name="msgErroNFParametroMens" xml:space="preserve">
+    <value>Não é possível emitir nota fiscal. Preencher nos parâmetros as informações: Item Mensalidade e Tipo de NF Taxa/Mensalidade.</value>
+  </data>
+  <data name="msgErroNFParametroPolCom" xml:space="preserve">
+    <value>Não é possível emitir nota fiscal. Preencher nos parâmetros a informação: Politica Comercial.</value>
+  </data>
+  <data name="msgErroNFStatus" xml:space="preserve">
+    <value>Não é possível processar a nota fiscal. Nota {0}.</value>
+  </data>
+  <data name="msgErroNrAutomaticaNFS" xml:space="preserve">
+    <value>Para gerar notas automáticas a numeração automática de NF nos parâmetros deve estar marcada.</value>
+  </data>
+  <data name="msgErrorGerarXMLNF" xml:space="preserve">
+    <value>Erro ao gerar XML da nota fiscal.</value>
+  </data>
+  <data name="msgErroGerarXMLTerceiro" xml:space="preserve">
+    <value>Não é possível gerar XML para nota fiscal de terceiros.</value>
+  </data>
+  <data name="msgNotaFiscalFechada" xml:space="preserve">
+    <value>Não é possível alterar a nota fiscal. Nota {0}.</value>
+  </data>
+  <data name="msgErroCancelarNFAberta" xml:space="preserve">
+    <value>Não é possível cancelar a nota fiscal. Nota {0}.</value>
+  </data>
+  <data name="msgErroCancelarNFBaixado" xml:space="preserve">
+    <value>Não é possível cancelar a nota fiscal, pois possui baixa financeira.</value>
+  </data>
+  <data name="msgErroNFProcessadaOuCancelada" xml:space="preserve">
+    <value>Não é possível alterar ou excluir uma nota fiscal que está processada ou cancelada.</value>
+  </data>
+  <data name="msgErroNFTaxaItemBiblio" xml:space="preserve">
+    <value>Não é possível emitir nota fiscal. Preencher nos parâmetros as informações: Item Biblioteca e Tipo de Nota Fiscal Biblioteca.</value>
+  </data>
+  <data name="msgErroOrigemTituloMatricula" xml:space="preserve">
+    <value>Título escolhido não é proveniente de Matrícula.</value>
+  </data>
+  <data name="verificarTituloOrigemMatricula" xml:space="preserve">
+    <value>Título escolhido não é proveniente de Matrícula.</value>
+  </data>
+  <data name="msgErroNotConfigParametroNF" xml:space="preserve">
+    <value>Esta escola não foi configurada para emitir nota fiscal de serviço. Operação inválida.</value>
+  </data>
+  <data name="msgErroFatNF" xml:space="preserve">
+    <value>Existe(m) título(s) com Nota(s) Fiscal(is) gerada(s). Favor refazer a pesquisa e repetir a operação.</value>
+  </data>
+  <data name="msgErroPlanoItemTaxaMens" xml:space="preserve">
+    <value>Não foi configurado o plano de contas para o(s) item(ns) de Taxa de Matrícula e/ou Mensalidade, informado(s) no(s) parâmetro(s) fiscal(is) da escola.</value>
+  </data>
+  <data name="msgErroNaoPossuiModeloProgramacao" xml:space="preserve">
+    <value>Não existe modelo de programação para a duração e curso dessa(s) turma(s).</value>
+  </data>
+  <data name="msgErroModeloProgramacaoTurmaExistente" xml:space="preserve">
+    <value>Já existe modelo de programação gerado para a escola, curso e duração desta turma.</value>
+  </data>
+  <data name="msgErroModeloProgramacaoTurmaPPTPai" xml:space="preserve">
+    <value>Não é possível gerar modelo de programação de turma PPT pai.</value>
+  </data>
+  <data name="msgModeloProgramacoesCriadas" xml:space="preserve">
+    <value>As programações foram aplicadas ao modelo de programação do curso.</value>
+  </data>
+  <data name="msgProgramacoesInexistentes" xml:space="preserve">
+    <value>Não há programações para aplicar no modelo de programação do curso.</value>
+  </data>
+  <data name="msgErroMasterVincularDesEsc" xml:space="preserve">
+    <value>Favor vincular este desconto na escola logada para poder alterá-lo.</value>
+  </data>
+  <data name="msgErroTurmaSemProgramacaoTurma" xml:space="preserve">
+    <value>Existe uma turma sem programação da turma.</value>
+  </data>
+  <data name="msgErroCancelEncSitAluno" xml:space="preserve">
+    <value>Não é possível cancelar encerramento, pois existem alunos na turma nova criada a partir desta, que já não estão Aguardando Matrícula.</value>
+  </data>
+  <data name="msgErroAlunoProdVirada" xml:space="preserve">
+    <value>Existem alunos da turma encerrada que já estão ativos em outra turma do mesmo produto.</value>
+  </data>
+  <data name="msgErroHorarioOcupadoVirada" xml:space="preserve">
+    <value>O {0} já está ocupando o horários desta turma.</value>
+  </data>
+  <data name="msgErroPermissaoAlterarFollowUp" xml:space="preserve">
+    <value>Um usuário não pode alterar/excluir follow-up feito por outro usuário.</value>
+  </data>
+  <data name="msgErroNaoExcluirFollowUpComResposta" xml:space="preserve">
+    <value>Existem respostas a este follow-up, favor excluí-las primeiro.</value>
+  </data>
+  <data name="msgErroNaoPermitidoExcluirFollowUpOutroUsuario" xml:space="preserve">
+    <value>Não é permitido excluir follow-up feito por outro usuário.</value>
+  </data>
+  <data name="msgExistPessoaRelacEscola" xml:space="preserve">
+    <value>Pessoa '{0}' já cadastrada com este CPF e vinculada a escola.</value>
+  </data>
+  <data name="msgExistePessoaRelacionadaCPF" xml:space="preserve">
+    <value>Pessoa '{0}' já existe com este CPF, deseja vinculá-la a escola?&lt;br/&gt;Os dados desta pessoa serão preenchidos automaticamente.</value>
+  </data>
+  <data name="msgExistPessoaJuridicaRelacEscola" xml:space="preserve">
+    <value>Pessoa jurídica '{0}' já cadastrada com este CNPJ e vinculada a escola.</value>
+  </data>
+  <data name="msgExistePessoaJuridicaRelacionadaCPF" xml:space="preserve">
+    <value>Pessoa jurídica'{0}' já existe com este CNPJ, deseja vinculá-la a escola?&lt;br/&gt;Os dados desta pessoa serão preenchidos automaticamente.</value>
+  </data>
+  <data name="msgErroTpNFMovimento" xml:space="preserve">
+    <value>Não é possível alterar o regime tributário do tipo de nota fiscal, pois existe movimentos utilizando o mesmo.</value>
+  </data>
+  <data name="msgErroTpNFParametro" xml:space="preserve">
+    <value>Não é possível alterar o regime tributário do tipo de nota fiscal, pois existe parâmetros utilizando o mesmo.</value>
+  </data>
+  <data name="msgErroProcessarMovimentoItemZerado" xml:space="preserve">
+    <value>Não é possível emitir nota fiscal que possua algum item com valor total zero.</value>
+  </data>
+  <data name="msgErroProcessarMovimentoSemItem" xml:space="preserve">
+    <value>Não é possível emitir nota fiscal sem itens cadastrados.</value>
+  </data>
+  <data name="msgErroExisteNotaFiscalComDataPosteriorProcessada" xml:space="preserve">
+    <value>Não é possível processar a nota fiscal. Existe(m) outra(s) nota(s) fiscal(is) processada(s) com data posterior a data desta nota fiscal.</value>
+  </data>
+  <data name="msgErroExisteNotasAnterioresEmABerto" xml:space="preserve">
+    <value>Não é possível processar a nota fiscal. Existe(m) nota(s) fiscal(is) em aberto com data anterior a data desta nota fiscal.</value>
+  </data>
+  <data name="msgDiaInvalidoImpressaoContrato" xml:space="preserve">
+    <value>O campo “Dia Venc. Desc.” é inválido para a data do vencimento do título, informe outro valor.</value>
+  </data>
+  <data name="msgErroAlterarFollowUpDeOutroUsuario" xml:space="preserve">
+    <value>Não é possível alterar follow-up enviado por outro usuário.</value>
+  </data>
+  <data name="msgErroDeleteFollowUpOutroUsuario" xml:space="preserve">
+    <value>Não é possível excluir follow-up(s) enviado(s) por outro(s) usuário(s).</value>
+  </data>
+  <data name="msgInfoDataMinValueTransacao" xml:space="preserve">
+    <value>A data da transação financeira deve ser igual ou superior à 01/01/1900</value>
+  </data>
+  <data name="msgErroCalculosBaixaTitulo" xml:space="preserve">
+    <value>Houve algum problema na simulação ou nos valores a serem baixados, favor refaça toda a operação.</value>
+  </data>
+  <data name="msgErroFuncProfECoordCyber" xml:space="preserve">
+    <value>Funcionário não pode ser professor e coordenador cyber ao mesmo tempo.</value>
+  </data>
+  <data name="msgBaixaSemTitulo" xml:space="preserve">
+    <value>O título da baixa não foi encontrado. Contacte o suporte técnico.</value>
+  </data>
+  <data name="msgErroDataErroMaxDateAlunoBolsa" xml:space="preserve">
+    <value>A data "Data Início" ou "Data Comunicado"  ou "Data de Cancelamento Bolsa" deve ser igual ou inferior à 06/06/2079.</value>
+  </data>
+  <data name="msgErroViradaPPTFilhaAlunoNDisponivel" xml:space="preserve">
+    <value>Não é possível fazer uma virada de turma personalizada filha, onde o aluno tenha desistência ou foi movido da turma.</value>
+  </data>
+  <data name="msgErroPercBolsaLimite" xml:space="preserve">
+    <value>O valor da  {0}  excedeu o limite maximo de 100%.</value>
+  </data>
+  <data name="msgErroLimiteArquivoRetornoExcedido" xml:space="preserve">
+    <value>Tamanho máximo de 6Mb excedido. Contate o suporte técnico.</value>
+  </data>
+  <data name="msgErroDeleteCnabRegistrado" xml:space="preserve">
+    <value>Não foi possível excluir o Cnab, pois existe(em) título(s) com o status Cnab diferente de 'Enviado Gerado'.</value>
+  </data>
+  <data name="msgErroCarne" xml:space="preserve">
+    <value>Não existe titulo definido como Carnê, para a devida geração do mesmo.</value>
+  </data>
+  <data name="msgExisteTpDesc" xml:space="preserve">
+    <value>Um tipo de desconto com este nome já está cadastrado em outra escola, pesquise o tipo de desconto e edite o mesmo, pressionando salvar, para incluir na sua escola.</value>
+  </data>
+  <data name="msgExisteTpDescEsc" xml:space="preserve">
+    <value>Um tipo de desconto com este nome já está cadastrado.</value>
+  </data>
+  <data name="msgErroTpDescMaster" xml:space="preserve">
+    <value>Usuário administrador geral só pode alterar tipos de descontos incluídos pelo mesmo.</value>
+  </data>
+  <data name="msgErroTpDescAlterado" xml:space="preserve">
+    <value>Este tipo de desconto pertence a outras escolas, portanto não poderá mais ser alterado.</value>
+  </data>
+  <data name="msgErroDelTpDescMaster" xml:space="preserve">
+    <value>Usuário administrador geral só pode alterar tipos de descontos incluídos pelo mesmo.</value>
+  </data>
+  <data name="msgErroItemAlterado" xml:space="preserve">
+    <value>Este item pertence a outras escolas, portanto não poderá mais ser alterado.</value>
+  </data>
+  <data name="msgExisteItem" xml:space="preserve">
+    <value>Um item com este nome já está cadastrado em outra escola, pesquise o item e edite o mesmo, pressionando salvar, para incluir na sua escola.</value>
+  </data>
+  <data name="msgExisteItemEsc" xml:space="preserve">
+    <value>Um item com este nome já está cadastrado.</value>
+  </data>
+  <data name="msgErroDelItemOutraEsc" xml:space="preserve">
+    <value>Este item pertence a outras escolas, portanto não poderá mais ser excluído.</value>
+  </data>
+  <data name="msgErroItemEscKardex" xml:space="preserve">
+    <value>Não é possível excluir item da(s) escola(s), pois possui kardex.</value>
+  </data>
+  <data name="msgErroCancNFNaoAuto" xml:space="preserve">
+    <value>Não é possível cancelar nota fiscal não autorizada.</value>
+  </data>
+  <data name="msgErroEnviarRegistroMSF" xml:space="preserve">
+    <value>Erro ao enviar o registro para o Mastersaf.</value>
+  </data>
+  <data name="msgRegEnviadoSucessoMSF" xml:space="preserve">
+    <value>Registro enviado ao Mastersaf com sucesso.</value>
+  </data>
+  <data name="msgEscolaPropriaNaoEmiteNFFaturamento" xml:space="preserve">
+    <value>Escolas próprias não geram notas através da tela de faturamento.</value>
+  </data>
+  <data name="msgErrorProcNFDevolucao" xml:space="preserve">
+    <value>Não foi possível processar a nota fiscal, pois a chave de acesso não foi informada.</value>
+  </data>
+  <data name="msgAlteracoesSucess" xml:space="preserve">
+    <value>Alterações realizadas com sucesso.</value>
+  </data>
+  <data name="msgNotUpAllReg" xml:space="preserve">
+    <value>Não foi possível alterar o(s) registro(s).</value>
+  </data>
+  <data name="msgEnvioMalaDiretaError" xml:space="preserve">
+    <value>Erro ao enviar a mala direta.</value>
+  </data>
+  <data name="msgEnvioMalaDiretaSuccess" xml:space="preserve">
+    <value>Mala direta enviada com sucesso.</value>
+  </data>
+  <data name="msgRegExcListaEndereco" xml:space="preserve">
+    <value>Registro excluido da lista de endereços.</value>
+  </data>
+  <data name="msgErroImprimirVisualizarCartaoPostal" xml:space="preserve">
+    <value>Erro ao visualizar cartão postal.</value>
+  </data>
+  <data name="msgErroDeleteBaixaBolsaContrato" xml:space="preserve">
+    <value>Somente é possível excluir baixa(s) de título(s) proveniente(s) de contrato que não seja de ajuste manual.</value>
+  </data>
+  <data name="msgBaixaMotivoBolsaContratoSemAjusteManual" xml:space="preserve">
+    <value>Somente é possível fazer baixa com o tipo de liquidação 'Motivo - Bolsa', para título(s) proveniente(s) de contrato, com ajuste manual.</value>
+  </data>
+  <data name="msgErroMaxDateCNAB" xml:space="preserve">
+    <value>Data inicial ou final do período de vencimento deve ser igual ou inferior à 06/06/2079.</value>
+  </data>
+  <data name="msgErroMinDateCNAB" xml:space="preserve">
+    <value>Data inicial ou final do Período de Vencimento deve ser igual ou superior à 01/01/1900</value>
+  </data>
+  <data name="msgErroBaixarPDF100Paginas" xml:space="preserve">
+    <value>Não é possível fazer o download do PDF com mais de 100 boletos. Favor realizar o download através da ação relacionada “Baixar Boleto(s)” no cadastro do CNAB boleto, selecionando 100 registros por vez.</value>
+  </data>
+  <data name="msgErroBaixarPDFBoleto" xml:space="preserve">
+    <value>Erro ao baixar o PDF do(s) boleto(s).</value>
+  </data>
+  <data name="msgErroDataDiarioMaiorDataAtual" xml:space="preserve">
+    <value>Não é possível lançar aulas com data superior à de hoje.</value>
+  </data>
+  <data name="msgErroAulaPerSemAluno" xml:space="preserve">
+    <value>É necessário incluir pelo menos um aluno para salvar a aula personalizada.</value>
+  </data>
+  <data name="msgErroDataErroMaxDateMovimento" xml:space="preserve">
+    <value>A data "Data Emissão" ou "Vencimento"  ou "Movimento" deve ser igual ou inferior à 06/06/2079.</value>
+  </data>
+  <data name="msgErroDataErroMinDateMovimento" xml:space="preserve">
+    <value>A data "Data Emissão" ou "Vencimento"  ou "Movimento" deve ser igual ou superior à 01/01/1900.</value>
+  </data>
+  <data name="msgErroImprimirVisualizarCartaoPostalSemPermissao" xml:space="preserve">
+    <value>Erro ao visualizar cartão postal. Contacte o suporte técnico e verifique as permissões de acesso das URLs do email marketing a partir do servidor de aplicações.</value>
+  </data>
+  <data name="msgAlunoJaNaoRematriculado" xml:space="preserve">
+    <value>O aluno já possui não rematricula para esta turma.</value>
+  </data>
+  <data name="msgErroCursoMudancaInt" xml:space="preserve">
+    <value>Selecione o curso para realizar a mudança interna.</value>
+  </data>
+  <data name="msgErroAlunoBaixa" xml:space="preserve">
+    <value>Não é possível incluir aluno que já possui baixa financeira.</value>
+  </data>
+  <data name="msgErroAlunoPolBaixa" xml:space="preserve">
+    <value>Não é possível excluir aluno que já possui baixa financeira usando esse desconto por antecipação.</value>
+  </data>
+  <data name="msgErroTurmaBaixa" xml:space="preserve">
+    <value>Não é possível incluir turma onde existem alunos que já possuem baixas financeiras.</value>
+  </data>
+  <data name="msgErroTurmaPolBaixa" xml:space="preserve">
+    <value>Não é possível excluir turma onde existem alunos que já possuem baixa financeira usando esse desconto por antecipação.</value>
+  </data>
+  <data name="msgErroPolDescBaixas" xml:space="preserve">
+    <value>Não é possível incluir ou alterar desconto por antecipação porque existe(m) baixa(s) financeira(s) com data igual ou superior à data do desconto. Nesta situação, você pode criar outra política ou excluir a(s) baixa(s) financeira(s).</value>
+  </data>
+  <data name="msgErroSaldoMatriculaZeradoAditamento" xml:space="preserve">
+    <value>"Não existe saldo de títulos em aberto, favor utilizar um novo aditivo com o tipo "Adicionar Parcela."</value>
+  </data>
+  <data name="msgErroProfessorSemHorarioOcupadoTurma" xml:space="preserve">
+    <value>Existe(em) professor(es)  que não está(ão) ocupando horário na turma, favor repetir a operação.</value>
+  </data>
+  <data name="msgErroValorAditivoMenorSaldo" xml:space="preserve">
+    <value>O valor do aditivo é menor que o valor do saldo dos títulos em aberto, resultará em valores negativos, favor informar um valor maior que o saldo.</value>
+  </data>
+  <data name="msgErroTurmaPPTAguard" xml:space="preserve">
+    <value>Não é possível encerrar Turmas Personalizadas onde o Aluno não possui contrato.</value>
+  </data>
+  <data name="msgErroExisteChaveAcessoNF" xml:space="preserve">
+    <value>Não existe chave de acesso para nota fiscal informada.</value>
+  </data>
+  <data name="msgErroParticipacaoMaior" xml:space="preserve">
+    <value>Nota informada multiplicada pelo número de participações vinculadas com a avaliação maior que 10.</value>
+  </data>
+  <data name="msgErroSomaParticipacaoMaior" xml:space="preserve">
+    <value>Maior nota informada multiplicada pelo número de participações vinculadas com a avaliação está diferente de 10.</value>
+  </data>
+  <data name="msgErroAvalPartSemVinculo" xml:space="preserve">
+    <value>É necessário incluir pelo menos uma participação para salvar a avaliação x participação.</value>
+  </data>
+  <data name="msgErroQntParticipObrigatoria" xml:space="preserve">
+    <value>É necessário escolher obrigatoriamente {0} participações.</value>
+  </data>
+  <data name="msgErroQtdMensaMenorQtdMaterial" xml:space="preserve">
+    <value>O número de parcelas de material não pode ser maior que o número de parcelas do contrato</value>
+  </data>
+  <data name="msgErroCPFJaCadastrado" xml:space="preserve">
+    <value>Pessoa '{0}' já cadastrado com este CPF.</value>
+  </data>
+  <data name="msgErroDataMaxInicioAlunoTurma" xml:space="preserve">
+    <value>A data "Data de início do aluno na turma" deve ser igual ou inferior à 06/06/2079.</value>
+  </data>
+  <data name="msgErroDataMinInicioAlunoTurma" xml:space="preserve">
+    <value>A data "Data de início do aluno na turma" deve ser igual ou superior à 01/01/1900.</value>
+  </data>
+  <data name="msgErroNaoInformadoHrInicialFinal" xml:space="preserve">
+    <value>Para lançar aula, escolha o horário inicial e horário final desta aula.</value>
+  </data>
+  <data name="msgErroMinHrInicialFinal" xml:space="preserve">
+    <value>O horário inicial não pode ser maior que o horário final da aula.</value>
+  </data>
+  <data name="msgErroIntervaloHrInicialFinal" xml:space="preserve">
+    <value>Os horários inicial e final da aula devem estar no intervalo de horários da turma personalizada acima.</value>
+  </data>
+  <data name="msgErroAvaliacaoParticipacao" xml:space="preserve">
+    <value>Não é permitido desmarcar a participação, pois já existe Avaliação Participação cadastrada.</value>
+  </data>
+  <data name="msgErroTituloNaoEncontrado" xml:space="preserve">
+    <value>Não foi possível completar a operação. Há Título(s) que não foi(ram) encontrado(s). Favor refazer o procedimento.</value>
+  </data>
+  <data name="msgErroLimiteAssuntoFollowUp" xml:space="preserve">
+    <value>Limite de caracteres de 3000 para o texto da mensagem foi ultrapassada.</value>
+  </data>
+  <data name="msgErroAvaliacaoParticipacaoAluno" xml:space="preserve">
+    <value>Não é permitido marcar o campo participação, pois já existe avaliação lançada para alunos com este nome de avaliação.</value>
+  </data>
+  <data name="msgErroDiaroAposDataFeriado" xml:space="preserve">
+    <value>Já existem diários de aulas lançados após a data do feriado.</value>
+  </data>
+  <data name="msgErroDtEmissaoMaiorVencimento" xml:space="preserve">
+    <value>A data de emissão dos títulos não pode ser maior que a data de vencimento.</value>
+  </data>
+  <data name="msgErroDtEmissaoMaiorProcessamentoCnab" xml:space="preserve">
+    <value>Existe(m) título(s) com data de emissão maior que a data de processamento do Cnab. Acesse o menu Ações Relacionadas: Imprimir Títulos, e efetue a conferência e correção.</value>
+  </data>
+  <data name="msgErroMovimentoTurmaEncerrada" xml:space="preserve">
+    <value>Não é possível fazer mudança interna para turma encerrada.</value>
+  </data>
+  <data name="msgErroDeletarAvaliacaoParticipacao" xml:space="preserve">
+    <value>Não foi possível excluir a(s) participação(ões), pois o(s) registro(s) está(ão) sendo utilizado(s) em uma ou mais avaliações. Favor desativar.</value>
+  </data>
+  <data name="msgErroExtrapolouItensNFOriginal" xml:space="preserve">
+    <value>Existe(m) item(ens) que extrapolou(ram) a(s) quantidade(s) do(s) item(ns) da nota original.</value>
+  </data>
+  <data name="msgErroChaveAcessoInvalido" xml:space="preserve">
+    <value>Chave de acesso inválida.</value>
+  </data>
+  <data name="msgErroReajusteFechado" xml:space="preserve">
+    <value>Reajuste já aplicado (Fechado) não pode ser excluído.</value>
+  </data>
+  <data name="msgErroTituloFechadoReajusteAnual" xml:space="preserve">
+    <value>Este reajuste não poderá ser aberto, pois existem títulos que fora baixados.</value>
+  </data>
+  <data name="msgErroDtInvalida" xml:space="preserve">
+    <value>Data informada é inválida.</value>
+  </data>
+  <data name="msgInfoProspectUnidade" xml:space="preserve">
+    <value>Prospect '{0}' {1}? já cadastrado com este e-mail nesta unidade, deseja cadastrá-lo como Prospect?</value>
+  </data>
+  <data name="msgInfoProspectAlunoMatriculadoUnidade" xml:space="preserve">
+    <value>Este prospect já se encontra matriculado nesta unidade.</value>
+  </data>
+  <data name="msgErroAlterarSenhaSysadmin" xml:space="preserve">
+    <value>Por questões de segurança é necessário entrar em contato com a Fundação para recuperar a senha do usuário Sysadmin.</value>
+  </data>
+  <data name="msgErroFechCaixaConsolidado" xml:space="preserve">
+    <value>A visão consolidada só é permitida para usuários administradores da escola ou que tenha permissão de Fechamento de Caixa Consolidado.</value>
+  </data>
+  <data name="msgErrorSemVinculoNotaMaterial" xml:space="preserve">
+    <value>O contrato não possui vínculo com nota fiscal de venda de material.</value>
+  </data>
+  <data name="msgErroNaoExisteSaldoTitulo" xml:space="preserve">
+    <value>Não é permitido gravar titulo(s) com o valor zerado.</value>
+  </data>
+  <data name="msgErroEmailInvalido" xml:space="preserve">
+    <value>E-mail informado é inválido.</value>
+  </data>
+  <data name="msgErroNExisteAlteracaoCheque" xml:space="preserve">
+    <value>Existe(m) titulo(s) sem informações do cheque.</value>
+  </data>
+  <data name="msgErroReciboMotivoBolsa" xml:space="preserve">
+    <value>Não é possível gerar recibo para titulo de motivo bolsa.</value>
+  </data>
+  <data name="msgErroRetornoMatriculaSemAlunoTurma" xml:space="preserve">
+    <value>O aluno não existe na turma escolhida, favor escolher a turma novamente.</value>
+  </data>
+  <data name="msgErroExtensaoArqAnexoEmailMarketing" xml:space="preserve">
+    <value>Extensão diferente de arquivo suportado pelo sistema, favor escolher um arquivo com a extensão : .pdf</value>
+  </data>
+  <data name="msgErroLimiteArqAnexoExcedidoEmailMarketing" xml:space="preserve">
+    <value>O tamanho máximo do arquivo é de 500 kbyte. Contacte o suporte técnico para auxiliá-lo no redimensionamento do arquivo.</value>
+  </data>
+  <data name="msgNotUploadFile" xml:space="preserve">
+    <value>Não foi possivel fazer o upload do arquivo.</value>
+  </data>
+  <data name="msgNotHistoryFile" xml:space="preserve">
+    <value>Não foi possível carregar o histórico dos arquivos.</value>
+  </data>
+  <data name="msgErroTurmaNulo" xml:space="preserve">
+    <value>O objeto turma não pode ser nulo ou vazio.</value>
+  </data>
+  <data name="msgInfoProspectOutraUnidade" xml:space="preserve">
+    <value>Prospect '{0}' já cadastrado com este e-mail em outra unidade, deseja cadastrá-lo como Prospect?</value>
+  </data>
+  <data name="msgBaixaAditivoBolsaContratoSemAjusteManual" xml:space="preserve">
+    <value>Somente é possível fazer baixa com o tipo de liquidação 'Motivo bolsa aditivo', para título(s) proveniente(s) de contrato, com ajuste manual.</value>
+  </data>
+  <data name="msgErroFaltaInforCheque" xml:space="preserve">
+    <value>Está(ão) faltando informação(ões) a ser(em) preenchida(s) no(s) cheque(s).</value>
+  </data>
+  <data name="msgErroUsandoTipoDesconto" xml:space="preserve">
+    <value>Não é possível excluir este tipo de desconto, pois existe contrato utilizando o mesmo.</value>
+  </data>
+  <data name="msgErroTipoFinanceiroDiferente" xml:space="preserve">
+    <value>Não é possível adicionar cheque, onde a origem de matrícula/movimento seja diferente de Cheque.</value>
+  </data>
+  <data name="msgErroReajusteFechadoNotAlteracao" xml:space="preserve">
+    <value>Reajuste já aplicado (Fechado) não pode ser alterado.</value>
+  </data>
+  <data name="msgErroCaractInvalidosPathArquivoImagem" xml:space="preserve">
+    <value>Caracteres invalidos, não utilizar os seguintes caracteres no caminho do arquivo :" + "\"&lt;&gt;|\\0 \\a\\b\\t\\n\\v\\f\\r.</value>
+  </data>
+  <data name="msgErroCaractInvalidosImagem" xml:space="preserve">
+    <value>Caracteres invalidos, não utilizar os seguintes caracteres no nome do arquivo:" + "\"&lt;&gt;|\\0 \\a\\b\\t\\n\\v\\f\\r *?\\\\/.</value>
+  </data>
+  <data name="msgErroImagemJaCadastrado" xml:space="preserve">
+    <value>Já existe uma imagem cadastrado com esse nome.</value>
+  </data>
+  <data name="msgErroAlteracaoTituloEnviadoCnab" xml:space="preserve">
+    <value>Título(s) com CNAB gerado(s) não pode(m) ser(em) alterado(s) ou excluído(s).</value>
+  </data>
+  <data name="msgErroExclusaoAvaliacao" xml:space="preserve">
+    <value>Não é possível excluir avaliação da turma que possuir lançamentos de datas, avaliadores, notas ou conceitos.</value>
+  </data>
+  <data name="msgErroUrlDifParametros" xml:space="preserve">
+    <value>URL  digitada não confere com nenhuma informada nos parâmetros do sistema. Favor conferir o log de erro do sistema para maiores informações.</value>
+  </data>
+  <data name="msgErroDesistenciaDtRetroativa" xml:space="preserve">
+    <value>Não é permitido cadastrar desistência com data retroativa a data da matricula do aluno.</value>
+  </data>
+  <data name="msgErroMudancaTurmaDtRetroativaMat" xml:space="preserve">
+    <value>Não é permitido realizar mudança interna com data de início do aluno na turma, retroativa à data de matrícula do aluno.</value>
+  </data>
+  <data name="msgExistsEmailAlunoConfirm" xml:space="preserve">
+    <value>Aluno {0} já cadastrado com este e-mail. Deseja Continuar ?</value>
+  </data>
+  <data name="msgErrorCOMInteropWordContrato" xml:space="preserve">
+    <value>Não foi possível carregar o seu contrato devido a várias solicitações neste momento. Tente novamente em alguns instantes!</value>
+  </data>
+  <data name="msgErroDtFimMenorDtInicioEvento" xml:space="preserve">
+    <value>Data final do evento não pode ser menor que a data inicial.</value>
+  </data>
+  <data name="msgErrohhFimMenorhhInicioEvento" xml:space="preserve">
+    <value>Horário final do evento não pode ser menor que horário inicial.</value>
+  </data>
+  <data name="msgProcedureError" xml:space="preserve">
+    <value>Houve um erro interno na procedure.</value>
+  </data>
+  <data name="msgExtensaoErradaArquivoVideo" xml:space="preserve">
+    <value>A extensão de vídeo informada não é suportada pelo sistema.</value>
+  </data>
+  <data name="msgTamanhoMaximoVideoExedido" xml:space="preserve">
+    <value>O tamanho máximo permitido para arquivos vídeo é de 500 MB.</value>
+  </data>
+  <data name="msgVideoInvalido" xml:space="preserve">
+    <value>Favor selecionar um video válida.</value>
+  </data>
+  <data name="msgErroBaixarArquivo" xml:space="preserve">
+    <value>Não foi possível baixar o arquivo, tente novamente ou entre em contato com suporte técnico.</value>
+  </data>
+  <data name="msgErroNomeArquivoExistente" xml:space="preserve">
+    <value>Já existe um arquivo com este nome.</value>
+  </data>
+  <data name="msgErroQtdTituloAditamentonaoInformado" xml:space="preserve">
+    <value>Obrigatório informar quantidade de titulos de aditamento.</value>
+  </data>
+  <data name="msgExisteAditamentoBaixado" xml:space="preserve">
+    <value>Existe aditamento baixado, é necessário criar novo aditamento.</value>
+  </data>
+  <data name="msgErroDtVctoAditamentoNaoInformado" xml:space="preserve">
+    <value>Não é permitido adicionar parcela(s) de aditamento sem informar a data de vencimento da 1ª parcela.</value>
+  </data>
+  <data name="msgNotDeletedRegConfal" xml:space="preserve">
+    <value>Este Controle de Faltas não pode ser excluído porque existe(m) aluno(s) que tem marcado os campos “Assinou”.</value>
+  </data>
+  <data name="msgNotEditRegConfal" xml:space="preserve">
+    <value>Este Controle de Faltas não pode ser alterado porque existe(m) aluno(s) que tem marcado os campos “Assinou”.</value>
+  </data>
+  <data name="msgNotTurmaAvan" xml:space="preserve">
+    <value>Este relatório só pode ser executado para Turmas de Cursos Avançados.</value>
+  </data>
+  <data name="msgProdutosExecute" xml:space="preserve">
+    <value>Este relatório só pode ser executado para Turmas de Cursos de produto Inglês ou Espanhol.</value>
+  </data>
+  <data name="msgTurmaPPTPai" xml:space="preserve">
+    <value>Este relatório só pode ser executado para Turmas Personalizadas Filhas.</value>
+  </data>
+  <data name="msgErroProcedureAlteracaoSaldoItem" xml:space="preserve">
+    <value>Houve um erro interno na procedure de alteracao de itens do fechamento.</value>
+  </data>
+  <data name="msgErroProcedureExclusaoSaldoItem" xml:space="preserve">
+    <value>Houve um erro interno na procedure de exclusao de itens do fechamento.</value>
+  </data>
+  <data name="msgErroProcedureInclusaoSaldoItem" xml:space="preserve">
+    <value>Houve um erro interno na procedure de inclusão de itens do fechamento.</value>
+  </data>
+  <data name="msgNotNameVideoDuplicate" xml:space="preserve">
+    <value>Não foi possível alterar o arquivo. Nome informado já existe para outro vídeo.</value>
+  </data>
+  <data name="msgNotNumberAndPartVideoDuplicate" xml:space="preserve">
+    <value>Não foi possível alterar o arquivo. Número e parte informados já existem para outro vídeo.</value>
+  </data>
+  <data name="erroStatusFeriado" xml:space="preserve">
+    <value>Não é permitido alterar o campo ativo e demais campos na mesma solicitação.</value>
+  </data>
+  <data name="msgErroCadFeriadoInativo" xml:space="preserve">
+    <value>Não é permitido incluir feriado inativo.</value>
+  </data>
+  <data name="msgErroLocalBancoObrigatorio" xml:space="preserve">
+    <value>Obrigatório Selecionar o Banco.</value>
+  </data>
+  <data name="msgErroTaxaBancariaObrigatorio" xml:space="preserve">
+    <value>Obrigatório Incluir Taxa Bancária.</value>
+  </data>
+  <data name="msgErroNaoExisteLocalMovtoCartao" xml:space="preserve">
+    <value>Local de Movimento tipo cartão não cadastrado.</value>
+  </data>
+  <data name="msgErroBaixaCartaoLocalMovtDiferente" xml:space="preserve">
+    <value>Não se pode liquidar títulos tipo ”Cartão” com locais de movimento diferentes.</value>
+  </data>
+  <data name="msgErroBaixaCartaoTipoFinanceiro" xml:space="preserve">
+    <value>Não se pode liquidar Cartão com outros tipos financeiros.</value>
+  </data>
+  <data name="msgErroPlanoTaxBancariaNull" xml:space="preserve">
+    <value>Plano de Contas, referente ao parâmetro “Taxas Bancárias” não foi definido.</value>
+  </data>
+  <data name="msgCancelaEncerraRematricula" xml:space="preserve">
+    <value>Não é possível cancelar encerramento de uma turma com Alunos rematriculados.</value>
+  </data>
+  <data name="msgExcluiMatriculaCheque" xml:space="preserve">
+    <value>Não é permitido excluir matrícula que possua(m) Título(s) com Cheque(s) vinculado(s).</value>
+  </data>
+  <data name="msgExcluimatriculaExistediarioAula" xml:space="preserve">
+    <value>Não é permitido excluir matrícula com Diário(s) de Aula(s) lançado(s) para o(s) aluno(s) da turma.</value>
+  </data>
+  <data name="msgExistetitulosCartaoMatricula" xml:space="preserve">
+    <value>Não é permitido excluir matrícula que possua(m) Título(s) do Tipo Cartão de Crédito.</value>
+  </data>
+  <data name="msgSelectRegExcluirMatricula" xml:space="preserve">
+    <value>Selecione apenas uma matrícula para exclusão.</value>
+  </data>
+  <data name="msgNotFoundTituloBaixaAutomatica" xml:space="preserve">
+    <value>Nenhum Título foi encontrado para realizar a Baixa Automatica.</value>
+  </data>
+  <data name="msgXmlNaoEncontrado" xml:space="preserve">
+    <value>Não há registros para este usuario.</value>
+  </data>
+  <data name="msgUsuarioNaoencontrado" xml:space="preserve">
+    <value>Usuário não encontrado.</value>
+  </data>
+  <data name="msgNotDeleteAditamento" xml:space="preserve">
+    <value>Não é possível excluir aditamentos que não seja de Adicionar Parcelas.</value>
+  </data>
+  <data name="msgErroTituloTrocaFinanceiraComBaixa" xml:space="preserve">
+    <value>Não foi possível  deletar a transação financeira, pois existe título ({0} - {1} {2}, Vencto.: {3:dd/MM/yyyy}) gerado através de troca financeira que possui baixa(s).</value>
+  </data>
+  <data name="msgAlunosComAulaReposicao" xml:space="preserve">
+    <value>Não é permitido excluir aula de reposição com alunos.</value>
+  </data>
+  <data name="msgAulaRepNaoExisteHorarios" xml:space="preserve">
+    <value>Não existem disponibilidade de horários para esta aula de reposição</value>
+  </data>
+  <data name="msgHorarioOcupadoAulaRep" xml:space="preserve">
+    <value>Este Período não pode ser selecionado pois está ocupado pelo professor ou aluno(s).</value>
+  </data>
+  <data name="msgErroProcedureGerarTurmasnulas" xml:space="preserve">
+    <value>Erro na procedure de gerar turmas nulas.</value>
+  </data>
+  <data name="msgErrorExisteProgramacao" xml:space="preserve">
+    <value>Não é possivel gerar programação para esta turma pois ela já a possui.</value>
+  </data>
+  <data name="msgNotUpdateTituloBoleto" xml:space="preserve">
+    <value>Título(s) com boleto(s) gerado(s) não pode(m) mais ser alterado(s)/excluído(s).</value>
+  </data>
+  <data name="msgErroGerarRemessaCdContratoCnab" xml:space="preserve">
+    <value>Não é permitido gerar remessa para cnabs derivado de contrato.</value>
+  </data>
+  <data name="msgErroNotExistsProximoCurso" xml:space="preserve">
+    <value>Não há uma uma próxima sequência de Curso para inserir.</value>
+  </data>
+  <data name="msgErroCursosNaoVinculadosMatriculaComTurma" xml:space="preserve">
+    <value>Existem cursos que não possuem turmas vinculadas. </value>
+  </data>
+  <data name="msgProspectComAtividadeExtra" xml:space="preserve">
+    <value>Não é permitido excluir atividade extra com prospects.</value>
+  </data>
+  <data name="msgErroAtividadeExtraRecorrenciaIdZero" xml:space="preserve">
+    <value>ão foi possível gerar as recorrências, pois o cd_atividade_extra a atividadeExtraRecorrência não pode ter o valor 0 .</value>
+  </data>
+  <data name="msgErroAtividadeExtraRecorrenciaNulo" xml:space="preserve">
+    <value>Não foi possível gerar as recorrências, pois a atividadeExtraRecorrência não pode ser nulo.</value>
+  </data>
+  <data name="msgErroAtividadeRecorrenciaNulo" xml:space="preserve">
+    <value>Não foi possível gerar as recorrências, pois a Atividade Recorrência não pde ser nulo.</value>
+  </data>
+  <data name="msgErroDataAtividadeExtraMaiorDataLimiteRecorrencia" xml:space="preserve">
+    <value>A data de Término não pode ser menor que a data da AtividadeExtra.</value>
+  </data>
+  <data name="msgErroNenhumAlunoProspectFoundSendEmail" xml:space="preserve">
+    <value>Não foram encotrados nenhum aluno ou prospect para enviar email.</value>
+  </data>
+  <data name="msgErroSendEmailProspectAluno" xml:space="preserve">
+    <value>Não foi possível enviar o email para o Prospect com email {0}.&lt;/br&gt;</value>
+  </data>
+  <data name="msgErroAtividadeExtraNotFound" xml:space="preserve">
+    <value>Não foi possível gerar as recorrências, pois a atividadeExtra selecionada não foi encontrada.</value>
+  </data>
+  <data name="msgAlterarDiarioEscola" xml:space="preserve">
+    <value>Não é permitido inserir/alterar diário de aulas de turmas pertencentes a outra escola.</value>
+  </data>
+  <data name="msgErroAtividadeExtraEnviarEmailNulo" xml:space="preserve">
+    <value>Não foi possível enviar email, pois as atividades selecionadas não foram encontradas.</value>
+  </data>
+  <data name="msgErroAtividadeExtraRecorrenciaEnviarEmailNulo" xml:space="preserve">
+    <value>Não foi possível enviar email, pois nenhuma recorrência relacionada as atividades selecionadas foi encontrada.</value>
+  </data>
+  <data name="msgErroNenhumProspectFoundSendEmail" xml:space="preserve">
+    <value>Não foram encotrados prospects para enviar email.</value>
+  </data>
+  <data name="msgErroSendEmailProspect" xml:space="preserve">
+    <value>Não foi possível enviar o email para o Prospect {0} com email {1}.&lt;/br&gt;</value>
+  </data>
+  <data name="msgAvisoEmailProspect" xml:space="preserve">
+    <value>Não existem prospects para o envio de e-mail nesta atividade.</value>
+  </data>
+  <data name="msgErroEmailJaEnviadoAtividadeExtra" xml:space="preserve">
+    <value>Atividade Extra {0} o email já foi enviado anteriormente.&lt;/br&gt;</value>
+  </data>
+  <data name="msgErroNumeroMaximoArquivoRemessa" xml:space="preserve">
+    <value>Número máximo de remessas geradas para o dia foi atingido. Limite(".RM0": 10 remessas).</value>
+  </data>
+  <data name="msgErroExtesaoContratoDigitalizadoNaoValida" xml:space="preserve">
+    <value>Extensão diferente de arquivo suportado pelo sistema, favor escolher um arquivo com alguma destas extensões '.jpg','.jpeg','.png','.pdf','.dotx'.</value>
+  </data>
+  <data name="msgArquivoDigitalizadoNotFound" xml:space="preserve">
+    <value>O arquivo não foi encontrado para realizar o download. Favor contatar o administrador do sistema.</value>
+  </data>
+  <data name="msgArquivoDigNotFound" xml:space="preserve">
+    <value>O arquivo não foi encontrado para realizar o download.</value>
+  </data>
+  <data name="msgErroArquivoDigitalizadoFound" xml:space="preserve">
+    <value>Já existe um arquivo digitalizado cadastrado com este nome.</value>
+  </data>
+  <data name="msgErroGerarReciboConfirmacao" xml:space="preserve">
+    <value>Não foi possível gerar o recibo de confirmação, tente novamente.</value>
+  </data>
+  <data name="msgErroTipoFinanDifCartaoCheque" xml:space="preserve">
+    <value>Não é possível emitir recibo de confirmação: O tipo financeiro deve ser cartão (baixa automática) ou cheque.</value>
+  </data>
+  <data name="msgErroTitulosReciboConfirmacaoNotFound" xml:space="preserve">
+    <value>Nenhum título com tipo financeiro cartão (baixa automática) ou cheque e sem baixa financeira foi encontrado para gerar o recibo de confirmação.</value>
+  </data>
+  <data name="msgErroAgruparTitulosAlunosDiferentes" xml:space="preserve">
+    <value>Não é possível agrupar recibos de alunos diferentes.</value>
+  </data>
+  <data name="msgErroAgruparTitulosResponsaveisDiferentes" xml:space="preserve">
+    <value>Não é possível agrupar recibos de responsáveis diferentes.</value>
+  </data>
+  <data name="msgErroTitulosValidaReciboAgrupadoNotFound" xml:space="preserve">
+    <value>Não foi possível encontrar os títulos selecionados para realizar a operação.</value>
+  </data>
+  <data name="msgErroAlterarHorario" xml:space="preserve">
+    <value>Horario de Turmas Compartilhadas só podem ser alterados na escola de origem.</value>
+  </data>
+  <data name="msgErroPlanoMaterialNull" xml:space="preserve">
+    <value>Plano de Contas, referente ao parâmetro “Material” não foi definido.</value>
+  </data>
+  <data name="ErroChaveExecutaCyber" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: Chave Inválida (nula ou vazia) - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroComandoExecutaCyber" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: Comando Inválido (nulo ou vazio) - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroParametrosExecutaCyber" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: Parametros Inválidos - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroSendExecutaCyber" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: Erro Api newCyber - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroApiCyberCidadeNulaOuVazia" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: Cidade nula ou vazia - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroApiCyberEmailPessoaJuridicaNulaOuVazia" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: Email PessoaJuridica nula ou vazia - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroApiCyberEstadoNuloOuVazio" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: Estado nulo ou vazio - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroApiCyberNmIntegracaoNuloOuMenorIgualZero" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: NmIntegracao nulo ou menor ou igual a zero - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroApiCyberParametrosNulos" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: Parametros BD nulos - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroApiCyberPessoaJuridicaNulaOuVazia" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: PessoaJuridica nula ou vazia - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroApiCyberCdAlunoMenorIgualZero" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: codigo aluno menor ou igual a zero - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroApiCyberEmailAlunoNuloVazio" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: Email aluno nulo ou vazio - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroApiCyberNomeAlunoNuloVazio" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: Nome aluno nulo ou vazio - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroApiCyberCdFuncionarioMenorIgualZero" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: Codigo funcionario menor ou igual a zero - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroApiCyberEmailFuncionarioNuloVazio" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: email funcionario nulo vazio - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroApiCyberNomeFuncionarioNuloVazio" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: nome funcionario nulo ou vazio - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroApiCyberCodigoGrupoMenorIgualZero" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: codigo do grupo menor ou igual a zero - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroApiCyberCodigoProfessorMenorIgualZero" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: codigo do professor menor ou igual a zero - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroApiCyberNomeGrupoNuloVazio" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: nome grupo nulo ou vazio - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroApiCyberCodigoLivroMenorIgualZero" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: codigo do livro menor ou igual a zero - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="msgRegDesCanSuccess" xml:space="preserve">
+    <value>Registro não cancelado com sucesso.</value>
+  </data>
+  <data name="ErroAlunosTurmaInTurmaDestino" xml:space="preserve">
+    <value>Exitem alunos selecionados para a operação de mudança interna que já estiveram na turma de destino. Para realizar esta operação o campo (Manter Contrato) deve estar marcado.</value>
+  </data>
+  <data name="msgErroNomeComAsterisco" xml:space="preserve">
+    <value>Não é permitido o caracter (*) no campo nome.</value>
+  </data>
+  <data name="msgItemNaoEncontrado" xml:space="preserve">
+    <value>ItemServiço não encotrado, cd_item: {0}.</value>
+  </data>
+  <data name="msgTurmaNotFound" xml:space="preserve">
+    <value>Turma não encontrada.</value>
+  </data>
+  <data name="msgErroAditamentoAposReajusteAnual" xml:space="preserve">
+    <value>Este reajuste não poderá ser aberto, pois existe(em) aditamento(s) realizados após este reajuste anual.</value>
+  </data>
+  <data name="msgErroBaixaDuplicadaArquivoRetorno" xml:space="preserve">
+    <value>Baixa duplicada no mesmo arquivo de retorno, existe mais de uma linha com o mesmo (nosso número) no arquivo. Titulo: {0}, Nosso Número: {1}.</value>
+  </data>
+  <data name="msgErroSendEmailCartaQuitacao" xml:space="preserve">
+    <value>Não foi possível enviar o email com a carta de quitação para o aluno {0} com email {1}.</value>
+  </data>
+  <data name="msgErrorEmailCartaQuitacaoJaEnviada" xml:space="preserve">
+    <value>O e-mail com a Carta de Quitação já foi enviado anteriormente para os registros selecionados, nenhum email foi enviado nesta operação, selecione outros registros para gerar e enviar a carta.</value>
+  </data>
+  <data name="msgErrorDeleteMovimentoMaterialWithCdOrigem" xml:space="preserve">
+    <value>Não é possível deletar movimento de material didático com contrato informado.</value>
+  </data>
+  <data name="msgErrorDesprocessarMovimentoMaterialWithCdOrigem" xml:space="preserve">
+    <value>Não é possível desprocessar movimento de material didático com contrato informado.</value>
+  </data>
+  <data name="msgErroEnvioEmailAlunoRaf" xml:space="preserve">
+    <value>Erro ao enviar email. Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="msgErroInterBoletoCnabSemNossoNumero" xml:space="preserve">
+    <value>Para o banco Inter só é permitido gerar boletos após processar o arquivo de retorno.</value>
+  </data>
+  <data name="msgNotUpdateContratoWithNota" xml:space="preserve">
+    <value>Não é possível alterar curso ou tipo de contrato em matrículas vinculadas com nota de venda de material.</value>
+  </data>
+  <data name="msgCdEscolaDestinoMenorIgualZero" xml:space="preserve">
+    <value>O campo cd_escola_destino não pode ser menor ou igual a zero.</value>
+  </data>
+  <data name="msgCdTransferenciaMenoIgualZero" xml:space="preserve">
+    <value>O campo cd_transferência não pode ser menor ou igual a zero.</value>
+  </data>
+  <data name="msgErroCdMotivoStatusTransferencia" xml:space="preserve">
+    <value>O campo cd_motivo_transferencia não pode menor ou igual a zero.</value>
+  </data>
+  <data name="msgErroDcEmailDestinoNuloOuVazio" xml:space="preserve">
+    <value>O campo dc_email_destino não pode ser nulo ou vazio.</value>
+  </data>
+  <data name="msgErroDcEmailOrigemNuloOuVazio" xml:space="preserve">
+    <value>O campo dc_email_origem não pode ser nulo ou vazio.</value>
+  </data>
+  <data name="msgErroDeleteTransferenciaEfetuada" xml:space="preserve">
+    <value>Transferências com status efetuada não podem ser deletadas.</value>
+  </data>
+  <data name="msgErroEditTransferenciaEfetuada" xml:space="preserve">
+    <value>Transferência  com status efetuada não pode ser editada.</value>
+  </data>
+  <data name="msgErroEmailSolicitacaoStatusDiferenteCriadaSolicitada" xml:space="preserve">
+    <value>Não é possível enviar o email de solicitação de transferência quando o status do registro é diferente de cadastrada e solicitada.</value>
+  </data>
+  <data name="msgErroEnvioEmailTransferenciaAluno" xml:space="preserve">
+    <value>Não foi possível enviar o email para a unidade {2} com email {1} sobre a transferência do(a) aluno(a) {0}. Tente novamente.</value>
+  </data>
+  <data name="msgErroIdStatusTransferencia" xml:space="preserve">
+    <value>O campo id_status_transferencia não pode menor ou igual a zero na edição.</value>
+  </data>
+  <data name="msgErroTransferenciaAlunoNuloEnviarEmail" xml:space="preserve">
+    <value>Não foi possível enviar o email, pois o registro não foi encontrado.</value>
+  </data>
+  <data name="msgErroTransferiAlunoStatusDiferenteAprovado" xml:space="preserve">
+    <value>Não é possível realizar a transferência quando os status do registro é diferente de aprovada.</value>
+  </data>
+  <data name="msgObjTransferenciaAlunoNulo" xml:space="preserve">
+    <value>O objeto transferência aluno não pode ser nulo.</value>
+  </data>
+  <data name="msgErroEnvioEmailStatusDiferenteAprovadoRecusado" xml:space="preserve">
+    <value>O email só pode ser enviado para registros com status aprovado ou reprovado.</value>
+  </data>
+  <data name="msgErroStatusTransferenciaNaoAlterado" xml:space="preserve">
+    <value>O status da transferência deve ser alterado para aprovada ou recusada para que o registro seja salvo.</value>
+  </data>
+  <data name="msgErroCargaHorariaMinima" xml:space="preserve">
+    <value>Não é permitido turmas com carga horária semanal menor que {0} minutos</value>
+  </data>
+  <data name="msgErroTransferenciaAlunoDestino" xml:space="preserve">
+    <value>Não é possível Transferir pois já existe um aluno com este CPF na unidade de destino</value>
+  </data>
+  <data name="msgExistAlunoForCPfEscola" xml:space="preserve">
+    <value>Aluno '{0}' já cadastrado com este CPF. Use a transferencia de aluno para cadastrar este aluno nesta escola. </value>
+  </data>
+  <data name="msgBearerPromocaoIntercambioNuloVazio" xml:space="preserve">
+    <value>Houve um problema ao carregar o parâmetro bearer necessário para realizar a requisição da promoção de intercambio e não foi possível concluir a operação: (statusErro: Bearer (nula ou vazia) - Url: {0} - Parametros: {1}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="msgErroApiPromocaoIntercambioParametros" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para promoção de intercambio e não foi possível concluir a operação: (statusErro: {0} ). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="msgErrorRequestApiPromocaoIntercambio" xml:space="preserve">
+    <value>Houve um erro ao realizar a requisição da promoção de intercambio e não foi possível concluir a operação: (statusErro: {0} - DescricaoErro: {1} - Url: {2} - Parametros: {3}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="msgErroStatusCodeRequestApiPromocaoIntercambio" xml:space="preserve">
+    <value>Houve um erro ao realizar a requisição da promoção de intercambio e não foi possível concluir a operação: (DescricaoErro: {0} - Url: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="msgUrlPromocaoIntercambioNuloVazio" xml:space="preserve">
+    <value>Houve um problema ao carregar o parâmetro url necessário para realizar a requisição da promoção de intercambio e não foi possível concluir a operação: (statusErro: Url(nula ou vazia)  - Parametros: {0}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroApiCyberCdGrupoMenorIgualZero" xml:space="preserve">
+    <value>Houve um erro ao realizar uma requisição para a ApiNewCyber e não foi possível concluir a operação: (statusErro: codigo grupo menor ou igual a zero - Url: {0} - Comando: {1} - Parametros: {2}). Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="msgErroCpfNuloEscolaNãoInternacional" xml:space="preserve">
+    <value>O campo cpf é obrigatório em escolas que não são internacionais.</value>
+  </data>
+  <data name="msgErroDevolucaoNF" xml:space="preserve">
+    <value>Somente Administrador Geral pode devolver material didatico</value>
+  </data>
+  <data name="msgEdicaoPerdaMaterialFechada" xml:space="preserve">
+    <value>Perda de material com status fechado não pode ser alterado.</value>
+  </data>
+  <data name="msgExclusaoPerdaMaterialFechada" xml:space="preserve">
+    <value>Perda de material com status fechado não pode ser excluído.</value>
+  </data>
+  <data name="msgProcessarPerdaMaterialFechado" xml:space="preserve">
+    <value>Perda de material com status fechado não pode ser processado.</value>
+  </data>
+  <data name="msgErrorCaracteresInvalidosNomeArquivo" xml:space="preserve">
+    <value>Os caracteres (=) e (&amp;) não são permitidos no nome do arquivo.</value>
+  </data>
+  <data name="msgErrorEmailUsuarioNotFound" xml:space="preserve">
+    <value>Email de usuário não encontrado, o email é necessário para autenticação na área restrita.</value>
+  </data>
+  <data name="msgErrorTokenNaoGeradoAreaRestrita" xml:space="preserve">
+    <value>O token para a autenticação na área restríta não pode ser gerado. Tente novamente ou contate o administrador do sistema.</value>
+  </data>
+  <data name="ErroDiarioAulaposMudanca" xml:space="preserve">
+    <value>Existem diários de aula na turma destino já lançados, após a data de movimentação. Favor escolher outra data.</value>
+    <comment>Evitar de mover para uma turma já com diários lançados, se não já vai considerar o aluno com aulas assistidas.</comment>
+  </data>
+  <data name="ErroDiarioAulaOrigemMudanca" xml:space="preserve">
+    <value>Existem diários de aula na turma origem já lançados, após a data de movimentação. Favor escolher outra data.</value>
+  </data>
+  <data name="msgErroImprimirContrato" xml:space="preserve">
+    <value>Houve erro ao substituir macros no modelo de contrato</value>
+  </data>
+</root>

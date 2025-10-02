@@ -1,0 +1,117 @@
+﻿@{
+    ViewBag.Title = "Plano de Contas";
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/planoConta")
+}
+
+@section scriptsBody{    
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Plano de Contas";
+        require([
+                "dojo/NodeList-traverse",
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager",
+                "dojox/grid/LazyTreeGrid",
+                "dijit/tree/ForestStoreModel",
+                "dojo/data/ItemFileWriteStore"
+        ]);
+        montarCadastroPlanoConta();
+    </script>
+}
+
+<div style="width: 100%;">
+    <input type="hidden" id="link" value="" />
+    <div class="apresentadorMsg" id="apresentadorMensagem"  style="display:none;"></div>
+    <script type="text/javascript">
+        showCarregando();
+    </script>
+    <div class="EspacoCaixa caixaPesquisa" hidden style="display: none;">
+	    <table class="Table">
+		    <tr>
+                <td class="Pesquisa tdRight" style="width:15%">
+                    <label class="AlinhaDireita">Grupo de Contas:</label>
+				</td>
+			    <td style="width:30%">
+					<input id="cbGrupoContas" data-dojo-type="dijit/form/FilteringSelect" required="false"  class="campoGrande" style="width:100%">
+				</td>
+
+			    <td style="width:15%; text-align:center" class="nowrap">
+    	            <label class="AlinhaDireita">Subgrupo de Contas:</label>
+				</td>
+			    <td colspan="3" style="width:30%">
+					<input id="lbSubGrupo" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width:100%">
+				</td>
+                 <td style="width:15%; text-align:center" class="nowrap">
+    				<label class="tdRight;" for="inicioSubGrupo">Início:</label>
+	            	<input type="checkbox" id="inicioSubGrupo" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+			    </td> 
+                 <td style="width: 10%" class="tdRight" rowspan="3">
+                    <input id="pesquisarPlanoContas" title="Pesquisar" />
+                </td>
+		    </tr>
+            <tr>
+                <td class="tdRight">
+                    <label for="lbNiveis" class="tdRight">Níveis: </label>
+                </td>
+                <td>
+                    <input data-dojo-type="dijit/form/FilteringSelect" id="cbNiveis" required="false"  style="width: 100%;" />
+                </td>
+                <td class="tdRight">
+                    <label for="lbTipo" class="tdRight">Tipo:</label>
+                </td>
+                <td>
+                    <input data-dojo-type="dijit/form/FilteringSelect" id="cbTipo" required="false" style="width: 100%;" />
+                </td>
+                <td></td>
+            </tr>
+	    </table>
+    </div>
+    <div style="padding-top:10px">
+	    <div class="linha_acoes" style="width: 100%"></div>
+	    <div>
+		    <table style="width:100%">
+			    <tr style="width:100%">
+				    <td style="text-align:left; width:25%">
+					    <div class="linkAcoes" id="linkAcoesPlanoContas"></div>
+				    </td>
+				    <td style="text-align:right; width:25%">
+					    <span class="linkSelecionados" id="linkSelecionadosPlanoContas"></span>
+				    </td>
+			    </tr>
+		    </table>
+	    </div>
+	    <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+</div>
+
+<input id="hasDisponivel"  type="text" hidden style="display: none;">
+<div id="planoContasDisponivel" hidden style="display: none;"></div>
+<div id="planoContasEmpresa" hidden style="display: none;"></div>
+<input id="pesquisarBD" hidden style="display: none;"/>
+<input id="tipoPlano" hidden style="display: none;"/>
+<input id="niveis" hidden style="display: none;"/>
+<input id="wasPersisted" hidden style="display: none;"/>
+
+<div data-dojo-type="dijit/layout/ContentPane" id="ContentGridPlanoContas" style="padding-left: 0px; padding-right: 0px; width: 100%">
+    <div class="gridCadBasic" style="height: 490px;" id="paiGridPlanoConta">
+        <div id="gridPlanoContas" style="height: 100%;"></div>
+    </div>
+</div>
+<div class="CaixaAcao">
+    <div class="linha_acoes" style="width: 100%"></div>
+    <div class="Alinhamento">
+        <span id="divSalvarPlanoContas">
+            <input id="salvarPlanoContas" title="Salvar" /></span>
+        <span id="divCancelarPlanoContas">
+            <input id="cancelarPlanoContas" title="Cancelar" /></span>
+    </div>
+    <div class="linha_acoes" style="width: 100%"></div>
+</div>

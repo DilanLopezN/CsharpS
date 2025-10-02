@@ -1,0 +1,224 @@
+﻿@section scripts{
+    <script type="text/javascript">
+        require([
+                "dojo/NodeList-traverse",
+                "dijit/form/Select",
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/SimpleTextarea",
+                "dijit/form/Form",
+                "dojox/form/Manager",
+                "dijit/form/NumberTextBox"
+        ]);
+    </script>
+}
+@Scripts.Render("~/bundles/chequeFK")
+<input id="cd_tran_finan" type="hidden" value="0" />
+<div id="cadBaixaFinanceira" data-dojo-type="dijit/Dialog"
+    style="max-width: 930px; width: 930px;" title="Cadastro Baixas Financeiras">
+
+    <div class="sessao_form" style="margin-left: -8px;">
+        <span id="counter_form_1">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    <div class="corpo_interno" style="max-width: 100%; height: 100%; max-height: 90%">
+        <div class="scroll" style="height: 505px">
+            <form data-dojo-type="dijit/form/Form" data-dojo-id="formCadBaixa" id="formCadBaixa" name="formCadBaixa">
+                <div class="apresentadorMensagem" id="apresentadorMensagemCadBaixa" style="display: none;"></div>
+                <input id="telaMensagem" style="display: none" hidden />
+                <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Transação Financeira'" id="tagTranfinan" open="true" onhide="setarTagBaixa(false)" onshow="setarTagBaixa(true)">
+                    <table class="Table">
+                        <tr>
+                            <td class="CorpoFormAux AlinhaDireita" style="width: 5%;">
+                                <label>Data:</label></td>
+                            <td class="nowrap dojoTextBoxIECorrect AlinhaDireita" style="width: 10%;">
+                                <input
+                                    id="dt_baixa"
+                                    style="width: 100%;"
+                                    required="true"
+                                    data-dojo-type="dijit.form.DateTextBox"
+                                    onkeypress="mascaraDataHora(event, this)" maxlength="10" />
+                            </td>
+                            <td class="Pesquisa tdRight" style="width: 1%">
+                                <label class="AlinhaDireita nowrap">Local de Movimento:</label>
+                            </td>
+                            <td style="width: 32%;" class="dojoTextBoxIECorrect">
+                                <input id="cbLocalCad" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;">
+                            </td>
+                            <td class="Pesquisa tdRight" style="width: 1%">
+                                <label class="AlinhaDireita nowrap">Tipo Liquidação:</label>
+                            </td>
+                            <td style="width: 20%;" class="dojoTextBoxIECorrect">
+                                <input id="cbLiquidacao" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div data-dojo-type="dijit/TitlePane" id="tgCheque" data-dojo-props="title: 'Dados do Cheque'" open="false" style="display: none;">
+                    <input id="cd_cheque_trans" type="hidden" />
+                    <table class="Table">
+                        <tr>
+                            <td class="tdRight" style="width: 15%">Emitente:
+                            </td>
+                            <td class="dojoTextBoxIECorrect" style="width: 85%" colspan="3">
+                                <input id="emissorChequeBaixa" name="emissorChequeBaixa" style="width: 100%;" data-dojo-type="dijit/form/ValidationTextBox">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdRight" style="width: 15%">Banco:
+                            </td>
+                            <td style="width: 35%" class="dojoTextBoxIECorrect">
+                                <select id="bancoChequeBaixa" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" required="false" name="bancoChequeBaixa"></select>
+                            </td>
+                            <td class="tdRight" style="width: 15%">Agência:</td>
+                            <td style="width: 35%" class="dojoTextBoxIECorrect nowrap">
+                                <input id="nomeAgenciaChequeBaixa" name="nomeAgenciaChequeBaixa" style="width: 100%;" data-dojo-type="dijit/form/ValidationTextBox" maxlength="8">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdRight" style="width: 15%">Nro. da Agência:
+                            </td>
+                            <td style="width: 35%" class="dojoTextBoxIECorrect nowrap">
+                                <input id="nroAgenciaChequeBaixa" name="nroAgenciaChequeBaixa" onkeypress="mascaraInt(document.getElementById('nroAgenciaChequeBaixa'));"
+                                    style="width: 80%;" data-dojo-type="dijit/form/NumberTextBox" maxlength="8" data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'#'}">
+                                <input id="dgAgenciaChequeBaixa" name="dgAgenciaChequeBaixa" maxlength="2" style="width: 18%;" data-dojo-type="dijit/form/NumberTextBox" data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'#'}" />
+                            </td>
+                            <td class="tdRight" style="width: 15%">Conta Corrente:
+                            </td>
+                            <td style="width: 35%" class="dojoTextBoxIECorrect nowrap">
+                                <input id="nroContaCorrenteChequeBaixa" name="nroContaCorrenteChequeBaixa" onkeypress="mascaraInt(document.getElementById('nroContaCorrenteChequeBaixa'));"
+                                    style="width: 80%;" data-dojo-type="dijit/form/NumberTextBox" maxlength="8" data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'#'}" />
+                                <input id="dgContaCorrenteChequeBaixa" name="dgContaCorrenteChequeBaixa" style="width: 18%;" maxlength="2"
+                                    data-dojo-type="dijit/form/NumberTextBox" data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'#'}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdRight" style="width: 15%;">
+                                <label>Bom para:</label>
+                            </td>
+                            <td class="dojoTextBoxIECorrect" style="width: 35%;">
+                                <input id="dtChequeChequeBaixa" onkeypress="mascaraDataHora(event, this)" name="dtChequeChequeBaixa"
+                                    class="alignDojoData" style="width: 100%;" data-dojo-type="dijit.form.DateTextBox" />
+                            </td>
+                            <td class="tdRight" style="width: 15%">Nro. Cheque:
+                            </td>
+                            <td class="dojoTextBoxIECorrect" style="width: 35%">
+                                <input id="nroPrimeiroChequeChequeBaixa" name="nroPrimeiroChequeChequeBaixa" style="width: 100%;" data-dojo-type="dijit/form/ValidationTextBox" data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'#'}" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div data-dojo-type="dijit/TitlePane" id="tagBaixa" data-dojo-props="title: 'Baixas Efetuadas'" open="true">
+                    <div id="divBaixa" style="height: 330px;">
+                        <table style="width: 100%" class="Alinhamento">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkAcoesBxCad"></div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div id="PaigridBaixaCad" style="height: 455px;">
+                            <div id="gridBaixaCad" style="height: 310px"></div>
+                        </div>
+                    </div>
+                    <div id="comboTroco">
+                        <div class="linha_acoes" style="width: 100%; padding-top: 10px;"></div>
+                        <table class="Table">
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita" style="width: 15%;">
+                                    <label><b>TOTAL DA BAIXA:</b></label></td>
+                                <td>
+                                    <input id="vlTotal" name="vlTotal"
+                                           data-dojo-type="dijit/form/NumberTextBox"
+                                           style="width: 50%;"
+                                           data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'##.00'}"
+                                           disabled="disabled"
+                                           onkeypress="mascaraFloat(document.getElementById('vlTotal'));"/>
+                                </td>
+
+                                <td class="CorpoFormAux AlinhaDireita" style="width: 15%;"><label><b>VALOR P/ TROCO:</b></label></td>
+                                <td class="nowrap dojoTextBoxIECorrect AlinhaEsquerda"  style="width: 20%;">
+                                    <input id="vlTotalTroco" name="vlTotalTroco"
+                                           data-dojo-type="dijit/form/NumberTextBox"
+                                           style="width: 60%;"
+                                           data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'##.00'}"
+                                           onkeypress="mascaraFloat(document.getElementById('vlTotalTroco'));"/>
+                                </td>
+
+                                <td class="CorpoFormAux AlinhaDireita" style="width: 15%;"><label><b>VALOR TROCO:</b></label></td>
+                                <td class="nowrap dojoTextBoxIECorrect AlinhaEsquerda"  style="width: 20%;">
+                                    <input id="vlTroco" name="vlTroco"
+                                           data-dojo-type="dijit/form/NumberTextBox"
+                                           style="width: 60%;"
+                                           data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'##.00'}"
+                                           disabled="disabled"
+                                           onkeypress="mascaraFloat(document.getElementById('vlTroco'));"/>
+                                </td>
+
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="containerCrud" style="width: 100%; padding-top: 10px;">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <div style="text-align: center">
+                <span id="divIncluirBaixa">
+                    <input type="button" id="incluirBaixa" title="Salvar" /></span>
+                <span id="divAlterarBaixa">
+                    <input type="button" id="alterarBaixa" title="Salvar" /></span>
+                <span id="divExcluirBaixa">
+                    <input type="button" id="deleteBaixa" title="Excluir" /></span>
+                <span id="divLimparBaixa">
+                    <input type="button" id="limparBaixa" title="Cancelar" /></span>
+                <span id="divCancelarBaixa">
+                    <input type="button" id="cancelarBaixa" title="Cancelar" /></span>
+                <span id="divFecharBaixa">
+                    <input type="button" id="fecharBaixa" title="Fechar" /></span>
+            </div>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+    </div>
+</div>
+
+<div data-dojo-id="dialogObservacao" data-dojo-type="dijit/Dialog" id="dialogObservacao" title="Observação" style="display: none; width: 700px;">
+    <form data-dojo-type="dijit/form/Form" data-dojo-id="formDialog" id="formDialog">
+        <div class="dijitDialogPaneContentArea">
+            <textarea data-dojo-type="dijit/form/SimpleTextarea" rows="4" cols="50" style="width: 99%;" id="textAreaObs"></textarea>
+        </div>
+        <div style="padding-top: 10px">
+            <div class="CaixaAcao">
+                <div class="linha_acoes" style="width: 100%"></div>
+                <div class="Alinhamento">
+                    <button data-dojo-type="dijit/form/Button"
+                        id="btOKObservacao">
+                        Salvar</button>
+                    <button data-dojo-type="dijit/form/Button" type="button" id="btCancelarNota"
+                        data-dojo-props="onClick:function(){dialogObservacao.hide();}">
+                        Fechar</button>
+                </div>
+                <div class="linha_acoes" style="width: 100%"></div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="historicoBaixaTitulo" data-dojo-type="dijit/Dialog" class="Dialogo" style="max-width: 800px; height: 530px;" title="Histórico Baixa">
+
+    <div class="sessao_form" style="margin-left: -8px;">
+        <span id="counter_form_3">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    <div class="corpo_interno" style="max-width: 770px;" id="paiGridHistBaixaTitulo">
+        <div id="gridHistoricoBaixaTitulo" style="height: 100%; min-height: 460px; width: 100%"></div>
+    </div>
+</div>
+<div id="proChequeFK" data-dojo-type="dijit.Dialog" title="Dados do cheque do Título:" style="display: none; width: 820px; height: 190px;">
+    <div style="width: 100%; height: 180px;">
+        @Html.Partial("../Financeiro/ChequeFK")
+    </div>
+</div>

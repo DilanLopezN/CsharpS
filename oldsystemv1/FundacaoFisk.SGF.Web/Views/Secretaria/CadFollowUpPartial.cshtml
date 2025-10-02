@@ -1,0 +1,267 @@
+﻿@Scripts.Render("~/bundles/usuarioFK")
+@Scripts.Render("~/bundles/alunoFK")
+@Scripts.Render("~/bundles/turmaFK")
+
+<input type="hidden" id="cdProspectFollowUpPartial" />
+<input type="hidden" id="cdAlunoFollowUpPartial" />
+<input type="hidden" id="cdUsuarioDestinoFollowUpFK" />
+<input type="hidden" id="cdProspectAlunoUsuarioDestinoFollowUpFK" />
+<input type="hidden" id="cdUsuarioOrigFollowUpFK" />
+<input type="hidden" id="cd_follow_up_partial" value="0" />
+<input type="hidden" id="cd_follow_up_pai" value="" />
+<input type="hidden" id="cd_follow_up_origem" value="" />
+<input type="hidden" id="cdUsuarioOrigAdmFollowUpFK" />
+<input type="hidden" id="setValuePesquisaPessoaFKFollowUp" />
+<input type="hidden" id="nroOrdem" />
+<div class="corpo_interno">
+    <div class="scroll" style="width: 100%; max-height: 510px;">
+        <div class="apresentadorMsg" id="apresentadorMensagemCadFollowUpPartial" style="display: none;"></div>
+        <div data-dojo-type="dijit/layout/TabContainer" id="tabContainerFollowUpFK" onclick="selecionaTabFollowUpFK" class="Abas" style="min-height: 400px; max-height: 510px; width: 100%;">
+            <div data-dojo-type="dijit/layout/ContentPane" title="Principal" id="tabPrincipalFollowUpFK">
+                <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Geral'" id="panePesqGeralFollowUpFK" open="true">
+                    <form name="formTurmaPrincipal" id="formFollowUpFKPrincipal" data-dojo-type="dojox/form/Manager" style="width: 100%">
+                        <table class="Table">
+                            <tr id="trTipoFollowUpFK">
+                                <td class="tdRight nowrap" style="width: 10%;">
+                                    <label for="cadTipoFollowUpFK">Tipo:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" colspan="3" style="width: 90%;">
+                                    <input type="checkbox" id="cadTipoFollowUpFK" name="cadTipoFollowUpFK" data-dojo-type="dijit/form/FilteringSelect" style="width: 25%;" required="required" />
+                                </td>
+                            </tr>
+                            <tr id="trInternoUserFollowUpFK">
+                                <td class="tdRight nowrap" style="width: 10%;">
+                                    <label for="cadNomeUsuarioOrigFollowUpFK">Usuário de Origem:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect nowrap" style="width: 38%;">
+                                    <input type="text" id="cadNomeUsuarioOrigFollowUpFK" name="Nome" style="width: 100%;" data-dojo-type="dijit/form/ValidationTextBox" readonly="true" required="required" />
+                                </td>
+                                <td class="tdRight nowrap" style="width: 17%;">
+                                    <label for="cadNomeUsuarioDestinoFollowUpFK">Usuário de Destino:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect nowrap" style="width: 35%;">
+                                    <input type="text" id="cadNomeUsuarioDestinoFollowUpFK" name="cadNomeUsuarioDestinoFollowUpFK" style="width: 64%;" required="required" readonly="true" data-dojo-type="dijit/form/ValidationTextBox" />
+                                    <input id="FKUsuarioDestinoCad" style="min-width: 18px;" />
+                                    <input type="text" id="limparCadUsuarioDestinoFollowUpFK" />
+                                </td>
+                            </tr>
+                            <tr id="trInternoAdmFollowUpFK">
+                                <td class="tdRight nowrap" style="width: 10%;">
+                                    <label for="ckAdmFollowUpFK">Administradores:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" colspan="3">
+                                    <input type="checkbox" id="ckAdmFollowUpFK" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                                </td>
+                            </tr>
+                            <tr id="trProspectAlunoFollowUpFK">
+                                <td class="tdRight nowrap" style="width: 10%;">
+                                    <label for="descAlunoProspectFollowUpFK">Prospect/Aluno:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 38%;">
+                                    <input type="text" id="descAlunoProspectFollowUpFK" name="descAlunoProspectFollowUpFK" style="width: 83%;" data-dojo-type="dijit/form/ValidationTextBox" required="required" readonly="true" />
+                                    <input data-dojo-type="dijit/form/Button" data-dojo-props="label: '', iconClass:'dijitEditorIcon dijitEditorIconFindSGF'" type="button" id="btnAlunoProspectFK" style="width: 12%;" />
+                                    @*<input id="btnAlunoProspectFK" style="min-width: 18px;" />*@
+                                </td>
+                                <td class="tdRight" style="width: 17%">
+                                    <label for="cadAcaoFollowUpFK">Ação:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 35%;">
+                                    <select id="cadAcaoFollowUpFK" name="cadAcaoFollowUpFK" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;"></select>
+                                </td>
+                            </tr>
+                            <tr id="trProspectAlunoUsuarioDestFollowUpFK">
+                                <td class="tdRight nowrap" style="width: 17%;">
+                                    <label for="cadNomeProspectAlunoUsuarioDestinoFollowUpFK">Usuário de Destino:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect nowrap" style="width: 35%;">
+                                    <input type="text" id="cadNomeProspectAlunoUsuarioDestinoFollowUpFK" name="cadNomeProspectAlunoUsuarioDestinoFollowUpFK" style="width: 64%;" required="false" readonly="true" data-dojo-type="dijit/form/ValidationTextBox" />
+                                    <input id="FKProspectAlunoUsuarioDestinoCad" style="min-width: 18px;" />
+                                    <input type="text" id="limparCadProspectAlunoUsuarioDestinoFollowUpFK" />
+                                </td>
+                            </tr>
+                            <tr id="trEmailTelefoneProspectAluno">
+                                <td class="tdRight nowrap" style="width: 10%;">
+                                    <label for="descAlunoProspectFollowUpFK">E-mail:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect nowrap" style="width: 38%;">
+                                    <input type="text" id="cadEmailProspectAluno" name="cadEmailProspectAluno" style="width: 100%;" disabled="disabled" data-dojo-type="dijit/form/TextBox" />
+                                </td>
+                                <td class="tdRight" style="width: 17%">
+                                    <label for="cadAcaoFollowUpFK">Telefone:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 35%;">
+                                    <select id="cadTelefoneProspectAluno" name="cadTelefoneProspectAluno" data-dojo-type="dijit/form/TextBox" disabled="disabled" style="width: 100%;"></select>
+                                </td>
+                            </tr>
+                            <tr id="trProximoContatoFollowUpFK">
+                                <td class="tdRight nowrap" style="width: 10%;">
+                                    <label for="dtaProxContatoFollowUpFK">Data Próximo Contato:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect nowrap">
+                                    <input id="dtaProxContatoFollowUpFK" name="dtaProxContatoFollowUpFK" style="width: 175px" onkeypress="mascaraDataHora(event, this)" maxlength="10" data-dojo-type="dijit/form/DateTextBox" />
+                                </td>
+                                <td class="tdRight" style="width: 17%">
+                                    <label for="cadTipoAtendimento">Tipo Atendimento:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 35%;">
+                                    <select id="cadTipoAtendimento" name="cadTipoAtendimento" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;"></select>
+                                </td>
+                            </tr>
+                            <tr id="trMasterFollowUp">
+                                <td class="tdRight nowrap" style="width: 10%;">
+                                    <label for="cadNomeUsuarioAdmOrgFollowUpFK">Usuário de Origem:</label></td>
+                                <td class="dojoTextBoxIECorrect nowrap" style="width: 38%;">
+                                    <input type="text" id="cadNomeUsuarioAdmOrgFollowUpFK" name="cadNomeUsuarioAdmOrgFollowUpFK" style="width: 100%;" data-dojo-type="dijit/form/ValidationTextBox" required="required" readonly="true" />
+                                </td>
+                                <td class="tdRight nowrap" style="width: 17%;">
+                                    <label>Administradores:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 35%;">
+                                    <input type="checkbox" id="ckAdm" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                                </td>
+                            </tr>
+                            <tr id="trResolvidoLidoFollowUp">
+                                <td class="tdRight" style="width: 10%;">
+                                    <label for="ckResolvidoFollowUpFK">Resolvido:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect nowrap" style="width: 38%;">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" id="ckResolvidoFollowUpFK" name="ckResolvidoFollowUpFK" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                                            </td>
+                                            <td>
+                                                <label id="lblLido" for="ckLidoFollowUpFK">Lido:</label></td>
+                                            <td>
+                                                <input type="checkbox" id="ckLidoFollowUpFK" name="ckLidoFollowUpFK" disabled="disabled" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                                            </td>
+                                            <td id="tdQtdUserLido" style="display: none">
+                                                <label id="lblQtdUserLido">Usuários</label>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td class="tdRight nowrap" style="width: 17%;">
+                                    <label for="dtaCadastroFollowUpFK">Data:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect nowrap" style="width: 35%;">
+                                    <input type="text" id="dtaCadastroFollowUpFK" name="dtaCadastroFollowUpFK" style="width: 60%;" data-dojo-type="dijit/form/TextBox" disabled="true" />
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+                <div id="historicoMensagens">
+                </div>
+                <div style="display: none;" data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Turma On-Line'" id="paneTurmaFollowUpFK" open="true">
+                    <form name="formTurmaFollowUp" id="formTurmaFollowUp" data-dojo-type="dojox/form/Manager" style="width: 100%">
+                        <table class="Table">
+                            <tr>
+                                <td class="tdRight" style="width: 16%">
+                                    <label for="cd_produto_atual_follow">Produto: </label>
+                                </td>
+                                <td style="width: 34%" class="dojoTextBoxIECorrect">
+                                    <input required="false" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" id="cd_produto_atual_follow" name="cd_produto_atual_follow" />
+                                </td>
+                                <td class="tdRight" style="width: 16%">
+                                    <label for="cd_curso_atual_follow">Curso: </label>
+                                </td>
+                                <td style="width: 34%" class="dojoTextBoxIECorrect">
+                                    <input required="false" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" id="cd_curso_atual_follow" name="cd_curso_atual_follow" />
+                                </td>
+                            </tr>
+                            <tr>                                
+                                <td class="Pesquisa tdRight" style="width: 10%">
+                                    <input id="cd_turma_pesquisa" disabled="disabled" type="hidden" value="0" />
+                                    <label for="cbTurma" class="AlinhaDireita">Turma: </label>
+                                </td>
+                                <td style="width: 26%" class="nowrap" class="dojoTextBoxIECorrect">
+                                    <input id="cbTurma" style="width: 70%;" required="false" readonly="true" data-dojo-type="dijit/form/TextBox" />
+                                    <input id="pesProTurmaFK" style="min-width: 18px" />
+                                    <input id="limparProTurmaFK" style="min-width: 18px" />
+                                </td>
+                                <td class="tdRight" style="width: 16%;">
+                                    <label>Professor:</label>
+                                </td>
+                                <td style="width: 34%" class="dojoTextBoxIECorrect">
+                                    <select id="pesProfessor" name="pesProfessor" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;"></select>
+                                </td>
+                            </tr>
+                            
+                        </table>
+                    </form>
+                </div>
+                <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Mensagem'" id="paneMensagemFollowUpFK" open="true">
+                    <div style="min-height: 200px" id="mensagemFollowUppartial"></div>
+                </div>
+            </div>
+            <div data-dojo-type="dijit/layout/ContentPane" title="Escola" id="tabEscolasFollowUpFK">
+                <div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%" class="Alinhamento" id=" ">
+                        <tr style="width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkAcoesEscolaFollowUpFK"></div>
+                            </td>
+                            <td style="text-align: center; width: 50%">
+                                <input id="incluirEscolaFKFollowUpFK" />
+                            </td>
+                            <td style="text-align: center; width: 25%">
+                                <div style="text-align: right; width: 25%;"></div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" id="panelEscolasFKFollowUpFK" style="width: 100%; height: 415px; padding-left: 0px; padding: 0px; padding-top: 3px;">
+                    <div id="gridEscolasFollowUpFK" style="height: 410px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="containerCrud" style="width: 100%; padding-top: 05px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <div style="text-align: center">
+            <span id="divIncluirFollowUpPartial">
+                <input type="button" id="btnIncluirFollowUpPartial" title="incluir" /></span>
+            <span id="divAlterarFollowUpPartial" style="display: none;">
+                <input type="button" id="alterarFollowUpPartial" title="Alterar" /></span>
+            <span id="divExcluirFollowUpPartial" style="display: none;">
+                <input type="button" id="deleteFollowUpPartial" title="Excluir" /></span>
+            <span id="divClearFollowUpPartial">
+                <input type="button" id="btnLimparFollowUpFK" title="Limpar" /></span>
+            <span id="divCancelarFollowUpPartial" style="display: none;">
+                <input type="button" id="cancelarFollowUpPartial" title="Cancelar" /></span>
+            <span id="divFecharFollow">
+                <input type="button" id="btnFecharFollowUpPartial" title="Fechar" /></span>
+        </div>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+</div>
+
+@* criando a turmafk *@
+@*<div id="proTurmaFKFollow" data-dojo-type="dijit.Dialog" title="Pesquisar Turma" style="display: none; width: 800px; height: 590px;">
+    <input id="apresentadorMensagemFks" type="hidden">
+    <div class="apresentadorMsg" id="apresentadorMensagemTurmaFK" style="display: none;"></div>
+    <div style="width: 785px; height: 590px;">
+        @Html.Partial("../Coordenacao/TurmaFK")
+    </div>
+</div>
+*@
+@*<div id="proAluno" data-dojo-type="dijit.Dialog" title="Pesquisar Aluno" style="display: none; width: 700px; height: 590px;">
+    <div style="width: 685px;height: 590px;">
+        @Html.Partial("../Secretaria/AlunoFK")
+    </div>
+</div>*@
+
+<div id="proUsuario" data-dojo-type="dijit.Dialog" title="Pesquisar Usuário" style="display: none; width: 705px; height: 590px;">
+    <div style="width: 690px; height: 590px;">
+        @Html.Partial("../Usuario/UsuarioFK")
+    </div>
+</div>
+
+<div id="cadProspectFollowUpFK" data-dojo-type="dijit/Dialog" title="Pesquisa de Prospect" style="display: none; width: 700px; height: 590px;">
+    <div style="height: 600px; width: 685px">
+        @Html.Partial("../Secretaria/ProspectFK")
+    </div>
+</div>

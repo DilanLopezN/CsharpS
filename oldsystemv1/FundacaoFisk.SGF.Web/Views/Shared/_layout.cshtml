@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xml:lang="pt" lang="pt-br">
+<head>
+	<meta charset="utf-8" />
+    <meta http-equiv="Cache-control" content="no-cache">
+    <META HTTP-EQUIV="Expires" CONTENT="-1">
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+	<meta name="viewport" content="width=device-width" />
+	<title id="titulo">@ViewBag.Title</title>
+	@Styles.Render("~/Content/css/themes")
+	@Styles.Render("~/Content/css")
+	@RenderSection("head", false)
+    <script src="~/Content/themes/base/dojo1.8.5r/dojo/dojo.js" data-dojo-config="async: true, isDebug: true, parseOnLoad: true, locale: 'pt-br', name: 'SpellCheck', lang:'pt-br', packages: [{name: 'app', location: '@Url.Content("~/Scripts/SGF")'}]"></script>
+	@Scripts.Render("~/bundles/util")
+   	@Scripts.Render("~/bundles/jquery")
+	@RenderSection("scripts", false)
+    <script>
+        var _prum = [['id', '57ab77b3abe53d206ac9ba40'],
+                     ['mark', 'firstbyte', (new Date()).getTime()]];
+        (function () {
+            var s = document.getElementsByTagName('script')[0]
+              , p = document.createElement('script');
+            p.async = 'async';
+            p.src = '//rum-static.pingdom.net/prum.min.js';
+            s.parentNode.insertBefore(p, s);
+        })();
+        require(["dijit/form/FilteringSelect"]);
+        function mostrarVersao()
+        {
+            if (document.getElementById('appVersion').style.display == 'none')
+                document.getElementById('appVersion').style.display = "block"
+            else
+                document.getElementById('appVersion').style.display = 'none';
+        };
+    </script>
+    <style>
+        .cc-btn {
+            border-radius: 20px!important;
+        }
+        .cc-DISMISS {
+            display: none!important;
+        }
+        
+        .cc-revoke {
+            display: none !important;
+        
+        }
+    </style>
+    
+</head>
+<body class="claro" id="body" onload="getSessionTime()">
+    <div id="divCarregando" style="display: none">
+        <img id="imgCarregando" src="~/images/carregando.gif" />
+    </div>
+    <!-- Input para Caixa de Dialogo -->
+    <input type="hidden" id="retornoDialogo" value="" />
+    <input type="hidden" id="tipos" value="" />
+    <input type="hidden" id="_ER1" value='@EnderecoWeb' />
+    <input type="hidden" id="_ER0" value='@EnderecoRelativoWeb' />
+    <input type="hidden" id="_ERW" value='@EnderecoRelatorioWeb' />
+    <input type="hidden" id="_ES0" value='@EscolaSelecionada' />
+    <input type="hidden" id="_TK0" value='BEARER @ApiAccessToken' />
+    <input type="hidden" id="_EU0" value='@EscolasUsuario' />
+    <input type="hidden" id="_EUI" value='@EscolasUsuarioInativas' />
+    <input type="hidden" id="_IM0" value='@idMaster' />
+    <input type="hidden" id="_IM1" value='@masterGeral' />
+    <input type="hidden" id="_LU0" value='@LoginUsuario' />
+    <input type="hidden" id="_FCC" value='@idFechConsolidado' />
+
+    <div>
+        <div class="cabecalho_backgroud" style="height:92px">
+            <div style="min-width:790px;">
+                <div class="cabecalho_background_esc">
+                </div>
+                <div class="cabecalho_background_cent"></div>
+                <div class="cabecalho_background_dir"></div>
+            </div>
+        </div>
+        <div class="cabecalho_up">
+            <div class="cabecalho_up_outer">
+                <div class="logo_empresa">
+                    <a href="#" onclick="window.location=incluiNoCache('/');" style="display:block;margin: 35px 0 0 10px;"><img src="~/images/shared/logo_sgf_branco.png" border="0" /></a>
+                </div>
+                <div class="cabecalho_back">
+                    <strong><label id="empresaLogo" style="font-family: Arial;" class="corBranco">SISTEMA DE GEST&Atilde;O FISK</label></strong>
+                    <strong><label id="appVersion" style="font-family: Arial; display: none; width: 300px;" class="corBranco">  @AppVersion</label></strong>
+                </div>
+                <div class="cabecalho_background_outer" style="float:right">
+                    @*<div class="cabecalho_dir_super" style="text-align:right;"><img src="~/images/shared/logo_empresa_dir.png" style="margin-top:7px; margin-right:7px" border="0" /></div>*@
+                    <div class="cabecalho_dir_super" style="text-align:right;">
+                        <a href="#" onclick=mostrarVersao() style=" margin-top:7px; margin-right:7px"><img src="~/images/shared/logo_empresa_dir.png" border="0" /></a>
+                    </div>
+                    <div class="cabecalho_background_inf" style="float:right;">@Html.Partial("logout")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="Parte">
+        @Html.Partial("header")
+    </div>
+    <!-- start content-outer ........................................................................................................................START -->
+    <div id="content-outer">
+        <div id="content">
+            <div id="page-heading">
+                <!-- sessão do usuário-->
+                <div id="sessao">
+                    <table class="Table" style="width:100%">
+                        <tr>
+                            <td style="text-align: left; width: 20%;" class="nowrap"><label id="labelTitulos"></label></td>
+                            <td style="text-align: right; width: 80%;"><span id="counter">Sua sess&atilde;o expira em 59 min 59 seg</span></td>
+                        </tr>
+                    </table>
+                </div>
+                <!-- fim da sessão do usuário-->
+
+            </div>
+            <table class="Table" style="width:100%" id="content-table">
+                <tr>
+                    <th rowspan="3" class="sized"><img src="~/images/shared/side_shadowleft.jpg" width="20" height="300" alt="" /></th>
+                    <th class="topleft"></th>
+                    <td id="tbl-border-top">&nbsp;</td>
+                    <th class="topright"></th>
+                    <th rowspan="3" class="sized"><img src="~/images/shared/side_shadowright.jpg" width="20" height="300" alt="" /></th>
+                </tr>
+                <tr>
+                    <td id="tbl-border-left"></td>
+                    <td style="height:100%;">
+                        <!--  start content-table-inner ...................................................................... START -->
+                        <div id="content-table-inner">
+
+                            @RenderBody()
+                            <div class="clear"></div>
+
+                        </div>
+                        <!--  end content-table-inner ............................................END  -->
+                    </td>
+                    <td id="tbl-border-right"></td>
+                </tr>
+                <tr>
+                    <th class="sized bottomleft"></th>
+                    <td id="tbl-border-bottom">&nbsp;</td>
+                    <th class="sized bottomright"></th>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+    <div id="footer">
+        @Html.Partial("footer")
+    </div>
+    @RenderSection("scriptsBody", false)
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-66104609-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+    <script src="~/Scripts/LGPD/cookieconsent.min.js"></script>
+    <script>
+        var cc = new CookieConsent({
+            layout: 'my-cool-layout',
+            layouts: {
+                'my-cool-layout': '<div class="my-cool-layout"></div>',
+            },
+
+            type: 'opt-in',
+            palette: {
+                popup: { background: "#eaf7f7", text: "#5c7291" },
+                button: { background: "#F00000", text: "#ffffff" }
+            },
+            content: {
+                header: 'Cookies used on the website!',
+                message: 'Usamos cookies e coletamos seus dados como parte dos serviços oferecidos para melhorar sua experiência de navegação. Ao clicar em ACEITAR você concorda com os nossos Termos de uso, consentindo com o tratamento de seus dados.',
+                allow: 'Aceitar',
+                link: 'Termos de uso, política de privacidade e cookies',
+                href: 'https://downloads.fisk.com.br/restrita/fisk/Juridico/LGPD/TERMO_USO_SITE_FISK.pdf',
+                target: '_blank',
+            },
+            revokable: false,
+            cookie: {
+                name: "cookieconsent_sgf",
+                expiryDays: 360,
+                domain: window.location.hostname
+            }
+
+        });
+        cc.on("popupOpened", function () {
+            //console.log('<em>popupOpened</em> evento disparado');
+        })
+        cc.on("popupClose", function () {
+            //console.log('<em>popupClose</em> evento disparado');
+        })
+        cc.on("initialized",
+            function (statuses) {
+                //console.log('<em>initialized</em> evento disparado com status: ')
+                Object.keys(statuses).forEach(status => {
+                    // console.log('<em>' + status + ':</em> <em>' + statuses[status] + '</em>');
+                });
+            });
+        cc.on("statusChanged",
+            function (cookieName, status, chosenBefore) {
+                /* console.log('<em>statusChanged</em> evento disparado com status <em>' +
+                     status +
+                     '</em> for cookie <em>' +
+                     cookieName +
+                     '</em>');*/
+            });
+        cc.on("revokeChoice",
+            function () {
+                //console.log('<em>revokeChoice()</em> evento disparado');
+            });
+        cc.on("error", console.error);
+
+
+
+        var elem = document.createElement("img");
+        elem.setAttribute("src", "../images/logo-Fisk3.png");
+        elem.setAttribute("height", "60");
+        elem.setAttribute("width", "100");
+        var el = document.getElementsByClassName("cc-banner");
+        if (hasValue(el) && el.length > 0) {
+
+            el[0].insertBefore(elem, el[0].firstChild);
+        }
+
+
+            //el[0].appendChild(elem);
+    </script>
+</body>
+</html>

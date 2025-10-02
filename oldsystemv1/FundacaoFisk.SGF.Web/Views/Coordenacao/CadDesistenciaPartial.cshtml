@@ -1,0 +1,217 @@
+﻿<script type="text/javascript">
+
+
+    require([
+            "dojo/NodeList-traverse",
+            "dijit/form/Select",
+            "dojo/_base/event",
+            "dojox/validate/web",
+            "dojox/validate/check",
+            "dijit/form/NumberTextBox",
+            "dijit/form/ValidationTextBox",
+            "dijit/form/SimpleTextarea",
+            "dijit/form/Form",
+            "dojox/form/Manager",
+            "dijit/form/DateTextBox"
+    ]);
+</script>
+<input id="idOrigenPesquisaTurmaFKDesistencia" type="hidden" />
+<div class="corpo_interno" style="max-width: 100%; height: 77%; max-height: 88%">
+    <div class="scroll" style="height: 470px">
+        <div class="apresentadorMsg" id="apresentadorMensagemCadDesistencia" style="display: none;"></div>
+        <div data-dojo-type="dijit/layout/TabContainer" id="tabContainerDesistencia" class="Abas" style="min-height: 450px; height: 30%;">
+            <div data-dojo-type="dijit/layout/ContentPane" id="tabPrincipal" title="Principal" style="height: 20%;">
+                <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" class="Formulario" id="formDesistencia">
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Geral'" id="geral" open="true">
+                        <input id="cdDesistencia" hidden style="display: none" />
+                        <input id="cdAlunoTurma" hidden style="display: none" />
+                        <table class="Table">
+                            <tr>
+                                <td class="nowrap dojoTextBoxIECorrect AlinhaDireita" style="width: 5%;">
+                                    <label>Tipo:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 50%;" colspan="3">
+                                    <select id="cbTipoCad" name="cbTipoCad" data-dojo-type="dijit/form/FilteringSelect" required="true" style="width: 100%;"></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita" style="width: 5%;">
+                                    <label>Turma:</label>
+                                </td>
+                                <td class="nowrap dojoTextBoxIECorrect" colspan="3">
+                                    <input id="cdTurmaCad" hidden style="display: none" />
+                                    <input id="nome_turma" name="nome_turma" style="width: 85%;" required="true" data-dojo-type="dijit/form/ValidationTextBox" readonly="true" />
+                                    <input id="pesTurmaFKCadDesistencia" style="min-width: 18px; text-align: right" />
+                                    <input type="text" id="limparTurmaCad" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita" style="width: 5%;">
+                                    <label>Aluno:</label></td>
+                                <td class="nowrap dojoTextBoxIECorrect" style="width: 75%;">
+                                    <input id="cdAlunoCad" hidden style="display: none" />
+                                    <input id="cdAlunoDesistencia" hidden style="display: none" />
+                                    <input id="cdResponsavelCto" hidden style="display: none" />
+                                    <input id="cdContrato" hidden style="display: none" />
+                                    <input id="nome_aluno" name="nome_aluno" style="width: 82%;" required="true" data-dojo-type="dijit/form/ValidationTextBox" readonly="true" />
+                                    <input id="pesAlunoFKCad" style="min-width: 18px; text-align: right" />
+                                    <input type="text" id="limparAlunoCad" />
+                                </td>
+                                <td class="tdRight nowrap" style="width: 14%;">
+                                    <label for="ckAlunoAtivo">Aluno Ativo:</label>
+                                </td>
+                                <td style="width: 24%;">
+                                    <input type="checkbox" id="ckAlunoAtivo" name="ckAlunoAtivo" required="false" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="CorpoFormAux nowrap AlinhaDireita" style="width: 5%;">
+                                    <label>Data:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" colspan="3">
+                                    <table class="Table">
+                                        <tr>
+                                            <td class="dojoTextBoxIECorrect" style="width: 45%;">
+                                                <input
+                                                    type="text"
+                                                    style="width: 100%;"
+                                                    data-dojo-type="dijit/form/DateTextBox"
+                                                    name="dtaDesistencia"
+                                                    id="dtaDesistencia"
+                                                    onkeypress="mascaraDataHora(event, this)" maxlength="10"
+                                                    required="true" />
+                                            </td>
+                                            <td class="CorpoFormAux AlinhaDireita" style="width: 5%;">
+                                                <label>Motivo:</label>
+                                            </td>
+                                            <td class="CorpoFormAux AlinhaDireita" style="width: 45%;">
+                                                <select id="cbMotivoCad" name="cbMotivoCad" required="true" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" maxlength="128"></select>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+                <div data-dojo-type="dijit/TitlePane" id="tagObs" data-dojo-props="title: 'Observação'" open="true">
+                    <textarea id="des_obs" name="des_obs" data-dojo-type="dijit/form/SimpleTextarea" rows="12" cols="50" style="width: 100%;"></textarea>
+                </div>
+            </div>
+
+            <div data-dojo-type="dijit/layout/ContentPane" id="pnTitulo" title="Títulos" style="height: 500px;">
+                <div style="height: 70%;">
+                    <div id="gridTituloDesistencia" style="height: 100%;"></div>
+                </div>
+                <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" class="Formulario" id="formLiquidarTitulos">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td colspan="4">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td class="dojoTextBoxIECorrect AlinhaDireita" style="width: 19%;">
+                                            <label>O que deseja fazer?</label>
+                                        </td>
+                                        <td class="CorpoFormAux" style="width: 100%;">
+                                            <input id="cbEscolhaCad" style="width: 100%;" data-dojo-type="dijit/form/FilteringSelect" />
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </table>
+                            </td>
+
+                        </tr>
+                        <tr id="localMovto" style="display: none">
+                            <td class="dojoTextBoxIECorrect AlinhaDireita" style="width: 19%">
+                                <label class="AlinhaDireita nowrap">Local de Movimento:</label>
+                            </td>
+                            <td style="width: 30%;" class="dojoTextBoxIECorrect">
+                                <input id="des_local" data-dojo-type="dijit/form/FilteringSelect" name="des_local" style="width: 100%;" />
+                            </td>
+                            <td class="CorpoFormAux" style="width: 15%">
+                                <label class="AlinhaDireita nowrap">Tipo Liquidação:</label>
+                            </td>
+                            <td class="dojoTextBoxIECorrect" style="width: 50%;">
+                                <input id="cbLiquidacaoCad" data-dojo-type="dijit/form/FilteringSelect" name="cbLiquidacaoCad" style="width: 98%;" />
+                            </td>
+                        </tr>
+                    </table>
+                    <div data-dojo-type="dijit/TitlePane" id="tgChequeDesistencia" data-dojo-props="title: 'Dados do Cheque'" open="true" style="display: none;">
+                        <input id="cd_cheque_trans" type="hidden" />
+                        <table class="Table">
+                            <tr>
+                                <td class="tdRight" style="width: 15%">Emitente:
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 85%" colspan="3">
+                                    <input id="emissorChequeDesistencia" name="emissorChequeDesistencia" style="width: 100%;" data-dojo-type="dijit/form/ValidationTextBox">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdRight" style="width: 15%">Banco:
+                                </td>
+                                <td style="width: 35%" class="dojoTextBoxIECorrect">
+                                    <select id="bancoChequeDesistencia" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" name="bancoChequeDesistencia"></select>
+                                </td>
+                                <td class="tdRight" style="width: 15%">Agência:</td>
+                                <td style="width: 35%" class="dojoTextBoxIECorrect nowrap">
+                                    <input id="nomeAgenciaChequeDesistencia" name="nomeAgenciaChequeDesistencia" style="width: 100%;" data-dojo-type="dijit/form/ValidationTextBox" maxlength="8">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdRight" style="width: 15%">Nro. da Agência:
+                                </td>
+                                <td style="width: 35%" class="dojoTextBoxIECorrect nowrap">
+                                    <input id="nroAgenciaChequeDesistencia" name="nroAgenciaChequeDesistencia" onkeypress="mascaraInt(document.getElementById('nroAgenciaChequeDesistencia'));"
+                                        style="width: 80%;" data-dojo-type="dijit/form/NumberTextBox" maxlength="8" data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'#'}">
+                                    <input id="dgAgenciaChequeDesistencia" name="dgAgenciaChequeDesistencia" maxlength="2" style="width: 18%;" data-dojo-type="dijit/form/NumberTextBox" data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'#'}">
+                                </td>
+                                <td class="tdRight" style="width: 15%">Conta Corrente:
+                                </td>
+                                <td style="width: 35%" class="dojoTextBoxIECorrect nowrap">
+                                    <input id="nroContaCorrenteChequeDesistencia" name="nroContaCorrenteChequeDesistencia" onkeypress="mascaraInt(document.getElementById('nroContaCorrenteChequeDesistencia'));"
+                                        style="width: 80%;" data-dojo-type="dijit/form/NumberTextBox" maxlength="8" data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'#'}" />
+                                    <input id="dgContaCorrenteChequeDesistencia" name="dgContaCorrenteChequeDesistencia" style="width: 18%;" maxlength="2"
+                                        data-dojo-type="dijit/form/NumberTextBox" data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'#'}">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdRight" style="width: 15%;">
+                                    <label>Bom para:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 35%;">
+                                    <input id="dtChequeChequeDesistencia" onkeypress="mascaraDataHora(event, this)" name="dtChequeChequeDesistencia"
+                                        class="alignDojoData" style="width: 100%;" data-dojo-type="dijit.form.DateTextBox" />
+                                </td>
+                                <td class="tdRight" style="width: 15%">Nro. Cheque:
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 35%">
+                                    <input id="nroPrimeiroChequeChequeDesistencia" name="nroPrimeiroChequeChequeDesistencia" style="width: 100%;" maxlength="10" data-dojo-type="dijit/form/NumberTextBox" data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'#'}" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="containerCrud" style="width: 100%; padding-top: 1px;">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <div style="text-align: center">
+            <span id="divIncluirDesistencia">
+                <input type="button" id="incluirDesistencia" title="incluir" /></span>
+            <span id="divAlterarDesistencia" style="display: none;">
+                <input type="button" id="alterarDesistencia" title="Alterar" /></span>
+            <span id="divExcluirDesistencia" style="display: none;">
+                <input type="button" id="deleteDesistencia" title="Excluir" /></span>
+            <span id="divClearDesistencia">
+                <input type="button" id="limparDesistencia" title="Limpar" /></span>
+            <span id="divCancelarDesistencia" style="display: none;">
+                <input type="button" id="cancelarDesistencia" title="Cancelar" /></span>
+            <span id="divFecharDesistencia">
+                <input type="button" id="fecharDesistencia" title="Fechar" /></span>
+        </div>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+</div>

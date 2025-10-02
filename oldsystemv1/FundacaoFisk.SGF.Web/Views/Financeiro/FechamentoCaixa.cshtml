@@ -1,0 +1,286 @@
+﻿@{
+    ViewBag.Title = "Fechamento de Caixa";
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/fechamentoCaixa")
+    @Scripts.Render("~/bundles/usuarioFK")
+    <link rel="stylesheet" href="~/Content/themes/base/dojo1.8.5r/dgrid/css/dgrid.css">
+    <link rel="stylesheet" href="~/Content/themes/base/dojo1.8.5r/dgrid/css/skins/claro.css">
+    <link rel="stylesheet" href="~/Content/themes/base/dojo1.8.5r/my/examples.css">
+}
+
+@section scriptsBody{
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Fechamento de Caixa";
+        
+        //**** Requerires para a Tabulação ****\\
+        require([
+                "dijit/form/TextBox",
+                "dijit/Dialog",
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager",
+                "dojox/charting/plot2d/Columns",
+                "dojox/charting/axis2d/Default",
+                "dojox/charting/widget/Legend",
+                "dojox/charting/themes/MiamiNice",
+                "dojox/grid/LazyTreeGrid",
+                "dijit/tree/ForestStoreModel",
+                "dojo/data/ItemFileWriteStore",
+                "dijit/form/DateTextBox",
+                "dijit/form/FilteringSelect"
+        ]);
+        montarFechamentoCaixa('@Permissoes');
+
+        //Montagem dos scripts necessários para o componente do dgrid e dstore
+    	var dojoConfig;
+    	(function () {
+    	    var baseUrl = location.pathname.replace(/\/[^/]+$/, '/'),
+                dgridUrl = '~/Content/themes/base/dojo1.8.5r/';
+    	    dojoConfig = {
+    	        async: 1,
+    	        cacheBust: '20160108',
+    	        // Load dgrid and its dependencies from a local copy.
+    	        // If we were loading everything locally, this would not
+    	        // be necessary, since Dojo would automatically pick up
+    	        // dgrid as a sibling of the dojo folder.
+    	        packages: [
+                    { name: 'dgrid', location: dgridUrl + 'dgrid' },
+                    { name: 'dstore', location: dgridUrl + 'dstore' },
+                    { name: 'my', location: dgridUrl + 'my' }//baseUrl + '/my' }
+    	        ]
+    	    };
+    	}());
+	</script>
+}
+<div class="apresentadorMensagem" id="apresentadorMensagem" style="display:none;"></div>
+
+<div>
+    <div class="EspacoCaixa caixaPesquisa">
+        <input type="hidden" id="setValuePermissoes" value="" />
+        <table class="Table">
+            <tr>
+                <td id="tbl-border-left"></td>
+                <td style="height: 100%;">
+                    <!--  start content-table-inner ...................................................................... START -->
+                    <div id="content-table-inner">
+                        <div class="EspacoCaixa caixaPesquisa">
+                            <table class="Table">
+                                <tr>
+                                    <td class="tdRight" style="width: 10%">
+                                        <label class="AlinhaDireita;" for="categoria">Categoria:</label>
+                                    </td>
+                                    <td style="width: 20%;" class="dojoTextBoxIECorrect">
+                                        <input id="categoria" name="categoria" data-dojo-type="dijit/form/FilteringSelect" style="width: 70%;">
+                                    </td>
+                                    <td class="tdRight" style="width: 10%;">
+                                        <label for="professor">Usuário:</label>
+                                    </td>
+                                    <td style="width: 25%;" class="dojoTextBoxIECorrect nowrap">
+                                        <input type="hidden" id="cdFkUsuario" />
+                                        <input type="text" id="no_usuario" name="no_usuario" style="width: 60%;" data-dojo-type="dijit/form/TextBox" disabled="disabled" />
+                                        <input id="pesUsuarioFK" style="min-width: 18px" />
+                                    </td>
+                                    <td class="tdRight" style="width: 10%;">
+                                        <label for="dataFechamento">Data:</label>
+                                    </td>
+                                    <td style="width: 25%;" class="dojoTextBoxIECorrect nowrap">
+                                        <input type="text" id="dataFechamento" name="dataFechamento"
+                                               required="required"
+                                               class="alignDojoData"
+                                               data-dojo-type="dijit.form.DateTextBox"
+                                               onkeypress="mascaraDataHora(event, this)"
+                                               style="width: 100%;" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div style="padding-top: 10px">
+                            <div class="linha_acoes" style="width: 100%"></div>
+                            <table style="width: 100%" class="Alinhamento">
+                                <tr style="width: 100%">
+                                    <td style="text-align: left; width: 25%">
+                                        <div class="linkAcoes" id="linkAcoes"></div>
+                                    </td>
+                                    <td style="text-align: center; width: 50%">
+                                        <input id="relatorioA" title="Relatório" />
+                                        <input id="relatorioS" title="Relatório" />
+                                    </td>
+                                    <td style="text-align: right; width: 25%">
+                                        <span class="linkSelecionados" id="linkSelecionados"></span>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="linha_acoes" style="width: 100%"></div>
+                        </div>
+                        <div style="padding-top:10px">
+                            <table style="width: 10%">
+                                <tr style="width: 100%">
+                                    <td style="width: 5%" class="dojoTextBoxIECorrect">
+                                        <input type="checkbox" id="ckZerados" name="ckZerados" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                    </td>
+                                    <td style="width: 25%" class="nowrap">
+                                        <label  for="ckZerados">Mostrar locais sem movimentação</label>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+		    			<div style="padding-top:10px" data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Resumo das Movimentações de Caixa'" id="tagSaldoTipo" open="true" >
+		    				<input id="registryGridSaldoTipo" data-dojo-type="dijit/form/TextBox" style="display:none" />
+		    				<div style="height: 150px;" id="divSaldoTipo">
+                                <div id="gridSaldoTipo" style="height: 100%;width:100%;"></div>
+		    				</div>
+		    			</div>
+		    			<div style="padding-top:5px" data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Detalhe por Caixa'" id="tagSaldoCaixa" open="true" >
+                            <input id="registryGridSaldoCaixa" data-dojo-type="dijit/form/TextBox" style="display:none" />
+		    				<div style="height: 350px"; id="divSaldoCaixa">
+		    					<div id="gridSaldoCaixa" style="height: 100%;width:100%;"></div>
+		    				</div>
+		    			</div>
+		    			<div style="padding-top:5px" data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Observação de detalhamento'" id="tgObsCaixa" open="true" onblur="ObsSaldoCaixa()">
+								<textarea id="descObsCaixa" name="descObsCaixa" data-dojo-type="dijit/form/SimpleTextarea" rows="5" style="width: 100%;"></textarea>
+						</div>
+		    		</div>
+		    		<!--  end content-table-inner ............................................END  -->
+		    	</td>
+		    	<td id="tbl-border-right"></td>
+		    </tr>
+        </table>
+    </div>
+</div>
+
+<div id="cadAjusteContaCorrente" data-dojo-type="dijit/Dialog" class="Dialogo" onHide="fecharDialogo()" style="max-width: 600px; height: 500px;" title="Confirmacao de Acerto Fechamento de Caixa">
+    <div class="sessao_form" style="margin-left: -15px;">
+        <span id="counter_form">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+    <form data-dojo-type="dojox/form/Manager" id="formAjusteContaCorrente" data-dojo-id="formAjusteContaCorrente" enctype="multipart/form-data" class="Formulario">
+        <div class="corpo_interno" style="max-width: 96%; height: 88%; max-height: 88%">
+            <div class="scroll" style="width: 100%; height: 380px;">
+                <div class="apresentadorMsg" id="apresentadorMensagemAjusteContaCorrente" style="display: none;"></div>
+                <div data-dojo-type="dijit/TitlePane" id="tabPrincipal" data-dojo-props="title: 'Principal'" open="true">
+                    <input type="hidden" id="cdContaCorrente" />
+                    <input type="hidden" id="oldValueAjuste" />
+                    <input type="hidden" id="dataId" />
+                    <input type="hidden" id="objAjuste" />
+                    <table class="Table">
+                        <tr>
+                            <td class="CorpoFormAux AlinhaDireita" style="width: 1%">
+                                <label>Origem: </label>
+                            </td>
+                            <td colspan="3" style="width: 30%" class="dojoTextBoxIECorrect">
+                                <select id="cbOrigemAjusteCad" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" name="cbOrigemCad" required="true"></select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="CorpoFormAux AlinhaDireita" style="width: 1%;">
+                                <label>Destino: </label>
+                            </td>
+                            <td colspan="3" style="width: 30%" class="dojoTextBoxIECorrect">
+                                <select id="cbDestinoAjusteCad" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" required="false"></select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="Pesquisa tdRight" style="width: 1%">
+                                <label class="AlinhaDireita nowrap">Tipo Liquidação:</label>
+                            </td>
+                            <td colspan="3" style="width: 30%" class="dojoTextBoxIECorrect">
+                                <input id="cbAjusteLiquidacao" name="cbAjusteLiquidacao" data-dojo-type="dijit/form/FilteringSelect" required="required" style="width: 100%;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 5%;">
+                                <label>Data:</label>
+                            </td>
+                            <td class="nowrap dojoTextBoxIECorrect" style="width: 30%;">
+                                <input id="dtaAjusteCc"
+                                       type="text"
+                                       required="true"
+                                       style="width: 100%;"
+                                       data-dojo-type="dijit/form/DateTextBox" name="dtaAjusteCc"
+                                       onkeypress="mascaraDataHora(event, this)" maxlength="10" />
+                            </td>
+                            <td class="CorpoFormAux AlinhaDireita" style="width: 0px;">
+                                <label>Entrada/Saída:</label>
+                            </td>
+                            <td>
+                                <input id="idTipoCad" name="idTipoCad" required="true" style="width: 100%;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 5%;">
+                                <label style="margin-left: 2%">Movimento:</label>
+                            </td>
+                            <td>
+                                <select id="idMovimentoAjusteCad" name="idMovimentoAjusteCad" data-dojo-type="dijit/form/FilteringSelect" required="true" style="width: 98%;"></select>
+                            </td>
+                            <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 5%;">
+                                <label>Valor:</label>
+                            </td>
+                            <td class="dojoTextBoxIECorrect" style="width: 30%;">
+                                <input type="text"
+                                       name="valContaAjusteCorrente"
+                                       data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'##.00'}"
+                                       id="valContaAjusteCorrente" maxlength="10"
+                                       style="width: 100%; margin-top: 3px;" size="34"
+                                       required="true"
+                                       onkeypress="mascaraFloat(document.getElementById('valContaAjusteCorrente'));"
+                                       data-dojo-type="dijit/form/NumberTextBox" />
+                            </td>
+                        </tr>
+                        <!--  <tr>
+                <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 5%;">
+                    <label>Plano:</label>
+                </td>
+                <td colspan="3" class="nowrap">
+                    <input type="hidden" id="cdFkPlanoContaCad" />
+                    <input id="dcPlanoCad" name="dcPlanoCad" size="125" style="width: 78.5%;" required="true" data-dojo-type="dijit/form/ValidationTextBox" readonly="true" />
+                    <input id="pesPlanoCad" style="min-width: 18px; width: 100%;" />
+                    <input id="limparPlanoContas" style="min-width: 18px; width: 100%;" />
+                </td>
+            </tr>-->
+                    </table>
+
+                    <div data-dojo-type="dijit/TitlePane" id="tagObs" data-dojo-props="title: 'Observação'" open="true">
+                        <textarea id="desObsAjusteCc" name="desObsAjusteCc" data-dojo-type="dijit/form/SimpleTextarea" rows="6" cols="50" style="width: 100%;"></textarea>
+                    </div>
+                </div>
+                </div>
+                <div class="containerCrud" style="width: 100%; padding-top: 20px;">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div style="text-align: center">
+                        <span id="divIncluirContaCorrente">
+                            <input type="button" id="incluirAjusteContaCorrente" title="incluir" />
+                        </span>
+                        @*<span id="divAlterarContaCorrente" style="display: none;">
+                            <input type="button" id="alterarContaCorrente" title="Alterar" />
+                        </span>
+                        <span id="divExcluirContaCorrente" style="display: none;">
+                            <input type="button" id="deleteContaCorrente" title="Excluir" />
+                        </span>*@
+                        @*<span id="divClearContaCorrente">
+                            <input type="button" id="limparContaCorrente" title="Limpar" />
+                        </span>*@
+                        @*<span id="divCancelarContaCorrente" style="display: none;">
+                            <input type="button" id="cancelarContaCorrente" title="Cancelar" />
+                        </span>*@
+                        <span id="divFecharContaCorrente">
+                            <input type="button" id="fecharAjusteContaCorrente" title="Fechar" />
+                        </span>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="proUsuario" data-dojo-type="dijit.Dialog" title="Pesquisar Usuário" style="display: none; width: 705px; height: 590px;">
+         <div style="width: 690px;height: 590px;">
+            @Html.Partial("../Usuario/UsuarioFK")
+        </div>
+    </div>

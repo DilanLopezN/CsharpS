@@ -1,0 +1,95 @@
+﻿@{
+    ViewBag.Title = "Relatório de Uso";
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+
+
+@section scriptsBody{
+    @Scripts.Render("~/bundles/reportLoginEscola")
+
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Relatório de Uso";
+
+        //**** Requerires para a Tabulação ****\\
+        require([
+                "dojo",
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager",
+                "dijit/form/RadioButton",
+                "dojo/data/ObjectStore",
+                "dijit/form/FilteringSelect",
+                "dijit/form/DateTextBox",
+                "dijit/Dialog",
+                "dojo/parser"
+        ]);
+
+        montarTelaLogin();
+    </script>
+}
+
+<div class="apresentadorMensagem" id="apresentadorMensagem" style="display: none;"></div>
+<div>
+    <div class="EspacoCaixa caixaPesquisa">
+        <form data-dojo-type="dojox/form/Manager" id="formRptEstoque" data-dojo-id="formRptContaCorrente" enctype="multipart/form-data" class="Formulario">
+            <table class="Table">
+                <tr>
+                    <td style="width: 95%;">
+                        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Filtros'" id="panePesqGeral" open="true">
+                            <table class="Table">
+                                <tr>
+                                    <td class="tdRight nowrap" style="width: 10%;">
+                                        <label for="dtAnalise">Data Análise:</label>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="dtAnalise"
+                                               name="dtAnalise"
+                                               data-dojo-type="dijit.form.DateTextBox"
+                                               class="alignDojoData"
+                                               required ="required"
+                                               onkeypress="mascaraDataHora(event, this)"
+                                               maxlength="10" />
+                                        <input type="text" id="hhAnalise"
+                                               data-dojo-props="constraints: { timePattern: 'HH:mm' }"
+                                               name="hhAnalise"
+                                               required ="required"
+                                               data-dojo-type="dijit/form/TimeTextBox"
+                                               style="width: 85px;" />
+                                    </td>
+
+                                    <td class="tdRight nowrap" style="width: 5%;">
+                                        <label>Efetuaram login:</label>
+                                    </td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 20%;">
+                                        <select id="idLogin" name="idLogin" data-dojo-type="dijit/form/FilteringSelect" required="required" style="width: 100%;"></select>
+                                    </td>
+                                    <td class="tdRight nowrap" style="width: 5%;">
+                                        <label>Matriculas após data informada:</label>
+                                    </td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 20%;">
+                                        <select id="idMatricula" name="idMatricula" data-dojo-type="dijit/form/FilteringSelect" required="required" style="width: 100%;"></select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div style="padding-top: 10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%" class="Alinhamento">
+            <tr style="width: 100%">
+                <td style="text-align: center; width: 50%">
+                    <input type="button" id="relatorio" title="Relatório" />
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+</div>

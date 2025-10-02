@@ -1,0 +1,948 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D7E402D0-53F8-485F-B006-2165C555F379}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FundacaoFisk.SGF.Web.Services.ApresentadorRelatorio</RootNamespace>
+    <AssemblyName>FundacaoFisk.SGF.Web.Services.ApresentadorRelatorio</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Componentes.ApresentadorRelatorio">
+      <HintPath>..\lib\Componentes\Componentes.ApresentadorRelatorio.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericBusiness">
+      <HintPath>..\lib\Componentes\Componentes.GenericBusiness.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericController">
+      <HintPath>..\lib\Componentes\Componentes.GenericController.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericDataAccess, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Componentes\Componentes.GenericDataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericModel">
+      <HintPath>..\lib\Componentes\Componentes.GenericModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.Utils">
+      <HintPath>..\lib\Componentes\Componentes.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Types, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SqlServer.Types.14.0.314.76\lib\net40\Microsoft.SqlServer.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controllers\OpenXmlWordHelpers.cs" />
+    <Compile Include="DataSources\SgfDev_0000DataSet.cs">
+      <DependentUpon>SgfDev_0000DataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="DataSources\SgfDev_0000DataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SgfDev_0000DataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\RelatorioController.cs" />
+    <Compile Include="SqlServerTypes\Loader.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>5</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.Word">
+      <Guid>{00020905-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>8</VersionMajor>
+      <VersionMinor>5</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FundacaoFisk.SGF.GenericModel\FundacaoFisk.SGF.GenericModel.csproj">
+      <Project>{452b08af-98c4-4036-81d9-537bc4818afd}</Project>
+      <Name>FundacaoFisk.SGF.GenericModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Services.CNAB\FundacaoFisk.SGF.Web.Services.CNAB.csproj">
+      <Project>{d583454b-1d8d-4636-be4d-ca57f47740bb}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.CNAB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Services.InstituicaoEnsino\FundacaoFisk.SGF.Web.Services.InstituicaoEnsino.csproj">
+      <Project>{cd7be3b3-f32b-4ac4-88f2-ad819c6be5f1}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.InstituicaoEnsino</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Utils\FundacaoFisk.SGF.Utils.csproj">
+      <Project>{00a8d0a9-82e8-410b-86bd-dd2b80245e95}</Project>
+      <Name>FundacaoFisk.SGF.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Service.Biblioteca\FundacaoFisk.SGF.Web.Service.Biblioteca.csproj">
+      <Project>{ee7e3c57-2ccc-4982-9eb1-fbecf14713e3}</Project>
+      <Name>FundacaoFisk.SGF.Web.Service.Biblioteca</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Service.EmailMarketing\FundacaoFisk.SGF.Web.Service.EmailMarketing.csproj">
+      <Project>{4451b1a4-45f8-42ed-ae4a-89c73048f4ca}</Project>
+      <Name>FundacaoFisk.SGF.Web.Service.EmailMarketing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Auth\FundacaoFisk.SGF.Web.Services.Auth.csproj">
+      <Project>{bd8f4660-62a1-410a-90fd-f402a7e5bf08}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Auth</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Coordenacao\FundacaoFisk.SGF.Web.Services.Coordenacao.csproj">
+      <Project>{e91c3699-46d7-4199-8450-1579c6ac9658}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Coordenacao</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Empresa\FundacaoFisk.SGF.Web.Services.Empresa.csproj">
+      <Project>{1c4c8266-2d64-425e-8161-812a055d0b8b}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Empresa</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Financeiro\FundacaoFisk.SGF.Web.Services.Financeiro.csproj">
+      <Project>{b4a36be3-38a0-4cc7-90ad-660e591d7f6a}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Financeiro</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Log\FundacaoFisk.SGF.Web.Services.Log.csproj">
+      <Project>{7a66a3d2-02e3-454b-9ebd-a0e0b672d6b9}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Log</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Pessoa\FundacaoFisk.SGF.Web.Services.Pessoa.csproj">
+      <Project>{b3845b50-1ab4-46ba-ad0c-0fcd6b9bd120}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Pessoa</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Secretaria\FundacaoFisk.SGF.Web.Services.Secretaria.csproj">
+      <Project>{f8ebe765-4eec-448c-ac49-60b846f5afaf}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Secretaria</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Usuario\FundacaoFisk.SGF.Web.Services.Usuario.csproj">
+      <Project>{e177ace4-c36a-4f5f-88f1-8ac1c8aa24d0}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Usuario</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="DataSources\SgfDev_0000DataSet.xsc">
+      <DependentUpon>SgfDev_0000DataSet.xsd</DependentUpon>
+    </None>
+    <None Include="DataSources\SgfDev_0000DataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>SgfDev_0000DataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="DataSources\SgfDev_0000DataSet.xss">
+      <DependentUpon>SgfDev_0000DataSet.xsd</DependentUpon>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Properties\DataSources\Componentes.GenericModel.CommonEntityProperty.datasource" />
+    <None Include="Properties\DataSources\Componentes.GenericModel.ComponentesWebContext.datasource">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Properties\DataSources\Componentes.GenericModel.DbEntityEntryComp.datasource" />
+    <None Include="Properties\DataSources\Componentes.GenericModel.DefinicaoRelatorio.datasource" />
+    <None Include="Properties\DataSources\Componentes.GenericModel.Extensions.datasource" />
+    <None Include="Properties\DataSources\Componentes.GenericModel.IDescribableEntity.datasource" />
+    <None Include="Properties\DataSources\Componentes.GenericModel.SysGrupo.datasource" />
+    <None Include="Properties\DataSources\Componentes.GenericModel.SysMenuComp.datasource" />
+    <None Include="Properties\DataSources\Componentes.GenericModel.TO.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AcaoFollowUp.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Aditamento+TipoAditamento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Aditamento+TipoDataInicioEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Aditamento+TipoPagamentoAditamento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Aditamento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AditamentoBolsa.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AliquotaUF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Aluno+SituacaoAluno.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Aluno.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AlunoAulaReposicao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AlunoBolsa.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AlunoEvento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AlunoMotivoMatricula.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AlunoTurma+FiltroSituacaoAlunoTurma.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AlunoTurma+SituacaoAlunoTurma.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AlunoTurma.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AlunoTurmaEscolas.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AlunoTurmaPPT.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AnoEscolar.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Atividade.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AtividadeAluno.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AtividadeCurso.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AtividadeEscolaAtividade.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AtividadeExtra+EnumTipoAtividade.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AtividadeExtra.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AtividadeProspect.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AtividadeRecorrencia+EnumTipoRecorrencia.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AtividadeRecorrencia.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Atributos.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AulaPersonalizada.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AulaPersonalizadaAluno.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AulaReposicao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Avaliacao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AvaliacaoAluno.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AvaliacaoAlunoParticipacao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AvaliacaoCurso.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AvaliacaoParticipacao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AvaliacaoParticipacaoVinc.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.AvaliacaoTurma.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.BaixaAutomatica.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.BaixaTitulo+DiasPoliticaAntecipacao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.BaixaTitulo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Banco.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Biblioteca.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.CalendarioAcademico.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.CalendarioEvento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.CargaProfessor.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.CarteiraCnab+TipoColunas.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.CarteiraCnab+TipoImpressao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.CarteiraCnab.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.CFOP.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Cheque.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ChequeBaixa.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ChequeTransacao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Children.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Circular.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ClasseTelefoneSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Cnab+Bancos.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Cnab+StatusCnab.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Cnab+TipoCnab.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Cnab.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Conceito.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ContaCorrente+Tipo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ContaCorrente+TiposLiquidacao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ContaCorrente.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Contrato+TipoCKMatricula.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Contrato+TipoMatricula.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Contrato+TituloDescontoParcela.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Contrato.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ControleFaltas.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ControleFaltasAluno.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.CriterioAvaliacao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Curso.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.CursoContrato.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.CursosContrato.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.DadosNF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.DescontoContrato.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.DescontoTituloCNAB.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Desistencia.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.DespesaTituloCnab.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.DiarioAula+PresencaProfesssor.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.DiarioAula+StatusDiarioAula.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.DiarioAula.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.DiasPolitica.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.DocumentoDigitalizadoEditUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Duracao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Emprestimo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.EnderecoSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Escola.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Escolaridade.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.EstadoCivilSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.EstadoSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Estagio.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Evento+TiposEvento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Evento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Faq.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Fechamento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Feriado+TipoOperacaoSPFeriado.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Feriado.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.FeriadoDesconsiderado.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.FollowUp+TipoAtendimento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.FollowUp+TipoFollowUp.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.FollowUp.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.FollowUpEscola.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.FollowUpUsuario.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.FuncionarioComissao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.FuncionarioSGF+TipoConsultaFuncionarioEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.FuncionarioSGF+TipoFuncionario.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.FuncionarioSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.GrupoConta+GrupoContaComparer.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.GrupoConta+tipoGrupoConta.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.GrupoConta.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.GrupoEstoque+CategoriaEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.GrupoEstoque.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.GrupoSituacao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.HabilitacaoProfessor.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.HistoricoAluno+SituacaoHistorico.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.HistoricoAluno+TipoMovimento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.HistoricoAluno.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Horario+Origem.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Horario.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.HorarioProfessorTurma.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ImportacaoXML.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Item.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ItemEscola.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ItemKit.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ItemMovimento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ItemMovimentoKit.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ItemMovItemKit.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ItemPolitica.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ItemProgramacao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ItemSubgrupo+TipoSubgGrupo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ItemSubgrupo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.JsonTeste+ErroProcedure.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.JsonTeste.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Kardex+TipoMovimento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Kardex.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ListaEnderecoMala+TipoEnderecoMala.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ListaEnderecoMala.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ListaNaoInscrito.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.LocalidadeSGF+TipoLocalidadeSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.LocalidadeSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.LocalMovto+TipoLocalMovtoEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.LocalMovto.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.LogGeral.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.LogGeralDetalhe.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.LogradouroCEP.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.MalaDireta+TipoCadastro.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.MalaDireta+TipoProfissao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.MalaDireta.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.MalaDiretaCadastro.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.MalaDiretaCurso.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.MalaDiretaPeriodo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.MalaDiretaProduto.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ManagerRepositoryHttp.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Midia+TipoMidiaEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Midia.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Modalidade.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.MotivoBolsa.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.MotivoCancelamentoBolsa.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.MotivoDesistencia+motivoDesistencia.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.MotivoDesistencia.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.MotivoFalta.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.MotivoMatricula.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.MotivoNaoMatricula.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.MovimentacaoFinanceira+TipoMovimentacaoFinanceira.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.MovimentacaoFinanceira.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Movimento+CfOPEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Movimento+StatusNFEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Movimento+TipoFinanceiroEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Movimento+TipoImportacaoXML.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Movimento+TipoMeioPagamento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Movimento+TipoMovimentoEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Movimento+TipoVinculoMovimento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Movimento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Nivel+SituacaoHistorico.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Nivel.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.NomeContrato.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ObsSaldoCaixa.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Operadora.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.OrgaoExpedidor.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Origem.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PacoteCertificadoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PaisSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PapelSGF+TipoPapelSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PapelSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Parametro+REGIME_TRIBUTARIO.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Parametro+TipoNumeroMatricula.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Parametro.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ParametrosCarneUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ParametrosPercentualFaltaGrupoAvancadoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Participacao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PessoaEscola.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PessoaFisicaSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PessoaJuridicaSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PessoaSGF+Sexo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PessoaSGF+TipoPesquisa.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PessoaSGF+TipoPessoa.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PessoaSGF+TipoRelatorioAniversariantes.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PessoaSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PlanoConta.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PlanoTitulo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PoliticaAluno.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PoliticaComercial+TipoPeriodoIntervalo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PoliticaComercial.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PoliticaDesconto.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.PoliticaTurma.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Produto+TipoProduto.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Produto.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ProdutoFuncionario.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Professor.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ProfessorTurma.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ProgramacaoCurso.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ProgramacaoTurma+TipoConsultaProgramacaoEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ProgramacaoTurma+TipoProgramacaoManual.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ProgramacaoTurma.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Prospect+MotivoInativaProspect.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Prospect+PeriodoProspect.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Prospect+TipoOnline.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Prospect+TipoRelatorio.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Prospect+TipoStatusConsultado.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Prospect.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ProspectDia.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ProspectMotivoNaoMatricula.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ProspectPeriodo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ProspectProduto.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ProspectSite.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.QualifRelacionamento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ReajusteAluno.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ReajusteAnual+StatusReajuste.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ReajusteAnual.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ReajusteCurso.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ReajusteTitulo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ReajusteTurma.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Regime.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.RelacionamentoSGF+TipoGrauParentesco.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.RelacionamentoSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ReportPagamentoProfessor+TipoRelatorio.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.ReportPagamentoProfessor.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.RetornoCNAB+StatusRetornoCNAB.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.RetornoCNAB.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Sala.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SaldoItem+OperacaoProcedure.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SaldoItem+StatusProcedure.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SaldoItem.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SGFWebContext.datasource">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SituacaoTributaria+FormaTrib.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SituacaoTributaria+SitTrib.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SituacaoTributaria+TipoImpostoEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SituacaoTributaria.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SmSComporMensagemPadrao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SmsParametrosEscola.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_getRptMediaAlunos_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_listar_horario_aula_reposicao_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_login_escolas_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptAlunoRestricao_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptAtividadeExtraAluno_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptAtividadeExtra_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptAulaReposicaoAluno_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptAulaReposicao_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptAvaliacaoEstagio_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptAvaliacaoSub_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptAvaliacaoTurmaConceito_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptAvaliacaoTurma_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptAvaliacao_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptCartaQuitacao_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptControleFaltas_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptDiarioAluno_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptEventoAluno_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptHistoricoAlunoM_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptHistoricoAluno_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptHistoricoAtividade_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptHistoricoConceito_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptHistoricoEstagio_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptHistoricoFollow_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptHistoricoItem_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptHistoricoObs_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptHistoricoTitulos_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptInventario_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_Rptmatriculas_outros_produtos_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptTurmaControleFalta_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.sp_RptTurmasAvaliacoes_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.st_RptEtiqueta_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.st_RptFaixaEtaria_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.st_RptReceberPagar_Result1.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.st_RptRecebidaPaga_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SubgrupoConta+TipoNivelConsulta.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SubgrupoConta.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SysApp.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SysDireitoGrupo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SysDireitoUsuario.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SysGrupo+TipoGrupo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SysGrupo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SysGrupoUsuario.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SysMenu+TipoSysMenu.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.SysMenu.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TabelaPreco.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TaxaBancaria.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TaxaMatricula.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TelefoneSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoAtividadeExtra.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoAvaliacao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoContato.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoDesconto.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoDescontoEscola.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoEndereco.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoEnderecoSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoFinanceiro+TiposFinanceiro.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoFinanceiro.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoItem+TipoItemEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoItem.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoLiquidacao+TipoLiqui.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoLiquidacao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoLocalidadeSGF+TipoLocalidadeSGFEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoLocalidadeSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoLog+TipoLogEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoLog.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoLogradouroSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoNotaFiscal+Movto.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoNotaFiscal.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoSociedade.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoTelefoneSGF+TipoTelefoneSGFEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TipoTelefoneSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Titulo+NaturezaTitulo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Titulo+OrigemTitulo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Titulo+StatusCnabTitulo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Titulo+StatusTitulo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Titulo+StatusTituloBaixaAut.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Titulo+TipoMovimento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Titulo+TipoTitulo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Titulo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TituloAditamento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TituloCnab+StatusTituloCnab.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TituloCnab.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TituloRetornoCNAB+CodigoOcorrenciaCnab.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TituloRetornoCNAB+MotivoDespesaCnab.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TituloRetornoCNAB+StatusTituloRetornoCNAB.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TituloRetornoCNAB+TipoRetornoCNAB.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TituloRetornoCNAB.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TitulosBaixaAutomatica.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TransacaoFinanceira+TipoCancelamento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TransacaoFinanceira+TipoPesquisaTranFinan.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TransacaoFinanceira.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TratamentoPessoa.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Turma+SituacaoAlunoTurma.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Turma+SituacaoTurma.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Turma+SituacaoTurmaPPT.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Turma+TipoOnline.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Turma+TipoTurma.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Turma.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.TurmaEscola.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.UsuarioEmpresaSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.UsuarioWebSGF.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.Video.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.vi_contrato.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.vi_diario_aula.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Services.Coordenacao.Model.AlunoAulaReposicaoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Services.Coordenacao.Model.AvaliacaoParticipacaoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Services.Coordenacao.Model.ReportControleSala.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Services.Coordenacao.Model.RptComissaoSecretarias.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Services.Secretaria.Controllers.AlunoController.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.SGF.Services.Coordenacao.Model.AlunoEventoReport.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.SGF.Services.Coordenacao.Model.ReportControleSala.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.SGF.Services.Coordenacao.Model.ReportDiarioAula.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.SGF.Services.Coordenacao.Model.ReportProgramacaoTurmaAluno.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.SGF.Services.Coordenacao.Model.TurmaSearch2.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Utils.ConverterExtenso.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Utils.Messages.Messages.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Utils.ReportParameter.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Utils.Utils.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Service.EmailMarketing.Model.RptListagemEndereco.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.CNAB.Model.RptTitulosCnab.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.AlunoEventoReport.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.AtividadeAlunoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.AtividadeExtraPesquisa.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.AtividadeExtraUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.AulaPersonalizadaReport.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.AulaPersonalizadaUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.AvaliacaoAlunos+Hierarquia.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.AvaliacaoAlunos.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.AvaliacaoAuxiliarUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.AvaliacaoOrdem.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.AvaliacaoTurmaUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.AvaliacaoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.CargaProfessorSearchUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.ComponentesTurma.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.ConceitoSearchUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.CursoSearch.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.CursoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.DiarioAulaProgramcoesReport.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.EstagioOrdem.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.EstagioSearchUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.EventoHistoricoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.FuncionarioProfessorSearchUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.FuncionarioUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.HablitacaoProfessorUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.HorariosTurmasHorariosProfessores.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.LinkAtividadeExtra.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.MediaAvaliacaoAlunoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.ProfessorUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.Programacao.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.ProgramacaoCursoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.ProgramacaoHorarioUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.ProgramacaoTurmaAbaUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.ProgramacoesTurmaSemDiarioAula.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.ReportControleSala.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.ReportDiarioAula.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.ReportTurmaMatriculaMaterial.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.RptBolsistasAval.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.SalaDisponivel.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.SalaSearchUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.TipoAvaliacaoTurma+Hierarquia.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.TipoAvaliacaoTurma.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.TurmaSearch.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.TurmaSearchUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.TurmaView.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.DataAccess.KardexDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.DataAccess.TituloDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.AlunosSemTituloGeradoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.CarneUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.CarneUI1.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.ChequeUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.ContaCorrenteList.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.ContaCorrenteUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.Contas+Hierarquia.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.Contas.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.DescontoTituloCarne.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.Espelho.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.EstoqueUI+relatorioEstoque.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.EstoqueUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.ItemEspelho.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.ItemUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.KardexUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.LocalMovtoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.MovimentoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.ObservacaoBaixaUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.ParcelasReciboAgrupadoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.PlanoContaUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.PoliticaDescontoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.Recibo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.ReciboAgrupadoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.ReciboConfirmacaoParcelasUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.ReciboConfirmacaoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.ReciboPagamentoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.RptBalanceteMensal.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.RptContVendasMaterial.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.RptItemFechamento.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.RptLinhaRecibo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.RptPlanoTitulo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.RptReceberPagar.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.RptRecebidaPaga.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.RptTitulosCnab.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.SaldoFinanceiro.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.SimulacaoBaixa.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.SimulacaoBaixaCnab.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.SubGrupoSort.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.TabelaPrecoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.TipoDescontoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.TituloUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.Valores.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Business.AlunoBusiness.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Business.AlunoBusinessException+TipoErro.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Business.AlunoBusinessException.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Business.MatriculaBusiness.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Business.MatriculaBusinessException+TipoErro.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Business.MatriculaBusinessException.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Business.SecretariaBusiness.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Business.SecretariaBusinessException+TipoErro.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Business.SecretariaBusinessException.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IAcaoFollowupDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IAlunoBusiness.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAccess.IAditamentoDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAccess.IAlunoBolsaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAccess.IAlunoDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAccess.IAlunoMotivoMatriculaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAccess.IAlunoTurmaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAccess.IAnoEscolarDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAccess.IDescontoContratoDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAccess.IDesistenciaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAccess.IFollowUpDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAccess.IFollowUpEscolaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAccess.IFollowUpUsuarioDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAccess.IHistoricoAlunoDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAccess.IHorarioDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAccess.IMatriculaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAccess.INomeContratoDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAccess.IProspectDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAccess.IProspectMotivoNaoMatriculaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAccess.ITaxaMatriculaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAcess.IProspectPeriodoDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IDataAcess.IProspectProdutoDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IEscolaridadeDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IMatriculaBusiness.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IMidiaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IMotivoBolsaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IMotivoCancelamentoBolsaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IMotivoMatriculaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.IMotivoNaoMatriculaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.ISecretariaBusiness.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Comum.ITipoContatoDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Controllers.SecretariaController.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.AcaoFollowupDataAccess+TipoPesquisaAcaoEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.AcaoFollowupDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.AditamentoDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.AlunoBolsaDataAccess+TipoEventoEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.AlunoBolsaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.AlunoDataAccess+TipoConsultaAlunoEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.AlunoDataAccess+TipoPessoaEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.AlunoDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.AlunoMotivoMatriculaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.AlunoTurmaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.AnoEscolarDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.DescontoContratoDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.DesistenciaDataAccess+tipoDesistencia.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.DesistenciaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.EscolaridadeDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.FollowUpDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.FollowUpEscolaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.FollowUpUsuarioDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.HistoricoAlunoDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.HorarioDataAccess+TipoConsultaHorario.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.HorarioDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.MatriculaDataAccess+FiltroLayoutContratoEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.MatriculaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.MidiaDataAccess+TipoConsultaMidiaEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.MidiaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.MotivoBolsaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.MotivoCancelamentoBolsaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.MotivoMatriculaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.MotivoNaoMatriculaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.NomeContratoDataAccess+TipoConsultaNomeContratoEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.NomeContratoDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.ProspectDataAccess+TipoConsultaEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.ProspectDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.ProspectMotivoNaoMatriculaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.ProspectPeriodoDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.ProspectProdutoDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.TaxaMatriculaDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.DataAccess.TipoContatoDataAccess.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.AlunoRel.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.AlunoSearchUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.AlunoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.CarneUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.DescontoContratoSearchUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.DesistenciaUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.FollowUpRptUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.FollowUpSearchUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.LinkAlunoCurso.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.LinkAlunoMotivoMatricula.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.LinkAlunoMotivoNaoMatricula.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.MatriculaRel+TipoRelatorioMat.datasource">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.MatriculaRel.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.MatriculaSearchUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.MudancasInternas+OpcoesMudanca.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.MudancasInternas.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.OpcoesPagamentoUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.PessoaSGFSearchUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.ProspectSearchUI+TipoPesquisaEnum.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.ProspectSearchUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.ReportMediaAlunos+TipoRelatorioMediasAlunos.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.ReportMediaAlunos.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.ReportPercentualTerminoEstagio.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.ReportProgramacaoTurmaAluno.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.ReportProspect.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.RptBolsistas.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.TaxaMatriculaSearchUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.TipoHorarios.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Secretaria.Model.TurmaAlunoProfessorHorario.datasource" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Reports\Financeiro\CartaQuitacao\CartaQuitacao.rdlc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Reports\AlunosAtividade.rdlc" />
+    <EmbeddedResource Include="Reports\AlunosAulaReposicao.rdlc" />
+    <EmbeddedResource Include="Reports\AtividadeExtra.rdlc" />
+    <EmbeddedResource Include="Reports\AulaReposicao.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\ControleFaltas\CartaAviso.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\ControleFaltas\ControleFalta.rdlc" />
+    <EmbeddedResource Include="Reports\AulaReposicaoView.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\Turma\RptAvaliacao.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\Turma\RptAvaliacaoConceitoSub.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\Turma\RptAvaliacaoSub.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\AlunosSemTituloGerado\RptAlunosSemTituloGerado.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\Baixa\RptReciboPagamentoAgrupado.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\Baixa\SubRptReciboPagamentoAgrupado.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\Estoque\RptInventario.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\PosicaoFinanceira\SubRptBaixaDataObs.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\DiarioAula\RptDiarioAulaQuebra.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\DiarioAula\RptDiarioAulaProgramacaoQuebraTurma.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\DiarioAula\RptDiarioAula.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\DiarioAula\RptEventos.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\DiarioAula\RptEventosQuebraTurma.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\DiarioAula\RptDiarioAulaProgramacao.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\RptAulaPersonalizada.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\RptBolsistas.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\RptPagamentoProfessores.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\Sala\RptControleSala.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\Sala\SubRptControleSala.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\SubPagamentoProfessoresFaltas.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\SubPagamentoProfessoresObs.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\Turma\SubRptAlunosTurmaNova.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\Turma\SubRptAlunosTurmaPPTNova.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\Turma\SubRptAlunosTurmaEncerrar.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\Turma\RptTurmasNovas.rdlc">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Coordenacao\Turma\RptTurmasEncerrar.rdlc">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Coordenacao\Turma\RptTurmaMatriculaMaterial.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\Turma\RptProgramacaoAulasTurma.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\Turma\RptTurma.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\Turma\SubRptAlunosTurmaPPTEncerrar.rdlc" />
+    <EmbeddedResource Include="Reports\Coordenacao\Turma\SubRptProgramacaoAulasTurma.rdlc">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Coordenacao\Turma\SubRptTurma.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\Baixa\RptReciboBaixa.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\Baixa\RptReciboPagamento.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\BalanceteMensal\RptBalancete.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\CNAB\RptRetornoCnab.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\CNAB\RptTitulosCnab.rdlc">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Financeiro\ContaCorrente\RptContaCorrente.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\Estoque\RptBiblioteca.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\Estoque\RptContVendasMaterial.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\Estoque\RptKardex.rdlc">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Financeiro\Estoque\RptListaItem.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\Funcionario\RptComissaoSecretarias.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\PosicaoFinanceira\RptBaixasConta.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\PosicaoFinanceira\RptBaixasData.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\PosicaoFinanceira\RptBaixasPessoa.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\PosicaoFinanceira\RptTitulosConta.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\PosicaoFinanceira\RptTitulosData.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\PosicaoFinanceira\RptTitulosPessoa.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\PosicaoFinanceira\SubRptBaixaDataObsCC.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\PosicaoFinanceira\SubRptTitulosDataPlanos.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\PosicaoFinanceira\SubRptTitulosDataPlanosPes.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\Funcionario\RptPercentualTerminoEstagio.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\Restricao\RptAlunoRestricao.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\SaldoFinanceiro\RptFechamentoCaixaSint.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\SaldoFinanceiro\RptSaldoFinanceiro.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\Funcionario\SubRptPercentualTerminoEstagio.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\SubRptPercentualTerminoEstagio.rdlc" />
+    <EmbeddedResource Include="Reports\RelatorioDinamico.rdlc" />
+    <EmbeddedResource Include="Reports\ReportGestaoAtividadeExtra.rdlc" />
+    <EmbeddedResource Include="Reports\RptLoginEscola.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\FaixaEtaria\FaixaEtaria.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\FollowUp\FollowUp.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\FollowUp\SubReportFollowUp.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\HistoricoAluno\HistoricoAluno.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\HistoricoAluno\HistoricoAtividade.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\HistoricoAluno\HistoricoAvaliacaoEstagio.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\HistoricoAluno\HistoricoAvaliacaoTurma.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\HistoricoAluno\HistoricoEstagio.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\HistoricoAluno\HistoricoEstagioConceito.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\HistoricoAluno\HistoricoEventoAula.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\HistoricoAluno\HistoricoFollow.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\HistoricoAluno\HistoricoItem.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\HistoricoAluno\HistoricoObs.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\HistoricoAluno\HistoricoTitulo.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\HistoricoAluno\HistoricoTurmaAvaliacao.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\HistoricoAluno\HistoricoTurmaConceito.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\HistoricoAluno\HistoricoTurmas.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\MailMarketing\Etiqueta.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\Matricula\MatriculaOutros.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\Matricula\RptReciboConfirmacao.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\Matricula\SubRptReciboConfirmacao.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\RptAlunoCliente.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\RptMediaAlunos.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\MailMarketing\RptListagemEnderecoMMK.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\Matricula\Carne.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\Matricula\MatriculaAnalitico.rdlc">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Secretaria\Matricula\MatriculaPorMotivo.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\Matricula\SubRptCarne.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\Movimento\CarneMovto.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\Movimento\Movimento.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\Movimento\RptEspelhoMovimento.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\Movimento\RptReciboMovimento.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\Prospect\RptComparativoProspectsAtendidosPeriodos.rdlc" />
+    <EmbeddedResource Include="Reports\Financeiro\RptCheques.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\Prospect\RptProspectAtendido.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\Prospect\RptProspectAtendidosMotivoNaoMatricula.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\Prospect\RptProspectAtendidosXMatricula.rdlc" />
+    <EmbeddedResource Include="Reports\Secretaria\RptListagemAniversariantes.rdlc" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqlServerTypes\readme.htm" />
+    <Content Include="SqlServerTypes\x64\msvcr120.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x64\SqlServerSpatial140.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x86\msvcr120.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x86\SqlServerSpatial140.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

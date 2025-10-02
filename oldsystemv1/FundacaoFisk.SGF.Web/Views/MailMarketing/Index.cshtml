@@ -1,0 +1,415 @@
+@{
+    ViewBag.Title = "E-Mail Marketing";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/mail_marketing")
+    @Scripts.Render("~/bundles/cadMailMarketing")
+    @Scripts.Render("~/bundles/turmaFK")
+    @Scripts.Render("~/bundles/malaDireta")
+    <link href="~/Content/themes/base/dojo1.8.5r/dojox/form/resources/CheckedMultiSelect.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/dojo1.8.5r/dojox/editor/plugins/resources/css/CollapsibleToolbar.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/dojo1.8.5r/dojox/editor/plugins/resources/css/ShowBlockNodes.css" rel="stylesheet" />
+    <!--link href="~/Content/themes/base/dojo1.8.5r/dojox/editor/plugins/resources/css/Save.css" rel="stylesheet" /-->
+    <link href="~/Content/themes/base/dojo1.8.5r/dojox/editor/plugins/resources/css/Preview.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/dojo1.8.5r/dojox/editor/plugins/resources/css/FindReplace.css" rel="stylesheet" />
+}
+
+@section scriptsBody{    
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "E-Mail Marketing";
+
+        //**** Requerires para a Tabulação ****\\
+        require([
+                "dojo/NodeList-traverse",
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager",
+                "dojo/data/ObjectStore",
+                "dijit/form/DateTextBox",
+                "dojox/charting/Chart",
+                "dojox/charting/plot2d/Columns",
+                "dojox/charting/axis2d/Default",
+                "dojox/charting/widget/Legend",
+                "dojox/charting/themes/MiamiNice",
+                "dojo/parser"
+        ]);
+        montarMailMarketing();
+    </script>
+}
+<style>
+    .dijitReset .dijitMenuTable
+    {
+        max-width: 1%;
+    }
+
+    .GreenRow td
+    {
+        background-color: #98FB98;
+    }
+    .GreenRow td.Hovered
+    {
+        background-color: #98FB98;
+    }
+
+    .RedRow td
+    {
+        background-color: #F06167;
+    }
+
+    .RedRow td.Hovered
+    {
+        background-color:#F06167;
+    }
+</style>
+
+<div style="width: 100%;">
+    <input type="hidden" id="link" value="" />
+    <div class="apresentadorMsg" id="apresentadorMensagem"  style="display:none;"></div>
+    <script type="text/javascript">
+        showCarregando();
+    </script>
+	<table class="Table">
+		<tr>
+            <td style="width:10%">
+                <div class="EspacoCaixa caixaPesquisa" style="width:90%;min-height:508px">
+                    <b>Mensagem</b>
+                    <div id="menusMensagem" class="menuHorizontal"></div>
+                    <b>Controle</b>
+                    <div id="menusControle" class="menuHorizontal"></div>
+                      <b>Mala Direta</b>
+                    <div id="menusMalaDireta" class="menuHorizontal"></div>
+                </div>
+            </td>
+            <td style="width: 1%">&nbsp;</td>
+            <td style="width: 89%">
+                <div class="EspacoCaixa caixaPesquisa" style="width: 98%; min-height: 508px">
+                    <div id="compor_mensagem">
+                        <div class="scroll" style="width: 100%; height: 469px;" id="scrollComporMensagem">
+                            @Html.Partial("../MailMarketing/cadMailMarketing")
+                        </div>
+                        <div style="text-align: right">
+                            <div class="CaixaAcao">
+                                <div class="linha_acoes" style="width: 100%"></div>
+                                <div class="Alinhamento">
+                                    <input id="btCancelar" />&nbsp;<input id="btEnviar" />
+                                </div>
+                                <div class="linha_acoes" style="    "></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="historico" style="display: none">
+                        <b>Controle > Histórico</b>
+                        <div class="scroll" style="width: 100%; height: 490px">
+                            <div class="apresentadorMsg" id="apresentadorMensagemHistoricoMalaDireta" style="display: none;"></div>
+                            <div class="EspacoCaixa caixaPesquisa">
+                                <table class="Table">
+                                    <tr>
+                                        <td class="tdRight" style="width: 6%;">
+                                            <label for="dc_assunto_historico">Assunto:</label>
+                                        </td>
+                                        <td style="width: 79%;" class="dojoTextBoxIECorrect">
+                                            <input type="text" id="dc_assunto_historico" name="dc_assunto_historico" style="width: 100%;" data-dojo-type="dijit/form/TextBox" />
+                                        </td>
+                                        <td class="tdRight" style="width: 15%;" rowspan="2">
+                                            <input data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'dijitEditorIcon dijitEditorIconSearchSGF'" id="pesquisa_historico" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="tdRight" style="width: 6%;">
+                                            <label for="dta_historico">Data:</label>
+                                        </td>
+                                        <td style="width: 79%;" class="dojoTextBoxIECorrect">
+                                            <input type="text" id="dta_historico" name="dta_historico" onkeypress="mascaraDataHora(event, this)" style="width: 100%;" class="alignDojoData" data-dojo-type="dijit.form.DateTextBox" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div style="padding-top: 4px">
+                                <div class="linha_acoes" style="width: 100%"></div>
+                                <div>
+                                    <table style="width: 100%">
+                                        <tr style="width: 100%">
+                                            <td style="text-align: left; width: 25%">
+                                                <div class="linkAcoes" id="linkAcoesHitorico"></div>
+                                            </td>
+                                            <td style="text-align: center; width: 50%;"></td>
+                                            <td style="text-align: right; width: 25%">
+                                                <span class="linkSelecionados" id="linkSelecionadosHistoricoMalaDireta"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="linha_acoes" style="width: 100%"></div>
+                            </div>
+                            <div data-dojo-type="dijit/layout/ContentPane" style="padding-left: 0px; padding-top: 0px; width: 100%">
+                                <div class="gridCadBasic" style="height: 360px">
+                                    <div id="gridHistorico" style="height: 360px"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="listagem_enderecos" style="display: none">
+                        <b>Controle > Lista de Endereços</b>
+                        <div class="scroll" style="width: 100%; height: 455px">
+                            <div class="apresentadorMsg" id="apresentadorMensagemListagemEndereco" style="display: none;"></div>
+                            <div class="EspacoCaixa caixaPesquisa">
+                                <table class="Table">
+                                    <tr>
+                                        <td class="tdRight" style="width: 6%;">
+                                            <label for="no_pessoa_lista">Nome:</label>
+                                        </td>
+                                        <td style="width: 50%;" class="dojoTextBoxIECorrect">
+                                            <input type="text" id="no_pessoa_lista" name="no_pessoa_lista" style="width: 100%;" data-dojo-type="dijit/form/TextBox" />
+                                        </td>
+                                        <td class="tdRight" style="width: 8%;">
+                                            <label for="status_listagem">Status:</label>
+                                        </td>
+                                        <td style="width: 21%;" class="dojoTextBoxIECorrect">
+                                            <input type="text" id="status_listagem" name="status_listagem" style="width: 100%;" data-dojo-type="dijit/form/FilteringSelect" />
+                                        </td>
+                                        <td class="tdRight" style="width: 15%;" rowspan="2">
+                                            <input data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'dijitEditorIcon dijitEditorIconSearchSGF'" id="pesquisa_listagem_enderecos" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="tdRight" style="width: 6%;">
+                                            <label for="dta_historico">E-mail:</label>
+                                        </td>
+                                        <td style="width: 50%;" class="dojoTextBoxIECorrect">
+                                            <input type="text" id="email_listagem" name="email_listagem" style="width: 100%;" data-dojo-type="dijit/form/TextBox" />
+                                        </td>
+                                        <td class="tdRight" style="width: 8%;">
+                                            <label for="tipo_cadastro_listagem">Cadastro:</label>
+                                        </td>
+                                        <td style="width: 21%;" class="dojoTextBoxIECorrect">
+                                            <input type="text" id="tipo_cadastro_listagem" name="tipo_cadastro_listagem" style="width: 100%;" data-dojo-type="dijit/form/FilteringSelect" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div style="padding-top: 5px">
+                                <div class="linha_acoes" style="width: 100%"></div>
+                                <div>
+                                    <table style="width: 100%">
+                                        <tr style="width: 100%">
+                                            <td style="text-align: left; width: 25%"></td>
+                                            <td style="text-align: center; width: 50%;">
+                                                 <input id="relatorioListagemEnderecos" title="Relatório" />
+                                            </td>
+                                            <td style="text-align: right; width: 25%">
+                                                <span class="linkSelecionados" id="linkSelecionadosEnderecos"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="linha_acoes" style="width: 100%"></div>
+                            </div>
+                            <div data-dojo-type="dijit/layout/ContentPane" style="padding-left: 0px; padding-top: 0px; width: 100%">
+                                <div class="gridCadBasic" style="height: 325px">
+                                    <div id="gridListagemEndereco" style="height: 325px"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: right">
+                            <div class="CaixaAcao">
+                                <div class="linha_acoes" style="width: 100%">
+                                    <div id="paiLegend">
+                                        <div id="legendListagemEnd" style="align-items: center;"></div>
+                                    </div>
+                                    <div id='chartListagemEnd' style='display: none'></div>
+                                </div>
+                                <div class="Alinhamento">
+                                    <button data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'dijitEditorIcon dijitEditorIconSave'" id="salvarListagemEnd">Salvar</button>
+                                    <button data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'dijitEditorIcon dijitEditorIconTabIndent'" id="cancelarListagemEnd">Cancelar</button>
+                                </div>
+                                <div class="linha_acoes" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                     <div id="gerar_mala_direta" style="display: none">
+                        <div class="scroll" style="width: 100%; height: 400px;" id="scrollGerarMalaDireta">
+                            @Html.Partial("../MailMarketing/cadMalaDireta")
+                        </div>
+                        <div style="text-align: right">
+                            <div class="CaixaAcao">
+                                <div class="linha_acoes" style="width: 100%"></div>
+                                <div class="Alinhamento">
+                                    <input id="btnCancelarMalaDireta" />&nbsp;<input id="btnVisualizarMalaDireta" />
+                                </div>
+                                <div class="linha_acoes" style="    "></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="historicoEtiqueta" style="display: none">
+                        <b>Mala Direta > Histórico</b>
+                        <div class="scroll" style="width: 100%; height: 490px">
+                            <div class="apresentadorMsg" id="apresentadorMensagemHistoricoEtiqueta" style="display: none;"></div>
+                            <div class="EspacoCaixa caixaPesquisa">
+                                <table class="Table">
+                                    <tr>
+                                        <td class="tdRight" style="width: 6%;">
+                                            <label for="dc_assunto_historico_etiqueta">Descrição:</label>
+                                        </td>
+                                        <td style="width: 79%;" class="dojoTextBoxIECorrect">
+                                            <input type="text" id="dc_assunto_historico_etiqueta" name="dc_assunto_historico_etiqueta" style="width: 100%;" data-dojo-type="dijit/form/TextBox" />
+                                        </td>
+                                        <td class="tdRight" style="width: 15%;" rowspan="2">
+                                            <input data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'dijitEditorIcon dijitEditorIconSearchSGF'" id="pesquisa_historico_etiqueta" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="tdRight" style="width: 6%;">
+                                            <label for="dta_historico_etiqueta">Data:</label>
+                                        </td>
+                                        <td style="width: 79%;" class="dojoTextBoxIECorrect">
+                                            <input type="text" id="dta_historico_etiqueta" name="dta_historico_etiqueta" onkeypress="mascaraDataHora(event, this)" style="width: 100%;" class="alignDojoData" data-dojo-type="dijit.form.DateTextBox" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div style="padding-top: 4px">
+                                <div class="linha_acoes" style="width: 100%"></div>
+                                <div>
+                                    <table style="width: 100%">
+                                        <tr style="width: 100%">
+                                            <td style="text-align: left; width: 25%">
+                                                <div class="linkAcoes" id="linkAcoesHitoricoEtiqueta"></div>
+                                            </td>
+                                            <td style="text-align: center; width: 50%;"></td>
+                                            <td style="text-align: right; width: 25%">
+                                                <span class="linkSelecionados" id="linkSelecionadosHistoricoEtiqueta"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="linha_acoes" style="width: 100%"></div>
+                            </div>
+                            <div data-dojo-type="dijit/layout/ContentPane" style="padding-left: 0px; padding-top: 0px; width: 100%">
+                                <div class="gridCadBasic" style="height: 360px">
+                                    <div id="gridHistoricoEtiqueta" style="height: 360px"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div data-dojo-type="dijit.Dialog" id="dialogMensagem" title="Mensagem" style="width: 1000px; display: none;">
+    <div class="scroll" style="width: 100%; height: 469px;" id="scrollComporMensagemHisorico">
+        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" id="formComporMensagemHistorico">
+            <b>Compor Mensagem</b>
+            <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Destinatário'" id="tagDestinatarioHistorico" open="false">
+                <table class="Table">
+                    <tr>
+                        <td style="width: 25%; height: 35px">
+                            <input type="checkbox" id="ckProspectHistorico" required="required" onclick="mostraPeriodoProspectHistorico(this)" data-dojo-type="dijit/form/CheckBox" class="Check" /><label for="ckPendentes">Prospect</label>
+                        </td>
+                        <td style="width: 25%;">
+                            <input type="checkbox" id="ckAlunoHistorico" required="required" onclick="mostraPeriodoAlunoHistorico(this)" data-dojo-type="dijit/form/CheckBox" class="Check" /><label for="ckAluno">Aluno</label>
+                        </td>
+                        <td style="width: 25%;">
+                            <input type="checkbox" id="ckClienteHistorico" required="required" data-dojo-type="dijit/form/CheckBox" class="Check" /><label for="ckCliente">Cliente</label>
+                        </td>
+                        <td style="width: 25%;">
+                            <input type="checkbox" id="ckPessoaRelacionadaHistorico" required="required" data-dojo-type="dijit/form/CheckBox" class="Check" /><label for="ckPessoaRelacionada">Pessoa Relacionada</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%;" colspan="4">
+                            <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Filtros'" open="true" id="tagFiltrosHistorico">
+                                <table class="Table">
+                                    <tr>
+                                        <td class="tdRight" style="width: 15%;">Gênero:</td>
+                                        <td style="width: 35%;">
+                                            <select id="nm_sexo_historico" name="nm_sexo_historico" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;"></select></td>
+                                        <td class="tdRight" style="width: 15%;">Mês de Nascimento:</td>
+                                        <td style="width: 35%;">
+                                            <select id="nm_mes_nascimento_historico" name="nm_mes_nascimento" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;"></select></td>
+                                    </tr>
+                                    <tr id="trProdutoAtualHistorico" style="display: none">
+                                        <td class="tdRight" style="width: 15%;">Produto Atual:</td>
+                                        <td style="width: 25%;" class="Table dojoTextBoxIECorrect">
+                                            <select
+                                                id="cbProdutoAtualHistorico"
+                                                data-dojo-id="cbProdutoAtualHistorico"
+                                                data-dojo-props='dropDown:true'
+                                                name="cbProdutoAtual"
+                                                multiple="true"
+                                                onchange="atualizaCursosAtuais(this);"
+                                                data-dojo-type="dojox/form/CheckedMultiSelect" style="width: 100%;" required="false">
+                                            </select>
+                                        </td>
+                                        <td id="tdPeriodoProspect1Historico" class="tdRight" style="width: 15%; display: none">Período do Prospect:</td>
+                                        <td id="tdPeriodoProspect2Historico" style="width: 25%; display: none" class="Table dojoTextBoxIECorrect">
+                                            <select
+                                                id="cbPeriodoHistorico"
+                                                data-dojo-id="cbPeriodoHistorico"
+                                                data-dojo-props='dropDown:true'
+                                                name="cbPeriodoHistorico"
+                                                multiple="true"
+                                                data-dojo-type="dojox/form/CheckedMultiSelect" style="width: 100%;" required="false">
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td id="tdCursoAtual1Historico" class="tdRight" style="display: none">Curso Atual:</td>
+                                        <td id="tdCursoAtual2Historico" style="width: 25%; display: none" class="Table dojoTextBoxIECorrect">
+                                            <select
+                                                id="cbCursoAtualHistorico"
+                                                data-dojo-id="cbCursoAtualHistorico"
+                                                data-dojo-props='dropDown:true'
+                                                name="cbCursoAtual"
+                                                multiple="true"
+                                                data-dojo-type="dojox/form/CheckedMultiSelect" style="width: 100%;" required="false">
+                                            </select>
+                                        </td>
+                                        <td id="tdPeriodoAluno1Historico" class="tdRight" style="width: 15%; display: none">Período do Aluno: Das:</td>
+                                        <td id="tdPeriodoAluno2Historico" style="width: 25%; display: none" class="Table dojoTextBoxIECorrect">
+                                            <input type="text" name="timeIni" id="timeIniHistorico" value=""
+                                                data-dojo-type="dijit/form/TimeTextBox"
+                                                data-dojo-props="constraints: {clickableIncrement: 'T00:05', visibleIncrement: 'T00:30', formatLength:'short',min:'T08:00',max:'T18:00'}" required="true" />
+                                            Até:<input type="text" name="timeFim" id="timeFimHistorico" value=""
+                                                data-dojo-type="dijit/form/TimeTextBox"
+                                                data-dojo-props="constraints: {clickableIncrement: 'T00:05', visibleIncrement: 'T00:30', formatLength:'short',min:'T08:00',max:'T18:00'}" required="true" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Escrever Mensagem'" id="tagEscreverMensagemHistorico">
+                <table class="Table">
+                    <tr>
+                        <td class="tdRight" style="width: 10%;">Assunto:</td>
+                        <td style="width: 90%;" class="Table dojoTextBoxIECorrect">
+                            <input type="text" id="dc_assunto_historico_mala" name="dc_assunto_historico_mala" style="width: 100%;" data-dojo-type="dijit/form/ValidationTextBox" required="required" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%;" colspan="2">
+                            <div style="min-height: 200px" id="mensagemComporMsgHistorico"></div>
+                            <div>
+                                <span style="font-size: 10px">Rodapé Fixo</span>
+                                <div id="rodape_fixo_msg_historico"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>

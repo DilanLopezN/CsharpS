@@ -1,0 +1,381 @@
+@{
+    ViewBag.Title = "Histórico do Aluno";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts {
+    @Scripts.Render("~/bundles/historicoAluno")
+    @Scripts.Render("~/bundles/alunoFK")
+    <script src="~/Scripts/jquery.maskedinput-1.3.js"></script>
+    @Scripts.Render("~/bundles/cadFollowUpPartial")
+}
+
+@section scriptsBody{
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Histórico do Aluno";
+        //**** Requerires para a Tabulação ****\\
+        require([
+                "dijit/layout/TabContainer",
+                "dijit/layout/ContentPane",
+                "dojo/NodeList-traverse",
+                "dijit/form/TextBox",
+                "dijit/form/Select",
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager",
+                "dijit/Tooltip",
+                "dijit/form/DateTextBox"
+        ]);
+        montarHistoricoAluno('@Permissoes');
+    </script>
+    <style>
+        #dijit_form_ComboButton_0_dropdown
+        {
+            max-height: 400px;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+		.YellowRow td
+		{
+			background-color: #fefa77;
+		}
+		.RedRow td
+		{
+			background-color: #d30027;
+		}
+		.GreenRow td
+		{
+			background-color: #4dca48;
+		}
+	</style>
+}
+<input type="hidden" id="link" value="" />
+<div class="apresentadorMsg" id="apresentadorMensagem" style="display: none;"></div>
+<script type="text/javascript">
+    showCarregando();
+</script>
+<input type="hidden" id="descApresMsg" />
+
+<div class="EspacoCaixa caixaPesquisa">
+	<form id="formHistAlunoPesq" name="formHistAlunoPesq" data-dojo-type="dojox/form/Manager" style="width: 100%">
+        <input type="hidden" id="setValuePermissoes" value="" />
+        <table class="Table">
+		    <tr>
+			    <td class="Pesquisa tdRight" style="width: 5%">
+				    <label for="aluno" class="AlinhaDireita">Aluno: </label>
+			    </td>
+			    <td style="width: 35%" class="nowrap" class="dojoTextBoxIECorrect">
+                    <input type="hidden" id="cd_aluno_pesq" />
+				    <input id="cd_pessoa_pesq" type="hidden" value="" />
+				    <input id="alunoPesq" name="alunoPesq" style="width: 86%;" data-dojo-type="dijit/form/ValidationTextBox" readonly="true" required="required"/>
+				    <input id="pesAluno" style="min-width: 18px" />
+			    </td>
+			    <td class="tdRight" style="width: 5%">
+				    <label for="matricula" class="AlinhaDireita;">Matricula:</label>
+			    </td>
+			    <td style="width: 20%;" class="dojoTextBoxIECorrect">
+				    <input id="matricula" class="margemCampoEsq" disabled="disabled" style="width: 50%;" data-dojo-type="dijit.form.TextBox">
+			    </td>
+			    <td rowspan="2" style="width: 5%" class="tdRight">
+                    <input id="cd_aluno_pesquisado" type="hidden" value="" />
+				    <input id="cd_pessoa_pesquisada" type="hidden" value="" />
+				    <input id="pesquisarEscola" title="Pesquisar" />
+			    </td>
+		    </tr>
+	    </table>
+    </form>
+</div>
+<!--div style="padding-top: 10px">
+	<div class="linha_acoes" style="width: 100%"></div>
+	<div>
+		<table style="width: 100%">
+			<tr style="width: 100%">
+				<td style="text-align: center; width: 50%;">
+					<input id="relatorioHistorico" title="Relatório" />
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="linha_acoes" style="width: 100%"></div>
+</div-->
+<form id="formHistorico" name="formHistAlunoPesq" data-dojo-type="dojox/form/Manager" style="max-width: 1400px;">
+    <div data-dojo-type="dijit/layout/TabContainer" id="tabContainer" class="Abas" style="margin-top:10px"; onclick="selecionaTab">
+	    <div data-dojo-type="dijit/layout/ContentPane" title="Histórico das Turmas" id="tabHistoricoTurmas">
+            <div data-dojo-type="dijit/layout/TabContainer" id="tabProdutos" class="Abas" style="width: 100%; height: 97%;"></div>
+		    <!--div data-dojo-type="dijit/layout/TabContainer" id="tabIdiomas" class="Abas" style="margin-top:10px; margin-right:5px"; onclick="selecionaTabIdi" id="divProdutos">
+			    <div data-dojo-type="dijit/layout/ContentPane" title="Inglês" id="tabProduto1" class="ContentPane">
+				    <div class="gridCadBasic" style="height:95%";>
+					    <div id="gridHistorico" style="height: 100%; min-height: 200px"></div>
+				    </div>
+			    </div>
+			    <div data-dojo-type="dijit/layout/ContentPane" title="Espanhol" id="tabProduto2" class="ContentPane">
+			    </div>
+		    </div-->
+	    </div>
+	    <div data-dojo-type="dijit/layout/ContentPane" title="Turmas e Avaliações" id="tabAvaliacao" class="Abas">
+            <div class="gridCadBasic" style="height:95%" ;>
+                @*<div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Turmas'" id="tgTurma" open="true">
+                    <div style="height: 255px"; id="divTurma">
+                        <div id="gridTurmasAvaliacao" style="height: 248px;"></div>
+                    </div>
+                </div>*@
+
+                <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Turmas/Estágios'" id="tgTurma" open="true" onclick="selecionaTabAval">
+                    <div id="InfTurmaEstagio" class="Abas" data-dojo-type="dijit/layout/TabContainer" style="width: 100%; height: 268px;" >
+                        <div data-dojo-type="dijit/layout/ContentPane" title="Turmas" id="tabTurma" class="Abas"  >
+                            <div style="height: 255px"  id="divTurma">
+                                <div id="gridTurmasAvaliacao" style="height: 248px;"></div>
+                            </div>
+                        </div>
+                        <div data-dojo-type="dijit/layout/ContentPane" title="Estágios" id="tabEstagio" class="Abas" > 
+                            <div style="height: 100%"  id="divEstagio">
+                                <div id="gridEstagio" style="height: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Avaliações da Turma'" id="tgAvaliacao" open="true">
+                    <div style="height: 268px">
+                        <div id="tabInfAval" class="Abas" data-dojo-type="dijit/layout/TabContainer" onclick="selecionaTabAva" style="width: 100%; height: 268px;">
+                            <div id="tabAvaliacaoMedia" data-dojo-type="dijit/layout/ContentPane" title="Médias" data-dojo-props="selected:true">
+                                <table class="table" style="height: 100%;">
+                                    <tr>
+                                        <td style="width: 30%;">
+                                            <div id="gridAvaliacao" style="height: 100%"></div>
+                                        </td>
+                                        <td style="height: 100%; width: 20%;padding-left: 15%;">
+                                            <table class="table">
+                                                <tr>
+                                                    <td colspan="3"; style="text-align:center">
+                                                        <b>Aproveitamento Total do Aluno</b>
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                    <td style="width:15%;">&nbsp;</td>
+                                                </tr>
+                                                 <tr>
+                                                    <td style="width: 20%;" class="dojoTextBoxIECorrect">
+                                                        <label class="AlinhaDireita nowrap">Média Final:</label>
+                                                    </td>
+                                                    <td class="dojoTextBoxIECorrect">
+                                                        <input id="vl_media" readonly="true" type="text" data-dojo-type="dijit.form.TextBox" data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'##.0'}"
+                                                               maxlength="10" onkeypress="mascaraFloat(document.getElementById('vl_media'));" style="width: 100%; text-align: center;" />
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                </tr>
+
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div id="tabAvaliacaoNota" data-dojo-type="dijit/layout/ContentPane" title="Notas">
+                                <div style="height: 100%; width: 100%;">
+                                    <div id="gridAvaliacaoNota" style="height: 100%"></div>
+                                </div>
+                            </div>
+                            <div id="tabAvaliacaoConceito" data-dojo-type="dijit/layout/ContentPane" title="Conceitos">
+                                <div style="height: 100%; width: 100%;">
+                                    <div id="gridAvaliacaoConc" style="height: 100%"></div>
+                                </div>
+                            </div>
+                            <!--													<div data-dojo-type="dijit/layout/ContentPane" title="Transferência">
+                                4
+                            </div>-->
+                            <div id="tabAvaliacaoEventos" data-dojo-type="dijit/layout/ContentPane" title="Eventos/Última Aula">
+                                <table class="table" style="height: 100%;">
+                                    <tr>
+                                        <td style="height: 100%; width: 30%;">
+                                            <div style="height: 100%; width: 100%;">
+                                                <div id="gridEvento" style="height: 100%"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <table class="table" style="height: 100%;">
+                                                <tr>
+                                                    <td colspan="4" style="text-align:center"><b>Última Aula Aluno</b></td>
+                                                    <td colspan="4" style="text-align:center"><b>Última Aula Turma</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="width: 7%" class="dojoTextBoxIECorrect AlinhaDireita">
+                                                        <label>Data:</label>
+                                                    </td>
+                                                    <td class="dojoTextBoxIECorrect nowrap" style="width: 18%">
+                                                        <input id="dt_Aluno" type="text" data-dojo-type="dijit.form.DateTextBox" readonly="true" style="width: 100%;" />
+                                                    </td>
+                                                    <td style="width: 7%;" class="dojoTextBoxIECorrect AlinhaDireita">
+                                                        <label>Hora:</label>
+                                                    </td>
+                                                    <td style="width: 18%">
+                                                        <input id="hr_ultima_aula_aluno" readonly="true" style="width: 100%;" data-dojo-type="dijit.form.TextBox">
+                                                    </td>
+                                                    <td style="width: 7%;" class="dojoTextBoxIECorrect AlinhaDireita">
+                                                        <label>Data:</label>
+                                                    </td>
+                                                    <td class="dojoTextBoxIECorrect" style="width: 18%">
+                                                        <input id="dt_Turma" type="text" data-dojo-type="dijit.form.DateTextBox" readonly="true" style="width: 100%;" />
+                                                    </td>
+                                                    <td style="width: 7%;" class="dojoTextBoxIECorrect AlinhaDireita">
+                                                        <label>Hora:</label>
+                                                    </td>
+                                                    <td style="width: 18%">
+                                                        <input id="hr_ultima_aula_turma" readonly="true" style="width: 100%;" data-dojo-type="dijit.form.TextBox">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="4" style="padding-left:20px">
+                                                        <textarea id="DescAulaAluno" name="DescAulaAluno" readonly="true" data-dojo-type="dijit/form/SimpleTextarea" rows="7" cols="50" style="width: 100%;"></textarea>
+                                                    </td>
+                                                    <td colspan="4" style="padding-left:20px">
+                                                        <textarea id="DescAulaTurma" name="DescAulaTurma" readonly="true" data-dojo-type="dijit/form/SimpleTextarea" rows="7" cols="50" style="width: 100%;"></textarea>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Avaliações dos Estágios'" id="tgAvalEstagio" open="false" style="display: none">
+                    <div style="height: 268px">
+	                    <div id="tgMediasAvaliacao" class="Abas" data-dojo-type="dijit/layout/TabContainer" style="width: 100%;height: 268px;">
+                            <div data-dojo-type="dijit/layout/ContentPane" title="Médias por Avaliação" data-dojo-props="selected:true">
+                                <table class="table" style="height: 100%;">
+                                    <tr>
+                                        <td style="width: 30%;">
+                                            <div id="gridAvaliacaoEstagio" style="height: 100%"></div>
+                                        </td>
+                                        <td style="height: 100%; width: 20%;padding-left: 15%;">
+                                            <table class="table" >
+                                                <tr>
+                                                    <td colspan="3"; style="text-align:center">
+                                                        <b>Aproveitamento Total do Aluno</b>
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                    <td style="width:15%;">&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="width: 20%;" class="dojoTextBoxIECorrect">
+                                                        <label class="AlinhaDireita nowrap" >Média Final:</label>										                                    
+                                                    </td>
+                                                    <td class="dojoTextBoxIECorrect">
+                                                        <input id="vl_media_final" readonly="true" type="text" data-dojo-type="dijit.form.TextBox" style="width: 100%; text-align: center;" data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'##.0'}"
+                                                               maxlength="10" onkeypress="mascaraFloat(document.getElementById('vl_total'));" />
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            
+                            <div data-dojo-type="dijit/layout/ContentPane" title="Médias por Turma" data-dojo-props="selected:true">
+                                <div style="height: 100%; width: 80%;">
+                                    <div id="gridAvaliacaoEstagioTurma" style="height: 100%"></div>
+                                </div>
+                            </div>
+                            <div data-dojo-type="dijit/layout/ContentPane" title="Notas">
+			                    <div style="height: 100%; width: 100%;">
+			                    <div id="gridNotasEstagio" style="height: 100%"></div>
+			                    </div>
+		                    </div>
+	                    </div>
+                    </div>
+                   </div>
+
+            </div>
+	    </div>
+	    <div data-dojo-type="dijit/layout/ContentPane" title="Títulos" id="tabTitulo" class="Abas" onclick="selecionaTabTit">
+		    <div id="tabTituloStatus" class="Abas" data-dojo-type="dijit/layout/TabContainer" style="width: 100%; height: 97%;">
+			    <div data-dojo-type="dijit/layout/ContentPane" id="contentTitulo" title="Abertos" data-dojo-props="selected:true">
+				    <div class="gridCadBasic" style="height:95%";>
+					    <div id="gridTituloHist" style="height: 100%;"></div>
+				    </div>
+			    </div>
+			    <div id="tabTituloF" data-dojo-type="dijit/layout/ContentPane" title="Fechados" data-dojo-props="selected:false">
+				    <div class="gridCadBasic" style="height:95%";>
+					    <div id="gridTituloHistF" style="height: 100%;"></div>
+				    </div>
+			    </div>
+			    <div id="tabTituloC" data-dojo-type="dijit/layout/ContentPane" title="Cancelados" data-dojo-props="selected:false">
+				    <div class="gridCadBasic" style="height:95%";>
+					    <div id="gridTituloHistC" style="height: 100%;"></div>
+				    </div>
+			    </div>
+			    <div id="tabTituloT" data-dojo-type="dijit/layout/ContentPane" title="Todos" data-dojo-props="selected:false">
+				    <div class="gridCadBasic" style="height:95%";>
+					    <div id="gridTituloHistT" style="height: 100%;"></div>
+				    </div>
+			    </div>
+		    </div>
+	    </div>
+        <div data-dojo-type="dijit/layout/ContentPane" id="tabObsevacaoAluno" title="Observação">
+                <form name="FormObservacaoAluno" id="FormObservacaoAluno" data-dojo-type="dojox/form/Manager">
+                    <textarea style="width: 99.5%;" id="descObsAluno" name="descObsAluno" data-dojo-type="dijit/form/SimpleTextarea" rows="40" disabled="disabled"></textarea>
+                </form>
+            </div>
+    <!--								<div data-dojo-type="dijit/layout/ContentPane" title="Itens e Biblioteca" id="tabItem" class="Abas">
+		    <div class="gridCadBasic" style="height:95%";>
+			    <div id="gridItem" ></div>
+		    </div>
+	    </div>-->
+	    <div data-dojo-type="dijit/layout/ContentPane" title="Atividades Extras" id="tabAtividade" class="Abas">
+		    <div class="gridCadBasic" style="height:95%";>
+			    <div id="gridAtividade" ></div>
+		    </div>
+	    </div>
+	    <div data-dojo-type="dijit/layout/ContentPane" title="Follow-up" id="tabFollow" class="Abas">
+		    <div class="gridCadBasic" style="height:95%";>
+			    <div id="gridFollow" ></div>
+		    </div>
+	    </div>
+        <div data-dojo-type="dijit/layout/ContentPane" title="Itens" id="tabItens" class="Abas">
+            <div class="gridCadBasic" style="height:95%" ;>
+                <div id="gridItens"></div>
+            </div>
+        </div>
+
+
+        <div data-dojo-type="dijit/layout/ContentPane" id="tabMatricula" title="Matrículas">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <table style="width: 100%" class="Alinhamento">
+                <tr style="width: 100%">
+                    <td style="text-align: left; width: 25%">
+                        <div class="linkAcoes" id="linkAcoesMatricula"></div>
+                    </td>
+                    <td style="text-align: center; width: 50%"></td>
+                    <td style="text-align: center; width: 25%"></td>
+                </tr>
+            </table>
+            <div class="linha_acoes" style="width: 100%"></div>
+            <div id="idPanelMaricula" style="width: 100%; height: 85%; padding-left: 0px; padding-top: 3px;">
+                <div id="gridTabMatriculas"></div>
+            </div>
+        </div>
+        <!--								<div data-dojo-type="dijit/layout/ContentPane" title="Desistencia" id="tabDesistencia" class="Abas">
+                <div class="gridCadBasic" style="height:95%";>
+                    <div id="gridDesistencia" ></div>
+                </div>
+            </div>-->
+    </div>
+</form>
+
+
+
+
+<div id="cadFollowUp" data-dojo-type="dijit/Dialog" title="Cadastro de Follow-Up" style="display: none; width: 800px; height: 600px;">
+    <div style="height: 600px; width: 785px">
+        @Html.Partial("../Secretaria/CadFollowUpPartial")
+    </div>
+</div>
+
+<div id="cadMatricula" data-dojo-type="dijit/Dialog" title="Cadastro de Matrícula" style="width: 900px; max-width:900px; display:none">
+    @Html.Partial("../Secretaria/CadMatriculaPartial")
+</div>

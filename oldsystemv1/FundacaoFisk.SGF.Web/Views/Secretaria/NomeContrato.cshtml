@@ -1,0 +1,186 @@
+﻿@{
+    ViewBag.Title = "Layout de Contrato";
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+
+
+@section scripts {
+    @Scripts.Render("~/bundles/nomeContrato")
+}
+
+@section scriptsBody{
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Layout de Contrato";
+        //**** Requerires para a Tabulação ****\\
+        require([
+                "dojo/NodeList-traverse",
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager"
+        ]);
+        montarNomeContrato();
+    </script>
+}
+
+<div style="width: 100%;">
+    <input type="hidden" id="link" value="" />
+    <div class="apresentadorMsg" id="apresentadorMensagem" style="display: none;"></div>
+    <script type="text/javascript">
+        showCarregando();
+    </script>
+    <div class="EspacoCaixa caixaPesquisa">
+        <table id="tableConceito" class="table">
+            <tr style="vertical-align: middle;">
+                <td class="tdRight" style="width: 10%;">
+                    <label for="nome">Descrição:</label></td>
+                <td style="width: 20%;" class="dojoTextBoxIECorrect">
+                    <input type="text" id="descNoCont" name="Nome" style="width: 100%;" data-dojo-type="dijit/form/TextBox" /></td>
+                <td class="tdRight" style="width: 10%;">
+                    <label for="email">Arquivo:</label></td>
+                <td class="dojoTextBoxIECorrect" style="width: 20%;">
+                    <input type="text" id="layout" name="layout" style="width: 100%;" data-dojo-type="dijit/form/TextBox" /></td>
+                <td class="tdRight" style="width: 7%;">
+                    <label for="fantasia">Início:</label></td>
+                <td class="dojoTextBoxIECorrect" style="width: 1%;">
+                    <input type="checkbox" id="inicioNoCont" data-dojo-type="dijit/form/CheckBox" class="Check" /></td>
+                <td class="tdRight" style="width: 7%;">
+                    <label for="fantasia">Status:</label></td>
+                <td class="dojoTextBoxIECorrect" style="width: 10%;">
+                    <input type="text" id="statusNoCont" name="status" />
+                </td>
+                <td rowspan="2" class="AlinhaDireita" style="width: 15%;">
+                    <input id="pesquisarNoCont" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div style="padding-top: 10px">
+    <div class="linha_acoes" style="width: 100%"></div>
+    <table style="width: 100%" class="Alinhamento">
+        <tr style="width: 100%">
+            <td style="text-align: left; width: 25%">
+                <div class="linkAcoes" id="linkAcoesNoCont"></div>
+            </td>
+            <td style="text-align: center; width: 50%">
+                <input id="novaNoCont" title="Novo" />
+            </td>
+            <td style="text-align: right; width: 25%">
+                <span class="linkSelecionados" id="linkSelecionadosNoCont"></span>
+            </td>
+        </tr>
+    </table>
+    <div class="linha_acoes" style="width: 100%"></div>
+</div>
+
+<div data-dojo-type="dijit/layout/ContentPane" id="contentGridNomeContrato" style="padding-left: 0px; padding-right: 0px;">
+    <div class="gridCadBasic">
+        <div id="gridNomeContrato"></div>
+    </div>
+</div>
+
+<div id="cadNomeCont" data-dojo-type="dijit/Dialog" class="Dialogo" style="max-width: 750px;" title="Cadastro de Layout de Contrato">
+        
+    <div class="sessao_form" style="margin-left: -8px;">
+        <span id="counter_form">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+    <input id="cd_nome_contrato" name="cd_nome_contrato" type="hidden" value="0" />
+    <input id="cd_nome_contrato_pai" name="cd_nome_contrato_pai" type="hidden" value="0" />
+    <input id="des_url_arquivo" name="des_url_arquivo" type="hidden" value="" />
+    <div class="corpo_interno"> 
+        <div class="apresentadorMsg" id="apresentadorMensagemNoCont" style="display: none;"></div>
+        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" class="Formulario" id="formNoCont">
+            <table class="Table">
+                <tr>
+                    <td class="CorpoFormAux AlinhaDireita" style="width: 15%">
+                        <label for="noCont">Descrição:</label></td>
+                    <td class="dojoTextBoxIECorrect" style="width: 67%">
+                        <input id="noCont" name="noCont" maxlength="64" style="width: 100%;" required="required" data-dojo-type="dijit/form/ValidationTextBox" />
+                    </td>
+                    <td class="CorpoFormAux AlinhaDireita" style="width: 13%;">
+                        <label for="ckAtivo">Ativo:</label></td>
+                    <td style="width: 3%;" class="dojoTextBoxIECorrect">
+                        <input type="checkbox" id="ckAtivo" data-dojo-type="dijit/form/CheckBox" class="Check" checked="true" /></td>
+                    <td style="width: 2%;"></td>
+                </tr>
+                <tr>
+                    <td class="CorpoFormAux AlinhaDireita">
+                        <label for="edlayout">Arquivo:</label></td>
+                    <td class="dojoTextBoxIECorrect">
+                        <input id="edlayout" name="edlayout" maxlength="128" style="width: 100%;" data-dojo-type="dijit/form/ValidationTextBox" required="required" readonly="true"/>
+                    </td>
+                    <td class="dojoTextBoxIECorrect" colspan="2" style="text-align: right;">
+                        <input id="btnDown" style="min-width: 18px;" />
+                    <input accept="image/jpg" 
+                           class="browseButton"
+                           name="uploadedfile"
+                           type="file" 
+                           force:"iframe"  
+                           data-dojo-props='iconClass:"dijitEditorIcon dijitEditorIconUpload" ',
+                           isDebug:"true" 
+                           data-dojo-type="dojox/form/Uploader" 
+                           id="uploader" />
+                       @* <input id="btnUp" style="min-width: 18px;" />*@
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="CorpoFormAux AlinhaDireita">
+                        <label for="ckPrevDias">Prev.Dias:</label></td>
+                    <td style="text-align: left" class="dojoTextBoxIECorrect">
+                        <input type="checkbox" id="ckPrevDias" name="ckPrevDias" data-dojo-type="dijit/form/CheckBox" class="Check" /></td>
+                    <td class="CorpoFormAux AlinhaDireita">
+                        <label for="ckValAula">Valor Aula:</label></td>
+                    <td class="dojoTextBoxIECorrect">
+                        <input type="checkbox" id="ckValAula" name="ckValAula" data-dojo-type="dijit/form/CheckBox" class="Check" /></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="CorpoFormAux AlinhaDireita">
+                        <label for="ckAdit">Aditamento:</label></td>
+                    <td style="text-align: left" class="dojoTextBoxIECorrect">
+                        <input type="checkbox" id="ckAdit" name="ckAdit" data-dojo-type="dijit/form/CheckBox" class="Check" /></td>
+                    <td class="CorpoFormAux AlinhaDireita">
+                        <label for="ckTipoPag">Tipo Pagto:</label></td>
+                    <td class="dojoTextBoxIECorrect">
+                        <input type="checkbox" id="ckTipoPag" name="ckTipoPag" data-dojo-type="dijit/form/CheckBox" class="Check" /></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="CorpoFormAux AlinhaDireita">
+                        <label for="ckVlMaterial">Valor Material:</label></td>
+                    <td style="text-align: left" class="dojoTextBoxIECorrect">
+                        <input type="checkbox" id="ckVlMaterial" name="ckVlMaterial" data-dojo-type="dijit/form/CheckBox" class="Check" /></td>
+                    <td class="CorpoFormAux AlinhaDireita">
+                        <label for="ckReajusteAnual">Reajuste Anual:</label></td>
+                    <td class="dojoTextBoxIECorrect">
+                        <input type="checkbox" id="ckReajusteAnual" name="ckTipoPag" data-dojo-type="dijit/form/CheckBox" class="Check" /></td>
+                    <td ></td>
+                </tr>
+            </table>
+        </form>
+        <div class="containerCrud" style="padding-top: 20px;">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <div style="text-align: center">
+                <span id="divIncluirNoCont">
+                    <input type="button" id="incluirNoCont" title="incluir" /></span>
+                <span id="divAlterarNoCont" style="display: none;">
+                    <input type="button" id="alterarNoCont" title="Alterar" /></span>
+                <span id="divExcluirNoCont" style="display: none;">
+                    <input type="button" id="deleteNoCont" title="Excluir" /></span>
+                <span id="divClearNoCont">
+                    <input type="button" id="limparNoCont" title="Limpar" /></span>
+                <span id="divCancelarNoCont" style="display: none;">
+                    <input type="button" id="cancelarNoCont" title="Cancelar" /></span>
+                <span id="divFecharNoCont">
+                    <input type="button" id="fecharNoCont" title="Fechar" /></span>
+            </div>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+    </div>
+</div>

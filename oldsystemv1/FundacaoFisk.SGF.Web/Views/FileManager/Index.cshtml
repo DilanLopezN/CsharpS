@@ -1,0 +1,100 @@
+@{
+    ViewBag.Title = "GerenciadorArquivo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/fileManager")
+}
+
+@section scriptsBody{    
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "GerenciadorArquivo";
+
+        //**** Requerires para a Tabulação ****\\
+        require([
+                "dijit/layout/TabContainer",
+                "dijit/layout/ContentPane",
+                "dojo/NodeList-traverse",
+                "dijit/form/TextBox",
+                "dijit/Dialog",
+                "dijit/form/Select",
+                "dojo/_base/array",
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager",
+                "dojox/form/manager/_Mixin",
+                "dojox/form/manager/_NodeMixin",
+                "dojox/form/manager/_EnableMixin",
+                "dojox/form/manager/_ValueMixin",
+                "dojox/form/manager/_DisplayMixin",
+                "dojo/parser",
+                "dojo/_base/window",
+                "dijit/form/CheckBox"
+        ]);
+        montarCadastroArquivo();
+    </script>
+}
+
+<div style="width: 100%;">
+    <input type="hidden" id="link" value="" />
+    <div class="apresentadorMsg" id="apresentadorMensagem"  style="display:none;"></div>
+    <script type="text/javascript">
+        showCarregando();
+    </script>
+        <div class="EspacoCaixa caixaPesquisa">
+	    <table class="Table">
+		    <tr>
+                <td class="Pesquisa tdRight" style="width:15%">
+                    <label for="caminho" class="tdRight">Caminho: </label>
+				</td>
+			    <td colspan="3" style="width:60%" class="dojoTextBoxIECorrect">
+					<input id="caminho" value="C:/" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width:100%">
+				</td>
+                <td colspan="3" style="width:60%" class="dojoTextBoxIECorrect">
+					<input id="senha" value="" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width:100%">
+				</td>
+                <td style="width:15%" class="tdRight" rowspan="3">
+				    <input id="pesquisarArquivo" title="Pesquisar" />
+			    </td>
+		    </tr>
+	    </table>
+    </div>
+    <div style="padding-top:10px">
+	    <div class="linha_acoes" style="width: 100%"></div>
+	    <div>
+		    <table style="width:100%">
+			    <tr style="width:100%">
+				    <td style="text-align:left; width:25%">
+					    <div class="linkAcoes" id="linkAcoesCurso"></div>
+				    </td>
+				    <td style="text-align:right; width:25%">
+					    <span class="linkSelecionados" id="linkSelecionadosCurso"></span>
+				    </td>
+			    </tr>
+		    </table>
+	    </div>
+	    <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+</div>
+<div data-dojo-type="dijit/layout/ContentPane" id="ContentGridCurso" style="padding-left:0px; padding-right:0px;">
+	<div class="gridCadBasic">
+		<div id="gridArquivo"></div>
+	</div>
+</div>
+<table class="Table">
+	<tr>
+        <td class="Pesquisa tdRight" style="width:15%">
+            <label class="tdRight">Arquivo: </label>
+		</td>
+		<td colspan="3" style="width:60%" class="dojoTextBoxIECorrect nowrap">
+			<input id="arquivo" value="C:/" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width:100%">&nbsp;<input id="downloadArquivo" title="Download" />
+		</td>
+        <td>&nbsp;</td>
+	</tr>
+</table>
+<button type="button" data-dojo-type="dijit/form/Button" id="session" onclick="getSession();">Limpar</button>

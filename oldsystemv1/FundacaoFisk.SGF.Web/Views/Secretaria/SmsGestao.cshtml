@@ -1,0 +1,576 @@
+﻿ @{
+     ViewBag.Title = "Envio automático de SMS - Cobrança e aniversariantes";
+     Layout = "~/Views/Shared/_layout.cshtml";
+ }
+ 
+ @section head {
+     <link rel="stylesheet" href="~/Content/themes/base/dojo1.8.5r/dojox/calendar/themes/claro/Calendar.css">
+ }
+ 
+ @section scripts {
+     @Scripts.Render("~/bundles/SmsGestao");
+
+ }
+
+ @section scriptsBody{
+     <script type="text/javascript">
+         document.getElementById("labelTitulos").innerHTML = "Envio automático de SMS - Cobrança e aniversariantes";
+         //**** Requerires para a Tabulação ****\\
+         require([
+             "dojo/_base/xhr",
+             "dijit/registry",
+             "dojox/grid/EnhancedGrid",
+             "dojox/grid/DataGrid",
+             "dojox/grid/enhanced/plugins/Pagination",
+             "dojo/store/JsonRest",
+             "dojox/data/JsonRestStore",
+             "dojo/data/ObjectStore",
+             "dojo/store/Cache",
+             "dojo/store/Memory",
+             "dojo/query",
+             "dojo/dom-attr",
+             "dijit/form/Button",
+             "dijit/form/TextBox",
+             "dojo/ready",
+             "dijit/form/DropDownButton",
+             "dijit/DropDownMenu",
+             "dijit/MenuItem",
+             "dojo/dom",
+             "dijit/form/DateTextBox",
+             "dojo/on",
+             "dojox/grid/cells",
+             "dojo/data/ItemFileWriteStore",
+             "dijit/tree/ForestStoreModel",
+             "dojox/grid/LazyTreeGrid",
+             "dijit/Dialog",
+             "dojo/domReady!",
+             "dijit/Editor",
+             "dijit/_editor/plugins/FontChoice",
+             "dijit/_editor/plugins/TextColor",
+             "dijit/_editor/plugins/LinkDialog",
+             "dijit/_editor/plugins/ViewSource",
+             "dojox/editor/plugins/ShowBlockNodes",
+             "dojox/editor/plugins/Preview",
+             "dojox/editor/plugins/Blockquote",
+             "dijit/_editor/plugins/NewPage",
+             "dojox/editor/plugins/FindReplace",
+             "dojox/editor/plugins/ToolbarLineBreak",
+             "dojox/editor/plugins/CollapsibleToolbar",
+             "dojo/window",
+             "dojo/_base/event",
+             "dojox/validate/web",
+             "dojox/validate/check", 
+             "dijit/form/NumberTextBox",
+             "dijit/form/ValidationTextBox",
+             "dijit/form/Form",
+             "dojox/form/Manager"
+         ]);
+
+         $("#caixaDePesquisa").hide();
+         
+
+         montarSmsGestao();
+
+     </script>
+ }
+
+
+<div>
+    <div class="EspacoCaixa caixaPesquisa" id="caixaDePesquisa">
+        <table class="Table">
+        <tr>
+        <td>
+        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Filtros'" id="panePesqGeral" open="true" >
+            <table class="Table">
+                <tr>
+                    <td class="tdRight" style="width: 9%;">
+                        <label class="AlinhaDireita;" for="ckMotivo">Motivo:</label>
+                    </td>
+                    <td class="dojoTextBoxIECorrect" style="width: 29%;" colspan="3">
+                        <table>
+                            <tr>
+                                <td style="width: 35%;" class="dojoTextBoxIECorrect">
+                                    <select id="pesqFuncMotivo" name="pesqFuncMotivo" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;"></select>
+                                </td>
+                                <td colspan="2" style="width:50%" id="tdCampoVazio"></td>
+                            </tr>
+                        </table>
+                    </td>
+
+                    <td class="tdRight" style="width: 9%;">
+                        <label class="AlinhaDireita;" for="ckStatus">Status:</label>
+                    </td>
+                    <td style="width: 35%;" class="dojoTextBoxIECorrect" style="width: 29%;" colspan="3">
+                        <select id="pesqFuncStatus" name="pesqFuncStatus" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;"></select>
+                    </td>
+                    <td colspan="2" style="width:50%" id="tdCampoVazio"></td>
+                    <td class="tdRight" style="width: 9%;">
+                        <label class="AlinhaDireita;" for="ckLido">Lido:</label>
+                    </td>
+                    <td style="width: 35%;" class="dojoTextBoxIECorrect">
+                        <select id="pesqFuncLido" name="pesqFuncLido" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;"></select>
+                    </td>
+                    <td colspan="2" style="width:50%" id="tdCampoVazio"></td>
+                </tr>
+            </table>
+        </div>
+
+        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Período de Envio'" id="Div1" open="true">
+            <table class="Table">
+                <tr>
+                    <td class="tdRight nowrap" style="width: 10%;">
+                        <label for="dt_inicial">Data Inicial:</label>
+                    </td>
+                    <td style="width: 25%;" class="dojoTextBoxIECorrect">
+                        <input type="text" id="dt_inicial" name="dt_inicial" class="alignDojoData" data-dojo-type="dijit.form.DateTextBox" class="alignDojoData" style="width: 100%;" onkeypress="mascaraDataHora(event, this)" maxlength="10" />
+                    </td>
+                    <td class="tdRight" style="width: 15%;">
+                        <label for="nome">Data Final:</label>
+                    </td>
+                    <td style="width: 35%;" class="dojoTextBoxIECorrect">
+                        <input type="text" id="dt_final" name="dt_final" class="alignDojoData" data-dojo-type="dijit.form.DateTextBox" style="width: 100%;" onkeypress="mascaraDataHora(event, this)" maxlength="10"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <td style="width: 5%; text-align: center">
+            <input id="PesquisarHistoricoSms" title="Pesquisar" />
+        </td></table>
+    </div>
+   
+
+<div data-dojo-type="dijit/layout/TabContainer" id="tabParametroSMS" class="Abas" style="height: 500px; width:1200px;" onclick="selecionaTab">
+
+@*Grupo Parametro do Serviço de SMS*@
+<div data-dojo-type="dijit/layout/ContentPane" title="Parametrização do serviço" id="tabParametrosSMS" class="ContentPane">
+    <div style="padding-top:10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <div>
+            <table style="width:100%">
+                <tr style="width:100%;">
+                    <td style="text-align:center; width:50%;">
+                        <input id="btnEditarParametro" title="Editar Parametro" />
+                        <input id="btnExclirParametro" title="Excluir Parametro" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+        <div class="gridCadBasic">
+            <div id="gridParametroSMS"></div>
+        </div>
+</div>
+@*fim*@
+
+@*Histório dos SMS*@
+<div data-dojo-type="dijit/layout/ContentPane" title="Histórico de Envio" id="tabHistoricoSMS" class="ContentPane" >
+    <div style="padding-top:10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <div>
+            <table style="width:100%">
+                <tr>
+                    <td style="text-align:right; width:25%">
+                        <div class="linkAcoes" id="linkAcoes"></div>
+                    </td>
+                    <td style="text-align:center; width:50%;">
+                        <input id="relatorioCurso" title="" />
+                    </td>
+                    <td style="text-align:left; width:25%">
+                        <span class="linkSelecionados" id="linkSelecionados"></span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div> 
+        <div class="gridCadBasic">
+            <div id="gridHistoricoSms"></div>
+        </div>
+</div>
+@*fim*@
+
+<!-- anivesariantes do dia -->
+<div data-dojo-type="dijit/layout/ContentPane" title="Envio manual para aniversariantes" id="tabEnvioManualAniversarintesSMS" class="ContentPane" >
+
+    <div class="EspacoCaixa caixaPesquisa" id="caixaDePesquisa">
+        <table class="Table">
+        <tr>
+        <td>
+
+        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Filtros'" id="panePesqAniversariantes" open="true" >
+            <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <label for="pesquisaAniver">Aluno: </label>
+                                <input id="pesquisaAniver" maxlength="64" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 40%">
+                                <label class="AlinhaDireita">Início:</label>
+                                <input type="checkbox" id="inicioDescAniver" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                @*<br /><br />*@
+                                <label class="AlinhaDireita">Opções de público(s):</label>
+                                    <select id="tipoListagem" name="tipoListagem" data-dojo-type="dijit/form/FilteringSelect" class="margemCampoEsq" required="true" style="width: 15%;"></select>
+                            </td>
+                        </tr>
+                    </table>
+        </div>
+
+
+        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Período Aniversariantes'" id="periodoAniversario" open="true">
+            <table class="Table">
+                <tr>
+                    <td class="tdRight nowrap" style="width: 10%;">
+                        <label for="dt_inicial">Data Inicial:</label>
+                    </td>
+                    <td style="width: 25%;" class="dojoTextBoxIECorrect">
+                        <input type="text" id="dt_inicial_aniver" name="dt_inicial_aniver" class="alignDojoData" data-dojo-type="dijit.form.DateTextBox" class="alignDojoData" style="width: 100%;" onkeypress="mascaraDataHora(event, this)" maxlength="10" />
+                    </td>
+                    <td class="tdRight" style="width: 15%;">
+                        <label for="nome">Data Final:</label>
+                    </td>
+                    <td style="width: 35%;" class="dojoTextBoxIECorrect">
+                        <input type="text" id="dt_final_aniver" name="dt_final_aniver" class="alignDojoData" data-dojo-type="dijit.form.DateTextBox" style="width: 100%;" onkeypress="mascaraDataHora(event, this)" maxlength="10"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <td style="width: 5%; text-align: center">
+            <input id="pesquisarAniversariantes" title="Pesquisar" />
+        </td></table>
+    </div>
+
+    <div style="padding-top:10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <div>
+            <table style="width:100%">
+                <tr>
+                    <td style="text-align:right; width:25%">
+                        <div class="linkAcoesAniversariantes" id="linkAcoesAniversariantes"></div>
+                    </td>
+                    <td style="text-align:center; width:50%;" onshow="false">
+                        <input id="relatorioAniversariantes" title="" />
+                    </td>
+                    <td style="text-align:left; width:25%">
+                        <span class="linkSelecionadosAniversariantes" id="linkSelecionadosAniversariantes"></span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div> 
+        <div class="gridCadBasic">
+            <div id="gridAniversarioManualSms"></div>
+        </div>
+</div>
+
+<!-- devedores manual -->
+<div data-dojo-type="dijit/layout/ContentPane" title="Envio manual para devedores" id="tabEnvioManualDevedoresSms" class="ContentPane" >
+
+
+    <div class="EspacoCaixa caixaPesquisa" id="caixaDePesquisa">
+        <table class="Table">
+        <tr>
+        <td>
+
+        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Filtros'" id="panePesqDevedores" open="true" >
+            <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <label for="pesquisaDevedor">Aluno: </label>
+                                <input id="pesquisaDevedor" maxlength="64" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 59%">
+                                <label class="AlinhaDireita">Início:</label>
+                                <input type="checkbox" id="inicioDescDevedor" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                            </td>
+                        </tr>
+                    </table>
+        </div>
+
+        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Configuração de Disparo dos Itens Selecionados'" id="panePesqDevedoresAgenda" open="true" >
+            <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <label>Devedores do Dia: </label>
+                                <input type="checkbox" id="devedoresDoDia" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                            
+                                <label style="margin-bottom: inherit">Dias Antes de Vencer:</label>
+                                <input type="text" id="nmDiasAntes" style="width: 9%" name="nmDiasAntes"  required="true"
+                                        data-dojo-type="dijit/form/NumberSpinner"
+                                        onkeypress="mascaraInt(document.getElementById('nmDiasAntes'));"
+                                        data-dojo-props="smallDelta:1, constraints:{min:1,max:31,places:0,pattern:'00'}" />
+
+                                <label style="margin-bottom: inherit">Dias Depois de Vencer:</label>
+                                <input type="text" id="nmDiasDepois" style="width: 9%" name="nmDiasDepois"  required="true"
+                                        data-dojo-type="dijit/form/NumberSpinner"
+                                        onkeypress="mascaraInt(document.getElementById('nmDiasDepois'));"
+                                        data-dojo-props="smallDelta:1, constraints:{min:1,max:31,places:0,pattern:'00'}" />
+                            </td>
+                        </tr>
+                </table>
+        </div>
+
+
+        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Período de Envio'" id="periodoDevedores" open="true">
+            <table class="Table">
+                <tr>
+                    <td class="tdRight nowrap" style="width: 10%;">
+                        <label for="dt_inicial">Data Inicial:</label>
+                    </td>
+                    <td style="width: 25%;" class="dojoTextBoxIECorrect">
+                        <input type="text" id="dt_inicial_devil" name="dt_inicial_devil" class="alignDojoData" data-dojo-type="dijit.form.DateTextBox" class="alignDojoData" style="width: 100%;" onkeypress="mascaraDataHora(event, this)" maxlength="10" />
+                    </td>
+                    <td class="tdRight" style="width: 15%;">
+                        <label for="nome">Data Final:</label>
+                    </td>
+                    <td style="width: 35%;" class="dojoTextBoxIECorrect">
+                        <input type="text" id="dt_final_devil" name="dt_final_devil" class="alignDojoData" data-dojo-type="dijit.form.DateTextBox" style="width: 100%;" onkeypress="mascaraDataHora(event, this)" maxlength="10"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <td style="width: 5%; text-align: center">
+            <input id="pesquisarDevil" title="Pesquisar" />
+        </td></table>
+    </div>
+  
+    <div style="padding-top:10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <div>
+            <table style="width:100%">
+                 <tr style="width: 100%">
+                    <td style="text-align:right; width:25%">
+                        <div class="linkAcoes" id="linkAcoesDev"></div>
+                    </td>
+                    <td style="text-align:center; width:50%;">
+                        <input id="relatorioDevil" title="" />
+                    </td>
+                    <td style="text-align:left; width:25%">
+                        <span class="linkSelecionados" id="linkSelecionadosDev"></span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div> 
+        <div class="gridCadBasic">
+            <div id="gridDevedoresManualSms"></div>
+        </div>
+</div>
+
+@*Mensagens Padão de SMS - Se não for True (os campos: id_automatico_devedores e Id_automatico_aniver) o automatico*@
+<div data-dojo-type="dijit/layout/ContentPane" title="Mensagens Padrões" id="tabMensagemPadraoAutomaticoSms" class="ContentPane" >
+    <div style="padding-top:10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <div>
+            <table style="width:100%">
+                <tr style="width:100%;">
+                    <td style="text-align:center; width:50%;">
+                        <input id="btcomporMensagemSms" title="Compor Mensagem" />
+                        <input id="btnEditarMensagemSms" title="Editar Mensagem" />
+                        <input id="btnExclirMensagemSMS" title="Excluir Mensagem" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+        <div class="gridCadBasic">
+            <div id="gridComporSMS"></div>
+        </div>
+</div>
+@*fim*@
+
+@*Aba Créditos*@								
+<div data-dojo-type="dijit/layout/ContentPane" title="Créditos e validade de SMS" id="tabCreditosSMS" class="Abas">
+    <div class="gridCadBasic" style="height:95%";>
+        <h1>Nome da Unidade</h1> <br>
+            <b>- Você possui 5.000 créditos contratados.</b></br>
+        <b>- Com validade até 15/03/2020.</b>
+    </div>
+</div>
+@*fim*@
+    
+
+@*Cadasdatro de mensagens Padrões - Se não for True (os campos: id_automatico_devedores e Id_automatico_aniver) o automatico*@
+<div id="cad" data-dojo-type="dijit/Dialog" class="Dialogo" style="max-width: 1000px; height: 320px; display:none;" title="Mensagens SMS">
+    <div class="corpo_interno" style="max-width: 98%; height: 57%; max-height: 57%">
+        <div >
+            <div class="CaixaAcao">
+                <div class="linha_acoes" style="width: 100%"></div>
+                <div class="Alinhamento">
+                                                
+                    <select id="tipoSmsCompor" name="tipoSmsCompor" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" required="true"></select>
+                    <br /><br />
+                    <span class="linkSelecionados" id="linkCamposMesclagem"></span>
+                </div>
+                                                
+                <div class="linha_acoes" style="width: 100%"></div>
+            </div>
+                                            
+        </div>
+        <table class="Table">
+            <tr>
+                <h3>Escreva a Mensagem de SMS:</h3>
+                <br />
+                <td style="width: 90%;" class="Table dojoTextBoxIECorrect">
+                    <input type="text" id="dc_assunto" name="dc_assunto" style="width: 100%;" placeholder="Mensagem de SMS com no máximo 155 letras, incluindo espaço e pontuação." 
+                           maxlength="155" data-dojo-type="dijit/form/ValidationTextBox" required="required" />
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="containerCrud" style="margin-top: 50px;">
+        <div class="linha_acoes" style="width: 100%;"></div>
+        <div style="text-align: center">
+            <span id="divIncluirMensagem">
+                <input type="button" id="incluirMensagem" title="incluir" /></span>
+            <span id="divAlterarMensagem" style="display: none;">
+                <input type="button" id="alterarMensagem" title="Alterar" /></span>
+            <span id="divExcluirMensagem" style="display: none;">
+                <input type="button" id="deleteMensagem" title="Excluir" /></span>
+            <span id="divClearMensagem">
+                <input type="button" id="limparMensagem" title="Limpar" /></span>
+            <span id="divCancelarMensagem" style="display: none;">
+                <input type="button" id="cancelarMensagem" title="Cancelar" /></span>
+            <span id="divFecharMensagem">
+                <input type="button" id="fecharJanelaMensagem" title="Fechar" /></span>
+        </div>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+</div>
+@*fim*@
+    
+@*Mensagem que aparece quando a escola não tem parametro do serviço configurado*@
+<div data-dojo-type="dijit.Dialog" id="dialogParametrize" title="É preciso configurar o Serviço de SMS" style="width: 600px; visibility:visible;">
+    <div class="corpo_interno">
+        <div class="apresentadorMsg" id="apresentadorMensagemEncNovaTurmaCk" style="display: none;"></div>
+        <table style="width: 100%">
+            <tr style="width: 100%">
+                <p>1. Você não possui seus parâmetros do serviço de SMS cadastrados. <b style="color:blue">Caso já tenha,</b> clique em <b>"Cadastrar Meus parâmetros".</b></p><br>
+                <p> <b style="color:blue">2. Se ainda não contratou o serviço de SMS indicado pela Fundação Fisk, clique no botão:</b> <b>"Contratar Serviços de SMS".</b></p><br>
+                <p>3. Clique no <b style="color:blue">"Fechar (x)"</b> <b>para sair da tela sem fazer nada.</b></p></br>
+            </tr>
+        </table>
+        <div class="containerCrud">
+            <div class="linha_acoes" style="width: 100%"></div>
+
+            <div style="text-align: center" id="botaoNovaTurmaCk">
+                <span id="divNovaTurmaEncCk">
+                    <input id="meusParametros" title="Cadastrar Meus parâmetros" /></span>
+                <span id="divFecharEncNovaCk">
+                     
+    
+                    <a href="https://www.tww.com.br/sms-corporativo/" target="_blank">
+                        <input type="button" id="contratarServico" title="Contratar Serviços de SMS"/>
+                    </a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+@*fim*@
+
+<div class="clear"></div>
+
+@*Form de cadastro dos parametros*@
+<div id="cadParametroSMS" data-dojo-type="dijit/Dialog" class="Dialogo"  style="max-width: 750px;"  title="Parametrização do Serviço de SMS">
+        
+    <div class="sessao_form" style="margin-left: -10px;">
+        <span id="counter_form">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    <div class="corpo_interno" style="max-width: 720px;">
+        <div class="apresentadorMsg" id="apresentadorMensagemTurma" style="display: none;"></div>
+        <div data-dojo-type="dijit/layout/TabContainer" id="tabContainerTurma" class="Abas" onclick="selecionaTab" style="min-height: 240px; max-height: 300px; height: 100%;">
+            <div data-dojo-type="dijit/layout/ContentPane" id="tabPrincipalTurma" title="Principal" style="height: 100%;">
+                <form name="formTurmaPrincipal" id="formTurmaPrincipal" data-dojo-type="dojox/form/Manager" style="width: 100%">
+                    <table class="Table">
+                        <tr>
+                            <td class="CorpoFormAux AlinhaDireita" style="width: 30%;">
+                                <label>Seu Código de Usuário (NumUsu):</label></td>
+                            <td class="dojoTextBoxIECorrect" colspan="3" style="width: 30%;">
+                                <input id="numUsu" name="numUsu" type="text" data-dojo-type="dijit.form.ValidationTextBox" style="width: 100%" required="true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="CorpoFormAux AlinhaDireita">
+                                <label>Celular da Unidade:</label>
+                            </td>
+                            <td class="dojoTextBoxIECorrect">
+                                <input type="text" style="width: 100%;" id="seuNum" name="seuNum" type="text" data-dojo-type="dijit.form.ValidationTextBox" required="required" />
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="CorpoFormAux AlinhaDireita" style="width: 30%;">
+                                <label>Senha do Serviço:</label></td>
+                            <td class="dojoTextBoxIECorrect" colspan="3" style="width: 70%;">
+                                <input type="password" id="senha" name="senha" type="text" data-dojo-type="dijit.form.ValidationTextBox" style="width: 100%" required="true"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="CorpoFormAux AlinhaDireita" style="width: 30%;">
+                                <label>Confirme a Senha do Serviço:</label></td>
+                            <td class="dojoTextBoxIECorrect" colspan="3" style="width: 70%;">
+                                <input type="password" id="confirmeSenha" name="confirmeSenha" type="text" data-dojo-type="dijit.form.ValidationTextBox" style="width: 100%" required="true"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="CorpoFormAux AlinhaDireita">
+                                <label>URL do Serviço:</label>
+                            </td>
+                            <td class="dojoTextBoxIECorrect">
+                                <input type="text" id="urlServico" name="urlServico" data-dojo-type="dijit.form.ValidationTextBox" style="width: 100%" required="true" />
+                            </td>
+                        </tr>
+                         
+
+                        <!-- recurso novo -->
+                        <tr>
+                            <td class="tdRight" style="width: 10%;">
+                                <label class="AlinhaDireita;" for="dispartoAutomaticoDevedoresCk">Disparo automático para Devedores:</label>
+                            </td>
+                            <td class="dojoTextBoxIECorrect">
+                                <input type="checkbox" id="dispartoAutomaticoDevedoresCk" data-dojo-type="dijit/form/CheckBox" />
+                            </td>
+                            <td class="tdLeft" style="width: 35%;">
+                                <label for="dispartoAutomaticoAniversariantesCk">Disparo automático para Aniversariantes:</label>
+                            </td>
+                            <td class="dojoTextBoxIECorrect">
+                                <input type="checkbox" id="dispartoAutomaticoAniversariantesCk" data-dojo-type="dijit/form/CheckBox" />
+                            </td>
+                        </tr>
+                         
+                        <!-- recurso novo -->
+                            
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="containerCrud" style="margin-top: 50px;">
+        <div class="linha_acoes" style="width: 100%;"></div>
+        <div style="text-align: center">
+            <span id="divIncluirTurma">
+                <input type="button" id="incluirParametro" title="incluir" /></span>
+            <span id="divAlterarParam" style="display: none;">
+                <input type="button" id="alterarParametro" title="Alterar Parametro" /></span>
+            <span id="divExcluirParam" style="display: none;">
+                <input type="button" id="deleteParametro" title="Excluir" /></span>
+            <span id="divClearParam">
+                <input type="button" id="limparParametro" title="Limpar" /></span>
+            <span id="divCancelarParam" style="display: none;">
+                <input type="button" id="cancelarParametro" title="Cancelar" /></span>
+            <span id="divFecharParam">
+                <input type="button" id="fecharJanela" title="Fechar" /></span>
+        </div>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+</div>
+@*fim*@
+
+</div>
+
+
+</div>
+ 

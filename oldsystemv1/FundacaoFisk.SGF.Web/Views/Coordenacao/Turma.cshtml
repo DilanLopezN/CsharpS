@@ -1,0 +1,1589 @@
+﻿@{
+    ViewBag.Title = "Turma";
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+
+@section head {
+    <link rel="stylesheet" href="~/Content/themes/base/dojo1.8.5r/dojox/calendar/themes/claro/Calendar.css">
+    <link href="~/Content/themes/base/dojo1.8.5r/dojox/form/resources/CheckedMultiSelect.css" rel="stylesheet" />
+}
+@section scripts{
+    @Scripts.Render("~/bundles/pessoaTurmaFK")
+    @Scripts.Render("~/bundles/cadDiarioAulaPartial")
+    @Scripts.Render("~/bundles/cadDesistenciaPartial")
+    @Scripts.Render("~/bundles/turma")
+    <script src="~/Scripts/json2.js"></script>
+}
+
+
+@section scriptsBody{
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Turma";
+        //**** Requerires para a Tabulação ****\\
+        require([
+                "dojo/NodeList-traverse",
+                "dijit/form/Select",
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager",
+                "dijit/Tooltip",
+                "dijit/form/TimeTextBox",
+                "dojox/charting/Chart",
+                "dojo/_base/window",
+                "dojox/grid/LazyTreeGrid",
+                "dijit/tree/ForestStoreModel",
+                "dojo/data/ItemFileWriteStore"
+        ]);
+
+
+        //montarGridPesquisaAluno(false);
+        montarGridPesquisaProfessor(true);
+        montargridPesquisaCurso();
+        montarMetodosTurma('@Permissoes');
+
+    </script>
+    <style>
+        /*Mudar as cores dos horários alocados diferente de disponivies e alocados*/
+        /*Css abaixo aplicado para sala*/
+        .claro .dojoxCalendarEvent.Calendar3 .bg {
+            background-color: #FF4000;
+        }
+
+        .claro .dojoxCalendarEvent.Calendar3.Hovered .bg {
+            background-color: #FE642E;
+        }
+
+        .claro .dojoxCalendarEvent.Calendar3.Selected .bg {
+            background-color: #B43104;
+        }
+
+        .claro .dojoxCalendarEvent.Calendar3 .startTime {
+            background-color: #B43104;
+        }
+
+        .claro .dojoxCalendarEvent.Calendar3.Hovered .startTime {
+            background-color: #FF4000;
+        }
+
+        .claro .dojoxCalendarEvent.Calendar3.Selected .startTime {
+            background-color: #8A2908;
+        }
+
+        .claro .dojoxCalendarEvent.Calendar3 .handle {
+            background-color: #FF4000;
+        }
+
+        /*Csss abaixo aplicado professor alocado*/
+        .claro .dojoxCalendarEvent.Calendar4 .bg {
+            background-color: #088A08;
+        }
+
+        .claro .dojoxCalendarEvent.Calendar4.Hovered .bg {
+            background-color: #04B404;
+        }
+
+        .claro .dojoxCalendarEvent.Calendar4.Selected .bg {
+            background-color: #0B610B;
+        }
+
+        .claro .dojoxCalendarEvent.Calendar4 .startTime {
+            background-color: #0B610B;
+        }
+
+        .claro .dojoxCalendarEvent.Calendar4.Hovered .startTime {
+            background-color: #088A08;
+        }
+
+        .claro .dojoxCalendarEvent.Calendar4.Selected .startTime {
+            background-color: #0B3B0B;
+        }
+
+        .YellowRow td {
+            background-color: #fefa77;
+        }
+
+        .YellowRow td.Hovered {
+            background-color: #fefa77;
+        }
+
+        .GreenRow td {
+            background-color: #84fe88;
+        }
+
+        .GreenRow td.Hovered {
+            background-color: #84fe88;
+        }
+
+        .OrangeRow td {
+            background-color: #FC5B00;
+        }
+
+        .OrangeRow td.Hovered {
+            background-color: #FC5B00;
+        }
+
+        .RedRow td {
+            background-color:#be4848;
+        }
+
+        .BlueRow td {
+            background-color:CornflowerBlue;
+        }
+    </style>
+}
+<input type="hidden" id="link" value="" />
+<input type="hidden" id="linkTagProf" value="" />
+<div class="apresentadorMsg" id="apresentadorMensagem" style="display:none;"></div>
+<script type="text/javascript">
+    showCarregando();
+</script>
+
+<div>
+    <div class="EspacoCaixa caixaPesquisa">
+        <input type="hidden" id="setValuePermissoes" value="" />
+        <table class="Table">
+            <tr>
+                <td style="width: 100%;">
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Filtros'" id="panePesqGeral" open="true">
+                        <table class="Table">
+                            <tr>
+                                <td class="tdRight nowrap" style="width: 7%;">
+                                    <input id="cdAlunoPesTurma" type="hidden" />
+                                    <label for="noAluno">Aluno:</label>
+                                </td>
+                                <td>
+                                    <input id="cdAluno" type="hidden" />
+                                    <table class="Table">
+                                        <tr>
+                                            <td class="dojoTextBoxIECorrect" style="width: 95%;">
+                                                <input id="noAluno" name="nom_aluno" size="125" style="width: 100%;" required="true" data-dojo-type="dijit/form/ValidationTextBox" disabled="disabled" />
+                                            </td>
+                                            <td style="width: 5%; text-align: left" class="nowrap">
+                                                <input id="pesAluno" style="min-width: 18px" style="width: 100%;" />
+                                                <input type="text" id="limparAlunoPes" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td class="tdRight nowrap" style="width: 14%;">
+                                    <label for="semContrato">Alunos Movidos sem Matrícula:</label>
+                                </td>
+                                <td style="width: 24%;">
+                                    <input type="checkbox" id="semContrato" required="false" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                                </td>
+                                <td class="tdRight" style="width: 7%;">
+                                    <label for="tipoTurma">Tipo Turma:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 9%;">
+                                    <select id="tipoTurma" name="tipoTurma" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;"></select>
+                                </td>
+                                <td class="tdRight nowrap" style="width: 8%;">
+                                    <label id="lblTurmaFilhas" for="tipoTurma" style="display: none;">Turmas Filhas:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 3%;">
+                                    <div id="divPesTurmasFilhas" style="display: none;">
+                                        <input type="checkbox" id="pesTurmasFilhas" required="false" data-dojo-type="dijit/form/CheckBox" class="Check" required="required" />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdRight nowrap" style="width: 6%;">
+                                    <label for="nome">Nome Turma:</label>
+                                </td>
+                                <td style="width: 27%;" class="dojoTextBoxIECorrect">
+                                    <input type="text" id="_nomTurma" name="_nomTurma" style="width: 100%;" data-dojo-type="dijit/form/TextBox" required="required" />
+                                </td>
+                                <td class="tdRight" style="width: 7%;">
+                                    <label for="inicioTruma">Apelido Turma:</label>
+                                </td>
+                                <td style="width: 25%;">
+                                    <table class="Table">
+                                        <tr>
+                                            <td style="width:87%;" class="dojoTextBoxIECorrect">
+                                                <input type="text" id="_apelidoT" name="_apelidoT" style="width: 100%;" data-dojo-type="dijit/form/TextBox" required="required" />
+                                            </td>
+                                            <td class="tdRight" style="width: 08%;text-align:right;">
+                                                <label for="inicioTruma">Início:</label>
+                                            </td>
+                                            <td style="width: 5%;text-align:right;">
+                                                <input type="checkbox" id="inicioTurma" data-dojo-type="dijit/form/CheckBox" class="Check" required="required" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td class="tdRight" style="width: 9%;">
+                                    <label>Produto:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" colspan="3">
+                                    <select id="pesProduto" name="pesProduto" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;"></select>
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td class="tdRight" style="width: 7%;">
+                                    <label>Curso:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <select id="pesCurso" name="pesCurso" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;"></select>
+                                </td>
+                                <td class="tdRight" style="width: 14%;">
+                                    <label>Carga Horária:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <select id="pesDuracao" name="pesDuracao" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;"></select>
+                                </td>
+                                <td class="tdRight" style="width: 9%;">
+                                    <label for="sPogramacao">Programação:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" colspan="2">
+                                    <select id="sProgramacao" name="sProgramacao" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;"></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdRight" style="width: 7%;">
+                                    <label>Situação:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <select id="pesSituacao" name="pesSituacao" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;"></select>
+                                </td>
+                                <td class="tdRight" style="width: 14%;">
+                                    <label>Professor:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <select id="pesProfessor" name="pesProfessor" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;"></select>
+                                </td>
+                                <td class="tdRight nowrap" style="width: 9%;">
+                                    <label for="ckIdProfTurmasAtuais">Professor Turmas Atuais:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" colspan="3">
+                                    <input type="checkbox" id="ckIdProfTurmasAtuais" required="false" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdRight" style="width: 7%;">
+                                    <label for="ckOnLine">On-Line:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 9%;">
+                                    <select id="ckOnLine" name="ckOnLine" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;"></select>
+                                </td>
+                                <td class="tdRight nowrap" style="width: 9%;">
+                                    <label for="ckDomingo">Domingo:</label>
+                                </td>
+                                <td colspan="4">
+                                    <table>
+                                        <tr>
+                                            <td class="dojoTextBoxIECorrect">
+                                                <input type="checkbox" id="ckDomingo" required="false" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                                            </td>
+                                            <td class="tdRight nowrap" style="width: 9%;">
+                                                <label for="ckSegunda">Segunda:</label>
+                                            </td>
+                                            <td class="dojoTextBoxIECorrect">
+                                                <input type="checkbox" id="ckSegunda" required="false" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                                            </td>
+                                            <td class="tdRight nowrap" style="width: 9%;">
+                                                <label for="ckTerca">Terça:</label>
+                                            </td>
+                                            <td class="dojoTextBoxIECorrect">
+                                                <input type="checkbox" id="ckTerca" required="false" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                                            </td>
+                                            <td class="tdRight nowrap" style="width: 9%;">
+                                                <label for="ckQuarta">Quarta:</label>
+                                            </td>
+                                            <td class="dojoTextBoxIECorrect">
+                                                <input type="checkbox" id="ckQuarta" required="false" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                                            </td>
+                                            <td class="tdRight nowrap" style="width: 9%;">
+                                                <label for="ckQuinta">Quinta:</label>
+                                            </td>
+                                            <td class="dojoTextBoxIECorrect">
+                                                <input type="checkbox" id="ckQuinta" required="false" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                                            </td>
+                                            <td class="tdRight nowrap" style="width: 9%;">
+                                                <label for="ckSexta">Sexta:</label>
+                                            </td>
+                                            <td class="dojoTextBoxIECorrect">
+                                                <input type="checkbox" id="ckSexta" required="false" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                                            </td>
+                                            <td class="tdRight nowrap" style="width: 9%;">
+                                                <label for="ckSabado">Sábado:</label>
+                                            </td>
+                                            <td class="dojoTextBoxIECorrect">
+                                                <input type="checkbox" id="ckSabado" required="false" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdRight" style="width: 7%;">
+                                    <label for="cbSearchSala">Sala:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 9%;">
+                                    <select id="cbSearchSala" name="cbSearchSala" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;"></select>
+                                </td>
+
+                                <td class="tdRight" style="width: 7%;">
+                                    <label for="cbSearchSalaOnLine">SalaOn-Line:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 9%;">
+                                    <select id="cbSearchSalaOnLine" name="cbSearchSalaOnLine" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;"></select>
+                                </td>
+                                <td class="tdRight nowrap" style="width: 9%;">
+                                    <label for="ckSemSala">Sem Sala:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input type="checkbox" id="ckSemSala" required="false" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                                </td>
+                                <td class="tdRight nowrap" style="width: 9%;">
+                                    <label for="ckSemAluno">Sem Aluno:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input type="checkbox" id="ckSemAluno" required="false" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                                </td>
+                            </tr>
+                            <tr id="trEscolaFiltroTelaTurma">
+                                <td class="tdRight" style="width: 7%;">
+                                    <label for="escolaFiltroTelaTurma" id="lbEscolaFiltroTelaTurma">Escola:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <select id="escolaFiltroTelaTurma" name="escolaFiltroTelaTurma" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;"></select>
+                                </td>
+                                <td colspan="4">
+                                </td>
+                            </tr>
+                        </table>
+                        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Período da Data Inicial'" id="paneDataInicial" open="false">
+                            <table class="Table">
+                                <tr>
+                                    <td class="tdRight" style="width: 15%;">
+                                        <label for="nome">Data Inicial:</label>
+                                    </td>
+                                    <td style="width: 35%;" class="dojoTextBoxIECorrect">
+                                        <input 
+                                            type="text" 
+                                            id="dtInicial" 
+                                            name="dtInicial" 
+                                            class="alignDojoData" 
+                                            data-dojo-type="dijit.form.DateTextBox" style="width: 100%;" 
+                                            onkeypress="mascaraDataHora(event, this)" maxlength="10"/>
+                                    </td>
+                                    <td class="tdRight" style="width: 15%;">
+                                        <label for="nome">Data Final:</label>
+                                    </td>
+                                    <td style="width: 35%;" class="dojoTextBoxIECorrect">
+                                        <input 
+                                            type="text" 
+                                            id="dtFinal" 
+                                            name="dtFinal" 
+                                            class="alignDojoData" 
+                                            data-dojo-type="dijit.form.DateTextBox" style="width: 100%;" 
+                                            onkeypress="mascaraDataHora(event, this)" maxlength="10"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </td>
+                <td style="width: 5%; text-align: center">
+                    <input id="pesquisarTurma" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="padding-top: 10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%" class="Alinhamento">
+            <tr style="width: 100%">
+                <td style="text-align: left; width: 25%">
+                    <div class="linkAcoes" id="linkAcoesTurma"></div>
+                </td>
+                <td style="text-align: center; width: 50%">
+                    <input id="novaTurma" title="Novo" />
+                    <input id="relatorioTurma" title="Relatório" />
+                </td>
+                <td style="text-align: right; width: 25%">
+                    <span class="linkSelecionadosTurma" id="linkSelecionados"></span>
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+    <div data-dojo-type="dijit/layout/ContentPane" style="padding-left: 0px; padding-right: 0px;">
+        <div class="gridCadBasic">
+            <div id="gridTurma"></div>
+        </div>
+    </div>
+</div>
+
+<input id="cd_turma" type="hidden" value="0" />
+<input id="abriuEscola" name="abriuEscola" type="hidden" value="false" />
+<input id="qtdEscolasVinculadasUsuario" name="qtdEscolasVinculadasUsuario" type="hidden" value="0" />
+<input id="cd_turma_enc" type="hidden" value="0" />
+<input id="cd_turma_ppt" type="hidden" value="0" />
+<input id="tipoGrid" type="hidden" value="" />
+<input id="tipoTurmaCad" type="hidden" value="1" />
+<input id="apresentadorMensagemFks" type="hidden">
+<input id="tabAlunosRemovida" type="hidden" value="false" />
+<input id="escolaturma" type="hidden" value="0" />
+<div id="cadTurma" data-dojo-type="dijit/Dialog" class="Dialogo"  style="max-width: 750px;"  title="Cadastro de Turma">
+        
+    <div class="sessao_form" style="margin-left: -10px;">
+        <span id="counter_form">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    <div class="corpo_interno" style="max-width: 720px;">
+        <div class="apresentadorMsg" id="apresentadorMensagemTurma" style="display: none;"></div>
+        <div data-dojo-type="dijit/layout/TabContainer" id="tabContainerTurma" class="Abas" onclick="selecionaTab" style="min-height: 440px; max-height: 800px; height: 100%;">
+            <div data-dojo-type="dijit/layout/ContentPane" id="tabPrincipalTurma" title="Principal" style="height: 100%;">
+                <form name="formTurmaPrincipal" id="formTurmaPrincipal" data-dojo-type="dojox/form/Manager" style="width: 100%">
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Geral'" id="paneGeral" open="true">
+                        <table class="Table">
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita" style="width: 15%;">
+                                    <label>Modalidade:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 35%;">
+                                    <input type="text" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" id="pesCadRegime" name="pesCadRegime" required="true" />
+                                </td>
+                                <td colspan="2" style="width: 50%;">
+                                    <table class="Table">
+                                        <tr>
+                                            <td class="CorpoFormAux AlinhaDireita" style="width: 18%;">
+                                                <label for="idTurmaPPTPai">PPT pai:</label>
+                                            </td>
+                                            <td class="dojoTextBoxIECorrect" style="width: 40%;">
+                                                <input name="idTurmaPPTPai" type="checkbox" id="idTurmaPPTPai" data-dojo-type="dijit/form/CheckBox" disabled="disabled" />
+                                            </td>
+                                            <td class="CorpoFormAux AlinhaDireita" id="labelAtiva" style="width: 10%;">
+                                                <label for="idTurmaAtiva" id="labelTurmaAtiva">Ativa:</label>
+                                            </td>
+                                            <td class="dojoTextBoxIECorrect" id="turmaAtiva" style="width: 32%;">
+                                                <input name="idTurmaAtiva" type="checkbox" id="idTurmaAtiva" data-dojo-type="dijit/form/CheckBox" checked="true" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr id="trTurmaPPT" style="display: none;">
+                                <td class="CorpoFormAux AlinhaDireita" style="width: 15%;">
+                                    <label>Turma PPT:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" colspan="3" style="width: 85%;">
+                                    <table class="Table">
+                                        <tr>
+                                            <td style="width: 94%" class="dojoTextBoxIECorrect">
+                                                <input id="nomTurmaPPF" name="nomTurmaPPF" style="width: 100%;" disabled="disabled" data-dojo-type="dijit/form/ValidationTextBox" required="true" maxlength="128" />
+                                            </td>
+                                            <td class="tdRight" style="width: 4%">
+                                                <input id="pesProTurmaFK" style="min-width: 18px" /></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita" style="width: 10%;">
+                                    <label>Nome:</label></td>
+                                <td class="dojoTextBoxIECorrect" colspan="3" style="width: 90%;">
+                                    <input id="noTurma" name="noTurma" type="text" data-dojo-type="dijit.form.ValidationTextBox" style="width: 100%" disabled="disabled" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita" style="width: 10%;">
+                                    <label>Apelido:</label></td>
+                                <td class="dojoTextBoxIECorrect" colspan="3" style="width: 90%;">
+                                    <input id="noApelido" name="noApelido" type="text" data-dojo-type="dijit.form.ValidationTextBox" style="width: 100%" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita">
+                                    <label>Produto:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input type="text" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" id="pesCadProduto" name="pesCadProduto" required="required" />
+                                </td>
+                                <td class="CorpoFormAux AlinhaDireita">
+                                    <label>Curso:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    @*<input type="hidden" name="cdCurso" style="width: 100%;" id="cdCurso" />*@
+                                    <input type="text" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" name="pesCadCurso" id="pesCadCurso" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita">
+                                    <label>Carga Horária:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input type="text" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" id="pesCadDuracao" name="pesCadDuracao" />
+                                </td>
+                                <td class="CorpoFormAux AlinhaDireita" id="lblSalaPPTPai" >
+                                    <label>Sala:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" id="tdSalaPPTPai">
+                                    <input type="text"  style="width: 100%;" data-dojo-type="dijit/form/TextBox" disabled="disabled" id="salaPPTPai" name="salaPPTPai" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Datas/Aulas'" id="tagAula" open="true">
+                        <table class="Table">
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 20%;">
+                                    <label>Data Início:</label></td>
+                                <td class="dojoTextBoxIECorrect" style="width: 35%;">
+                                    <input 
+                                        type="text" 
+                                        id="dtIniAula" 
+                                        name="dtIniAula" 
+                                        class="alignDojoData" data-dojo-type="dijit.form.DateTextBox" 
+                                        required="required" style="width: 100%;" 
+                                        constraints="{min:'1900-01', max:'2079-06', datePattern:'dd/MM/yyyy'}"
+                                        onkeypress="mascaraDataHora(event, this)" maxlength="10"/>
+                                </td>
+                                <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 10%;">
+                                    <label>Data de Fim:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 35%;">
+                                    <input 
+                                        type="text" 
+                                        id="dtFimAula" 
+                                        data-dojo-type="dijit.form.DateTextBox" 
+                                        class="alignDojoData" style="width: 100%;" disabled="disabled" 
+                                        onkeypress="mascaraDataHora(event, this)" maxlength="10"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita nowrap">
+                                    <label>Aulas Programadas:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input value="0" style="width: 40%;"  data-dojo-type="dijit.form.TextBox" id="nrAulasProg" name="nrAulasProg" maxlength="8" disabled="disabled" />
+                                </td>
+                                <td class="CorpoFormAux AlinhaDireita nowrap">
+                                    <label for="id_aula_externa">Aula Externa:</label>
+                                </td>
+
+                                <td class="dojoTextBoxIECorrect">
+                                    <input name="idAulaExterna" type="checkbox" id="idAulaExterna" data-dojo-type="dijit/form/CheckBox" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita">
+                                    <label>Data de Encerramento:</label>
+                                </td>
+                                <td class="nowrap" >
+                                    <input type="text" 
+                                        data-dojo-type="dijit.form.DateTextBox" 
+                                        id="dtaTermino" name="dtaTermino" disabled="disabled" 
+                                        onkeypress="mascaraDataHora(event, this)" maxlength="10"/>
+                                </td>
+                                <td class="CorpoFormAux AlinhaDireita">
+                                    <label>Total Alunos:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" > @*colspan="3" style="width: 85%;">*@
+                                    <table>
+                                        <tr>
+                                            <td class="dojoTextBoxIECorrect" >
+                                                <input type="text"  style="width: 100%;" data-dojo-type="dijit/form/TextBox" disabled="disabled" id="nm_alunos" name="nm_alunos" />
+                                            </td>
+                                            <td class="CorpoFormAux AlinhaDireita">
+                                                <label>Vagas Disponíveis:</label>
+                                            </td>
+                                            <td class="dojoTextBoxIECorrect" >
+                                                <input type="text"  style="width: 100%;" data-dojo-type="dijit/form/TextBox" disabled="disabled" id="nm_vagas" name="nm_vagas" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Professores'" id="tagProfessores" open="false">
+                        <div id="grupoAcoesProf">
+                            <div class="linha_acoes" style="width: 100%"></div>
+                            <table style="width: 100%" class="Alinhamento" id=" ">
+                                <tr style="width: 100%">
+                                    <td style="text-align: left; width: 25%">
+                                        <div class="linkAcoes" id="linkAcoesProfessor"></div>
+                                    </td>
+                                    <td style="text-align: center; width: 50%">
+                                        <div id="btnNovoProfessor"></div>
+                                    </td>
+                                    <td style="text-align: center; width: 25%">
+                                        <div id="Di5"></div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="linha_acoes" style="width: 100%"></div>
+                        </div>
+                        <div data-dojo-type="dijit/layout/ContentPane" id="paiProfessor" style="max-width: 664px; width: 100%; height: 150px; padding-left: 0px">
+                            <div id="gridProfessor" style="height: 150px;"></div>
+                        </div>
+                    </div>
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Alunos'" id="tagAlunos" open="false">
+                        <div id="grupoAcoesAlunos">
+                            <div class="linha_acoes" style="width: 100%"></div>
+                            <table style="width: 100%" class="Alinhamento">
+                                <tr style="width: 100%">
+                                    <td style="text-align: left; width: 25%" id="acoesAluno">
+                                        <div class="linkAcoes" id="linkAcoesAluno"></div>
+                                    </td>
+                                    <td style="text-align: left; width: 25%" id="acoesFilha">
+                                        <div class="linkAcoes" id="linkAcoesFilha"></div>
+                                    </td>
+                                    <td style="text-align: center; width: 50%" >
+                                        <div id="novoAlunoTurma"><div id="btnNovoAluno"></div></div>
+                                    </td>
+                                    <td style="text-align: center; width: 25%">
+                                        <div class="linkAcoes" id="linkFiltroAcoesAluno"></div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="linha_acoes" style="width: 100%"></div>
+                        </div>
+                        <div data-dojo-type="dijit/layout/ContentPane" id="paiAluno" style="max-width: 664px; width: 100%; height: 300px; padding-left: 0px">
+                            <div id="gridAlunos" style="height: 300px;"></div>
+                        </div>
+                        <div id="paiLegendAlunosPPT"><div id="legendaluno" style="align-items: center;"></div></div>
+                        <div id='chartAlunoPPT' style='display: none'></div>
+                    </div>
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Alunos PPT'" id="tagAlunosPPT" open="false" style="display:none;">
+                        <div class="linha_acoes" style="width: 100%"></div>
+                        <table style="width: 100%" class="Alinhamento">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkAcoesAlunoPPT"></div>
+                                </td>
+                                <td style="text-align: center; width: 50%">
+                                    <div id="btnNovoAlunoPPT"></div>
+                                </td>
+                                <td style="text-align: center; width: 25%">
+                                     <div class="linkAcoes" id="linkFiltroAcoesAlunoPPT"></div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="linha_acoes" style="width: 100%"></div>
+                        <div data-dojo-type="dijit/layout/ContentPane" id="paiAlunoPPT" style="width:100%; padding-left: 0px">
+                            <div id="gridAlunosPPT" style="height: 235px;"></div>
+                        </div>   
+                        <div id="paiLegendAlunosPPT"><div id="legendPaiAlunoPPT" style="align-items: center;"></div></div>
+                        <div id='chartAlunosPPT' style='display: none'></div>
+                        
+                    </div>
+                </form>
+            </div>
+            <div data-dojo-type="dijit/layout/ContentPane" id="tabHorarios" title="Horários">
+                <input type="hidden" id='mostrarLabelHorario' value="true" />
+                <input type='hidden' id='customizaCalendario' />
+                <input type='hidden' id='idNovoHorario' value='1' />
+                <div id="tbCriarHorarios">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 25%" class="nowrap" colspan="4">
+                                <form id="formSemana" data-dojo-type="dojox/form/Manager" style="width: 100%">
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <td class="tdRight" style="width: 15%">
+                                                <label id="laDias">Dias :</label>
+                                            </td>
+                                            <td style="width: 60%">
+                                                <select id="cbDias" data-dojo-id="cbDias" data-dojo-props='dropDown:true' name="cbDias" data-dojo-type="dojox/form/CheckedMultiSelect" style="width: 100%; max-width: 183px" multiple="true"></select>
+                                            </td>
+
+                                            <td class="tdRight" style="width: 10%">
+                                                <label for="timeIni">Das:</label></td>
+                                            <td style="width: 10%">
+                                                <input type="text" name="timeIni" id="timeIni"
+                                                    data-dojo-type="dijit/form/TimeTextBox"
+                                                    data-dojo-props="constraints: {clickableIncrement: 'T00:05', visibleIncrement: 'T00:30', formatLength:'short',min:'T08:00',max:'T18:00'}" required="true" />                                                    
+                                            </td>
+                                            <td style="width: 10%" class="tdRight">
+                                                <label for="timeFim">Até:</label>
+                                            </td>
+                                            <td style="width: 10%">
+                                                <input type="text" name="timeFim" id="timeFim"
+                                                    data-dojo-type="dijit/form/TimeTextBox"
+                                                    data-dojo-props="constraints: {clickableIncrement: 'T00:05', visibleIncrement: 'T00:30', formatLength:'short',min:'T08:00',max:'T18:00'}" required="true" />                                                    
+                                            </td>
+                                        </tr>
+                                        <tr id="trSalaHorario">
+                                            <td class="tdRight">
+                                                <label id="label5">Sala:</label>
+                                            </td>
+                                            <td class="tdLeft" >
+                                                <select id="cbSala" name="cbSala" required="false" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%; max-width: 100%"></select>
+                                            </td>
+                                            <td class="tdRight">
+                                                <label id="lbSalaOnline">Sala On-line:</label>
+                                            </td>
+                                            <td class="tdLeft" colspan="3">
+                                                <select id="cbSalaOnLine" name="cbSalaOnLine" required="false" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%; max-width: 100%"></select>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </form>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="CaixaAcao" style="width: 100%; padding: 0px;">
+                        <div class="linha_acoes"></div>
+                        <div class="Alinhamento">
+                            <span id="divIncluirHorarioTurma">
+                                <input id="incluirHorarioTurma" title="Incluir" /></span>
+                            <span id="divExcluirHorarioTurma">
+                                <input type="button" id="excluirHorarioTurma"  title="Excluir horário selecionado." /></span>
+                        </div>
+                        <div class="linha_acoes" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div id="paiGridHorarios">
+                    <div id="gridHorarios" style="width: 100%; height: 266px"></div>
+                </div>
+                <div id="paiLegend"><div id="legend" style="align-items: center;"></div></div>
+                <div id='chart' style='display: none'></div>
+            </div>
+            <div data-dojo-type="dijit/layout/ContentPane" id="tabProgramacao" title="Programação" style="height: 100%;">
+                <input type="hidden" id="refazer_programacao" value="0" />
+                <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Programações da Turma'" id="tagProgramaoesTurma" open="true">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%" class="Alinhamento">
+                        <tr style="width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkAcoesProgramacao"></div>
+                            </td>
+                            <td style="text-align: center; width: 50%">
+                                <input id="btnNovaProgramacao" />
+                            </td>
+                            <td style="text-align: center; width: 25%">
+                                <div id="Div12"></div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div data-dojo-type="dijit/layout/ContentPane" id="PaigridProgramacao" style="width: 100%; padding-left: 0px;">
+                        <div id="gridProgramacao" style="height: 235px;"></div>
+                    </div>
+                    <div id="legendProgramacao" style="align-items: center;"></div>
+                    <div id='chartProgramacao' style='display: none'></div>
+                 </div>
+                 <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Períodos para Desconsiderar Feriados'" id="tagDesconsiderarFeriados" open="false">
+                        <div class="linha_acoes" style="width: 100%"></div>
+                        <table style="width: 100%" class="Alinhamento">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkAcoesDesconsidera"></div>
+                                </td>
+                                <td style="text-align: center; width: 50%">
+                                    <input id="btnNovaDesconsideracao" />
+                                </td>
+                                <td style="text-align: center; width: 25%">&nbsp;
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="linha_acoes" style="width: 100%"></div>
+                        <div data-dojo-type="dijit/layout/ContentPane" id="paiDesconsideraFeriados" style="width: 100%; height: 235px; padding-left: 0px">
+                            <div id="gridDesconsideraFeriados"></div>
+                        </div>
+                    </div>
+            </div>
+            <div data-dojo-type="dijit/layout/ContentPane" id="tabAvaliacoes" title="Avaliações">
+                <div data-dojo-type="dijit/layout/ContentPane" id="divGridAvalAluno" style="width: 100%; height: 200px; padding-left: 0px">
+                    <div id="gridAvaliacaoAluno" style="height: 100%;"></div>
+                </div>
+            </div>
+            <div data-dojo-type="dijit/layout/ContentPane" title="Escola" id="escolaContentPane">
+                <div id="grupoAcoesProf">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%" class="Alinhamento" id=" ">
+                        <tr style="width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkSelecionadosEscola"></div>
+                            </td>
+                            <td style="text-align: center; width: 50%">
+                                <input id="incluirEscolaFK" />
+                            </td>
+                            <td style="text-align: center; width: 25%">
+                                <div style="text-align: right; width: 25%;"></div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                @*<div id="paiGridEscolas" style="height: 275px;">*@
+                <div data-dojo-type="dijit/layout/ContentPane" id="panelEscolasFK" style="width: 100%; height: 362px; padding-left: 0px; padding: 0px; padding-top: 3px;">
+                    <div id="gridEscolas"></div>
+                </div>
+            </div>
+
+        </div>
+        <div class="containerCrud" style="margin-top: 10px;">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <div style="text-align: center">
+                <span id="divIncluirTurma">
+                    <input type="button" id="incluirTurma" title="incluir" /></span>
+                <span id="divAlterarTurma" style="display: none;">
+                    <input type="button" id="alterarTurma" title="Alterar" /></span>
+                <span id="divExcluirTurma" style="display: none;">
+                    <input type="button" id="deleteTurma" title="Excluir" /></span>
+                <span id="divClearTurma">
+                    <input type="button" id="limparTurma" title="Limpar" /></span>
+                <span id="divCancelarTurma" style="display: none;">
+                    <input type="button" id="cancelarTurma" title="Cancelar" /></span>
+                <span id="divFecharTurma">
+                    <input type="button" id="fecharTurma" title="Fechar" /></span>
+            </div>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+        @* </div>*@
+    </div>
+</div>
+
+<div id="proProfessor" data-dojo-type="dijit.Dialog" title="Pesquisar Professor" style="display: none; width: 700px; height: 590px;">
+    <div style="width: 685px;height: 590px;">
+        @Html.Partial("../Pessoa/ProfessorFK")
+    </div>
+</div>
+
+<div id="proCurso" data-dojo-type="dijit.Dialog" title="Pesquisar Curso" style="display: none; width: 705px; height: 590px;">
+     <div style="width: 690px;height: 590px;">
+        @Html.Partial("../Curso/CursoFK")
+    </div>
+</div>
+
+<div data-dojo-type="dijit.Dialog" id="dialogAlunoPPT" title="Aluno/Curso" style="max-width: 685px; display: none;">
+    <div class="apresentadorMsg" id="apresentadorMensagemAlunoCursoPPT" style="display: none;"></div>
+    <input type="hidden" name="setValuePesquisaAlunoFK" id="setValuePesquisaAlunoFK" />
+    <input type="hidden" name="cdAlunoPPT" id="cdAlunoPPT" />
+    <input type="hidden" name="cdCursoPPT" id="cdCursoPPT" />
+    <div class="corpo_interno" style="height: 99px">
+        <div class="EspacoCaixa caixaPesquisa">
+                <table class="Table">
+                    <tr>
+                        <td class="AlinhaDireita" style="width: 7%;">
+                            <label>Curso:</label></td>
+                        <td class="dojoTextBoxIECorrect" style="width: 43%;">
+                            <table>
+                                <tr>
+                                    <td class="dojoTextBoxIECorrect" style="width: 90%">
+                                        <form id="formDescCursoPPT" data-dojo-type="dojox/form/Manager" style="width: 100%">
+                                            <input type="text" name="descCursoPPT" data-dojo-type="dijit/form/ValidationTextBox" style="width: 100%;" id="descCursoPPT" required="true" readonly="true" />
+                                        </form>
+                                    </td>
+                                    <td class="nowrap" style="width: 10%">
+                                        <input data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'dijitEditorIcon dijitEditorIconFindSGF'" type="button" id="proCursoPPT" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td class="AlinhaDireita" style="width: 7%;">
+                            <label>Aluno:</label></td>
+                        <td class="dojoTextBoxIECorrect" style="width: 43%;">
+                            <table>
+                                <tr>
+                                    <td class="dojoTextBoxIECorrect" style="width: 90%">
+                                        <form  id="formDescAlunoPPT" data-dojo-type="dojox/form/Manager" style="width: 100%">
+                                            <input type="text" data-dojo-type="dijit/form/ValidationTextBox" style="width: 100%;" required="true" name="descAlunoPPT" id="descAlunoPPT" readonly="true" />
+                                        </form>
+                                    </td>
+                                    <td class="nowrap" style="width: 10%">
+                                        <input data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'dijitEditorIcon dijitEditorIconFindSGF'" type="button" id="proAlunoPPT" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+        </div>
+        <div style="padding-top: 5px; width: 100%">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <table style="width: 100%">
+                <tr style="width: 100%">
+                    <td style="text-align: center; width: 100%;">
+                        <input type="button" id="btnIncluirPPT"/>
+                        <input type="button" id="btnFecharPPT"/>
+                        <input type="button" id="btnLimparPPT"/>
+                    </td>
+                </tr>
+            </table>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="linkProg" value="" />
+<div data-dojo-type="dijit.Dialog" id="dialogProgramacao" title="Programação" style="width: 600px; display: none;">
+    <input type="hidden" id="cd_programacao_turma" value="0" />
+    <div class="corpo_interno">
+        <div class="apresentadorMsg" id="apresentadorMensagemProgramacao" style="display: none;"></div>
+        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" class="Formulario" id="formProgramacao">
+            <table style="width: 100%">
+                <tr style="width: 100%">
+                    <td class="CorpoFormAux AlinhaDireita" style="width: 12%">Data:
+                    </td>
+                    <td style="width: 15%">
+                        <input type="text" 
+                            data-dojo-type="dijit.form.DateTextBox" 
+                            id="dtaProgramacao" 
+                            name="dtaProgramacao" 
+                            required="required" 
+                            disabled="disabled" 
+                            onkeypress="mascaraDataHora(event, this)" maxlength="10"/>
+                    </td>
+                    <td class="CorpoFormAux AlinhaDireita" style="width: 12%">Aux:
+                    </td>
+                    <td style="width: 15%">
+                        <input type="text" data-dojo-type="dijit/form/ValidationTextBox" style="width: 100%;" maxlength="4" onkeypress="mascaraInt(document.getElementById('aulaProgramacao'));" id="aulaProgramacao" name="aulaProgramacao" required="required" />
+                    </td>
+                </tr>
+                <tr style="width: 100%">
+                    <td class="CorpoFormAux AlinhaDireita" style="width: 12%">Horário Inicial:
+                    </td>
+                    <td style="width: 15%">
+                        <input type="text" name="horarioIniProgramacao" id="horarioIniProgramacao" value="T08:00"
+                            data-dojo-type="dijit/form/TimeTextBox"
+                            data-dojo-props="constraints: {clickableIncrement: 'T00:05:00', visibleIncrement: 'T00:30:00'}" required="required" disabled="disabled" />
+                    </td>
+                    <td class="CorpoFormAux AlinhaDireita" style="width: 12%">Horário Final:
+                    </td>
+                    <td style="width: 15%">
+                        <input type="text" name="horarioFimProgramacao" id="horarioFimProgramacao" value="T08:00"
+                            data-dojo-type="dijit/form/TimeTextBox"
+                            data-dojo-props="constraints: {clickableIncrement: 'T00:05:00', visibleIncrement: 'T00:30:00'}" required="required" disabled="disabled" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="CorpoFormAux AlinhaDireita" style="width: 12%">Descrição:
+                    </td>
+                    <td style="width: 75%" colspan="3">
+                        <input type="text" data-dojo-type="dijit/form/ValidationTextBox" style="width: 100%;" id="descricaoProgramacao" maxlength="255" required="required" name="descricaoProgramacao" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div style="padding-top: 5px; width: 100%">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <table style="width: 100%">
+                <tr style="width: 100%">
+                    <td style="text-align: center; width: 100%;">
+                        <span id="divIncluirProg">
+                            <input type="button" id="incluirProg" title="incluir" /></span>
+                        <span id="divAlterarProg">
+                            <input type="button" id="alterarProg" title="Cancelar" /></span>
+                        <span id="divCancelarProg">
+                            <input type="button" id="cancelarProg" title="Fechar" /></span>
+                        <span id="divFecharProg">
+                            <input type="button" id="fecharProg" title="Fechar" /></span>
+                    </td>
+                </tr>
+            </table>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+    </div>
+</div>
+
+@*Area TurmaPPTFilha*@
+<input id="cd_turmaPPT" type="hidden" value="0" />
+<input id="tabAlunosRemovidaPPT" type="hidden" value="false" />
+<div id="cadTurmaPPT" data-dojo-type="dijit/Dialog" class="Dialogo" style="max-width: 750px;" title="Cadastro de Turma">
+    <div class="corpo_interno" style="max-width: 720px; ">
+        <div class="apresentadorMsg" id="apresentadorMensagemTurmaPPT" style="display: none;"></div>
+        <div data-dojo-type="dijit/layout/TabContainer" id="tabContainerPPT" class="Abas" onclick="selecionaTab" style="min-height: 440px; max-height: 800px; height: 100%;">
+            <div data-dojo-type="dijit/layout/ContentPane" id="tabPrincipalPPT" title="Principal" style="height:100%;">
+                <form name="formTurmaPrincipalPPT" id="formTurmaPrincipalPPT" data-dojo-type="dojox/form/Manager">
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Geral'" id="paneGeralPPT" open="true" style="width: 100%">
+                        <table class="Table">
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita" style="width: 15%;">
+                                    <label>Nome:</label></td>
+                                <td class="dojoTextBoxIECorrect" colspan="3" style="width: 85%;">
+                                    <input id="noTurmaPPT" name="noTurma" type="text" data-dojo-type="dijit.form.ValidationTextBox" disabled="disabled" style="width: 100%" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita" style="width: 15%;">
+                                    <label>Apelido:</label></td>
+                                <td class="dojoTextBoxIECorrect" colspan="3" style="width: 85%;">
+                                    <input id="noApelidoPPT" name="noApelidoPPT" type="text" data-dojo-type="dijit.form.ValidationTextBox" style="width: 100%" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita">
+                                    <label>Curso:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input type="text" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" disabled="disabled"  name="pesCadCursoPPT" id="pesCadCursoPPT" />
+                                </td>
+
+                                <td class="CorpoFormAux AlinhaDireita">
+                                    <label>Modalidade:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input type="text" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" disabled="disabled"  id="pesCadRegimePPT" name="pesCadRegimePPT" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita">
+                                    <label>Produto:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input type="text" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" disabled="disabled"  id="pesCadProdutoPPT" name="pesCadProdutoPPT" />
+                                </td>
+
+                                <td class="CorpoFormAux AlinhaDireita">
+                                    <label>Carga Horária:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input type="text" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" id="pesCadDuracaoPPT" name="pesCadDuracaoPPT" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita">
+                                    <label>Data Término:</label>
+                                </td>
+                                <td class="nowrap" colspan="3">
+                                    <input 
+                                        type="text" 
+                                        data-dojo-type="dijit.form.DateTextBox" 
+                                        id="dtaTerminoPPT" 
+                                        disabled="disabled"  
+                                        name="dtaTermino" 
+                                        disabled="disabled" 
+                                        onkeypress="mascaraDataHora(event, this)" maxlength="10"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Aula'" id="tagAulaPPT" open="true">
+                        <table class="Table">
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 17%;">
+                                    <label>Data Início:</label></td>
+                                <td class="dojoTextBoxIECorrect" style="width: 35%;">
+                                    <input 
+                                        type="text" 
+                                        id="dtIniAulaPPT" 
+                                        name="dtIniAulaPPT" 
+                                        class="alignDojoData" 
+                                        data-dojo-type="dijit.form.DateTextBox"  style="width: 100%;" 
+                                        onkeypress="mascaraDataHora(event, this)" maxlength="10"/>
+                                </td>
+                                <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 13%;">
+                                    <label>Data Fim:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 35%;">
+                                    <input 
+                                        type="text" 
+                                        id="dtFimAulaPPT" 
+                                        data-dojo-type="dijit.form.DateTextBox" 
+                                        disabled="disabled" class="alignDojoData" style="width: 100%;" 
+                                        onkeypress="mascaraDataHora(event, this)" maxlength="10"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita nowrap">
+                                    <label>Aulas Programadas:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input value="0" style="width: 40%;"  data-dojo-type="dijit.form.TextBox" id="nrAulasProgPPT" name="nrAulasProgPPT" maxlength="8" disabled="disabled" />
+                                </td>
+                                <td class="CorpoFormAux AlinhaDireita nowrap">
+                                    <label for="id_aula_externa">Aula Externa:</label>
+                                </td>
+
+                                <td class="dojoTextBoxIECorrect">
+                                    <input name="idAulaExternaPPT" type="checkbox" id="idAulaExternaPPT" disabled="disabled"  data-dojo-type="dijit/form/CheckBox" />
+                                </td>
+
+                            </tr>
+                        </table>
+                    </div>
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Professores'" id="tagProfessoresPPT" open="false">
+                        <div class="linha_acoes" style="width: 100%"></div>
+                         <table style="width: 100%" class="Alinhamento">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkAcoesProfessorFilhaPPT"></div>
+                                </td>
+                                <td style="text-align: center; width: 50%">
+                                    <div id="btnNovoProfessorFilhaPPT"></div>
+                                </td>
+                                <td style="text-align: center; width: 25%">
+                                    <div></div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="linha_acoes" style="width: 100%"></div>
+                        <div data-dojo-type="dijit/layout/ContentPane"  id="paiProfessorPPT" style="max-width: 665px;width: 100%; height: 100px; padding-left: 0px">
+                            <div id="gridProfessorPPT" style="height: 100px;"></div>
+                        </div>
+                    </div>
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Alunos'" id="tagAlunosPPTFilha" open="false">
+                        <div class="linha_acoes" style="width: 100%"></div>
+                        <table style="width: 100%" class="Alinhamento">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkAcoesAlunoPPTFilha"></div>
+                                </td>
+                                <td style="text-align: center; width: 50%">
+                                </td>
+                                <td style="text-align: center; width: 25%">
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="linha_acoes" style="width: 100%"></div>
+                        <div data-dojo-type="dijit/layout/ContentPane"  id="paiAlunoPPTFilha" style="max-width: 665px;width: 100%; height: 100px; padding-left: 0px">
+                            <div id="gridAlunosPPTFilha" style="height: 100px;"></div>
+                        </div>
+                        <div id="paiLegendAlunosPPTFilha"><div id="legendPaiAlunoPPTFilha" style="align-items: center;"></div></div>
+                        <div id='chartAlunosPPTFilha' style='display: none'></div>
+                    </div>
+                </form>
+            </div>
+            <div data-dojo-type="dijit/layout/ContentPane" id="tabHorariosPPT" title="Horários">
+                <input type='hidden' id='customizaCalendarioPPT' />
+                <input type='hidden' id='idNovoHorarioPPT' value='1' />
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 25%" class="nowrap" colspan="4">
+                            <form id="formSemanaFilhaPPT" data-dojo-type="dojox/form/Manager" style="width: 100%">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td class="tdRight" style="width: 15%">
+                                            <label id="laDiasFilhaPPT">Dias :</label>
+                                        </td>
+                                        <td style="width: 50%">
+                                            <select id="cbDiaFilhaPPTs" data-dojo-id="cbDias" data-dojo-props='dropDown:true' name="cbDias" data-dojo-type="dojox/form/CheckedMultiSelect" style="width: 100%; max-width: 183px" multiple="true"></select>
+                                        </td>
+
+                                        <td class="tdRight" style="width: 10%">
+                                            <label for="timeIni">Das:</label></td>
+                                        <td style="width: 10%">
+                                            <input type="text" name="timeIni" id="timeIniFilhaPPT"
+                                                   data-dojo-type="dijit/form/TimeTextBox"
+                                                   data-dojo-props="constraints: {clickableIncrement: 'T00:05', visibleIncrement: 'T00:30', formatLength:'short',min:'T08:00',max:'T18:00'}" required="true" />                                                    
+                                        </td>
+                                        <td style="width: 10%" class="tdRight">
+                                            <label for="timeFim">Até:</label>
+                                        </td>
+                                        <td style="width: 10%">
+                                            <input type="text" name="timeFim" id="timeFimFilhaPPT"
+                                                   data-dojo-type="dijit/form/TimeTextBox"
+                                                   data-dojo-props="constraints: {clickableIncrement: 'T00:05', visibleIncrement: 'T00:30', formatLength:'short',min:'T08:00',max:'T18:00'}" required="true" />                                                    
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+                <div class="CaixaAcao" style="width: 100%; padding: 0px;">
+                    <div class="linha_acoes"></div>
+                    <div class="Alinhamento">
+                        <span>
+                            <input id="incluirHorarioTurmaFilhaPPT" title="Incluir" /></span>
+                        <span>
+                            <input type="button" id="excluirHorarioTurmaFilhaPPT" disabled title="Excluir horário selecionado." /></span>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div id="paiGridHorariosPPT">
+                    <div id="gridHorariosPPT" style="width: 100%; height: 266px"></div>
+                </div>
+                <div><div id="legendFilhaPPT" style="align-items: center;"></div></div>
+                <div id='chartFilhaPPT' style='display: none'></div>
+            </div>
+            <div data-dojo-type="dijit/layout/ContentPane" id="tabProgramacaoPPT" title="Programação" style="width: 100%">
+                <input type="hidden" id="refazer_programacao_ppt" value="0" />
+                <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Programações da Turma'" id="tagProgramaoesTurmaPPT" open="true">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%" class="Alinhamento">
+                        <tr style="width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkAcoesProgramacaoPPT"></div>
+                            </td>
+                            <td style="text-align: center; width: 50%">
+                                <input id="btnNovaProgramacaoPPT" />
+                            </td>
+                            <td style="text-align: center; width: 25%"></td>
+                        </tr>
+                    </table>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div data-dojo-type="dijit/layout/ContentPane" id="PaiGridProgramacaoPPT" style="width: 100%; padding-left: 0px;">
+                        <div id="gridProgramacaoPPT" style="height: 235px;"></div>
+                    </div>
+                    <div id="legendProgramacaoPPT" style="align-items: center;"></div>
+                    <div id='chartProgramacaoPPT' style='display: none'></div>
+                </div>
+                <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Períodos para Desconsiderar Feriados'" id="tagDesconsiderarFeriadosPPT" open="false">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%" class="Alinhamento">
+                        <tr style="width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkAcoesDesconsideraPPT"></div>
+                            </td>
+                            <td style="text-align: center; width: 50%">
+                                <input id="btnNovaDesconsideracaoPPT" />
+                            </td>
+                            <td style="text-align: center; width: 25%">&nbsp;
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div data-dojo-type="dijit/layout/ContentPane" id="paiDesconsideraFeriadosPPT" style="width: 100%; height: 235px; padding-left: 0px">
+                        <div id="gridDesconsideraFeriadosPPT"></div>
+                    </div>
+                </div>
+            </div>
+            <div data-dojo-type="dijit/layout/ContentPane" id="tabAvaliacoesPPT" title="Avaliações">
+                <div data-dojo-type="dijit/layout/ContentPane" id="divGridAvalAlunoPPT" style="width: 100%; height: 200px; padding-left: 0px">
+                    <div class="apresentadorMsg" id="apresentadorMensagemAvaliacaoPPT" style="display: none;"></div>
+                    <div id="gridAvalAlunoPPT" style="height: 100%;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="containerCrud" style="margin-top:10px;">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <div style="text-align: center">
+                <span id="divIncluirTurmaPPT">
+                    <input type="button" id="incluirTurmaPPT" title="incluir" /></span>
+                <span id="divCancelarTurmaPPT">
+                    <input type="button" id="cancelarTurmaPPT" title="Cancelar" /></span>
+                <span id="divFecharTurmaPPT">
+                    <input type="button" id="fecharTurmaPPT" title="Fechar" /></span>
+            </div>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+    </div>
+</div>
+
+<div data-dojo-type="dijit.Dialog" id="dialogProfessor" title="Professor" style="width: 600px; display: none; height: 450px">
+    <div class="corpo_interno" style="height: 391px">
+        <input type="hidden" id="tipoVerif" />
+        <div class="scroll" style="height: 391px">
+            <div class="apresentadorMsg" id="apresentadorMensagemProfessor" style="display: none;"></div>
+            <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" class="Formulario" id="formProfessor">
+                <table style="width: 100%">
+                    <tr>
+                        <td class="CorpoFormAux AlinhaDireita" style="width: 12%">Nome:
+                        </td>
+                        <td style="width: 88%">
+                            <input type="text" style="width: 100%;" data-dojo-type="dijit.form.TextBox" id="no_professor" disabled="disabled" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="CorpoFormAux AlinhaDireita" style="width: 12%">Ativo
+                        </td>
+                        <td style="width: 88%">
+                            <input name="situacaoProfessorTurma" type="checkbox" id="situacaoProfessorTurma" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="CorpoFormAux AlinhaDireita" style="width: 100%; height:228px" colspan="2">
+                             <div style="padding-top: 10px">
+                                <div class="linha_acoes" style="width: 100%"></div>
+                                <table style="width: 100%" class="Alinhamento">
+                                    <tr style="width: 100%">
+                                        <td style="text-align: left; width: 25%">
+                                            <div class="linkAcoes" id="linkAcoesHorarioProf"></div>
+                                        </td>
+                                        <td style="text-align: center; width: 50%">
+                                        </td>
+                                        <td style="text-align: right; width: 25%">
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div class="linha_acoes" style="width: 100%"></div>
+                            </div>
+                            <div data-dojo-type="dijit/layout/ContentPane" id="paiGridHorarioProfessor" style="width: 100%; height: 217px; padding-left: 0px; padding-right: 0px;">
+                                <div id="gridHorarioProfessor" style=" height:217px"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <div style="padding-top: 5px; width: 100%">
+                <div class="linha_acoes" style="width: 100%"></div>
+                <table style="width: 100%">
+                    <tr style="width: 100%">
+                        <td style="text-align: center; width: 100%;">
+                            <input type="button" id="alterarProf" title="Cancelar" />
+                            <input type="button" id="cancelarProf" title="Fechar" />
+                            <input type="button" id="fecharProf" title="Fechar" />
+                        </td>
+                    </tr>
+                </table>
+                <div class="linha_acoes" style="width: 100%"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="cd_feriado_desconsiderado" />
+<div data-dojo-type="dijit.Dialog" id="dialogDesconsideracao" title="Período para Desconsiderar Feriado" class="Dialogo">
+    <div class="corpo_interno">
+        <div class="apresentadorMsg" id="apresentadorMsgDesconsideracao" style="display: none;"></div>
+        <div class="EspacoCaixa caixaPesquisa">
+            <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" class="Formulario" id="formFeriadoDesconsiderado">
+                <table style="width: 100%">
+                    <tr style="width: 100%">
+                        <td class="CorpoFormAux AlinhaDireita" style="width: 20%">
+                            <label>Data Início:</label>
+                        </td>
+                        <td style="width: 30%">
+                            <input 
+                                type="text" 
+                                id="dt_inicio_des" 
+                                name="dt_inicio_des" 
+                                required="required" 
+                                data-dojo-type="dijit.form.DateTextBox" style="width: 100%;" 
+                                onkeypress="mascaraDataHora(event, this)" maxlength="10"/>
+                        </td>
+                        <td class="CorpoFormAux AlinhaDireita" style="width: 20%">
+                            <label>Data Fim:</label>
+                        </td>
+                        <td style="width: 30%">
+                            <input 
+                                type="text" 
+                                id="dt_fim_des" 
+                                name="dt_fim_des" 
+                                required="required" 
+                                data-dojo-type="dijit.form.DateTextBox" style="width: 100%;" 
+                                onkeypress="mascaraDataHora(event, this)" maxlength="10"/>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div style="padding-top: 5px; width: 100%">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <table style="width: 100%">
+                <tr style="width: 100%">
+                    <td style="text-align: center; width: 100%;">
+                        <span id="divIncluirDesc">
+                            <input id="incluirDescon"/>
+                        </span>
+                        <span id="divAlterarDesc">
+                            <input id="alterarDescon"/>
+                        </span>
+                        <span id="divCancelarDesc">
+                            <input id="cancelarDescon"/>
+                        </span>
+                        <span id="divLimparDesc">
+                            <input  id="limparDescon"/>
+                        </span>
+                        <span id="divFecharDesc">
+                            <input id="fecharDescon"/>
+                        </span>
+                    </td>
+                </tr>
+            </table>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+
+    </div>
+</div>
+
+ <div data-dojo-type="dijit.Dialog" id="dialogEncerramento" title="Encerramento de Turma" style="width: 600px; display: none;">
+    <div class="corpo_interno">
+        <div class="apresentadorMsg" id="apresentadorMensagemEncerramento" style="display: none;"></div>
+        <table style="width: 100%">
+			<tr style="width: 100%">
+                <td class="CorpoFormAux" colspan="4"><b style="color:red";><strong style="font-size:15px;">Atenção:</strong></b> Após a confirmação abaixo, a turma estará encerrada e todos os alunos e professores desta serão liberados. <b>Todas as movimentações com essa turma estarão bloqueadas.</b> Em caso afirmativo, esta operação demandará alguns segundos. <b>Deseja continuar?</b><br />
+            <br />
+            </tr>
+            <tr style="width: 100%" >
+                <td class="CorpoFormAux AlinhaDireita" style="width: 25%;">
+                    <label>Data de Encerramento:</label>
+                </td>
+                <td style="width: 30%">
+                    <input 
+                        type="text" id="dt_fim_enc" 
+                        data-dojo-type="dijit.form.DateTextBox" 
+                        required="true" style="width: 60%;" 
+                        onkeypress="mascaraDataHora(event, this)" maxlength="10"/>
+                </td>
+                <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 10%;">
+					<label>Rematricular (Virada de Turma): </label>
+				</td>
+				<td style="width: 24%;">
+					<input type="checkbox" id="ckViradaTurma" required="false" data-dojo-type="dijit/form/CheckBox" class="Check" onClick="mostrarPeriodo(this.checked);"/>
+				</td>
+            </tr>
+		</table>
+        <!-- Dados do Contrato -->
+        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Dados do Contrato'" id="tgPeriodo" open="true" style="display: none;">
+            <table>
+                <tr id="trPeriodo">
+                    <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 15%;">
+                        <label>Data Inicial:</label>
+                    </td>
+                    <td style="width: 30%" class="dojoTextBoxIECorrect">
+                        <input type="text" id="dtInicialR" data-dojo-type="dijit.form.DateTextBox" style="width: 60%;"/>
+                    </td>
+                    <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 15%;">
+                        <label>Data Final:</label>
+                    </td>
+                    <td style="width: 30%" class="dojoTextBoxIECorrect">
+                        <input type="text" id="dtFinalR" data-dojo-type="dijit.form.DateTextBox" style="width: 60%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdRight" style="width: 2%;">
+                        <label for="cd_nome_contrato_pesq">Layout:</label>
+                    </td>
+                    <td class="dojoTextBoxIECorrect" colspan="2">
+                        <select id="cd_nome_contrato_pesq" name="cd_nome_contrato_pesq" data-dojo-type="dijit/form/FilteringSelect" style="width: 70%;"></select>
+
+                        <!-- <input class="dijitReset dijitInputInner" type="text" autocomplete="off" data-dojo-attach-point="textbox,focusNode" role="textbox" aria-required="true" tabindex="0" id="cd_nome_contrato_pesq" value="" aria-invalid="false"> -->
+
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div data-dojo-type="dijit/layout/ContentPane" id="PaigridEncerramentoTurmas" style="width: 100%; height: 300px; padding-left: 0px;">
+			<div id="gridEncerramentoTurmas" style="height: 300px;"></div>
+		</div>
+        <div class="containerCrud">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <div style="text-align: center">
+                <span id="divAnterior">
+                    <input id="anterior" title="Anterior" /></span>
+                <span id="divProximo">
+                    <input type="button" id="proximo" title="Posterior" /></span>
+                <span id="divFechar">
+                    <input type="button" id="fecharEnc" title="Fechar" /></span>
+            </div>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+    </div>
+</div>
+
+<div data-dojo-type="dijit.Dialog" id="dialogEncerramento2" title="Encerramento de Turma - Confirmação" style="width: 600px; display: none;">
+    <div class="corpo_interno">
+        <div class="apresentadorMsg" id="apresentadorMensagemEncConf" style="display: none;"></div>
+        <table style="width: 100%">
+            <tr style="width: 100%">
+                <td class="CorpoFormAux" colspan="4">Verifique a situação dos alunos abaixo e confirme se realmente deseja encerrar a turma.
+                </td>
+            </tr>
+			<tr style="width: 100%">
+				<td class="CorpoFormAux AlinhaDireita" style="width: 15%;">
+                    <label>Turma:</label>
+                </td>
+                <td style="width: 50%">
+                    <input data-dojo-type="dijit/form/FilteringSelect" required="false" id="no_turma_encerramento" name="no_turma_encerramento" style="width: 55%;"/>
+                </td>
+			</tr>
+        </table>
+        <div data-dojo-type="dijit/layout/ContentPane" id="PaigridConfirmacaoAlunos" style="width: 100%; height: 300px; padding-left: 0px;">
+            <div id="gridConfirmacaoAlunos" style="height: 300px;"></div>
+        </div>
+         <div class="containerCrud">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <div style="text-align: center">
+                <span id="divAnteriorConf">
+                    <input id="anteriorConf" title="Anterior" /></span>
+                <span id="divProximoConf">
+                    <input type="button" id="proximoConf" title="Confirmar" /></span>
+                <span id="divFecharConf">
+                    <input type="button" id="fecharConf" title="Fechar" /></span>
+            </div><div class="linha_acoes" style="width: 100%"></div>
+        </div>
+
+    </div>
+</div>
+
+<div data-dojo-type="dijit.Dialog" id="dialogEncerramento3" title="Encerramento de Turma - Nova Turma" style="width: 600px; display: none;">
+    <div class="corpo_interno">
+        <div class="apresentadorMsg" id="apresentadorMensagemEncNovaTurma" style="display: none;"></div>
+        <table style="width: 100%">
+            <tr style="width: 100%">
+                <td class="CorpoFormAux" colspan="4">A turma foi encerrada.<br />
+                    Clique no botão "Nova Turma" se deseja formar uma nova turma a partir desta que foi encerrada.
+                </td>
+            </tr>
+        </table>
+        <div class="containerCrud">
+            <div class="linha_acoes" style="width: 100%"></div>
+
+            <div style="text-align: center" id="botaoNovaTurma">
+                <span id="divNovaTurmaEnc">
+                    <input id="novaTurmaEnc" title="Nova Turma" /></span>
+                <span id="divFecharEncNova">
+                    <input type="button" id="fecharEncNova" title="Fechar" /></span>
+            </div>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+    </div>
+</div>
+
+<div data-dojo-type="dijit.Dialog" id="dialogEncerramentoNovaturma" title="Encerramento de Turma - Nova Turma" style="width: 600px; display: none;">
+    <div class="corpo_interno">
+        <div class="apresentadorMsg" id="apresentadorMensagemEncNovaTurmaCk" style="display: none;"></div>
+        <table style="width: 100%">
+            <tr style="width: 100%">
+                <!-- <td class="CorpoFormAux" colspan="4">A turma foi encerrada.<br /> -->
+                    <p>1. Clique no Botão <b style="color:blue">"Novas Turmas":</b> para <b>formar nova(s) turma(s) à partir da(s) turma(s) selecionada(s).</b></p></br>
+                    <p>2. Clique no Botão <b style="color:blue">"Encerrar":</b> para <b>Encerrar a(s) turma(s) selecionada(s).</b></p></br>
+                    <p>3. Clique no <b style="color:blue">"Fechar (x)"</b> do formulário: <b>para sair da tela sem fazer nada.</b></p></br>
+                <!-- </td> -->
+            </tr>
+        </table>
+        <div class="containerCrud">
+            <div class="linha_acoes" style="width: 100%"></div>
+
+            <div style="text-align: center" id="botaoNovaTurmaCk">
+                <span id="divNovaTurmaEncCk">
+                    <input id="novaTurmaEncCk" title="Novas Turmas" /></span>
+                <span id="divFecharEncNovaCk">
+                    <input type="button" id="fecharEncNovaCk" title="Encerrar" /></span>
+            </div>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+    </div>
+</div>
+
+<div id="cadMatricula" data-dojo-type="dijit/Dialog" title="Cadastro de Matrícula" style="display: none; width: 900px;">
+    
+    <div class="sessao_form" style="margin-left: -10px;">
+        <span id="counter_form_3">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    @Html.Partial("../Secretaria/CadMatriculaPartial")
+</div>
+
+<div id="cadDiarioAula" data-dojo-type="dijit/Dialog" class="Dialogo" style="display: none; width: 800px;" title="Cadastro de Diário de Aula">
+
+    <div class="sessao_form" style="margin-left: -10px;">
+        <span id="counter_form_4">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    @Html.Partial("CadDiarioAulaPartial")
+</div>
+
+
+<div id="cadDesistencia" data-dojo-type="dijit/Dialog" title="Cadastro de Desistência" style="display: none; width: 700px;">
+    
+<div class="sessao_form" style="margin-left: -10px;">
+    <span id="counter_form_2">Sua sess&atilde;o expira em 59 min 59 seg</span>
+</div>
+
+    @Html.Partial("../Coordenacao/CadDesistenciaPartial")
+</div>
+
+<div id="fkPessoaTurmaPesq" data-dojo-type="dijit.Dialog" title="Pesquisar Pessoa" style="display: none; width: 800px; height: 590px;">
+    <div style="height:590px;width:780px">
+        @Html.Partial("../Pessoa/PessoaTurmaFK")
+    </div>
+</div>
+
+<div id="fkPessoaPesq" data-dojo-type="dijit.Dialog" title="Pesquisar Pessoa" style="display: none; width: 800px; height: 590px;">
+    <div style="height:590px;width:780px">
+        @Html.Partial("../Pessoa/PessoaFK")
+    </div>
+</div>

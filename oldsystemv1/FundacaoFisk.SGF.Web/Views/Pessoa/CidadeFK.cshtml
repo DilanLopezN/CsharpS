@@ -1,0 +1,70 @@
+﻿<input type="hidden" id="id_origem_cidade" /> 
+
+<form id="pesquisaCidadeFK">
+    <div class="corpo_interno">
+        <div style="display: none;" class="apresentadorMsg" id="apresentadorMensagemCidadeFK"></div>
+        <div class="EspacoCaixa caixaPesquisa">
+            <table class="Table">
+                <tr style="vertical-align: middle; width: 50%;">
+                    <td class="tdRight " style="width: 10%;">
+                        <label for="nomeCidade">Nome:</label></td>
+                    <td style="width: 35%;" class="dojoTextBoxIECorrect">
+                        <input id="nomeCidade" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" style="width: 100%"></td>
+                    <td class="tdRight">
+                        <label for="numeroMunicipio">Cod IBGE:</label></td>
+                    <td style="width: 35%;" class="dojoTextBoxIECorrect">
+                        <input id="numeroMunicipio" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" style="width: 100%"></td>
+                    <td rowspan="2" style="padding-left: 1%; text-align: right;">
+                        <input id="pesquisar" />
+                    </td>
+                </tr>
+                <tr style="vertical-align: middle; width: 50%;">
+                    <td class="tdRight" style="width: 10%;">
+                        <label for="paisFk">País:</label></td>
+                    <td style="width: 35%;" class="dojoTextBoxIECorrect">
+                        <select
+                            id="paisFk"
+                            name="paisFk"
+                            style="width: 100%; max-width: 200px;"
+                            data-dojo-type="dijit/form/FilteringSelect">
+                        </select>
+                    </td>
+                    <td class="tdRight">
+                        <label for="estadoFk">Estado:</label></td>
+                    <td style="width: 40%;" class="dojoTextBoxIECorrect">
+                        <input
+                            name="estadoFk"
+                            id="estadoFk"
+                            disabled="disabled"
+                            size="10"
+                            style="width: 100%;"
+                            data-dojo-type="dijit/form/FilteringSelect"
+                            data-dojo-props="style: 'width:100%; overflow-y: auto; overflow-x: hidden;'"
+                            aria-sort="descending"
+                            autocomplete="on" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div style="padding-top: 5px; width: 100%">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <table style="width: 100%">
+                <tr style="width: 100%">
+                    <td style="text-align: center; width: 100%;">
+                        <input id="selecionar" />
+                        <input id="fechar" />
+                    </td>
+                </tr>
+            </table>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+
+        <div style="width: 100%; height: 425px;">
+            <div data-dojo-type="dijit/layout/ContentPane" style="width: 100%; height: 98%; min-width: 560px; padding-top: 5px; padding-left: 0px;">
+                <div id="gridPesquisaCidade"></div>
+            </div>
+        </div>
+    </div>
+</form>
+
+

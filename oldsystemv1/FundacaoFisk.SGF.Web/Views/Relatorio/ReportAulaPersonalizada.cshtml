@@ -1,0 +1,157 @@
+﻿@{
+    ViewBag.Title = "Relatório de Aula Personalizada";
+    Layout = "~/Views/Shared/_layout.cshtml";
+
+}
+
+@section scriptsBody{
+    @Scripts.Render("~/bundles/reportAulaPersonalizada")
+    @Scripts.Render("~/bundles/alunoFK")
+    <script src="~/Scripts/jquery.maskedinput-1.3.js"></script>
+
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Relatório de Aula Personalizada";
+        
+        //**** Requerires para a Tabulação ****\\
+        require([
+                "dojo",
+                "dijit/layout/TabContainer",
+                "dijit/layout/ContentPane",
+                "dijit/form/TextBox",
+                "dijit/form/Select",
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager",
+                "dijit/form/DateTextBox",
+                "dijit/Dialog"
+        ]);
+        montarMetodosReportAulaPersonalizada();
+        mascarar();
+    </script>
+}
+<div class="apresentadorMensagem" id="apresentadorMensagem" style="display: none;"></div>
+<div>
+    <div class="EspacoCaixa caixaPesquisa">
+        <form data-dojo-type="dojox/form/Manager" id="formRptAulaPersonalizada" data-dojo-id="formRptAulaPersonalizada" enctype="multipart/form-data" class="Formulario">
+            <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Filtros'" id="panePesqGeral" open="true">
+				<table class="Table">
+					<tr>
+						<td class="tdRight nowrap" style="width: 10%;">
+							<label for="noAluno">Aluno:</label>
+						</td>
+						<td style="width: 30%;">
+							<table class="Table">
+								<tr>
+									<td class="dojoTextBoxIECorrect" style="width: 95%;">
+                                        <input type="hidden" id="cdAlunoPes" />
+										<input id="noAluno" name="noAluno" size="125" style="width: 100%;" required="true" data-dojo-type="dijit/form/ValidationTextBox" readonly />
+									</td>
+									<td style="width: 5%; text-align: left" class="nowrap">
+										<input id="pesAlunoFK" style="min-width: 18px" />
+										<input type="text" id="limparAluno" />
+									</td>
+								</tr>
+							</table>
+						</td>
+						<td class="tdRight" style="width: 10%;">
+							<label>Produto:</label>
+						</td>
+						<td class="dojoTextBoxIECorrect" style="width: 10%;">
+							<select id="cbProduto" name="cbProduto" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;" disabled="disabled"></select>
+						</td>
+						<td class="tdRight nowrap" style="width: 10%;" id="tdLblProf">
+							<label>Curso:</label>
+						</td>
+						<td style="width:20%;" id="tdProf">
+								<select id="cbCurso" name="cbCurso" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 70%;" disabled="disabled"></select>
+						</td>
+					</tr>
+				</table>
+				<div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Período Agendamento'" id="paneDataInicial" open="true">
+					<table class="Table">
+						<tr>
+							<td class="tdRight" style="width: 15%;">
+								<label for="nome">Data Inicial:</label>
+							</td>
+							<td style="width: 35%;" class="dojoTextBoxIECorrect">
+								<input type="text" id="dtInicial" name="dtInicial" class="alignDojoData" data-dojo-type="dijit.form.DateTextBox" onkeypress="mascaraDataHora(event, this)" style="width: 100%;" />
+							</td>
+							<td class="tdRight" style="width: 15%;">
+								<label for="nome">Data Final:</label>
+							</td>
+							<td style="width: 35%;" class="dojoTextBoxIECorrect">
+								<input type="text" id="dtFinal" name="dtFinal" class="alignDojoData" data-dojo-type="dijit.form.DateTextBox" onkeypress="mascaraDataHora(event, this)" style="width: 100%;" />
+							</td>
+								<td class="tdRight" style="width: 10%">
+									<label for="timeIni">H.Inicial:</label></td>
+								<td style="width: 10%">
+									<input type="text" name="timeIni" id="timeIni" 
+										data-dojo-type="dijit/form/TimeTextBox"
+										data-dojo-props="constraints: {clickableIncrement: 'T00:05:00', visibleIncrement: 'T00:30'}" required="false" />
+								</td>
+								<td class="tdRight" style="width: 10%">
+									<label for="timeIni">H.Final:</label></td>
+								<td style="width: 10%">
+									<input type="text" name="timeFim" id="timeFim" 
+										data-dojo-type="dijit/form/TimeTextBox"
+										data-dojo-props="constraints: {clickableIncrement: 'T00:05:00', visibleIncrement: 'T00:30'}" required="false" />
+								</td>
+						</tr>
+					</table>
+				</div>
+				<div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Período Aulas lançadas'" id="tgHorarioAulas" open="true">
+					<table class="Table">
+						<tr>
+							<td class="tdRight" style="width: 15%;">
+								<label for="nome">Data Inicial:</label>
+							</td>
+							<td style="width: 35%;" class="dojoTextBoxIECorrect">
+								<input type="text" id="dtAulaIni" name="dtAulaIni" class="alignDojoData" data-dojo-type="dijit.form.DateTextBox" onkeypress="mascaraDataHora(event, this)" style="width: 100%;" />
+							</td>
+							<td class="tdRight" style="width: 15%;">
+								<label for="nome">Data Final:</label>
+							</td>
+							<td style="width: 35%;" class="dojoTextBoxIECorrect">
+								<input type="text" id="dtAulaFim" name="dtAulaFim" class="alignDojoData" data-dojo-type="dijit.form.DateTextBox" onkeypress="mascaraDataHora(event, this)" style="width: 100%;" />
+							</td>
+								<td class="tdRight" style="width: 10%">
+									<label for="timeIni">H.Inicial:</label></td>
+								<td style="width: 10%">
+									<input type="text" name="timeAulaIni" id="timeAulaIni"
+										data-dojo-type="dijit/form/TimeTextBox"
+										data-dojo-props="constraints: {clickableIncrement: 'T00:05:00', visibleIncrement: 'T00:30'}" required="false" />
+								</td>
+								<td class="tdRight" style="width: 10%">
+									<label for="timeIni">H.Final:</label></td>
+								<td style="width: 10%">
+									<input type="text" name="timeAulaFim" id="timeAulaFim"
+										data-dojo-type="dijit/form/TimeTextBox"
+										data-dojo-props="constraints: {clickableIncrement: 'T00:05:00', visibleIncrement: 'T00:30'}" required="false" />
+								</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+        </form>
+    </div>
+    <div style="padding-top: 10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%" class="Alinhamento">
+            <tr style="width: 100%">
+                <td style="text-align: center; width: 50%">
+                    <input type="button" id="relatorio" title="Relatório" />
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+</div>
+<div id="proAluno" data-dojo-type="dijit.Dialog" title="Pesquisar Aluno" style="display: none; width: 700px; height: 590px;">
+    <div style="width: 685px; height: 590px;">
+        @Html.Partial("../Secretaria/AlunoFK")
+    </div>
+</div>

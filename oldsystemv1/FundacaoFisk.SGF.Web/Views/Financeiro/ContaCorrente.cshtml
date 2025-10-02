@@ -1,0 +1,298 @@
+﻿@{
+    ViewBag.Title = "Conta Corrente";
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+
+
+@section scriptsBody{
+    @Scripts.Render("~/bundles/contaCorrente")
+    @Scripts.Render("~/bundles/planoContasFK")
+
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Conta Corrente";
+
+        //**** Requerires para a Tabulação ****\\
+        require([
+            "dojo/NodeList-traverse",
+            "dojo/_base/event",
+            "dojox/validate/web",
+            "dojox/validate/check",
+            "dijit/form/NumberTextBox",
+            "dijit/form/ValidationTextBox",
+            "dijit/form/Form",
+            "dojox/form/Manager",
+            "dijit/Tooltip",
+            "dojo/data/ItemFileWriteStore",
+            "dojox/charting/plot2d/Columns",
+            "dojox/charting/axis2d/Default",
+            "dojox/charting/widget/Legend",
+            "dojox/charting/themes/MiamiNice",
+            "dojox/grid/LazyTreeGrid",
+            "dijit/tree/ForestStoreModel"
+        ]);
+        montarCadastroContaCorrente();
+    </script>
+}
+
+<div id="container">
+    <input type="hidden" id="link" value="" />
+    <div class="apresentadorMsg" id="apresentadorMensagem" style="display: none;"></div>
+    <script type="text/javascript">
+        showCarregando();
+    </script>
+    <div>
+        <div class="EspacoCaixa caixaPesquisa">
+            <input type="hidden" id="planoContaObrigatorio" />
+            <table class="Table">
+                <tr>
+                    <td style="width: 95%;">
+                        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Pesquisa'" id="panePesqGeral" open="true">
+                            <table class="Table">
+                                <tr>
+                                    <td class="tdRight" style="width: 10%;">
+                                        <label for="cbOrigemPes">Origem:</label>
+                                    </td>
+                                    <td style="width: 30%;" class="dojoTextBoxIECorrect">
+                                        <select id="cbOrigemPes" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;"></select>
+                                    </td>
+                                    <td class="tdRight" style="width: 10%;">
+                                        <label for="cbDestinoPes">Destino:</label>
+                                    </td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 30%;">
+                                        <select id="cbDestinoPes" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;"></select>
+                                    </td>
+                                    <td class="tdRight" style="width: 5%;">
+                                        <label for="cbEntradaSaidaPes">Entrada(E)/Saída(S):</label>
+                                    </td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 15%;">
+                                        <input id="cbEntradaSaidaPes" required="false" style="width: 50%;" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tdRight" style="width: 10%;">
+                                        <label for="cbMovimentoPes">Movimento:</label>
+                                    </td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 30%;">
+                                        <select id="cbMovimentoPes" required="false" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;"></select>
+                                    </td>
+
+                                    <td class="tdRight" style="width: 10%;">
+                                        <label for="fkPlanoContasPes">Plano:</label>
+                                    </td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 15%;">
+                                        <input type="hidden" id="cdFkPlanoContaPes" />
+                                        <input id="desPlanoContasPes" name="desPlanoContasPes" data-dojo-type="dijit/form/ValidationTextBox" style="width: 50%;" disabled="disabled" />
+                                        <input id="fkPlanoContasPes" style="min-width: 18px" />
+                                        <input id="limparFkPlanoContasPes" style="min-width: 18px" />
+                                    </td>
+                                    <td class="tdRight" style="width: 5%;">
+                                        <label></label>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Período da Data Inicial/Data Final'" id="paneDataInicial" open="false">
+                                <table class="Table">
+                                    <tr>
+                                        <td class="tdRight" style="width: 12%;">
+                                            <label for="dtaIni">Data Inicial:</label>
+                                        </td>
+                                        <td style="width: 35%;" class="dojoTextBoxIECorrect">
+                                            <input id="dtaIni"
+                                                   data-dojo-type="dijit/form/DateTextBox"
+                                                   style="width: 100%"
+                                                   class="alignDojoData"
+                                                   onblur="limparDateHoraTextBox(this)"
+                                                   onkeypress="mascaraDataHora(event, this)" maxlength="10"
+                                                   name="dtaIni" />
+                                        </td>
+
+                                        <td class="tdRight" style="width: 12%;">
+                                            <label for="dtaFim">Data Final:</label>
+                                        </td>
+                                        <td style="width: 35%;" class="dojoTextBoxIECorrect">
+                                            <input id="dtaFim"
+                                                   data-dojo-type="dijit/form/DateTextBox"
+                                                   style="width: 100%" class="alignDojoData"
+                                                   onblur="limparDateHoraTextBox(this)"
+                                                   onkeypress="mascaraDataHora(event, this)" maxlength="10"
+                                                   name="dtaFim" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="width: 5%; text-align: center">
+                        <input id="pesquisarContaCorrente" title="Pesquisar" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="padding-top: 10px">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <div>
+                <table style="width: 100%">
+                    <tr style="width: 100%">
+                        <td style="text-align: left; width: 25%">
+                            <div class="linkAcoes" id="linkAcoesContaCorrente"></div>
+                        </td>
+                        <td style="text-align: center; width: 50%;">
+                            <input id="novaContaCorrente" title="Novo" />
+                            <input id="relatorioContaCorrente" title="Relatório" />
+                        </td>
+                        <td style="text-align: right; width: 25%">
+                            <span class="linkSelecionados" id="linkSelecionadosContaCorrente"></span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+        <div data-dojo-type="dijit/layout/ContentPane" id="ContentGridContaCorrente" style="padding-left: 0px; padding-right: 0px;">
+            <div class="gridCadBasic">
+                <div id="gridContaCorrente"></div>
+            </div>
+        </div>
+    </div>
+    @*Inicio do cadastro da conta corrente*@
+
+    <div id="cadContaCorrente" data-dojo-type="dijit/Dialog" class="Dialogo" style="max-width: 750px;" title="Cadastro de Conta Corrente">
+        <div class="sessao_form" style="margin-left: -15px;">
+            <span id="counter_form">Sua sess&atilde;o expira em 59 min 59 seg</span>
+        </div>
+        <div class="corpo_interno" style="max-width: 720px;">
+            <div data-dojo-type="dijit/layout/TabContainer" id="tabContainerContaCorrente" class="Abas" onclick="selecionaTabContaCorrente" style="min-height: 450px; max-height: 450px; height: 100%;">
+                <div data-dojo-type="dijit/layout/ContentPane" id="tabPrincipalContaCorrente" title="Principal" style="height: 100%;">
+                    <form data-dojo-type="dojox/form/Manager" id="formContaCorrente" data-dojo-id="formContaCorrente" enctype="multipart/form-data" class="Formulario" style="width: 100%">
+
+                        <div class="scroll" style="width: 100%; height: 380px;">
+                            <div class="apresentadorMsg" id="apresentadorMensagemContaCorrente" style="display: none;"></div>
+                            <div data-dojo-type="dijit/TitlePane" id="tabPrincipal" data-dojo-props="title: 'Principal'" open="true">
+                                <input type="hidden" id="cdContaCorrente" />
+                                <table class="Table">
+                                    <tr>
+                                        <td class="CorpoFormAux AlinhaDireita" style="width: 1%">
+                                            <label>Origem: </label>
+                                        </td>
+                                        <td colspan="3" style="width: 30%" class="dojoTextBoxIECorrect">
+                                            <select id="cbOrigemCad" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" name="cbOrigemCad" required="true"></select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="CorpoFormAux AlinhaDireita" style="width: 1%;">
+                                            <label>Destino: </label>
+                                        </td>
+                                        <td colspan="3" style="width: 30%" class="dojoTextBoxIECorrect">
+                                            <select id="cbDestinoCad" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" required="false"></select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="Pesquisa tdRight" style="width: 1%">
+                                            <label class="AlinhaDireita nowrap">Tipo Liquidação:</label>
+                                        </td>
+                                        <td colspan="3" style="width: 30%" class="dojoTextBoxIECorrect">
+                                            <input id="cbLiquidacao" name="cbLiquidacao" data-dojo-type="dijit/form/FilteringSelect" required="required" style="width: 100%;">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 5%;">
+                                            <label>Data:</label>
+                                        </td>
+                                        <td class="nowrap dojoTextBoxIECorrect" style="width: 30%;">
+                                            <input id="dtaCc"
+                                                   type="text"
+                                                   required="true"
+                                                   style="width: 100%;"
+                                                   data-dojo-type="dijit/form/DateTextBox" name="dtaCc"
+                                                   onkeypress="mascaraDataHora(event, this)" maxlength="10" />
+                                        </td>
+                                        <td class="CorpoFormAux AlinhaDireita" style="width: 0px;">
+                                            <label>Entrada/Saída:</label>
+                                        </td>
+                                        <td>
+                                            <input id="idTipoCad" name="idTipoCad" required="true" style="width: 100%;" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 5%;">
+                                            <label style="margin-left: 2%">Movimento:</label>
+                                        </td>
+                                        <td>
+                                            <select id="idMovimentoCad" name="idMovimentoCad" data-dojo-type="dijit/form/FilteringSelect" required="true" style="width: 98%;"></select>
+                                        </td>
+                                        <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 5%;">
+                                            <label>Valor:</label>
+                                        </td>
+                                        <td class="dojoTextBoxIECorrect" style="width: 30%;">
+                                            <input type="text"
+                                                   name="valContaCorrente"
+                                                   data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'##.00'}"
+                                                   id="valContaCorrente" maxlength="10"
+                                                   style="width: 100%; margin-top: 3px;" size="34"
+                                                   required="true"
+                                                   onkeypress="mascaraFloat(document.getElementById('valContaCorrente'));"
+                                                   data-dojo-type="dijit/form/NumberTextBox" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 5%;">
+                                            <label>Plano:</label>
+                                        </td>
+                                        <td colspan="3" class="nowrap">
+                                            <input type="hidden" id="cdFkPlanoContaCad" />
+                                            <input id="dcPlanoCad" name="dcPlanoCad" size="125" style="width: 78.5%;" required="true" data-dojo-type="dijit/form/ValidationTextBox" readonly="true" />
+                                            <input id="pesPlanoCad" style="min-width: 18px; width: 100%;" />
+                                            <input id="limparPlanoContas" style="min-width: 18px; width: 100%;" />
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <div data-dojo-type="dijit/TitlePane" id="tagObs" data-dojo-props="title: 'Observação'" open="true">
+                                    <textarea id="desObsCc" name="desObs" data-dojo-type="dijit/form/SimpleTextarea" rows="6" cols="50" style="width: 100%;"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" id="tabHistorico" title="Histórico" style="height: 490px;">
+                    <div id="gridHistoricoContaCorrente" style="height: 100%; min-height: 200px"></div>
+                </div>
+            </div>
+            <div class="containerCrud" style="width: 100%; padding-top: 20px;">
+                <div class="linha_acoes" style="width: 100%"></div>
+                <div style="text-align: center">
+                    <span id="divIncluirContaCorrente">
+                        <input type="button" id="incluirContaCorrente" title="incluir" />
+                    </span>
+                    <span id="divAlterarContaCorrente" style="display: none;">
+                        <input type="button" id="alterarContaCorrente" title="Alterar" />
+                    </span>
+                    <span id="divExcluirContaCorrente" style="display: none;">
+                        <input type="button" id="deleteContaCorrente" title="Excluir" />
+                    </span>
+                    <span id="divClearContaCorrente">
+                        <input type="button" id="limparContaCorrente" title="Limpar" />
+                    </span>
+                    <span id="divCancelarContaCorrente" style="display: none;">
+                        <input type="button" id="cancelarContaCorrente" title="Cancelar" />
+                    </span>
+                    <span id="divFecharContaCorrente">
+                        <input type="button" id="fecharContaCorrente" title="Fechar" />
+                    </span>
+                </div>
+                <div class="linha_acoes" style="width: 100%"></div>
+            </div>
+
+
+        </div>
+    </div>
+
+</div>
+
+<div id="cadPlanoContas" data-dojo-type="dijit.Dialog" title="Pesquisar Plano de Contas" style="display: none; width: 700px; height: 590px;">
+    <div style="width: 685px; height: 590px;">
+        @Html.Partial("../Financeiro/PlanoContasFK")
+    </div>
+</div>

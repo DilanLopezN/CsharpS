@@ -1,0 +1,39 @@
+﻿
+@Scripts.Render("~/bundles/politicaComercialFk")
+<div class="corpo_interno" style="height: 90%">
+    <div class="apresentadorMsg" id="apresentadorMensagemPoliticaComercialFK" style="display: none;"></div>
+    <div class="EspacoCaixa caixaPesquisa">
+        <table class="Table">
+            <tr>
+                <td class="tdRight" style="width: 10%;">
+                    <label for="pesquisaPolicaComercialFK">Descrição: </label>
+                </td>
+                <td style="width: 60%;">
+                    <input id="desPoliticaComercialFK" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 100%"></td>
+                <td class="tdRight" style="width: 10%;">
+                    <label class="AlinhaDireita;">Início</label></td>
+                <td style="width: 20%;">
+                    <input type="checkbox" id="inicioPolicaComercialFK" data-dojo-type="dijit/form/CheckBox" class="Check" /></td>
+                <td rowspan="2" style="padding-left: 10px; width: 10%">
+                    <input data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'dijitEditorIconSearchSGF'" type="button" id="pesquisarPolicaComercialFK" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="padding-top: 5px; width: 100%">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%">
+            <tr style="width: 100%">
+                <td style="text-align: center; width: 100%;">
+                    <input type="button" id="selecionaPolicaComercialFK" />&nbsp;
+                    <input type="button" id="fecharPolicaComercialFK" title="Fechar" />
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+
+    <div data-dojo-type="dijit/layout/ContentPane" id="panelPolicaComercialFK" style="width: 100%; height: 410px; padding-top: 5px; padding-left: 0px">
+        <div id="gridPolicaComercialFK" style="height: 400px"></div>
+    </div>
+</div>

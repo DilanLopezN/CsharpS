@@ -1,0 +1,76 @@
+﻿<div class="corpo_interno">
+    <div class="EspacoCaixa caixaPesquisa">
+        <table class="Table">
+            <tr id="trTipoPesquisaFKProspect" style="display: none;">
+                <td class="tdRight" style="width: 10%;">
+                    <label for="tipoPesquisaFKProspect">Tipo:</label>
+                </td>
+                <td class="dojoTextBoxIECorrect" style="width: 25%;">
+                    <input id="tipoPesquisaFKProspect" name="tipoPesquisaFKProspect" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 100%;" />
+                </td>
+                <td colspan="5" style="width: 65%;">
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td class="tdRight" style="width: 10%">
+                    <label for="nomeProspectFK">Nome:</label>
+                </td>
+                <td style="width: 25%" class="dojoTextBoxIECorrect">
+                    <input id="nomeProspectFK" maxlength="64" required="false" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 100%">
+                </td>
+                <td class="tdRight" style="width: 10%;" id="tdFantasiaFK">
+                    <label for="emailPesqProspFK">E-Mail:</label>
+                </td>
+                <td class="dojoTextBoxIECorrect" id="tdReduzidoFK" style="width: 30%;">
+                    <input type="text" id="emailPesqProspFK" required="false" name="emailPesqProspFK" data-dojo-type="dijit/form/TextBox" style="width: 100%;" />
+                </td>
+                <td class="tdRight" style="width: 7%;">
+                    <label for="inicioProspectFK">Início:</label>
+                </td>
+                <td style="width: 3%;" class="dojoTextBoxIECorrect">
+                    <input type="checkbox" id="inicioProspectFK" required="false" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                </td>
+                <td rowspan="3" class="tdRight" style="width: 15%;">
+                    <input type="button" id="prospectSearchFK" />
+                </td>
+            </tr>
+            <tr>
+                <td class="tdRight" style="width: 10%">
+                    <label for="telefoneProspectFK">Telefone/Celular: </label>
+                </td>
+                <td class="dojoTextBoxIECorrect" style="width: 25%">
+                    <input id="telefoneProspectFK"
+                        type="text"
+                        size="15"
+                        onkeypress="mascaraTelefone(document.getElementById('telefoneProspectFK'))"
+                        data-dojo-type="dijit/form/TextBox" required="false"
+                        maxlength="15"
+                        name="telefoneProspectFK"
+                        style="width: 100%;" />
+                </td>
+                <td colspan="5" style="width: 65%;"></td>
+            </tr>
+        </table>
+
+    </div>
+    <div style="padding-top: 5px; width: 100%">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%">
+            <tr style="width: 100%">
+                <td style="text-align: center; width: 100%;">
+                    <input type="button" id="selecionaProspectFK" />&nbsp;
+                    <input type="button" id="fecharProspectFK" title="Fechar" />
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+
+    <input id="idOrigemProspectFK" type="hidden" />
+    <div style="width: 100%; height: 415px;" id="paiPanelProspectFK">
+        <div data-dojo-type="dijit/layout/ContentPane" id="panelProspectFK" style="width: 100%; height: 410px; padding-top: 5px; padding-left: 0px">
+            <div id="gridPesquisaProspect"></div>
+        </div>
+    </div>
+</div>

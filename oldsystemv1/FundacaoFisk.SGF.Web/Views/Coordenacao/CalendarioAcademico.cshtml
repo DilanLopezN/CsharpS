@@ -1,0 +1,158 @@
+﻿@{
+    ViewBag.Title = "Calendário Acadêmico";
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+@section scriptsBody{
+    @Scripts.Render("~/bundles/calendarioAcademico")
+
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Calendário Acadêmico";
+
+        //**** Requerires para a Tabulação ****\\
+        require([
+            "dojo/_base/event",
+            "dojox/validate/web",
+            "dojox/validate/check",
+            "dijit/form/NumberTextBox",
+            "dijit/form/ValidationTextBox",
+            "dijit/form/Form",
+            "dojox/form/Manager",
+            "dijit/form/TimeTextBox",
+            "dijit/form/DateTextBox"
+        ]);
+        montarMetodosCalendarioAcademico();
+
+    </script>
+}
+
+<div class="apresentadorMsg" id="apresentadorMensagem" style="display: none;"></div>
+
+<div>
+    <div class="EspacoCaixa caixaPesquisa">
+        <table class="Table">
+            <tr>
+                <td style="width: 95%;">
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Pesquisa'" id="panePesqGeral" open="true">
+                        <table class="Table">
+                            <tr>
+                                <td class="tdRight nowrap" style="width: 12%;">
+                                    <label for="pesqTipoTitulo">Tipo Calendário:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect ">
+                                    <input id="tipoCalendario" name="tipoCalendario" required="false" data-dojo-type="dijit/form/FilteringSelect">
+                                </td>
+                                <td class="tdRight">
+                                    <label for="statusCalendario" class="tdRight;">Status:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input id="statusCalendario" class="margemCampoEsq">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+                <td style="width: 5%; text-align: center">
+                    <input id="pesquisarCalendario" title="Pesquisar" />
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="padding-top: 10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <div>
+            <table style="width: 100%">
+                <tr style="width: 100%">
+                    <td style="text-align: left; width: 25%">
+                        <div class="linkAcoes" id="linkAcoesCalAcademico"></div>
+                    </td>
+                    <td style="text-align: center; width: 50%;">
+                        <input id="novoCalAcademico" title="Novo" />
+                        <input id="relatorioCalAcademico" title="Relatório" />
+                    </td>
+                    <td style="text-align: right; width: 25%">
+                        <span class="linkSelecionados" id="linkSelecionadosCalAcademico"></span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+
+    <div data-dojo-type="dijit/layout/ContentPane" id="ContentGridCalAcademico" style="padding-left: 0px; padding-right: 0px;">
+        <div class="gridCadBasic">
+            <div id="gridCalAcademico"></div>
+        </div>
+    </div>
+
+    <div id="dialogCalendarioAcademico" data-dojo-type="dijit.Dialog" title="Cadastro de Calendário Acadêmico" class="Dialogo">
+        <div class="corpo_interno" style="max-width: 800px;">
+        <div class="apresentadorMsg" id="apresentadorMensagemCalAcademico" style="display: none;"></div>
+            <input id="cd_calendario_academico" name="cd_calendario_academico" type="hidden" value="0" />
+
+            <div class="scroll">
+                <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" class="Formulario" id="formCalendarioAcademico">
+
+                    <div style="width: 98%; height: 90px;" class="scroll">
+                        <table class="Table">
+                            <tr>
+                                <td class="tdRight nowrap" style="width: 12%;">
+                                    <label for="pesqTipoTitulo">Tipo Calendário:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect " style="width: 50px;">
+                                    <input id="tipoCalAcademico" name="tipoCalAcademico" required="true" data-dojo-type="dijit/form/FilteringSelect">
+                                </td>
+                                <td class="tdRight nowrap">Descrição:</td>
+                                <td class="dojoTextBoxIECorrect" style="width: 60%">
+                                    <input id="txt_desc_academico" data-dojo-type="dijit/form/ValidationTextBox" style="width: 100%;" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdRight nowrap">Mostrar Todos:</td>
+                                <td class="dijitDialogPaneContentArea">
+                                    <input id="chk_mostrar_todos" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+                                </td>
+                                <td class="tdRight nowrap">Ativo:</td>
+                                <td class="dijitDialogPaneContentArea">
+                                    <input id="chk_id_ativo" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <br />
+                    <div class="CaixaAcao">
+                        <div class="linha_acoes" style="width: 100%"></div>
+                        <div class="Alinhamento">
+                            <span id="divIncluirCalAcademico">
+                                <input id="incluirCalAcademico" title="incluir" />
+                            </span>
+
+                            <span id="divAlterarCalAcademico">
+                                <input type="button" id="alterarCalAcademico" title="alterar" />
+                            </span>
+
+                            <span id="divExcluirCalAcademico">
+                                <input type="button" id="deleteCalAcademico" title="Excluir" />
+                            </span>
+
+                            <span id="divLimparCalAcademico">
+                                <input type="button" id="limparCalAcademico" title="Limpar" />
+                            </span>
+
+                            <span id="divCancelarCalAcademico">
+                                <input type="button" id="cancelarCalAcademico" title="Fechar" />
+                            </span>
+
+                            <span id="divFecharCalAcademico">
+                                <input type="button" id="fecharCalAcademico" title="Fechar" />
+                            </span>
+
+                        </div>
+                        <div class="linha_acoes" style="width: 100%"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>

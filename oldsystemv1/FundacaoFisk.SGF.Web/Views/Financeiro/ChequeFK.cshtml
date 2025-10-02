@@ -1,0 +1,72 @@
+﻿@{
+    ViewBag.Title = "ChequeFK";
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/chequeFK")
+}
+
+<div class="">
+    <div class="apresentadorMsg" id="descApresAuxiliarPessoaFKMsg" style="display: none;"></div>
+    <input id="cd_cheque" type="hidden" hidden />
+    <input id="cd_titulo" type="hidden" hidden />
+    <form name="cadCheque" id="cadCheque" data-dojo-type="dijit/form/Form" style="width: 100%">
+        <table class="Table">
+            <tr>
+                <td class="tdRight" style="width: 15%">Emitente:</td>
+                <td class="dojoTextBoxIECorrect" style="width: 35%">
+                    <input id="emissorName" style="width: 100%;" data-dojo-type="dijit/form/ValidationTextBox"  maxlength="128"  required="required">
+                </td>
+            </tr>
+            <tr>
+                <td class="tdRight" style="width: 15%">Banco:</td>
+                <td class="dojoTextBoxIECorrect" style="width: 35%">
+                    <select id="bancosViewCheque" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" name="bancosViewCheque" required="required" ></select>
+                </td>
+                <td class="tdRight" style="width: 15%">Agência:</td>
+                <td class="dojoTextBoxIECorrect" style="width: 35%">
+                    <input id="agenciaCh" style="width: 100%;" data-dojo-type="dijit/form/ValidationTextBox" maxlength="32" required="required" />
+                </td>
+            </tr>
+            <tr>
+                <td class="tdRight" style="width: 15%">Nro. da Agência:</td>
+                <td style="width: 35%" class="dojoTextBoxIECorrect nowrap">
+                    <input id="nroAgenciaCheque" name="nroAgenciaCheque"  onkeypress="mascaraInt(document.getElementById('nroAgenciaCheque'));"
+                          style="width: 80%;" data-dojo-type="dijit/form/NumberTextBox" required="required"  maxlength="8" data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'#'}">
+                    <input id="dgAgenciaCheque" name="serie" style="width: 18%;" maxlength="1" data-dojo-type="dijit/form/NumberTextBox" required="required" data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'#'}"/>
+                </td>
+                <td class="tdRight" style="width: 15%">Conta Corrente:</td>
+                <td style="width: 35%" class="dojoTextBoxIECorrect nowrap">
+                    <input id="nroContaCorrenteCheque" name="nroContaCorrenteCheque" 
+                          style="width: 80%;" data-dojo-type="dijit/form/NumberTextBox" onkeypress="mascaraInt(document.getElementById('nroContaCorrenteCheque'));" required="required" maxlength="8" data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'#'}"/>
+                    <input id="dgContaCorrenteCheque" name="dgContaCorrenteCheque" style="width: 18%;" data-dojo-type="dijit/form/NumberTextBox" required="required" data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'#'}" maxlength="2">
+                </td>
+            </tr>
+            <tr>
+                <td class="tdRight" style="width: 15%;">
+                    <label>Bom para:</label>
+                </td>
+                <td class="dojoTextBoxIECorrect"  style="width: 35%;">
+                    <input id="dtBomParaCheque" style="width: 100%;" name="dtBomParaCheque"  onkeypress="mascaraDataHora(event, this)" class="alignDojoData" data-dojo-type="dijit.form.DateTextBox" required="required"/>
+                </td>
+                <td class="tdRight" style="width: 15%">Nro. Cheque:</td>
+                <td class="dojoTextBoxIECorrect" style="width: 35%">
+                    <input id="nroCheque" name="nroCheque" style="width: 100%;" data-dojo-type="dijit/form/NumberTextBox"  required="required" maxlength="10" data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'#'}">
+                </td>
+            </tr>
+        </table>
+    </form>
+    <div class="CaixaAcao" style="padding-top: 5px; padding-right:8px">
+        <div class="linha_acoes" style="width: 98%"></div>
+        <div class="Alinhamento">
+            <span id="divIncluirCheque">
+                <input data-dojo-type="dijit/form/Button" data-dojo-props="label: 'Incluir', iconClass:'dijitEditorIcon dijitEditorIconSave'" type="button" id="btnIncluirCheque" onclick="incluirCheque()"/>
+            </span>
+
+        @*    <span id="divLimparCheque">
+                <input data-dojo-type="dijit/form/Button" data-dojo-props="label: 'Limpar', iconClass:'dijitEditorIcon dijitEditorIconRemoveFormat'" type="button" id="btnLimparCheque" onclick="limparViewCheque()"/>
+            </span>*@
+        </div>
+        <div class="linha_acoes" style="width: 98%"></div>
+    </div>
+</div>

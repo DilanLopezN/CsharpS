@@ -1,0 +1,64 @@
+﻿@{
+    ViewBag.Title = "Alterar Senha";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/usuarioSenha")
+}
+
+@section scriptsBody{
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Alterar Senha";
+        require([
+              "dijit/layout/ContentPane",
+              "dijit/form/ValidationTextBox",
+              "dijit/form/Form",
+              "dojox/form/Manager"
+        ]);
+        montarUsuarioSenha();
+    </script>
+}
+
+<div id="FormSenha" title="Alterar Senha" style="width: 100%;">
+     <div class="apresentadorMsg" id="apresentadorMensagem" style="display:none;"></div>
+        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data"  data-dojo-id="formularioSenha" id="formularioSenha" class="Formulario">
+        <div style="width:100%;text-align:center">
+            
+            <div style="height: 60px; margin-top: 60px;">
+                <table class="Table">
+                    <tr>
+                        <td class="tdRight" style="width:50%">
+                            <label>Senha Atual:</label>
+                        </td>
+                        <td style="text-align:left">
+                            <input id="SenhaAtual" name="SenhaAtual" type="password" style="width: 235px"  data-dojo-type="dijit/form/ValidationTextBox"  required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdRight" style="width:50%">
+                            <label>Nova Senha:</label>
+                        </td>
+                        <td style="text-align:left">
+                            <input id="NovaSenha" name="NovaSenha" type="password" style="width: 235px" data-dojo-type="dijit/form/ValidationTextBox"  required="true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdRight" style="width:50%">
+                            <label>Confirmar Senha:</label>
+                        </td>
+                        <td style="text-align:left">
+                            <input id="ConfirmaNovaSenha" name="ConfirmaNovaSenha" type="password" style="width: 235px" data-dojo-type="dijit/form/ValidationTextBox"  required="true" />
+                        </td>
+                    </tr>
+                    <tr><td>&nbsp</td></tr>
+                    <tr>
+                        <td colspan="2">
+                            <input id="salvar" type="text" title="Salvar" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </form>
+</div>

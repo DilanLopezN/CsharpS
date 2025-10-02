@@ -1,0 +1,245 @@
+@{
+    ViewBag.Title = "Kit de Vendas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/KitVendas")
+    @Scripts.Render("~/bundles/pessoaFK")
+    @Scripts.Render("~/bundles/ItemFK")
+}
+
+@section scriptsBody{    
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Kit de Vendas";
+
+        //**** Requerires para a Tabulação ****\\
+        require([
+                "dojo/NodeList-traverse",
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager"
+        ]);
+        montarCadastroItem();
+    </script>
+}
+
+<div style="width: 100%;">
+    <input type="hidden" id="link" value="" /><input type="hidden" id="tipoPesquisaFKItem" value="" />
+    <div class="apresentadorMsg" id="apresentadorMensagem"  style="display:none;"></div>
+    <script type="text/javascript">
+        showCarregando();
+    </script>
+    <div class="EspacoCaixa caixaPesquisa">
+        <input id="isMasterGeral" name="" type="hidden"/>
+		  <table class="Table">
+              <tr>
+				<td class="Pesquisa tdRight" style="width:5%">
+					<label for="_pes_nome" class="AlinhaDireita">Nome:</label>
+				</td>
+				<td class="dojoTextBoxIECorrect" style="width:40%;">
+					<input id="_pes_nome" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width:100%">
+				</td>
+				<td class="tdRight" style="width:5%">
+					<label class="AlinhaDireita;" for="pes_inicioKit">Início:</label>
+				</td>
+				<td style="width:5%" class="dojoTextBoxIECorrect">
+					<input type="checkbox" id="pes_inicioKit" data-dojo-type="dijit/form/CheckBox"  class="margemCampoEsq" />
+				</td>
+				<td class="tdRight" style="width:5%">
+					<label for="pes_statusKit" class="AlinhaDireita;">Status:</label>
+				</td>
+				<td style="width:10%;" class="dojoTextBoxIECorrect">
+					<input id="pes_statusKit" class="margemCampoEsq">
+				</td>
+				<td class="tdRight" style="width:10%" rowspan="2">
+					<input id="pes_pesquisaKit" title="Pesquisar" />
+				</td>
+			</tr>
+			<tr>
+				<td class="Pesquisa tdRight" style="width:5%">
+					<label for="pes_grupoKit">Grupo:</label>
+				</td>
+				<td>
+					<table class="Table">
+						<tr>
+							<td style="width:32%" class="dojoTextBoxIECorrect">
+								<input type="text" name="pes_grupoKit" style="width: 100%;" id="pes_grupoKit" data-dojo-type="dijit/form/FilteringSelect" disabled="disabled"/>
+							</td>
+							<td style="width:10%" class="tdRight">
+								<label for="pes_tipoKit">Tipo: </label>
+							</td>
+							<td style="width:30%" class="dojoTextBoxIECorrect">
+								<input type="text" name="pes_tipoKit" style="width: 100%;" id="pes_tipoKit" data-dojo-type="dijit/form/FilteringSelect" disabled="disabled"/>
+							</td>
+						</tr>
+					</table>
+				</td>
+				<td colspan="2"></td>
+				<td class="tdRight" style="width:5%">
+					<label class="AlinhaDireita;">Categoria:</label>
+				</td>
+				<td style="width:10%;" class="dojoTextBoxIECorrect">
+					<input type="text" class="margemCampoEsq" name="pes_categoriaKit" style="width: 100%;" id="pes_categoriaKit" data-dojo-type="dijit/form/FilteringSelect" disabled="disabled"/>
+				</td>
+			</tr>
+        </table>
+    </div>
+    <div style="padding-top: 10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%">
+            <tr style="width: 100%">
+                <td style="text-align:left; width: 25%">
+                    <div class="linkAcoes" id="linkAcoesKit"></div>
+                </td>
+                <td style="text-align:center; width: 50%">
+                    <input id="novoKit" title="Novo" />
+                    <input id="relatorioKit" title="Relatório" />
+                </td>
+                <td style="text-align: right; width: 25%">
+                    <span class="linkSelecionados" id="linkSelecionadosKit"></span>
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+     <div data-dojo-type="dijit/layout/ContentPane" style="padding-left: 0px; width: 100%">
+        <div class="gridCadBasic">
+            <div id="gridKit"></div>
+        </div>
+    </div>
+</div>
+
+<div id="cadKit" data-dojo-type="dijit.Dialog" title="Cadastro de Item/Serviço" class="Dialogo">
+
+    <div class="sessao_form" style="margin-left: -18px;">
+        <span id="counter_form">Sua sess&atilde;o expira em 29 min 59 seg</span>
+    </div>
+
+    <div class="corpo_interno" >
+       <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" id="formKit" data-dojo-id="formKit" class="Formulario">
+        <div class="scroll" style="height: 455px;">
+            <div class="apresentadorMsg" id="apresentadorMensagemKit" style="display: none;"></div>
+
+            <div data-dojo-type="dijit/layout/TabContainer" id="tabContainerKit" style="height: 450px;" onclick="selecionaTab">
+
+                <div data-dojo-type="dijit/layout/ContentPane" title="Principal" id="tabPrincipal">
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Item/Serviço'">
+                        <input id="cd_item" name="cd_item" type="hidden" value="0" />
+                        <input id="abriuEscola" name="abriuEscola" type="hidden" value="false" />
+                        <table class="Table">
+                            <tr>
+                                <td class="tdRight" style="width: 15%">Tipo Item:</td>
+                                <td style="width: 45%" class="dojoTextBoxIECorrect">
+                                    <input id="tipoItens" data-dojo-type="dijit/form/FilteringSelect" name="tipoItens" class="alignDojoData" style="width: 100%;" required="true" disabled="disabled" />
+                                </td>
+                                <td class="tdRight" style="width: 15%">Grupo Item:</td>
+                                <td style="width: 25%" class="dojoTextBoxIECorrect">
+                                    <input id="categoriaGrupoCad" name="categoriaGrupoCad" type="hidden" value="0" />
+                                    <input data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" id="grupoItem" name="grupoItem" required="true" disabled="disabled" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdRight">Nome:</td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input data-dojo-type="dijit/form/ValidationTextBox" style="width: 100%;" id="nome" name="nome" required="true" maxlength="128" />
+                                </td>
+                                <td class="tdRight nowrap">Ativo:</td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input data-dojo-type="dijit/form/CheckBox" checked="checked" id="ativo" name="ativo" />
+                                </td>
+                            </tr>
+                        </table>
+                            
+                        
+                    </div>
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Itens que compõe o Kit'" id="tagItemKit" open="true">
+                        <div class="linha_acoes" style="width: 100%"></div>
+                        <table style="width: 100%" class="Alinhamento">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkItemKit"></div>
+                                </td>
+                                <!--<td class="Alinhamento">-->
+                                <td style="text-align: center; width: 50%">
+                                    <div id="btnaddItemKit"></div>
+                                </td>
+                                <td style="text-align: center; width: 25%">
+                                    <div style="text-align: right; width: 25%;"></div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="linha_acoes" style="width: 100%"></div>
+
+                        <div class="gridCadBasicPartial" style="height: 26%">
+                            <div id="gridItemKit" style="height: 220px"></div>
+                        </div>
+                    </div>
+                    
+                    
+                </div>
+               
+                <div data-dojo-type="dijit/layout/ContentPane" title="Escola" id="escolaContentPane">
+                    <div id="grupoAcoesProf">
+                        <div class="linha_acoes" style="width: 100%"></div>
+                        <table style="width: 100%" class="Alinhamento" id=" ">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkSelecionadosEscola"></div>
+                                </td>
+                                <td style="text-align: center; width: 50%">
+                                    <input id="incluirEscolaFK" />
+                                </td>
+                                <td style="text-align: center; width: 25%">
+                                    <div style="text-align: right; width: 25%;"></div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="linha_acoes" style="width: 100%"></div>
+                    </div>
+                    @*<div id="paiGridEscolas" style="height: 275px;">*@
+                    <div data-dojo-type="dijit/layout/ContentPane" id="panelEscolasFK" style="width: 100%; height: 362px; padding-left: 0px; padding: 0px; padding-top: 3px;">
+                        <div id="gridEscolas"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+           <div class="CaixaAcao" style="padding-top: 5px; padding-right:8px">
+               <div class="linha_acoes" style="width: 98%"></div>
+               <div class="Alinhamento">
+                   <span id="divIncluirKit">
+                       <input id="incluirKit" title="Salvar" /></span>
+                   <span id="divAlterarKit">
+                       <input id="alterarKit" title="Salvar" /></span>
+                   <span id="divExcluirKit">
+                       <input type="button" id="deleteKit" title="Apagar" /></span>
+                   <span id="divLimparKit">
+                       <input id="limparKit" title="Limpar" /></span>
+                   <span id="divCancelarKit">
+                       <input type="button" id="cancelarKit" title="Cancelar" /></span>
+                   <span id="divFecharKit">
+                       <input id="fecharKit" title="Fechar" type="button" /></span>
+               </div>
+               <div class="linha_acoes" style="width: 98%"></div>
+           </div>
+        </form>
+    </div>
+</div>
+<div id="fkItem" data-dojo-type="dijit.Dialog" title="Pesquisar Item" style="display: none; width: 700px; height: 590px;">
+    <div style="width: 685px;height: 590px;">
+        @Html.Partial("../Financeiro/ItemFK")
+    </div>
+</div>
+<div id="fkPessoaPesq" data-dojo-type="dijit.Dialog" title="Pesquisar Pessoa" style="display: none; width: 800px; height: 590px;">
+   <div style="height:590px;width:780px">
+        @Html.Partial("../Pessoa/PessoaFK")
+    </div>
+</div>
+

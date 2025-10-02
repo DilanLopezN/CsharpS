@@ -1,0 +1,130 @@
+/* Artfully masterminded by ZURB  */
+
+/* --------------------------------------------------
+   Table of Contents
+-----------------------------------------------------
+:: Shared Styles
+:: Page Name 1
+:: Page Name 2
+*/
+
+
+/* -----------------------------------------
+   Shared Styles
+----------------------------------------- */
+body
+{
+    background: url('../images/orange-waves2.png') no-repeat;
+    background-size: 100%;
+}
+
+input[type='text'],
+input[type='password']
+{
+    height: auto;
+    border-width: 2px;
+    border-radius: 5px;
+}
+
+input[type='text'].input-validation-error,
+input[type='password'].input-validation-error
+{
+    border-color: Red;
+}
+
+
+.small.button
+{
+    font-size: 14px;
+    border-radius: 5px;
+}
+
+.small.nice.orange.button
+{
+    background-color: #FF8132;
+    border-color: #FF8132;
+}
+
+.small.nice.orange.button:hover
+{
+    background-color: #FF6919;
+}
+/* -----------------------------------------
+   Page Name 1
+----------------------------------------- */
+#login_container
+{
+    max-width: 400px;
+    margin: 200px auto;
+    padding: 10px;
+}
+
+#formLogin
+{
+    background: url('../images/low_contrast_linen_orange_transp.png');
+    box-shadow: 0 0px 0 rgba(0, 0, 0, .2),0 0 200px rgba(255, 255, 255, .8);
+    margin: 0px;
+    border-radius: 15px;
+}
+
+#formLogin fieldset
+{
+    padding: 20px;
+    margin-bottom: 0px;
+    border: 0px none;
+}
+
+#login_container ol
+{
+    list-style-position:outside;
+}
+
+#login_container li
+{
+    list-style-type: none;
+}
+
+#login_container label
+{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#login_container .button
+{
+    margin-top: 10px;
+}
+
+#login_container .header
+{
+    line-height: 0px;
+}
+
+#login_container .body
+{
+    display: inline-block;
+    width: 100%;
+}
+
+#login_container .header img
+{
+    margin: 0;
+}
+
+@media only screen and (max-width: 767px)
+{
+    #login_container
+    {
+        margin: 0px auto;
+    }
+    
+    #formLogin fieldset
+    {
+        padding: 29px;
+    }
+}
+
+/* -----------------------------------------
+   Page Name 2
+----------------------------------------- */
+

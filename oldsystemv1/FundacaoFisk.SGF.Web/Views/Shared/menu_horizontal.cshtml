@@ -1,0 +1,311 @@
+﻿<script type="text/javascript">
+    require(["dojo/_base/xhr",
+                "dojo/ready",
+                "dijit/MenuBar",
+                "dijit/PopupMenuBarItem",
+                "dijit/MenuItem",
+                "dijit/DropDownMenu",
+                "dijit/MenuSeparator",
+                "dojo/store/Memory",
+                "dijit/form/FilteringSelect"
+    ], function (xhr, ready, MenuBar, PopupMenuBarItem, MenuItem, DropDownMenu, MenuSeparator, Memory, FilteringSelect) {
+        ready(function () {
+            xhr.get({
+                url: "@EnderecoRelativoWeb/permissao/GetMenusUsuario",
+                preventCache: true,
+                handleAs: "json",
+                headers: { "Accept": "application/json", "Content-Type": "application/json", "Authorization": "BEARER @ApiAccessToken" }
+            }).then(function (dataMenus) {
+                ready(function () {
+                    try {
+                        if (hasValue(dataMenus)) {
+                            apresentaMensagem('apresentadorMensagem', dataMenus, true);
+                            dataMenus = jQuery.parseJSON(dataMenus).retorno;
+                            var empresaPropria = dataMenus.empresaPropria;
+                            for (var data in dataMenus) {
+                                var pMenuBar = null;
+                                var pSubMenu;
+                                var menu = new Array();                                
+
+                                data == "menuPrincipal" ? menu = dataMenus.menuPrincipal : "";
+                                if (data == "menuConfiguracao") {
+                                    menu = dataMenus.menuConfiguracao;
+                                    pMenuBar = new MenuBar({
+                                        id: "menuConfBar"
+                                    });
+                                } else if (data == "menuCadastrosBasicos") {
+                                    menu = dataMenus.menuCadastrosBasicos;
+                                    pMenuBar = new MenuBar({
+                                        id: "menuCadBasicBar"
+                                    });
+                                } else
+                                    pMenuBar = new MenuBar({});
+
+                                //Processa menus do primeiro nível:
+                                if (hasValue(menu))
+                                    for (var i = 0; i < menu.length; i++) {
+
+                                        // Não mostrar menu "Área Restrita" quando o ambiente for teste.
+                                        // Solicitação feita pelo Leonardo 13/08/2019
+                                        if (document.getElementById("_AMB").value.toLowerCase() == '"true"' &&
+                                                menu[i].no_menu == "Área Restrita") {
+                                            continue;
+                                        }
+
+                                        pSubMenu = new DropDownMenu({});
+                                        //Processa os menus de próximos níveis:
+                                        mostraMenusFilhos(menu[i].MenusFilhos, pSubMenu, MenuItem, DropDownMenu, MenuSeparator, empresaPropria);
+
+                                        if (hasValue(menu[i].MenusFilhos) && menu[i].MenusFilhos.length > 0)
+                                            pMenuBar.addChild(new PopupMenuBarItem({
+                                                label: menu[i].no_menu == "Cadastros Básicos" || menu[i].no_menu == "Configuração" ? "" : menu[i].no_menu,
+                                                id: menu[i].no_menu == "Cadastros Básicos" ? "menuCadBasic" : menu[i].no_menu == "Configuração" ? "menuCasBasicConf" : "",
+                                                popup: pSubMenu
+                                            }));
+                                        else
+                                            pMenuBar.addChild(new PopupMenuBarItem({
+                                                dc_url_menu: incluiNoCache(menu[i].dc_url_menu),
+                                                label: menu[i].no_menu,
+                                                onClick: function (obj) { abreMenu(this.dc_url_menu); },
+                                                id: menu[i].no_menu == "Cadastros Básicos" ? "menuCadBasic" : menu[i].no_menu == "Configuração" ? "menuCasBasicConf" : ""
+                                            }));
+                                    }
+                                data == "menuPrincipal" ? pMenuBar.placeAt("menuHorizontal") : "";
+                                data == "menuConfiguracao" ? pMenuBar.placeAt("configuracao") : "";
+                                data == "menuCadastrosBasicos" ? pMenuBar.placeAt("cadastroBasicos") : "";
+                                pMenuBar = null;
+                            }
+
+                            // Preenchendo os dados de cabeçalho:
+                            var nomeUsuario = document.getElementById('nomeUsuario');
+                            if (dataMenus == 'undefined' || dataMenus == undefined) {
+                                window.location = EnderecoAbsoluto() + '/Auth/Login';
+                                //window.location.reload();
+                            }
+                            else {
+                                nomeUsuario.innerHTML = dataMenus.nomeUsuario + "&nbsp;";
+                                if (hasValue(dataMenus.empresasUsuario) && dataMenus.empresasUsuario.length > 0)
+                                    populaEmpresasLogin(150, dataMenus, Memory, FilteringSelect);
+                                else
+                                    document.getElementById("escola").innerHTML = hasValue(dataMenus.nomeEscolaLogada) ? dataMenus.nomeEscolaLogada : "";
+                            }
+
+                            if (jQuery.browser.mozilla) {
+                                $('#menuConfBar').css("height", "100%").css("padding-top", "1px");
+                                $('#menuCadBasicBar').css("height", "100%").css("padding-top", "1px");
+                                $('#menuLogoutBar').css("height", "100%").css("padding-top", "1px");
+                                $('#menuAjudaBar').css("height", "100%").css("padding-top", "1px");
+                                $('#menuCasBasicConf').css("height", "87%");
+                                $('#menuCadBasic').css("height", "87%");
+                                $('#menuLogout').css("height", "87%");
+                                $('#menuManual').css("height", "87%");
+                            } else if (jQuery.browser.msie) {
+                                ready(function () {
+                                    require(["dojo/query!css3", "dojo/ready"], function (query, redy) {
+                                        $('#menuConfBar').css("padding-top", "3px");
+                                        $('#menuCadBasicBar').css("padding-top", "3px");
+                                        $('#menuLogoutBar').css("padding-top", "3px");
+                                        $('#menuAjudaBar').css("padding-top", "3px");
+                                    });
+                                });
+                            } else
+                                ready(function () {
+                                    require(["dojo/query!css3", "dojo/ready"], function (query, redy) {
+                                        $('#menuConfBar').css("padding-top", "1px");
+                                        $('#menuCadBasicBar').css("padding-top", "1px");
+                                        $('#menuLogoutBar').css("padding-top", "1px");
+                                        $('#menuAjudaBar').css("padding-top", "1px");
+                                    });
+                                });
+                            $('#menuCadBasic').append('<img src="@EnderecoRelativoWeb/images/shared/nav/nav_cadastros_basicos.png" />').css("padding", "3px 10px 0px");
+                            $('#menuCasBasicConf').append('<img src="@EnderecoRelativoWeb/images/shared/nav/nav_configuracao.png" />').css("padding", "3px 10px 0px");
+                            document.getElementById("menuConfBar").title = "Configuração";
+                            document.getElementById("menuCadBasicBar").title = "Cadastros Básicos";
+                            document.getElementById("menuLogoutBar").title = "Efetuar logout da aplicação";
+                            document.getElementById("menuAjudaBar").title = "Chat/Circulares/Impressos-contingência/VideoAulas";
+                        } else {
+                            var mensagensWeb = new Array();
+                            mensagensWeb[0] = new MensagensWeb(DIALOGO_AVISO, "Erro ao preencher o menu, tente novamente!");
+                            apresentaMensagem("apresentadorMensagem", mensagensWeb);
+                        }
+                    }
+                    catch (e) {
+                        postGerarLog(e);
+                    }
+                });
+            },
+            function (error) {
+                apresentaMensagem('apresentadorMensagem', error);
+            });
+        });
+    });
+
+
+    //Monta o  menu do logout
+    require([
+    "dijit/registry",
+    "dojo/on",
+    "dijit/form/Button",
+    "dijit/MenuBar",
+    "dijit/PopupMenuBarItem",
+    "dijit/MenuItem",
+    "dijit/DropDownMenu",
+    "dojo/request/xhr",
+    "dojox/json/ref",
+    "dojo/ready",
+    "dojo/aspect"
+    ], function (registry, on, Button, MenuBar, PopupMenuBarItem, MenuItem, DropDownMenu, aspect) {
+        var pMenuBar = new MenuBar({
+            id: "menuLogoutBar"
+        });
+        var pSubMenu = new DropDownMenu({});
+        pSubMenu.addChild(new MenuItem({
+            label: ""
+        }));
+        pMenuBar.addChild(new PopupMenuBarItem({
+            onClick: function (obj) { efetuaLogout(); },
+            id: "menuLogout",
+            label: ""
+        }));
+        pMenuBar.placeAt("divLogout");
+        //pMenuBar.startup();
+        $('#menuLogout').append('<img src="@EnderecoRelativoWeb/images/shared/nav/nav_logout_new.png" />').css("padding", "3px 10px 0px");
+
+        var pMenuBar = new MenuBar({
+            id: "menuAjudaBar"
+        });
+
+        pSubMenu = new DropDownMenu({});
+        /*
+        pSubMenu.addChild(new MenuItem({
+            label: "Manual do Usuário",
+            onClick: function (obj) {
+                abrePopUp(Endereco() + '/Content/manual/manual.htm', '765px', '771px');
+                require(["dijit/focus", "dojo/dom"], function (focusUtil, dom) {
+                    focusUtil.focus(dom.byId("menuAjudaBar"), false);
+                });
+            },
+            id: "menuManual"
+        }));*/
+
+        pSubMenu.addChild(new MenuItem({
+            label: "Chat",
+            onClick: function (obj) {
+                abrePopUpChat();
+            },
+            id: "menuChat"
+        }));
+
+        var Permissoes = "@Permissoes";
+        if (Permissoes != null && Permissoes != "" && possuiPermissao('cir', Permissoes)) {
+            pSubMenu.addChild(new MenuItem({
+                label: "Circulares",
+                onClick: function (obj) {
+                    window.location = Endereco() + "/Informacao/Circular";
+                },
+                id: "menuCirculares"
+            }));
+        }
+
+        if (Permissoes != null && Permissoes != "" && possuiPermissao('faq', Permissoes)) {
+            pSubMenu.addChild(new MenuItem({
+                label: "Faq",
+                onClick: function (obj) {
+                    window.location = Endereco() + "/Informacao/Faq";
+                },
+                id: "faq"
+            }));
+        }
+
+        if (jQuery.parseJSON(MasterGeral()) == true || (Permissoes != null && Permissoes != "" && possuiPermissao('impcont', Permissoes))) {
+            //caixaDialogo(DIALOGO_AVISO, msgErroDownloadFundacao);
+
+            pSubMenu.addChild(new MenuItem({
+                label: "Impressos-contingência",
+                onClick: function (obj) {
+                    open(Endereco() + "/Informacao/getDownloadImpressosContingencia");
+                },
+                id: "menuImpressosContingencia"
+            }));
+        }
+
+        if (Permissoes != null && Permissoes != "" && possuiPermissao('vid', Permissoes)) {
+            pSubMenu.addChild(new MenuItem({
+                label: "Vídeoaulas",
+                onClick: function (obj) {
+                    window.location = Endereco() + "/Informacao/Video";
+                },
+                id: "menuVideos"
+            }));
+        }
+
+        pMenuBar.addChild(new PopupMenuBarItem({
+            label: "",
+            popup: pSubMenu,
+            id: "menuInformacao"
+        }));
+        pMenuBar.placeAt("ajuda");
+        $('#menuInformacao').append('<img src="@EnderecoRelativoWeb/images/shared/nav/informacao.png" />').css("padding", "3px 10px 0px");
+    });
+
+    function alteraEmpresaLogada(e) {
+        require(["dojo/request/xhr", "dojox/json/ref", "dojo/ready"], function (xhr, ref, ready) {
+            ready(function () {
+                try {
+                    xhr.post(Endereco() + "/auth/postAlteraEmpresaLogada", {
+                        headers: { "Accept": "application/json", "Content-Type": "application/json", "Authorization": Token() },
+                        handleAs: "json",
+                        data: ref.toJson({
+                            id_empresa: e
+                        })
+                    }).then(function (data) {
+                        window.location = EnderecoAbsoluto();
+                    }, function (error) {
+                        apresentaMensagem('apresentadorMensagem', error.response.data);
+                    });
+                }
+                catch (e) {
+                    postGerarLog(e);
+                }
+            });
+        });
+    }
+
+    function populaEmpresasLogin(count, dataMenus, Memory, FilteringSelect) {
+        var cbEmpresaUsuario = dijit.byId('cbEmpresaUsuario');
+        if (hasValue(cbEmpresaUsuario, true))
+            cbEmpresaUsuario._onChangeActive = false;
+        cbEmpresaUsuario = criarOuCarregarCompFiltering('cbEmpresaUsuario', dataMenus.empresasUsuario, "", dataMenus.codEscolaLogada, null, Memory, FilteringSelect, 'cd_pessoa', 'dc_reduzido_pessoa', null);
+        if (hasValue(cbEmpresaUsuario, true)) {
+            cbEmpresaUsuario._onChangeActive = true;
+            cbEmpresaUsuario.old_value = dataMenus.codEscolaLogada;
+            cbEmpresaUsuario.on("change", function (e) {
+                if (e != cbEmpresaUsuario.old_value) {
+                    caixaDialogo(DIALOGO_CONFIRMAR, msgConfirmaMudancaEmpresa, function () {
+                        if (hasValue(e)) {
+                            alteraEmpresaLogada(e);
+                            cbEmpresaUsuario.old_value = e;
+                        }
+                    }, function () {
+                        cbEmpresaUsuario._onChangeActive = false;
+                        cbEmpresaUsuario.set('value', cbEmpresaUsuario.old_value);
+                        cbEmpresaUsuario._onChangeActive = true;
+                    });
+                }
+            });
+        }
+        else
+            setTimeout(function () { populaEmpresasLogin(count - 1, dataMenus, Memory, FilteringSelect); }, 100);
+    }
+</script>
+<!--[if IE]>
+
+    <![endif]-->
+<div class="nav">
+    <input type="hidden" id="_AMB" value='@AmbienteTeste' />
+    <div id="menuHorizontal" class="menuHorizontal"></div>
+</div>
+
+
+
+ 

@@ -1,0 +1,79 @@
+﻿@{
+    ViewBag.Title = "Visualização de Vídeo";
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+
+@section scripts {
+    @Scripts.Render("~/bundles/faqVideoDetail")
+    <link href="~/Content/themes/base/dojo1.8.5r/dojox/form/resources/CheckedMultiSelect.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/dojo1.8.5r/dojox/form/resources/UploaderFileList.css" rel="stylesheet" />
+}
+
+@section scriptsBody{
+
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Visualização de Vídeo";
+
+        //**** Requerires para a Tabulação ****\\
+        require([
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager",
+                "dijit/form/TimeTextBox",
+                "dijit/form/DateTextBox"
+        ]);
+        montarMetodosVideoFaq();
+
+    </script>
+}
+
+<style>
+    .titulo-video {
+        font-family: Google Sans,Roboto,RobotoDraft,Helvetica,Arial,sans-serif;
+        font-size: 14px;
+        font-variant-ligatures: no-contextual;
+        font-weight: 500;
+    }
+</style>
+<div class="apresentadorMsg" id="apresentadorMensagem" style="display: none;"></div>
+
+<table class="Table" style="width: 100%" id="content-table">
+    <tr>
+        <th rowspan="3" class="sized">
+            <img src="~/images/shared/side_shadowleft.jpg" width="20" height="300" alt="" /></th>
+        <th class="topleft"></th>
+        <td id="tbl-border-top">&nbsp;</td>
+        <th class="topright"></th>
+        <th rowspan="3" class="sized">
+            <img src="~/images/shared/side_shadowright.jpg" width="20" height="300" alt="" /></th>
+    </tr>
+    <tr>
+        <td id="tbl-border-left"></td>
+        <td style="height: 100%;">
+            <!--  start content-table-inner ...................................................................... START -->
+            <div id="content-table-inner">
+                <div class="titulo-video">
+                    <div class="apresentadorMsg" id="apresentadorMensagemVideoDetail" style="display: none;"></div>
+                    <h3 style="margin-top: 0; color: black" id="nomeVid"></h3>
+
+                </div>
+                <div class="EspacoCaixa caixaPesquisa">
+
+                    <div class="playerVideo" id="playerVideo"></div>
+                </div>
+
+            </div>
+            <!--  end content-table-inner ............................................END  -->
+        </td>
+        <td id="tbl-border-right"></td>
+    </tr>
+    <tr>
+        <th class="sized bottomleft"></th>
+        <td id="tbl-border-bottom">&nbsp;</td>
+        <th class="sized bottomright"></th>
+    </tr>
+</table>

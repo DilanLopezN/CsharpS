@@ -1,0 +1,102 @@
+﻿
+@Scripts.Render("~/bundles/ItemFK")
+<input id="tipoRetornoItemFK" type="hidden">
+<div class="corpo_interno">
+    <div class="apresentadorMsg" id="apresentadorMensagemItemFK" style="display:none;"></div>
+    <div class="EspacoCaixa caixaPesquisa">
+        <table class="Table">
+            <tr style="vertical-align: middle;">
+                <td class="tdRight" style="width: 10%;">
+                    <label for="pesquisaItemServico">Descrição: </label>
+                </td>
+                <td class="dojoTextBoxIECorrect" style="width: 25%;">
+                    <input id="pesquisaItemServico" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 100%">
+                </td>
+                <td class="tdRight" style="width: 7%">
+                    <label class="AlinhaDireita;">Início:</label>
+                </td>
+                <td class="dojoTextBoxIECorrect" style="width: 25%;">
+                    <input type="checkbox" id="inicioItemServico" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                </td>
+
+                <td class="tdRight" style="width: 10%">
+                    <label class="AlinhaDireita;">Kit:</label>
+                </td>
+                <td class="dojoTextBoxIECorrect" style="width: 25%;">
+                    <input disabled checked="false" type="checkbox" id="kit" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                </td>
+
+                <td class="tdRight" style="width: 10%;">
+                    <label for="statusItemFK">Status:</label>
+                </td>
+                <td class="dojoTextBoxIECorrect" style="width: 10%;">
+                    <input id="statusItemFK" class="margemCampoEsq" style="width: 100%">
+                </td>
+                <td rowspan="2" style="text-align: right; width:10%;">
+                    <input id="pesquisarItemFK" title="Pesquisar" />
+                </td>
+            </tr>
+            <tr>
+                <td class="tdRight" style="width: 10%;">
+                    <label for="grupo">Grupo:</label>
+                </td>
+                <td class="dojoTextBoxIECorrect">
+                    <input data-dojo-type="dijit/form/FilteringSelect" id="grupoPes" required="false" style="width: 100%" />
+                </td>
+                <td class="tdRight" style="width: 7%">
+                    <label for="tipo">Tipo: </label>
+                </td>
+                <td class="dojoTextBoxIECorrect">
+                    <input id="cdTipoItem" type="hidden" value="0" />
+                    <input data-dojo-type="dijit/form/FilteringSelect" id="tipo" required="false" style="width: 100%" maxlength="6" />
+                </td>
+                <td id="comEstoqueTitulo" class="tdRight nowrap" style="width: 10%;display:none">
+                    Com Estoque:
+                </td>
+                <td id="comEstoqueCampo" class="dojoTextBoxIECorrect" style="width: 10%;display:none">
+                    <input type="checkbox" id="comEstoque" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                </td>
+                <td id="vinculadoCursoTitulo" class="tdRight nowrap" style="width: 10%;display:none">
+                    Vinculado ao Curso:
+                </td>
+                <td id="vinculadoCursoCampo" class="dojoTextBoxIECorrect" style="width: 10%;display:none">
+                    <input type="checkbox" id="vinculadoCurso" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                </td>
+
+                <td id="notDisplayViculadoCurso" style="display:block"></td>
+            </tr>
+            <tr id="trAnoMes" style="display: none">
+                  <td class="tdRight" style="width: 10%;">
+                      <label for="grupo" >Ano:</label>
+                  </td>
+                  <td class="dojoTextBoxIECorrect">
+                      <input data-dojo-type="dijit/form/ValidationTextBox" id="anoItemFk" style="width: 100%" onkeypress="mascaraInt(document.getElementById('ano'));" maxlength="4"/>
+                  </td>
+                  <td class="tdRight" style="width: 7%">
+                      <label for="tipo">Mês: </label>
+                  </td>
+                  <td class="dojoTextBoxIECorrect">
+                      <input name="mes_items" id="mes_items" class="margemCampoEsq" style="width: 100%">
+                  </td>
+                  <td>&nbsp;</td>
+            </tr>
+        </table>
+    </div>
+    <div style="padding-top: 5px; width: 100%">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%">
+            <tr style="width: 100%">
+                <td style="text-align: center; width: 100%;">
+                    <input type="button" id="selecionaItemFK" />&nbsp;
+                    <input type="button" id="fecharItemFK" title="Fechar" />&nbsp;
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+    <div style="width: 100%; height: 415px;">
+        <div data-dojo-type="dijit/layout/ContentPane" id="panelItemFK" style="width: 100%; height: 410px; padding-top: 5px; padding-left: 0px">
+            <div id="gridPesquisaItem"></div>
+        </div>
+    </div>
+</div>

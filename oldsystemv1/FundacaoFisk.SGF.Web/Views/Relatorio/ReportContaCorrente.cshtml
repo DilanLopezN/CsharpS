@@ -1,0 +1,89 @@
+﻿@{
+    ViewBag.Title = "Relatório de Conta Corrente";
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+
+@section scriptsBody{
+        @Scripts.Render("~/bundles/reportContaCorrente")
+
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Conta Corrente";
+        
+        //**** Requerires para a Tabulação ****\\
+        require([
+           "dojo",
+           "dijit/form/Button",
+           "dijit/form/DateTextBox",
+           "dijit/Dialog",
+           "dojox/validate/web",
+           "dojox/validate/check",
+           "dijit/form/ValidationTextBox",
+           "dijit/form/Form",
+           "dojox/form/Manager",
+           "dijit/form/FilteringSelect"
+        ]);
+        montarMetodosContaCorrente();
+    </script>
+}
+<div class="apresentadorMensagem" id="apresentadorMensagem" style="display:none;"></div>
+<div>
+    <div class="EspacoCaixa caixaPesquisa">
+        <form data-dojo-type="dojox/form/Manager" id="formRptContaCorrente" data-dojo-id="formRptContaCorrente" enctype="multipart/form-data" class="Formulario">
+            <table class="Table">
+                <tr>
+                    <td style="width: 95%;">
+                        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Filtros'" id="panePesqGeral" open="true">
+                            <table class="Table">
+                                <tr>
+                                    <td class="tdRight" style="width: 5%;">
+                                        <label for="localMovto">Local Movimento:</label>
+                                    </td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 10%;">
+                                        <select id="localMovto" data-dojo-type="dijit/form/FilteringSelect" name="localMovto" required="true" style="width: 100%;"></select>
+                                    </td>
+                                    <td class="tdRight" style="width: 5%;">
+                                        <label for="tipoLiquidacao">Tipo de Liquidação:</label>
+                                    </td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 10%;">
+                                        <select id="tipoLiquidacao" data-dojo-type="dijit/form/FilteringSelect" name="tipoLiquidacao" required="true" style="width: 100%;"></select>
+                                    </td>
+
+                                </tr>
+                            </table>
+                            <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Período da Data Inicial'" id="paneDataInicial" open="true">
+                                <table class="Table">
+                                    <tr>
+                                        <td class="tdRight" style="width: 9%;">
+                                            <label for="dtInicialCC">Data Inicial:</label>
+                                        </td>
+                                        <td style="width: 24%;" class="dojoTextBoxIECorrect">
+                                            <input type="text" id="dtInicialCC" name="dtInicialCC" onkeypress="mascaraDataHora(event, this)" maxlength="10" class="alignDojoData" data-dojo-type="dijit.form.DateTextBox" style="width: 100%;" required="false" />
+
+                                        </td>
+                                        <td class="tdRight" style="width: 9%;">
+                                            <label for="dtFinalCC">Data Final:</label>
+                                        </td>
+                                        <td style="width: 24%;" class="dojoTextBoxIECorrect">
+                                            <input type="text" id="dtFinalCC" name="dtFinalCC" class="alignDojoData" onkeypress="mascaraDataHora(event, this)" maxlength="10" data-dojo-type="dijit.form.DateTextBox" style="width: 100%;" required="false" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div style="padding-top: 10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%" class="Alinhamento">
+            <tr style="width: 100%">
+                <td style="text-align: center; width: 50%">
+                    <input type="button" id="relatorio" title="Relatório" />
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+</div>

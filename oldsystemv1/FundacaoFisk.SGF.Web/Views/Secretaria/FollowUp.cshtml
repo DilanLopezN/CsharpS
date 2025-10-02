@@ -1,0 +1,229 @@
+﻿@{
+    ViewBag.Title = "Follow-Up";
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+
+@section head {
+    <link rel="stylesheet" href="~/Content/themes/base/dojo1.8.5r/dojox/calendar/themes/claro/Calendar.css">
+    <link href="~/Content/themes/base/dojo1.8.5r/dojox/editor/plugins/resources/css/CollapsibleToolbar.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/dojo1.8.5r/dojox/editor/plugins/resources/css/ShowBlockNodes.css" rel="stylesheet" />
+    <!--link href="~/Content/themes/base/dojo1.8.5r/dojox/editor/plugins/resources/css/Save.css" rel="stylesheet" /-->
+    <link href="~/Content/themes/base/dojo1.8.5r/dojox/editor/plugins/resources/css/Preview.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/dojo1.8.5r/dojox/editor/plugins/resources/css/FindReplace.css" rel="stylesheet" />
+}
+
+
+@section scriptsBody{
+    @Scripts.Render("~/bundles/followUp")
+    @Scripts.Render("~/bundles/cadFollowUpPartial")
+    @Scripts.Render("~/bundles/prospectFK")
+    @Scripts.Render("~/bundles/pessoaFK")
+    @Scripts.Render("~/bundles/cidadeFk")
+    <script src="~/Scripts/jquery.maskedinput-1.3.js"></script>
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Follow-Up";
+        require([
+            "dojo/NodeList-traverse",
+            "dijit/form/TextBox",
+            "dijit/form/Select",
+            "dojo/_base/event",
+            "dojox/validate/web",
+            "dojox/validate/check",
+            "dijit/form/NumberTextBox",
+            "dijit/form/ValidationTextBox",
+            "dijit/form/Form",
+            "dojox/form/Manager",
+            "dijit/Tooltip",
+            "dijit/form/DateTextBox",
+            "dojo/data/ObjectStore",
+            "dojo/parser",
+        ]);
+        montarCadastroFollowUp();
+
+    </script>
+}
+<input type="hidden" id="link" value="" />
+<div class="apresentadorMsg" id="apresentadorMensagem" style="display:none;"></div>
+<script type="text/javascript">
+    showCarregando();
+</script>
+
+<input type="hidden" id="cdUsuarioOrgPesq" />
+<input type="hidden" id="cdUsuarioDestinoPesq" />
+<input type="hidden" id="cdUsuarioOrgAdmPesq" />
+<input type="hidden" id="cdProspectPesq" />
+<input type="hidden" id="cdAlunoPesq" />
+<div>
+    <div class="EspacoCaixa caixaPesquisa">
+        <table class="Table">
+            <tr>
+                <td>
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Filtros'" id="tagPesqGeral" open="true">
+                        <table class="Table">
+                            <tr class="Pesquisa">
+                                <td class="tdRight nowrap" style="width: 10%;">
+                                    <label for="tipoFollowUpPesq">Tipo:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 25%;">
+                                    <input id="tipoFollowUpPesq" name="tipoFollowUpPesq" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 50%;" />
+                                </td>
+                                
+                                <td class="tdRight" style="width: 8%;">
+                                    <label for="ckLidoPesq">Lido:</label></td>
+                                <td class="dojoTextBoxIECorrect" style="width: 19%;">
+                                    <input type="checkbox" id="lidoPesq" name="lidoPesq" data-dojo-type="dijit/form/FilteringSelect" style="width: 75%;"/></td>
+                                <td class="tdRight" style="width: 8%;">
+                                    <label for="ckResolvidoPesq">Resolvido:</label></td>
+                                <td class="dojoTextBoxIECorrect" style="width: 30%;">
+                                    <input type="checkbox" id="resolvidoPesq" name="resolvidoPesq" data-dojo-type="dijit/form/FilteringSelect" style="width: 50%;" />
+                                </td>
+                            </tr>
+                        </table>
+                        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Interno'" id="tgPesqInterno" open="true">
+                            <table class="Table">
+                                <tr class="Pesquisa">
+                                    <td class="tdRight nowrap" style="width: 10%;">
+                                        <label for="usuarioOrgPesq">Usuário de Origem:</label></td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 20%;">
+                                        <input type="text" id="usuarioOrgPesq" name="usuarioOrgPesq" style="width: 100%;" data-dojo-type="dijit/form/TextBox" />
+                                    </td>
+                                    <td style="width: 5%; text-align: left" class="nowrap">
+                                        <input id="FKUsuarioOrigemPesq" style="min-width: 18px;" />
+                                        <input type="text" id="limparUsuarioOrigemPesq" />
+                                    </td>
+                                    <td class="tdRight nowrap" style="width: 10%;">
+                                        <label for="usuarioDestinoPesq">Usuário de Destino:</label></td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 20%;">
+                                        <input type="text" id="usuarioDestinoPesq" name="usuarioDestinoPesq" style="width: 100%;" data-dojo-type="dijit/form/TextBox" />
+                                    </td>
+                                    <td style="width: 5%; text-align: left" class="nowrap">
+                                        <input id="FKUsuarioDestinoPesq" style="min-width: 18px;" />
+                                        <input type="text" id="limparUsuDestinoPesq" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Prospect/Aluno'" id="tgPesqAluno" open="false">
+                            <table class="Table">
+                                <tr>
+                                    <td class="tdRight nowrap" style="width: 10%;">
+                                        <label for="prospectAlunoPesq">Prospect/Aluno:</label></td>
+                                    <td class="dojoTextBoxIECorrect nowrap" style="width: 45%;">
+                                        <input type="text" id="prospectAlunoPesq" name="prospectAlunoPesq" style="width: 70%;" data-dojo-type="dijit/form/TextBox" />
+                                        <input id="FKProspectAlunoPesq" style="min-width: 18px;" />
+                                        <input id="limparProspectAlunoPesq" type="text" />
+                                    </td>
+                                    <td class="tdRight" style="width: 5%">
+                                        <label for="acaoPesq">Ação:</label>
+                                    </td>
+                                    <td style="width: 40%;">
+                                        <select id="acaoPesq" name="acaoPesq" data-dojo-type="dijit/form/FilteringSelect" style="width: 90%;"></select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Administração Geral'" id="tgPesqMaster" open="false">
+                            <table class="Table" style="width: 50%;">
+                                <tr class="Pesquisa">
+                                    <td class="tdRight nowrap" style="width: 25%;">
+                                        <label for="usuarioOrgAdmPesq">Usuário de Origem:</label></td>
+                                    <td style="width: 75%;" class="dojoTextBoxIECorrect nowrap">
+                                        <input type="text" id="usuarioOrgAdmPesq" name="usuarioOrgAdmPesq" style="width: 75%;" data-dojo-type="dijit/form/TextBox" />
+                                        <input id="FKUsuarioOrgAdmPesq" style="min-width: 18px;" />
+                                        <input id="limparFKUsuarioOrgAdmPesq" type="text" />
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Período'" id="tagPeriodoPesq" open="false">
+                            <table class="Table">
+                                <tr>
+                                    <td class="Pesquisa tdRight" style="width: 10%">
+                                        <label for="dtaInicialPesq">Data Inicial:</label>
+                                    </td>
+                                    <td style="width: 15%" class="dojoTextBoxIECorrect">
+                                        <input type="text" id="dtaInicialPesq" name="dtaInicialPesq" onkeypress="mascaraDataHora(event, this)" data-dojo-type="dijit/form/DateTextBox" class="alignDojoData" style="width: 100%;" />
+                                    </td>
+                                    <td class="tdRight" style="width: 10%">
+                                        <label for="dtaFinalPesq" class="AlinhaDireita">Data Final:</label>
+                                    </td>
+                                    <td style="width: 20%" class="dojoTextBoxIECorrect">
+                                        <input type="text" id="dtaFinalPesq" name="dtaFinalPesq" onkeypress="mascaraDataHora(event, this)" data-dojo-type="dijit/form/DateTextBox" class="alignDojoData" style="width: 100%;" />
+                                    </td>
+                                    <td class="tdRight" style="width: 7%;">
+                                        <label for="ckDataPesq">Data:</label></td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 1%;">
+                                        <input type="checkbox" id="ckDataPesq" name="ckDataPesq" data-dojo-type="dijit/form/CheckBox" class="Check" checked="true" />
+                                    </td>
+                                    <td class="tdRight" style="width: 7%;">
+                                        <label for="ckProximoPesq">Próximo:</label></td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 1%;">
+                                        <input type="checkbox" id="ckProximoPesq" name="ckProximoPesq" data-dojo-type="dijit/form/CheckBox" class="Check" /></td>
+
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </td>
+                <td style="width: 5%; text-align: center">
+                    <input id="pesquisarFollowUp" title="Pesquisar" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="padding-top: 10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%" class="Alinhamento">
+            <tr style="width: 100%">
+                <td style="text-align: left; width: 25%">
+                    <div class="linkAcoes" id="linkAcoesFollowUpFK"></div>
+                </td>
+                <td style="text-align: center; width: 50%">
+                    <input id="novoFollowUp" title="Novo" />
+                    <input id="relatorioFollowUp" title="Relatório" />
+                </td>
+                <td style="text-align: right; width: 25%">
+                    <span class="linkSelecionados" id="linkSelecionadosFollowUp"></span>
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+    <div data-dojo-type="dijit/layout/ContentPane" style="padding-left: 0px; padding-right: 0px;">
+        <div class="gridCadBasic">
+            <div id="gridCadFollowUp"></div>
+        </div>
+    </div>
+</div>
+
+<div id="cadFollowUp" data-dojo-type="dijit/Dialog" title="Cadastro de Follow-Up" style="display: none; width: 800px; height: 600px;">
+    <div style="height: 600px; width: 785px">
+        @Html.Partial("../Secretaria/CadFollowUpPartial")
+    </div>
+</div>
+
+<div id="proPessoa" data-dojo-type="dijit.Dialog" title="Pesquisar Pessoa" style="display: none; width: 800px; height: 605px;">
+    <div style="height: 605px; width: 785px">
+        @Html.Partial("../Pessoa/PessoaFK")
+    </div>
+</div>
+<!-- FK de pesquisa de cidade para a FK de Escola -->
+<div data-dojo-type="dijit.Dialog" id="cadCidadeEscolaFK" title="Pesquisar Cidade" style="width: 600px; display: none;">
+    @Html.Partial("../Pessoa/CidadeFK")
+</div>
+
+<div id="proTurmaFK" data-dojo-type="dijit.Dialog" title="Pesquisar Turma" style="display: none; width: 800px; height: 590px;">
+    <input id="apresentadorMensagemFks" type="hidden">
+    <div class="apresentadorMsg" id="apresentadorMensagemTurmaFK" style="display: none;"></div>
+    <div style="width: 785px; height: 590px;">
+        @Html.Partial("../Coordenacao/TurmaFK")
+    </div>
+</div>
+
+
+<div id="proAluno" data-dojo-type="dijit.Dialog" title="Pesquisar Aluno" style="display: none; width: 700px; height: 590px;">
+    <div style="width: 685px;height: 590px;">
+        @Html.Partial("../Secretaria/AlunoFK")
+    </div>
+</div>

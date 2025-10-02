@@ -1,0 +1,360 @@
+@{
+    ViewBag.Title = "Desconto por Antecipação";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    @*algumas funcionalidades estão nesse arquivo*@
+    @Scripts.Render("~/bundles/politicaDesconto")
+    @Scripts.Render("~/bundles/turmaFK")
+    @Scripts.Render("~/bundles/alunoFK")
+    @*<script src="~/Scripts/SGF/contratoFK_v31.js"></script>*@
+    <script src="~/Scripts/jquery.maskedinput-1.3.js"></script>
+}
+@section scriptsBody{
+    <script type="text/javascript">
+        //Titulo do Formulário
+        document.getElementById("labelTitulos").innerHTML = "Desconto por Antecipação";
+
+        require([
+            "dojo/NodeList-traverse",
+            "dojo/_base/array",
+            "dojo/_base/event",
+            "dojox/validate/web",
+            "dojox/validate/check",
+            "dijit/form/NumberTextBox",
+            "dijit/form/ValidationTextBox",
+            "dijit/form/Form",
+            "dijit/form/TextBox",
+            "dijit/form/Select",
+            "dijit/form/SimpleTextarea",
+            "dojox/form/Manager"
+        ]);
+
+        //*** Segurança do Formulário ***\\
+        //      mostraTabs('@Permissoes');
+        montarCadastroPoliticaDesconto();
+    </script>
+}
+
+
+<div id="container">
+    <input type="hidden" id="link" value="" />
+    <div style="width: 100%; BACKGROUND-ATTACHMENT: fixed; OVERFLOW: auto; display: none;" id="apresentadorMensagem"></div>
+    @*<script type="text/javascript"> showCarregando(); </script>*@
+    <div id="div 1">
+        @*PoliticaDesc*@
+        <div class="EspacoCaixa caixaPesquisa">
+            <table class="Table">
+                <tr>
+                    <td style="width: 100%;">
+                        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Filtros'" id="panePesqGeral" open="true">
+                            <table class="Table">
+                                <tr>
+                                    <td style="width: 10%" class="tdRight">
+                                        <label for="cdTurma" class="AlinhaDireita">Turma: </label>
+                                    </td>
+                                    <td style="width: 20%">
+                                        <select id="cdTurma" class="alignDojoData" data-dojo-type="dijit/form/FilteringSelect"></select>
+                                    </td>
+                                    <td style="width: 10%" class="tdRight">
+                                        <label for="cdAluno" class="AlinhaDireita">Aluno: </label>
+                                    </td>
+                                    <td style="width: 20%">
+                                        <select id="cdAluno" class="alignDojoData" data-dojo-type="dijit/form/FilteringSelect"></select>
+                                    </td>
+
+                                    @*<td style="width: 10%" class="tdRight">
+                                        <label for="cdContraro" class="AlinhaDireita">Contrato: </label>
+                                    </td>
+                                    <td style="width: 20%">
+                                        <select id="cdContrato" class="alignDojoData" data-dojo-type="dijit/form/FilteringSelect" required="false"></select>
+                                    </td>*@
+
+                                    <td style="width: 10%" class="tdRight">
+                                        <label for="statusPoliticaDesconto" class="AlinhaDireita;">Status:</label>
+                                    </td>
+                                    <td style="width: 20%">
+                                        <input id="statusPoliticaDesconto" class="margemCampoEsq">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Período'" id="paneDataInicial" open="true">
+                            <table class="Table">
+                                <tr>
+                                    <td class="tdRight" style="width: 15%;">
+                                        <label for="nome">Data Inicial:</label>
+                                    </td>
+                                    <td style="width: 35%;" class="dojoTextBoxIECorrect">
+                                        <input
+                                            id="periodoInicial"
+                                            data-dojo-type="dijit.form.DateTextBox"
+                                            class="alignDojoData" style="width: 100%;"
+                                            onkeypress="mascaraDataHora(event, this)" maxlength="10" />
+                                    </td>
+                                    <td class="tdRight" style="width: 15%;">
+                                        <label for="nome">Data Final:</label>
+                                    </td>
+                                    <td style="width: 35%;" class="dojoTextBoxIECorrect">
+                                        <input
+                                            id="periodoFinal"
+                                            data-dojo-type="dijit.form.DateTextBox"
+                                            class="alignDojoData" style="width: 100%;"
+                                            onkeypress="mascaraDataHora(event, this)" maxlength="10" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <td rowspan="2" style="width: 10%" class="tdRight">
+                            <input id="pesquisarPoliticaDesconto" title="Pesquisar" />
+                        </td>
+                </tr>
+            </table>
+        </div>
+        <div style="padding-top: 10px">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <div>
+                <table style="width: 100%">
+                    <tr style="width: 100%">
+                        <td style="text-align: left; width: 25%">
+                            <div class="linkAcoes" id="linkAcoesPoliticaDesconto"></div>
+                        </td>
+                        <td style="text-align: center; width: 50%;">
+                            <input id="novoPoliticaDesconto" />
+                            <input id="relatorioPoliticaDesconto" title="Relatório" />
+                        </td>
+                        <td style="text-align: right; width: 25%">
+                            <span class="linkSelecionados" id="linkSelecionadosPoliticaDesconto"></span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+        <div data-dojo-type="dijit/layout/ContentPane" id="ContentGridPoliticaDesconto" style="padding-left: 0px; padding-right: 0px;">
+            <div class="gridCadBasic">
+                <div id="gridPoliticaDesconto"></div>
+            </div>
+        </div>
+
+    </div>@*fim div 1*@
+</div>@*fim container*@
+
+<div id="cad" data-dojo-type="dijit.Dialog" title="Cadastro de Desconto por Antecipação" class="Dialogo">
+
+    <div class="sessao_form" style="margin-left: -20px;">
+        <span id="counter_form">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    <div class="corpo_interno" style="min-width: 360px; max-width: 96%; height: 98%;">
+        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" id="formPoliticaDesconto" class="Formulario">
+            <div class="apresentadorMsg" id="apresentadorMensagemPoliticaDesc" style="display: none;"></div>
+            <div data-dojo-type="dijit/layout/TabContainer" id="tabContainer" class="Abas" onclick="selecionaTabPolitica" style="min-height: 450px; max-height: 800px; height: 100%;">
+                <div data-dojo-type="dijit/layout/ContentPane" title="Desconto" id="tabPolitica" class="ContentPane" data-dojo-props="selected:true">
+                    <table class="Table">
+                        <tr>
+                            <input id="cd_politica_desconto" name="cd_politica_desconto" type="hidden" value="0" />
+                            <td class="tdRight nowrap">Data Inicial:</td>
+                            <td class="dojoTextBoxIECorrect">
+                                <input
+                                    data-dojo-type="dijit.form.DateTextBox"
+                                    class="alignDojoData" style="width: 100%;"
+                                    id="dt_inicial_politica"
+                                    name="dt_inicial_politica"
+                                    onkeypress="mascaraDataHora(event, this)" maxlength="10" />
+                            </td>
+                            <td class="tdRight">Ativo</td>
+                            <td>
+                                <input name="id_ativo" type="checkbox" id="id_ativo" required="true" checked="checked" data-dojo-type="dijit/form/CheckBox" />
+                            </td>
+                        </tr>
+                    </table>
+                    <div style="padding-top: 10px">
+                        <div class="linha_acoes" style="width: 100%"></div>
+                        <div>
+                            <table style="width: 100%">
+                                <tr style="width: 100%">
+                                    <td style="text-align: left; width: 25%;">
+                                        <div class="linkAcoes" id="linkAcoesDia"></div>
+                                    </td>
+                                    <td style="text-align: center; width: 50%;">
+                                        <input id="incluirDataLimite" />
+                                    </td>
+
+                                    <td style="text-align: right; width: 25%;"></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="linha_acoes" style="width: 100%"></div>
+                    </div>
+                    <div data-dojo-type="dijit/layout/ContentPane" id="ContentGridDatasLimites" style="padding-left: 0px; padding-right: 0px; width: 630px; height: 300px">
+                        <div class="gridCadBasic" style="height: 295px">
+                            <div id="gridDatasLimites"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div data-dojo-type="dijit/layout/ContentPane" title="Turmas" id="tabTurma" data-dojo-props="selected:false">
+                    <form name="formTurmaPol" id="formTurmaPol" data-dojo-type="dojox/form/Manager" style="width: 100%">
+                        <div class="linha_acoes" style="width: 100%"></div>
+                        <table style="width: 100%" class="Alinhamento">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkAcoesTurma"></div>
+                                </td>
+                                <!--<td class="Alinhamento">-->
+                                <td style="text-align: center; width: 50%">
+                                    <div id="btnAddTurma"></div>
+                                </td>
+                                <td style="text-align: center; width: 25%">
+                                    <div id="btnNone"></div>
+                                </td>
+                                <td style="text-align: right; width: 25%"></td>
+                            </tr>
+                        </table>
+                        <div class="linha_acoes" style="width: 100%"></div>
+                        <div class="gridCadBasicPartial" style="width: 100%; height: 85%;">
+                            <div id="gridTurma" style="height: 352px"></div>
+                        </div>
+                    </form>
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" title="Alunos" id="tabAluno" data-dojo-props="selected:false">
+                    <form name="formAlunoPOl" id="formAlunoPol" data-dojo-type="dojox/form/Manager" style="width: 100%">
+                        <div class="linha_acoes" style="width: 100%"></div>
+                        <table style="width: 100%" class="Alinhamento">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkAcoesAluno"></div>
+                                </td>
+                                <!--<td class="Alinhamento">-->
+                                <td style="text-align: center; width: 50%">
+                                    <div id="btnAddAluno"></div>
+                                </td>
+                                <td style="text-align: center; width: 25%">
+                                    <div id="btnNone1"></div>
+                                </td>
+                                <td style="text-align: right; width: 25%"></td>
+                            </tr>
+                        </table>
+                        <div class="linha_acoes" style="width: 100%;"></div>
+                        <div class="gridCadBasicPartial" style="width: 100%; height: 85%;">
+                            <div id="gridAluno" style="height: 352px"></div>
+                        </div>
+                    </form>
+                </div>
+        @*        <div data-dojo-type="dijit/layout/ContentPane" title="Contratos" id="tabContrato" data-dojo-props="selected:false">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%" class="Alinhamento">
+                        <tr style="width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkAcoesContrato"></div>
+                            </td>
+                            <!--<td class="Alinhamento">-->
+                            <td style="text-align: center; width: 50%">
+                                <div id="btnAddContrato"></div>
+                            </td>
+                            <td style="text-align: center; width: 25%">
+                                <div id="btnNone2"></div>
+                            </td>
+                            <td style="text-align: right; width: 25%"></td>
+                        </tr>
+                    </table>
+                    <div class="linha_acoes" style="width: 100%;"></div>
+                    <div class="gridCadBasicPartial" style="width: 100%; height: 85%;">
+                        <div id="gridContrato" style="height: 352px"></div>
+                    </div>
+                </div>*@
+            </div>
+            <br />
+            <div class="CaixaAcao">
+                <div class="linha_acoes" style="width: 100%"></div>
+                <div class="Alinhamento">
+                    <span id="divIncluirPoliticaDesconto">
+                        <input id="incluirPoliticaDesconto" title="incluir" /></span>
+                    <span id="divAlterarPoliticaDesconto">
+                        <input id="alterarPoliticaDesconto" title="Alterar" /></span>
+                    <span id="divExcluirPoliticaDesconto">
+                        <input type="button" id="deletePoliticaDesconto" title="Apagar" /></span>
+
+                    <span id="divLimparPoliticaDesconto">
+                        <input id="limparPoliticaDesconto" title="Limpar" /></span>
+                    <span id="divCancelarPoliticaDesconto">
+                        <input type="button" id="cancelarPoliticaDesconto" title="Cancelar" /></span>
+                    <span id="divFecharPoliticaDesconto">
+                        <input type="button" id="fecharPoliticaDesconto" title="Fechar" /></span>
+                </div>
+                <div class="linha_acoes" style="width: 100%"></div>
+            </div>
+            <div id="dialogDataLimite" data-dojo-type="dijit/Dialog" class="Dialogo" title="Dia Limite" style="width: 700px;">
+                <input id="cd_politica_desconto_dias" name="cd_politica_desconto_dias" type="hidden" value="0" />
+                <input id="cd_dias_politica" name="cd_dias_politica" type="hidden" value="0" />
+                <input id="cd_dias_aux" name="cd_dias_aux" type="hidden" value="0" />
+                <div class="corpo_interno">
+                    <div style="height: auto" class="apresentadorMsg" id="Div5"></div>
+                    <table class="Table">
+                        <tr>
+                            <td class="CorpoFormAux AlinhaDireita" style="width: 15%">
+                                <label>Dia Limite:</label></td>
+                            <td class="dojoTextBoxIECorrect" style="width: 35%">
+                                <input name="dia_limite"
+                                    data-dojo-props="smallDelta:1, constraints:{min:1,max:31,places:0,pattern:'00'}"
+                                    id="dia_limite" maxlength="2" style="width: 75%; margin-top: 3px;" size="34"
+                                    onkeypress="mascaraInt(document.getElementById('dia_limite'));"
+                                    data-dojo-type="dijit/form/NumberSpinner" required="required" />
+
+
+                            <td class="CorpoFormAux AlinhaDireita" style="width: 15%">
+                                <label>Percentual:</label></td>
+                            <td class="dojoTextBoxIECorrect" style="width: 55%">
+                                <input
+                                    name="percentual"
+                                    id="percentual"
+                                    data-dojo-type="dijit/form/NumberTextBox"
+                                    data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'##0.####'}"
+                                    style="width: 100%; margin-top: 3px;" size="34"
+                                    maxlength="8"
+                                    onkeypress="mascaraFloat(document.getElementById('percentual'));"
+                                    required="required" /></td>
+                        </tr>
+                    </table>
+                    <div class="containerCrud">
+                        <div class="linha_acoes" style="width: 100%"></div>
+
+                        <div style="text-align: center">
+                            <span id="divIncluirDiasPolitica">
+                                <input id="incluirDiasPolitica" title="Incluir" /></span>
+                            <span id="divEditarDiasPolitica">
+                                <input id="editarDiasPolitica" title="Editar" /></span>
+                            <span id="divLimparDiasPolitica">
+                                <input id="limparDiasPolitica" title="Limpar" /></span>
+                            <span id="divFecharDiasPolitica">
+                                <input type="button" id="fecharDiasPolitica" title="Fechar" /></span>
+                        </div>
+                        <div class="linha_acoes" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@* criando a turmafk *@
+<div id="proTurmaFK" data-dojo-type="dijit.Dialog" title="Pesquisar Turma" style="display: none; width: 800px; height: 590px;">
+    <input id="apresentadorMensagemFks" type="hidden">
+    <div class="apresentadorMsg" id="apresentadorMensagemTurmaFK" style="display: none;"></div>
+    <div style="width: 785px; height: 590px;">
+        @Html.Partial("../Coordenacao/TurmaFK")
+    </div>
+</div>
+
+<div id="proAluno" data-dojo-type="dijit.Dialog" title="Pesquisar Aluno" style="display: none; width: 700px; height: 590px;">
+    <div style="width: 685px; height: 590px;">
+        @Html.Partial("../Secretaria/AlunoFK")
+    </div>
+</div>
+
+@*<div id="proContrato" data-dojo-type="dijit.Dialog" title="Pesquisar Contrato" style="display: none; width: 800px; height: 590px;">
+    <div style="width: 785px; height: 590px;">
+        @Html.Partial("../Secretaria/ContratoFK")
+    </div>
+</div>*@

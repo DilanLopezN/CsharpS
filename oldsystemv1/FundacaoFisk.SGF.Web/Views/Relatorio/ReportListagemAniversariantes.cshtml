@@ -1,0 +1,125 @@
+﻿@{
+    ViewBag.Title = "Relatório de Listagem de Aniversariantes";
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+
+@section scriptsBody{
+    <script src="~/Scripts/jquery.maskedinput-1.3.js"></script>
+    @Scripts.Render("~/bundles/reportListagemAniversariantes")
+    @Scripts.Render("~/bundles/turmaFK")
+    @Scripts.Render("~/bundles/alunoFK")
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Listagem de Aniversariantes";
+
+        //**** Requerires para a Tabulação ****\\
+        require([
+                "dojo",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/FilteringSelect",
+                "dijit/form/TimeTextBox",
+                "dojo/data/ObjectStore",
+                "dijit/form/DateTextBox",
+                "dijit/Dialog",
+                "dojo/parser"
+        ]);
+        montarMetodosRelatorioListagemAniversariantes();
+    </script>
+}
+<div class="apresentadorMensagem" id="apresentadorMensagem" style="display:none;"></div>
+<script type="text/javascript">
+    showCarregando();
+</script>
+<div>
+    <div class="EspacoCaixa caixaPesquisa">
+        <table class="Table">
+            <tr>
+                <td>
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Filtros'" id="panePesqGeral" open="true">
+                        <table class="Table">
+                            <tr>
+                                <td class="tdRight" style="width: 15%;">
+                                    <label>Opção:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 35%;">
+                                    <select id="tipoListagem" name="tipoListagem" data-dojo-type="dijit/form/FilteringSelect" required="true" style="width: 100%;"></select>
+                                </td>
+
+                                <td class="tdRight" style="width: 10%;">
+                                    <label>Turma:</label>
+                                </td>
+                                <td style="width: 45%;">
+                                    <input id="cd_turma" type="hidden" />   
+                                    <table class="Table" style="width: 85%">
+                                        <tr>
+                                            <td class="dojoTextBoxIECorrect" style="width: 95%;">
+                                                <input id="noTurmaPesq" name="noTurmaPesq" size="125" style="width: 100%;" required="true" data-dojo-type="dijit/form/ValidationTextBox" disabled="disabled" />
+                                            </td>
+                                            <td style="width: 5%; text-align: left" class="nowrap">
+                                                <input id="pesProTurma" style="min-width: 18px" />
+                                                <input type="text" id="limparProTurma" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdRight" style="width: 15%;">
+                                    <label>Mês:</label>
+                                </td>
+                                <td class="tdRight" style="width: 35%;">
+                                    <table class="Table">
+                                        <tr>
+
+                                            <td class="dojoTextBoxIECorrect" style="width: 35%;">
+                                                <input type="text" id="nmMes" name="nmMes" required="true"
+                                                data-dojo-type="dijit/form/NumberSpinner" onkeypress="mascaraInt(document.getElementById('nmMes'));"
+                                                data-dojo-props="smallDelta:1, constraints:{min:1,max:12,places:0,pattern:'00'}" />
+                                            </td>
+                                            <td class="tdRight" style="width: 15%;">
+                                                <label>Dia:</label>
+                                            </td>
+                                            <td class="dojoTextBoxIECorrect" style="width: 35%;">
+                                                <input type="text" id="nmDia" style="width: 100%" name="nmDia"  required="true"
+                                                data-dojo-type="dijit/form/NumberSpinner"
+                                                onkeypress="mascaraInt(document.getElementById('nmDia'));"
+                                                data-dojo-props="smallDelta:1, constraints:{min:1,max:31,places:0,pattern:'00'}" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td colspan="2" style="width: 50%;"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div style="padding-top: 10px">
+    <div class="linha_acoes" style="width: 100%"></div>
+    <table style="width: 100%" class="Alinhamento">
+        <tr style="width: 100%">
+            <td style="text-align: center; width: 50%">
+                <input type="button" id="relatorioListagem" title="Relatório" />
+            </td>
+        </tr>
+    </table>
+    <div class="linha_acoes" style="width: 100%"></div>
+</div>
+
+<div id="proTurmaFK" data-dojo-type="dijit.Dialog" title="Pesquisar Turma" style="display: none; width: 800px; height: 600px;">
+    <input id="apresentadorMensagemFks" type="hidden">
+    <div class="apresentadorMsg" id="apresentadorMensagemTurmaFK" style="display: none;"></div>
+    <div style="width: 785px; height: 590px;">
+        @Html.Partial("../Coordenacao/TurmaFK")
+    </div>
+</div>
+
+<div id="proAluno" data-dojo-type="dijit.Dialog" title="Pesquisar Aluno" style="display: none; width: 700px; height: 590px;">
+    <div style="width: 685px;height: 590px;">
+        @Html.Partial("../Secretaria/AlunoFK")
+    </div>
+</div>

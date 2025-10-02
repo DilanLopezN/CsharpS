@@ -1,0 +1,179 @@
+@{
+    ViewBag.Title = "Nome de Avaliação";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+
+    @*algumas funcionalidades estão nesse arquivo*@
+    @Scripts.Render("~/bundles/criteriosavaliacoes")
+}
+
+
+@section scriptsBody{
+    <script type="text/javascript">
+        //Titulo do Formulário
+        document.getElementById("labelTitulos").innerHTML = "Nome de Avaliação";
+        require([
+                "dojo/NodeList-traverse",
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager"
+        ]);
+
+        //*** Segurança do Formulário ***\\
+        montaCadastroCriterio();
+
+
+    </script>
+}
+<div id="container">
+    <input type="hidden" id="link" value="" />
+    <div class="apresentadorMsg" id="apresentadorMensagem" style="display:none;"></div>
+    <script type="text/javascript">
+        showCarregando();
+    </script>
+    <div id="div 1">
+      <div class="EspacoCaixa caixaPesquisa">
+			<table class="Table">
+				<tr>
+					<td class="Pesquisa tdRight" style="width:5%">
+						<label for="descCriterio" class="AlinhaDireita">Descrição:</label>
+					</td>
+					<td class="dojoTextBoxIECorrect" style="width:25%;">
+						<input id="descCriterio" maxlength="64" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width:95%">
+					</td>
+
+                    <td class="Pesquisa tdRight" style="width:5%">
+						<label for="abrevCriterio" class="AlinhaDireita">Abreviatura:</label>
+					</td>
+					<td class="dojoTextBoxIECorrect" style="width:20%;">
+						<input id="abrevCriterio" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width:100%">
+					</td>
+
+					<td class="tdRight" style="width:5%">
+						<label class="AlinhaDireita;" for="inicioCriterio">Início:</label>
+					</td>
+					<td style="width:5%" class="dojoTextBoxIECorrect">
+						<input type="checkbox" id="inicioCriterio" data-dojo-type="dijit/form/CheckBox"  class="margemCampoEsq" />
+					</td>
+					<td class="tdRight" style="width:5%">
+						<label for="statusCriterio" class="AlinhaDireita;">Status:</label>
+					</td>
+					<td style="width:10%;" class="dojoTextBoxIECorrect">
+						<input id="statusCriterio" class="margemCampoEsq">
+					</td>
+                    
+					<td class="tdRight" style="width:10%" rowspan="2">
+						<input id="pesquisarCriterio" title="Pesquisar" />
+					</td>
+				</tr>
+                <tr>
+                    <td class="tdRight" style="width:5%">
+						<label class="AlinhaDireita;" for="conceitoCrit">Conceito:</label>
+					</td>
+					<td style="width:5%" class="dojoTextBoxIECorrect">
+                        <input id="conceitoCrit" name="conceitoCrit" class="alignDojoData" style="width: 50%;" />
+					</td>
+                    <td class="tdRight" style="width:5%">
+                        <label class="AlinhaDireita;" for="ckPart">Participação:</label>
+                    </td>
+                    <td style="width:5%" class="dojoTextBoxIECorrect">
+                        <input type="checkbox" id="ckPart" data-dojo-type="dijit/form/CheckBox"  class="margemCampoEsq" />
+                    </td>
+                    <td colspan="3"></td>
+                </tr>
+			</table>
+		</div>
+		
+            <div style="padding-top:10px">
+				<div class="linha_acoes" style="width: 100%"></div>
+				<div>
+					<table style="width:100%">
+						<tr style="width:100%">
+							<td style="text-align:left; width:25%">
+								<div class="linkAcoes" id="linkAcoes"></div>
+							</td>
+							<td style="text-align:center; width:50%;">
+								<input id="novoCriterio" title="Novo" />
+								<input id="relatorioCriterio" title="Relatório" />
+							</td>
+							<td style="text-align:right; width:25%">
+								<span class="linkSelecionados" id="linkSelecionados"></span>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div class="linha_acoes" style="width: 100%"></div>
+			</div>
+			<div data-dojo-type="dijit/layout/ContentPane" id="ContentGridCriterio" style="padding-left:0px; padding-right:0px;">
+				<div class="gridCadBasic">
+					<div id="gridCriterio"></div>
+				</div>
+			</div>
+        </div>
+    </div>
+<div id="cadCriterio" data-dojo-type="dijit.Dialog" title="Cadastro de Nome de Avaliação" class="Dialogo">
+    <div class="corpo_interno">
+        <form data-dojo-type="dojox/form/Manager" id="formCriterio" data-dojo-id="formCriterio" enctype="multipart/form-data" class="Formulario">
+            <div class="apresentadorMsg" style="display: none;" id="apresentadorMensagemCriterio"></div>
+            <input id="cd_criterio_avaliacao" name="cd_criterio_avaliacao" type="hidden" value="0" />
+            <table class="Table">
+                <tr>
+                    <td class="tdRight" for="dc_criterio_avaliacao">Descrição:</td>
+                    <td class="dojoTextBoxIECorrect" style="width: 60%">
+                        <input data-dojo-type="dijit/form/ValidationTextBox" maxlength="64" style="width: 100%;" id="dc_criterio_avaliacao" name="dc_criterio_avaliacao" required="true" />
+                    </td>
+                    <td  class="tdRight">Abreviatura:</td>
+					<td class="dojoTextBoxIECorrect">
+						<input data-dojo-type="dijit/form/ValidationTextBox" maxlength="6" id="dc_criterio_abreviado" style="width: 100%;" name="dc_criterio_abreviado"/>
+					</td>
+                </tr>
+                <tr>
+                    <td class="tdRight nowrap" for="id_conceito">Conceito:</td>
+                    <td>
+                        <table>
+                            <tr>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input data-dojo-type="dijit/form/CheckBox" id="id_conceito" />
+                                </td>
+                                <td  class="tdRight nowrap">Participação:</td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input data-dojo-type="dijit/form/CheckBox" id="id_participacao"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="tdRight nowrap" for="id_criterio_ativo">Ativo:</td>
+                    <td class="dojoTextBoxIECorrect">
+                        <input data-dojo-type="dijit/form/CheckBox" checked="checked" id="id_criterio_ativo" />
+                    </td>
+                </tr>
+            </table>
+            <div class="CaixaAcao">
+                <div class="linha_acoes" style="width: 100%"></div>
+                <div class="Alinhamento">
+                    <span id="divIncluirCriterio">
+                        <input id="incluirCriterio" title="incluir" /></span>
+                    <span id="divAlterarCriterio">
+                        <button id="alterarCriterio" title="Alterar">Salvar</button>
+                    </span>
+                    <span id="divExcluirCriterio">
+                        <input type="button" id="deleteCriterio" title="Excluir" /></span>
+                    <span id="divLimparCriterio">
+                        <input id="limparCriterio" title="Limpar" /></span>
+                    <span id="divCancelarCriterio">
+                        <input type="button" id="cancelarCriterio" title="Cancelar" /></span>
+                    <span id="divFecharCriterio">
+                        <input type="button" id="fecharCriterio" title="Fechar" />
+                    </span>
+                </div>
+                <div class="linha_acoes" style="width: 100%"></div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="clear"></div>

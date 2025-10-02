@@ -1,0 +1,323 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B4A36BE3-38A0-4CC7-90AD-660E591D7F6A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FundacaoFisk.SGF.Web.Services.Financeiro</RootNamespace>
+    <AssemblyName>FundacaoFisk.SGF.Web.Services.Financeiro</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Componentes.ApresentadorRelatorio">
+      <HintPath>..\lib\Componentes\Componentes.ApresentadorRelatorio.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericBusiness, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Componentes\Componentes.GenericBusiness.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericController">
+      <HintPath>..\lib\Componentes\Componentes.GenericController.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericDataAccess">
+      <HintPath>..\lib\Componentes\Componentes.GenericDataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericModel">
+      <HintPath>..\lib\Componentes\Componentes.GenericModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.Utils">
+      <HintPath>..\lib\Componentes\Componentes.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="DALC4NET">
+      <HintPath>..\lib\DALC4NET.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Business\FechamentoBusinessException.cs" />
+    <Compile Include="Business\FinanceiroBusiness.cs" />
+    <Compile Include="Business\FinanceiroBusinessException.cs" />
+    <Compile Include="Business\FiscalBusiness.cs" />
+    <Compile Include="Business\FiscalBusinessException.cs" />
+    <Compile Include="Comum\IBusiness\IFinanceiroBusiness.cs" />
+    <Compile Include="Comum\IBusiness\IFiscalBusiness.cs" />
+    <Compile Include="Comum\IDataAccess\IBaixaAutomaticaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IEmpresaValorServicoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IPessoaCartaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IItemMovimentoKitDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IChequeBaixaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IChequeTransacaoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IItemKitDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IItemMovItemKitDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IOrgaoFinanceiroDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IReajusteTituloDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IReajusteCursoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IReajusteAlunoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IReajusteTurmaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IReajusteAnualDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IObsSaldoCaixa.cs" />
+    <Compile Include="Comum\IDataAccess\IPoliticaTurmaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IPoliticaAlunoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ICFOPDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IDadosNFDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IAliquotaUFDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ISituacaoTributariaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ITaxaBancariaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ITipoNotaFiscalDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IItemSubgrupoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ITipoDescontoEscolaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ISaldoItemDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IFechamentoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IItemPoliticaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IItemMovimentoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IKardexDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IPoliticaComercialDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IPlanoTituloDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IBaixaTituloDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IContaCorrenteDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IMovimentoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ITituloAditamento.cs" />
+    <Compile Include="Comum\IDataAccess\ITitulosBaixaAutomaticaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ITransacaoFinanceiraDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ILocalMovtoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ITituloDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IBancoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IChequeDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IContratoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IPlanoContasDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ISubgrupoContaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IGrupoContaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ITabelaPrecoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IBibliotecaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IDiasPoliticaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IItemDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IItemEscolaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IPoliticaDescontoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ITipoDescontoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ITipoFinanceiroDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ITipoItemDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ITipoLiquidacaoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IMovimentacaoFinanceiraDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IGrupoEstoqueDataAccess.cs" />
+    <Compile Include="Controllers\FinanceiroController.cs" />
+    <Compile Include="Controllers\FiscalController.cs" />
+    <Compile Include="DataAccess\BaixaAutomaticaDataAccess.cs" />
+    <Compile Include="DataAccess\BaixaTituloDataAccess.cs" />
+    <Compile Include="DataAccess\BibliotecaDataAccess.cs" />
+    <Compile Include="DataAccess\ContaCorrenteDataAccess.cs" />
+    <Compile Include="DataAccess\ContratoDataAccess.cs" />
+    <Compile Include="DataAccess\ChequeDataAccess.cs" />
+    <Compile Include="DataAccess\BancoDataAccess.cs" />
+    <Compile Include="DataAccess\AliquotaUFDataAccess.cs" />
+    <Compile Include="DataAccess\CFOPDataAccess.cs" />
+    <Compile Include="DataAccess\ChequeTransacaoDataAccess.cs" />
+    <Compile Include="DataAccess\ChequeBaixaDataAccess.cs" />
+    <Compile Include="DataAccess\EmpresaValorServicoDataAccess.cs" />
+    <Compile Include="DataAccess\ItemMovimentoKitDataAccess.cs" />
+    <Compile Include="DataAccess\ItemKitDataAccess.cs" />
+    <Compile Include="DataAccess\ItemMovItemKitDataAccess.cs" />
+    <Compile Include="DataAccess\OrgaoFinanceiroDataAccess.cs" />
+    <Compile Include="DataAccess\PessoaCartaDataAccess.cs" />
+    <Compile Include="DataAccess\ReajusteTituloDataAccess.cs" />
+    <Compile Include="DataAccess\ReajusteCursoDataAccess.cs" />
+    <Compile Include="DataAccess\ReajusteTurmaDataAccess.cs" />
+    <Compile Include="DataAccess\ReajusteAlunoDataAccess.cs" />
+    <Compile Include="DataAccess\ReajusteAnualDataAccess.cs" />
+    <Compile Include="DataAccess\ObsSaldoCaixaDataAccess.cs" />
+    <Compile Include="DataAccess\PoliticaTurmaDataAccess.cs" />
+    <Compile Include="DataAccess\PoliticaAlunoDataAccess.cs" />
+    <Compile Include="DataAccess\DadosNFDataAccess.cs" />
+    <Compile Include="DataAccess\SituacaoTributariaDataAccess.cs" />
+    <Compile Include="DataAccess\TaxaBancariaDataAccess.cs" />
+    <Compile Include="DataAccess\TipoNotaFiscalDataAccess.cs" />
+    <Compile Include="DataAccess\ItemSubgrupoDataAccess.cs" />
+    <Compile Include="DataAccess\TipoDescontoEscolaDataAccess.cs" />
+    <Compile Include="DataAccess\SaldoItemDataAccess.cs" />
+    <Compile Include="DataAccess\FechamentoDataAccess.cs" />
+    <Compile Include="DataAccess\DiasPoliticaDataAccess.cs" />
+    <Compile Include="DataAccess\ItemPoliticaDataAccess.cs" />
+    <Compile Include="DataAccess\ItemMovimentoDataAccess.cs" />
+    <Compile Include="DataAccess\KardexDataAccess.cs" />
+    <Compile Include="DataAccess\PoliticaComercialDataAccess.cs" />
+    <Compile Include="DataAccess\PlanoTituloDataAccess.cs" />
+    <Compile Include="DataAccess\MovimentoDataAccess.cs" />
+    <Compile Include="DataAccess\TituloAditamentoDataAccess.cs" />
+    <Compile Include="DataAccess\TitulosBaixaAutomaticaDataAccess.cs" />
+    <Compile Include="DataAccess\TransacaoFinanceiraDataAccess.cs" />
+    <Compile Include="DataAccess\LocalMovtoDataAccess.cs" />
+    <Compile Include="DataAccess\TituloDataAccess.cs" />
+    <Compile Include="DataAccess\PlanoContasDataAccess.cs" />
+    <Compile Include="DataAccess\SubgrupoContaDataAccess.cs" />
+    <Compile Include="DataAccess\GrupoContaDataAccess.cs" />
+    <Compile Include="DataAccess\TabelaPrecoDataAccess.cs" />
+    <Compile Include="DataAccess\ItemDataAccess.cs" />
+    <Compile Include="DataAccess\ItemEscolaDataAccess.cs" />
+    <Compile Include="DataAccess\PoliticaDescontoDataAccess.cs" />
+    <Compile Include="DataAccess\TipoDescontoDataAccess.cs" />
+    <Compile Include="DataAccess\TipoFinanceiroDataAccess.cs" />
+    <Compile Include="DataAccess\TipoItemDataAccess.cs" />
+    <Compile Include="DataAccess\TipoLiquidacaoDataAccess.cs" />
+    <Compile Include="DataAccess\MovimentacaoFinanceiraDataAccess.cs" />
+    <Compile Include="DataAccess\GrupoEstoqueDataAccess.cs" />
+    <Compile Include="Model\AlunosSemTituloGeradoUI.cs" />
+    <Compile Include="Model\BaixaAutomaticaUI.cs" />
+    <Compile Include="Model\BaixaEfetuadaChequeUI.cs" />
+    <Compile Include="Model\CarneUI.cs" />
+    <Compile Include="Model\ChequeUI.cs" />
+    <Compile Include="Model\ContaCorrenteList.cs" />
+    <Compile Include="Model\ContaCorrenteUI.cs" />
+    <Compile Include="Model\Contas.cs" />
+    <Compile Include="Model\ItemKitUI.cs" />
+    <Compile Include="Model\KitUI.cs" />
+    <Compile Include="Model\DescontoTituloCarne.cs" />
+    <Compile Include="Model\LocalMovimentoWithContaUI.cs" />
+    <Compile Include="Model\MovimentoPerdaMaterialUI.cs" />
+    <Compile Include="Model\MovimentoProcessarUI.cs" />
+    <Compile Include="Model\ObservacaoBaixaUI.cs" />
+    <Compile Include="Model\ParcelasReciboAgrupadoUI.cs" />
+    <Compile Include="Model\ParcelasReciboConfirmacaoResultUI.cs" />
+    <Compile Include="Model\ReciboAgrupadoUI.cs" />
+    <Compile Include="Model\ReciboConfirmacaoParcelasUI.cs" />
+    <Compile Include="Model\ReciboConfirmacaoUI.cs" />
+    <Compile Include="Model\ReciboPagamentoUI.cs" />
+    <Compile Include="Model\RptContVendasMaterial.cs" />
+    <Compile Include="Model\RptLinhaRecibo.cs" />
+    <Compile Include="Model\SaldoFinanceiroParams.cs" />
+    <Compile Include="Model\SimulacaoAditamentoUI.cs" />
+    <Compile Include="Model\SimulacaoBaixaCnab.cs" />
+    <Compile Include="Model\TipoDescontoUI.cs" />
+    <Compile Include="Model\EstoqueUI.cs" />
+    <Compile Include="Model\KardexUI.cs" />
+    <Compile Include="Model\RptItemFechamento.cs" />
+    <Compile Include="Model\RptPlanoTitulo.cs" />
+    <Compile Include="Model\Espelho.cs" />
+    <Compile Include="Model\LocalMovtoUI.cs" />
+    <Compile Include="Model\MovimentoUI.cs" />
+    <Compile Include="Model\PlanoContaUI.cs" />
+    <Compile Include="Model\Recibo.cs" />
+    <Compile Include="Model\RptBalanceteMensal.cs" />
+    <Compile Include="Model\RptReceberPagar.cs" />
+    <Compile Include="Model\RptRecebidaPaga.cs" />
+    <Compile Include="Model\SaldoFinanceiro.cs" />
+    <Compile Include="Model\SimulacaoBaixa.cs" />
+    <Compile Include="Model\SubGrupoSort.cs" />
+    <Compile Include="Model\TabelaPrecoUI.cs" />
+    <Compile Include="Model\ItemUI.cs" />
+    <Compile Include="Model\PoliticaDescontoUI.cs" />
+    <Compile Include="Model\TituloChequeUI.cs" />
+    <Compile Include="Model\TituloCodUI.cs" />
+    <Compile Include="Model\TituloUI.cs" />
+    <Compile Include="Model\TituloValidaReciboAgrupadoUI.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.CarneUI.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.Espelho.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.RptBalanceteMensal.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.RptPlanoTitulo.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Financeiro.Model.RptRecebidaPaga.datasource" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FundacaoFisk.SGF.GenericDataAccess\FundacaoFisk.SGF.GenericDataAccess.csproj">
+      <Project>{dd863842-024f-44b6-bcdf-952c5172f5f4}</Project>
+      <Name>FundacaoFisk.SGF.GenericDataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.GenericModel\FundacaoFisk.SGF.GenericModel.csproj">
+      <Project>{452b08af-98c4-4036-81d9-537bc4818afd}</Project>
+      <Name>FundacaoFisk.SGF.GenericModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Utils\FundacaoFisk.SGF.Utils.csproj">
+      <Project>{00a8d0a9-82e8-410b-86bd-dd2b80245e95}</Project>
+      <Name>FundacaoFisk.SGF.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Empresa\FundacaoFisk.SGF.Web.Services.Empresa.csproj">
+      <Project>{1c4c8266-2d64-425e-8161-812a055d0b8b}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Empresa</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Pessoa\FundacaoFisk.SGF.Web.Services.Pessoa.csproj">
+      <Project>{b3845b50-1ab4-46ba-ad0c-0fcd6b9bd120}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Pessoa</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Registration\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

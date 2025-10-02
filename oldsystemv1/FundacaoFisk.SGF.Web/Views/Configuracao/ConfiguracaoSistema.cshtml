@@ -1,0 +1,86 @@
+﻿@{
+    ViewBag.Title = "Configuração do Sistema";
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+
+@section head {
+    <link rel="stylesheet" href="~/Content/themes/base/dojo1.8.5r/dojox/calendar/themes/claro/Calendar.css">
+    <link href="~/Content/themes/base/dojo1.8.5r/dojox/editor/plugins/resources/css/CollapsibleToolbar.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/dojo1.8.5r/dojox/editor/plugins/resources/css/ShowBlockNodes.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/dojo1.8.5r/dojox/editor/plugins/resources/css/Preview.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/dojo1.8.5r/dojox/editor/plugins/resources/css/FindReplace.css" rel="stylesheet" />
+}
+
+
+@section scriptsBody{
+    @Scripts.Render("~/bundles/configuracaoSistema")
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Configuração do Sistema";
+        require([
+            "dojo/NodeList-traverse",
+            "dijit/form/TextBox",
+            "dijit/form/Select",
+            "dojo/_base/event",
+            "dojox/validate/web",
+            "dojox/validate/check",
+            "dijit/form/NumberTextBox",
+            "dijit/form/ValidationTextBox",
+            "dijit/form/Form",
+            "dojox/form/Manager",
+            "dijit/Tooltip",
+            "dijit/form/DateTextBox",
+            "dojo/data/ObjectStore",
+            "dojo/parser"
+        ]);
+        montarCadastroRodape();
+
+    </script>
+}
+<script type="text/javascript">
+    showCarregando();
+</script>
+
+@*<div>
+    <div style="padding-top: 10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%" class="Alinhamento">
+            <tr style="width: 100%">
+                <td style="text-align: left; width: 25%">
+                    <div class="linkAcoes" id="linkAcoesRodape"></div>
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+    
+</div>*@
+
+<div id="container">
+    <input type="hidden" id="link" value="" />
+    <div style="width: 100%; BACKGROUND-ATTACHMENT: fixed; OVERFLOW: auto; display: none;" id="apresentadorMensagem"></div>
+    @*<script type="text/javascript"> showCarregando(); </script>*@
+    <div>
+        <div data-dojo-type="dijit/layout/TabContainer" id="tabContainer" onclick="selecionaTab" class="Abas">
+            <div data-dojo-type="dijit/layout/ContentPane" title="E-mail Marketing" id="tabAtividade" class="ContentPane" style="height: 100%">
+                <div class="scroll" style="width: 100%; height: 580px;" id="scrollComporMensagem">
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Rodapé E-mail Marketing'" open="true" id="tagFuncionario">
+                        <div style="min-height: 450px" id="mensagemRodape"></div>
+                    </div>
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Verso Cartão Postal'" open="true" id="tagVersoCartaoPostal" style="display:none">
+                        <div style="min-height: 500px" id="mensagemVersoCartaoPostal"></div>
+                    </div>
+                </div>
+                <div class="containerCrud" style="width: 100%; padding-top: 05px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div style="text-align: center">
+                        <span id="divAlterarEmailMarketing">
+                            <input type="button" id="alterarEmailMarketing" title="Alterar" /></span>
+                        <span id="divCancelarEmailMarketing">
+                            <input type="button" id="cancelarEmailMarketing" title="Cancelar" /></span>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>@*fim class="Abas"*@
+    </div>@*fim div 1*@
+</div>@*fim container*@

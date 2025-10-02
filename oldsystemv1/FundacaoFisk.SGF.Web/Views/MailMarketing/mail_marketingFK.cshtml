@@ -1,0 +1,68 @@
+﻿
+@Scripts.Render("~/bundles/mail_marketingFK")
+<div class="corpo_interno" style="height: 100%">
+    <div class="apresentadorMsg" id="apresentadorMensagemMailMarketingFK" style="display: none;"></div>
+    <div class="EspacoCaixa caixaPesquisa">
+        <table class="Table">
+            <tr>
+                <td class="tdRight" style="width: 10%;">
+                    <label for="pesquisaTipoDesconto">Descrição: </label>
+                </td>
+                <td style="width: 90%;" colspan="3">
+                    <input id="assuntoEmailMktFK" name="assuntoEmailMktFK" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 100%"></td>
+                
+            </tr>
+            <tr>
+                <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 10%;">
+                    <label>Data Início:</label></td>
+                <td class="dojoTextBoxIECorrect" style="width: 40%;">
+                    <input
+                        type="text"
+                        id="dtIni"
+                        name="dtIni"
+                        class="alignDojoData" data-dojo-type="dijit.form.DateTextBox"
+                        required="required" style="width: 100%;"
+                        constraints="{min:'1900-01', max:'2079-06', datePattern:'dd/MM/yyyy'}"
+                        onkeypress="mascaraDataHora(event, this)" maxlength="10" />
+                </td>
+                <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 10%;">
+                    <label>Data Fim:</label>
+                </td>
+                <td class="dojoTextBoxIECorrect" style="width: 40%;">
+                    <input
+                        type="text"
+                        id="dtFim"
+                        name="dtFim"
+                        data-dojo-type="dijit.form.DateTextBox"
+                        class="alignDojoData" style="width: 100%;" 
+                        onkeypress="mascaraDataHora(event, this)" maxlength="10" />
+                </td>
+                
+                <td rowspan="2" style="text-align: right; width: 10%;">
+                    <input id="pesquisarMailMarketingFK" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="padding-top: 5px; width: 100%">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%">
+            <tr style="width: 100%">
+                <td style="text-align: center; width: 100%;">
+                    <input type="button" id="selecionaMailMarketingFK" />&nbsp;
+                    <input type="button" id="fecharMailMarketingFK" title="Fechar" />
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+    
+    <input id="idOrigemTipoDescFK" type="hidden" />
+    <div style="width: 100%; height: 480px;">
+        <div data-dojo-type="dijit/layout/ContentPane" id="panelMailMarketingFK" style="width: 100%; height: 480px; padding-top: 5px; padding-left: 0px">
+            <div id="gridPesquisaMailMarketingPai" style="height: 415px">
+                <div id="gridPesquisaMailMarketing" style="height: 400px"></div>
+            </div>
+        </div>
+    </div>
+</div>

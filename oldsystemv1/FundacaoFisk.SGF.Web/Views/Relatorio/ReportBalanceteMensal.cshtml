@@ -1,0 +1,91 @@
+﻿@{
+    ViewBag.Title = "Relatório Balancete Mensal";
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+
+@section scriptsBody{
+    @Scripts.Render("~/bundles/reportBalanceteMensal")
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Balancete Mensal";
+
+        //**** Requerires para a Tabulação ****\\
+        require([
+                "dojo",
+                "dijit/form/TextBox",
+                "dijit/Dialog",
+                "dijit/form/Select",
+                "dojo/_base/array",
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager"
+        ]);
+        montarBalanceteMensal();
+
+    </script>
+}
+<div class="apresentadorMensagem" id="apresentadorMensagem" style="display:none;"></div>
+<script type="text/javascript">
+    showCarregando();
+</script>
+<div>
+    <div class="EspacoCaixa caixaPesquisa">
+        <table class="Table">
+            <tr>
+                <td style="width: 95%;">
+                    <form id="formBalancete" data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" class="Formulario">
+					    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Filtros'" id="panePesqGeral" open="true">
+						    <table class="Table">
+							    <tr>
+								    <td class="tdRight" style="width: 9%;">
+									    <label for="dtInicialPos">Mês:</label>
+								    </td>
+								    <td style="width: 15%;" class="dojoTextBoxIECorrect">
+									    <input type="text" id="mes" name="mes"data-dojo-type="dijit/form/NumberSpinner" required="required"
+													    data-dojo-props="smallDelta:1, constraints:{min:1,max:12,places:0,pattern:'00'}, style: 'width:50px'" />
+								    </td>
+								    <td class="tdRight" style="width: 5%;">
+									    <label for="tipoMovtoPosFin">Ano:</label>
+								    </td>
+								    <td class="dojoTextBoxIECorrect" style="width: 10%;">
+                                        <input type="text" id="ano" name="ano" data-dojo-type="dijit/form/NumberSpinner" required="required"
+													    data-dojo-props="smallDelta:1, constraints:{min:1500,max:3000,places:0000,pattern:'0000'}, style: 'width:60px'" />
+									</td>
+								    <td class="tdRight" style="width: 15%;">
+									    <label >Nível a analisar:</label>
+								    </td>
+								    <td style="width: 10%;" class="dojoTextBoxIECorrect">
+                                        <input type="hidden" id="nivel_escola" value="0" />
+									    <input type="text" id="nivel" name="parcelas"data-dojo-type="dijit/form/NumberSpinner" required="required"
+													    data-dojo-props="smallDelta:1, constraints:{min:0,max:2,places:0,pattern:'0'}, style: 'width:50px'" />
+								    </td>
+								    <td class="tdRight" style="width:20%">
+									    <label class="AlinhaDireita;" for="inicioCurso">Mostrar contas sem movimento:</label>
+								    </td>
+								    <td style="width:5%" class="dojoTextBoxIECorrect">
+									    <input type="checkbox" id="mostrar_contas" data-dojo-type="dijit/form/CheckBox"  class="margemCampoEsq" checked="true" />
+								    </td>
+								    <td style="width: 30%;">&nbsp;&nbsp;</td>
+							    </tr>
+						    </table>
+					    </div>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="padding-top: 10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%" class="Alinhamento">
+            <tr style="width: 100%">
+                <td style="text-align: center; width: 50%">
+                    <input type="button" id="relatorio" title="Relatório" />
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+</div>

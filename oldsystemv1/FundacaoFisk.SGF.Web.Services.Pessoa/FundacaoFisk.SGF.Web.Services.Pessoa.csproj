@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B3845B50-1AB4-46BA-AD0C-0FCD6B9BD120}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FundacaoFisk.SGF.Web.Services.Pessoa</RootNamespace>
+    <AssemblyName>FundacaoFisk.SGF.Web.Services.Pessoa</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Componentes.GenericBusiness, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Componentes\Componentes.GenericBusiness.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericController, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Componentes\Componentes.GenericController.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericDataAccess, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Componentes\Componentes.GenericDataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Componentes\Componentes.GenericModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.Utils, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Componentes\Componentes.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.4.0.20710.0\lib\net40\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.4.0.20710.0\lib\net40\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.4.0.20710.0\lib\net40\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Business\LocalidadeBusiness.cs" />
+    <Compile Include="Business\PessoaBusinessException.cs" />
+    <Compile Include="Comum\DataAccess\IPessoaEscolaDataAccess.cs" />
+    <Compile Include="Comum\DataAccess\IPessoaFisicaDataAccess.cs" />
+    <Compile Include="Comum\DataAccess\IAtividadeDataAccess.cs" />
+    <Compile Include="Comum\DataAccess\IEnderecoDataAccess.cs" />
+    <Compile Include="Comum\DataAccess\IEstadoCivilDataAccess.cs" />
+    <Compile Include="Comum\DataAccess\IOperadoraDataAccess.cs" />
+    <Compile Include="Comum\DataAccess\IOrgaoExpedidorDataAccess.cs" />
+    <Compile Include="Comum\DataAccess\IPessoaRafDataAccess.cs" />
+    <Compile Include="Comum\DataAccess\IRelacionamentoDataAccess.cs" />
+    <Compile Include="Comum\DataAccess\ITipoTelefoneDataAccess.cs" />
+    <Compile Include="Comum\DataAccess\IClasseTelefoneDataAccess.cs" />
+    <Compile Include="Comum\DataAccess\IEstadoDataAccess.cs" />
+    <Compile Include="Comum\DataAccess\IPaisDataAccess.cs" />
+    <Compile Include="Comum\Business\ILocalidadeBusiness.cs" />
+    <Compile Include="Comum\Business\IPessoaBusiness.cs" />
+    <Compile Include="Business\PessoaBusiness.cs" />
+    <Compile Include="Comum\DataAccess\ITratamentoPessoaDataAccess.cs" />
+    <Compile Include="Controllers\LocalidadeController.cs" />
+    <Compile Include="Controllers\PessoaController.cs" />
+    <Compile Include="Comum\DataAccess\IPessoaDataAccess.cs" />
+    <Compile Include="Comum\DataAccess\IPapelDataAccess.cs" />
+    <Compile Include="Comum\DataAccess\ITipoEnderecoDataAccess.cs" />
+    <Compile Include="Comum\DataAccess\ITipoLogradouroDataAccess.cs" />
+    <Compile Include="Comum\DataAccess\ITelefoneDataAccess.cs" />
+    <Compile Include="Controllers\PessoaMediaController.cs" />
+    <Compile Include="DataAccess\AtividadeDataAccess.cs" />
+    <Compile Include="DataAccess\ClasseTelefoneDataAccess.cs" />
+    <Compile Include="DataAccess\PessoaEscolaDataAccess.cs" />
+    <Compile Include="DataAccess\PessoaFisicaDataAccess.cs" />
+    <Compile Include="DataAccess\EnderecoDataAccess.cs" />
+    <Compile Include="DataAccess\EstadoCivilDataAccess.cs" />
+    <Compile Include="DataAccess\OperadoraDataAccess.cs" />
+    <Compile Include="DataAccess\OrgaoExpedidorDataAccess.cs" />
+    <Compile Include="DataAccess\PessoaRafDataAccess.cs" />
+    <Compile Include="DataAccess\RelacionamentoDataAccess.cs" />
+    <Compile Include="DataAccess\TipoTelefoneDataAccess.cs" />
+    <Compile Include="DataAccess\EstadoDataAccess.cs" />
+    <Compile Include="DataAccess\PaisDataAccess.cs" />
+    <Compile Include="DataAccess\LocalidadeDataAccess.cs" />
+    <Compile Include="Comum\DataAccess\ILocalidadeDataAccess.cs" />
+    <Compile Include="DataAccess\TelefoneDataAccess.cs" />
+    <Compile Include="DataAccess\TipoLogradouroDataAccess.cs" />
+    <Compile Include="DataAccess\PapelDataAccess.cs" />
+    <Compile Include="DataAccess\PessoaDataAccess.cs" />
+    <Compile Include="DataAccess\TipoEnderecoDataAccess.cs" />
+    <Compile Include="DataAccess\TratamentoPessoaDataAccess.cs" />
+    <Compile Include="Model\AtividadeEscolaAtividadeSearchUI.cs" />
+    <Compile Include="Model\ComponentesPessoaUI.cs" />
+    <Compile Include="Model\ContatosUI.cs" />
+    <Compile Include="Model\CidadeUI.cs" />
+    <Compile Include="Model\EnderecoUI.cs" />
+    <Compile Include="Model\EstadoUI.cs" />
+    <Compile Include="Model\LocalidadeUI.cs" />
+    <Compile Include="Model\PaisUI.cs" />
+    <Compile Include="Model\PessoaFisicaSearchUI.cs" />
+    <Compile Include="Model\PessoaFisicaUI.cs" />
+    <Compile Include="Model\PessoaJuridicaUI.cs" />
+    <Compile Include="Model\PessoaJurdicaSearchUI.cs" />
+    <Compile Include="Model\PessoaPartial.cs" />
+    <Compile Include="Model\PessoaRafUI.cs" />
+    <Compile Include="Model\PessoaSearchComboUI.cs" />
+    <Compile Include="Model\PessoaSearchUI.cs" />
+    <Compile Include="Model\RelacionamentoUI.cs" />
+    <Compile Include="Model\TelefoneUI.cs" />
+    <Compile Include="Model\TurmaEscolaSearchUI.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FundacaoFisk.SGF.GenericModel\FundacaoFisk.SGF.GenericModel.csproj">
+      <Project>{452b08af-98c4-4036-81d9-537bc4818afd}</Project>
+      <Name>FundacaoFisk.SGF.GenericModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Utils\FundacaoFisk.SGF.Utils.csproj">
+      <Project>{00a8d0a9-82e8-410b-86bd-dd2b80245e95}</Project>
+      <Name>FundacaoFisk.SGF.Utils</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,119 @@
+﻿@{
+    ViewBag.Title = "Mensagens";
+}
+<div id="Parte">
+    @section scripts{
+        <script src="~/Content/themes/base/dojo1.8.5r/dojo/dojo.js" data-dojo-config="async: true, isDebug: true, parseOnLoad: true"></script>
+        @Styles.Render("~/Content/themes/base/css")
+        @Styles.Render("~/Content/css")
+        @Scripts.Render("~/bundles/util")
+       	@Scripts.Render("~/bundles/jquery")
+        <link href="~/Content/screen.css" rel="stylesheet" />
+        <script type="text/javascript">
+            var erroPagina;
+            require([
+                      "dojo/_base/xhr",
+                      "dijit/registry",
+                      "dojo/store/JsonRest",
+                      "dojox/data/JsonRestStore",
+                      "dojo/data/ObjectStore",
+                      "dojo/store/Cache",
+                      "dojo/store/Memory",
+                      "dojo/domReady!",
+                      "dojo/parser"
+            ], function (xhr, _registry, JsonRest, JsonRestStore, ObjectStore, Cache, Memory) {
+                var parametros = getParamterosURL();
+                if (hasValue(parametros['Parametros']))
+                    xhr.get({
+                        url: "@EnderecoRelativoWeb/NaoInscrito/excluirContatoListagemEnderecos?Parametros=" + parametros['Parametros'],
+                        preventCache: true,
+                        handleAs: "json",
+                        headers: { "Accept": "application/json", "Content-Type": "application/json", "Authorization": "BEARER @ApiAccessToken" }
+                    }).then(function (data) {
+                        //retornaValoresErro(data);
+                        apresentaMensagem('apresentadorMensagem', data);
+                    },
+                    function (error) {
+                        apresentaMensagem('apresentadorMensagem', error);
+                       // retornaValoresErro(data);
+                    });
+            });
+
+        </script>
+    }
+</div>
+	<input type="hidden" id="retornoDialogo" value="" />
+    <input type="hidden" id="tipos" value="" />
+	<input type="hidden" id="_ER1" value='@EnderecoWeb' />
+    <input type="hidden" id="_ER0" value='@EnderecoRelativoWeb' />
+    <input type="hidden" id="_ERW"  />
+    
+	<input type="hidden" id="_ES0" />
+	<input type="hidden" id="_TK0" />
+    <input type="hidden" id="_EU0" />
+    <input type="hidden" id="_IM0" />
+    <input type="hidden" id="_IM1" />
+    <input type="hidden" id="_LU0" />
+    <input type="hidden" id="_FCC" />
+
+<!-- start content-outer ........................................................................................................................START -->
+<div id="content-outer">
+    <div id="content">
+        <div id="page-heading">
+            <label id="labelTitulos"></label>
+        </div>
+        <table class="Table" style="width: 100%" id="content-table">
+            <tr>
+                <th rowspan="3" class="sized">
+                    <img src="~/images/shared/side_shadowleft.jpg" width="20" height="300" alt="" /></th>
+                <th class="topleft"></th>
+                <td id="tbl-border-top">&nbsp;</td>
+                <th class="topright"></th>
+                <th rowspan="3" class="sized">
+                    <img src="~/images/shared/side_shadowright.jpg" width="20" height="300" alt="" /></th>
+            </tr>
+            <tr>
+                <td id="tbl-border-left"></td>
+                <td style="height: 100%;">
+                    <!--  start content-table-inner ...................................................................... START -->
+                    <div id="content-table-inner">
+                        <div style="width: 100%; BACKGROUND-ATTACHMENT: fixed; OVERFLOW: auto; display: none;" id="apresentadorMensagem"></div>
+                        <div class="clear"></div>
+
+                    </div>
+                    <!--  end content-table-inner ............................................END  -->
+                </td>
+                <td id="tbl-border-right"></td>
+            </tr>
+            <tr>
+                <th class="sized bottomleft"></th>
+                <td id="tbl-border-bottom">&nbsp;</td>
+                <th class="sized bottomright"></th>
+            </tr>
+        </table>
+
+    </div>
+</div>
+
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-66104609-1', 'auto');
+    ga('send', 'pageview');
+</script>
+<script>
+    var _prum = [['id', '570d92daabe53d3930288c12'],
+                 ['mark', 'firstbyte', (new Date()).getTime()]];
+    (function () {
+        var s = document.getElementsByTagName('script')[0]
+          , p = document.createElement('script');
+        p.async = 'async';
+        p.src = '//rum-static.pingdom.net/prum.min.js';
+        s.parentNode.insertBefore(p, s);
+    })();
+</script>

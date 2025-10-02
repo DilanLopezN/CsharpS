@@ -1,0 +1,995 @@
+@{
+    ViewBag.Title = "Secretaria";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    @*algumas funcionalidades estão nesse arquivo*@
+    @Scripts.Render("~/bundles/secretaria")
+}
+
+@section scriptsBody{
+    <script type="text/javascript">
+        //Titulo do Formulário
+        document.getElementById("labelTitulos").innerHTML = "Secretaria";
+
+        require([
+            "dojo/NodeList-traverse",
+            "dojo/_base/event",
+            "dojox/validate/web",
+            "dojox/validate/check",
+            "dijit/form/NumberTextBox",
+            "dijit/form/ValidationTextBox",
+            "dijit/form/Form",
+            "dojox/form/Manager",
+            "dijit/form/CheckBox"
+        ]);
+        mostraTabs('@Permissoes');
+
+            montaCadastroSec();
+    </script>
+}
+<div id="container">
+    <input type="hidden" id="link" value="" />
+    <div class="apresentadorMsg" id="apresentadorMensagem" style="display: none;"></div>
+    <script type="text/javascript">
+        showCarregando();
+    </script>
+    <div id="div 1" style="max-width: 1400px;">
+        <div data-dojo-type="dijit/layout/TabContainer" id="tabContainer" onclick="selecionaTab" class="Abas">
+            @*Escolaridade*@
+            <div data-dojo-type="dijit/layout/ContentPane" title="Escolaridade" id="tabEscolaridade" class="ContentPane">
+
+
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <label for="pesquisaEsc">Descrição: </label>
+                                <input id="pesquisaEsc" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 59%">
+                                <label class="AlinhaDireita;" for="inicioDescEsc">Início:</label>
+                                <input type="checkbox" id="inicioDescEsc" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                <span class="nowrap">
+                                    <label for="statusEsc" class="AlinhaDireita;">Status:</label>
+                                    <input id="statusEsc" class="margemCampoEsq">
+                                </span>
+                            </td>
+                            <td>
+                                <input id="pesquisarEsc" title="Pesquisar" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div>
+                        <table style="width: 100%">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkAcoes"></div>
+                                </td>
+                                <td style="text-align: center; width: 50%;">
+                                    <input id="novoEsc" title="Novo" />
+                                    <input id="relatorioEsc" title="Relatório" />
+                                </td>
+                                <td style="text-align: right; width: 25%">
+                                    <span class="linkSelecionados" id="linkSelecionados"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div class="gridCadBasic">
+                    <div id="gridEsc"></div>
+                </div>
+            </div>
+            @*Fim*@
+            @*Midia*@
+            <div data-dojo-type="dijit/layout/ContentPane" title="Mídia" id="tabMidia" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <label for="pesquisaMidia">Descrição: </label>
+                                <input id="pesquisaMidia" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 59%">
+                                <label class="AlinhaDireita;" for="inicioDescMid">Início:</label>
+                                <input type="checkbox" id="inicioDescMid" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                <span class="nowrap">
+                                    <label for="statusMid" class="AlinhaDireita;">Status:</label>
+                                    <input id="statusMid" class="margemCampoEsq">
+                                </span>
+                            </td>
+                            <td>
+                                <input id="pesquisarMidia" title="Pesquisar" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div>
+                        <table style="width: 100%">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkAcoesMid"></div>
+                                </td>
+                                <td style="text-align: center; width: 50%;">
+                                    <input id="novoMidia" title="Novo" />
+                                    <input id="relatorioMid" title="Relatório" />
+                                </td>
+                                <td style="text-align: right; width: 25%">
+                                    <span class="linkSelecionados" id="linkSelecionadosMid"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div class="gridCadBasic">
+                    <div id="gridMid"></div>
+                </div>
+            </div>
+            @*fim*@
+            @*Tipo Contato*@
+            <div data-dojo-type="dijit/layout/ContentPane" title="Tipo de Contato" id="tabTipoContato" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <label for="pesquisaTipoContato">Descrição: </label>
+                                <input id="pesquisaTipoContato" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 59%">
+                                <label class="AlinhaDireita;" for="inicioDescTpContato">Início:</label>
+                                <input type="checkbox" id="inicioDescTpContato" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                <span class="nowrap">
+                                    <label for="statusTpContato" class="AlinhaDireita;">Status:</label>
+                                    <input id="statusTpContato" class="margemCampoEsq">
+                                </span>
+                            </td>
+                            <td>
+                                <input id="pesquisarTipoContato" title="Pesquisar" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div>
+                        <table style="width: 100%">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkAcoesTpContato"></div>
+                                </td>
+                                <td style="text-align: center; width: 50%;">
+                                    <input id="novoTipoContato" title="Novo" />
+                                    <input id="relatorioTipoContato" title="Relatório" />
+                                </td>
+                                <td style="text-align: right; width: 25%">
+                                    <span class="linkSelecionados" id="linkSelecionadosTpContato"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div class="gridCadBasic">
+                    <div id="gridTpContato"></div>
+                </div>
+            </div>
+            @*fim*@
+            @*Motivo Matricula*@
+            <div data-dojo-type="dijit/layout/ContentPane" title="Motivo Matrícula" id="tabMotivoMatricula" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <label for="pesquisaMtvMat">Descrição: </label>
+                                <input id="pesquisaMtvMat" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 59%">
+                                <label class="AlinhaDireita;" for="inicioDescMtvMat">Início:</label>
+                                <input type="checkbox" id="inicioDescMtvMat" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                <span class="nowrap">
+                                    <label for="statusMtvMat" class="AlinhaDireita;">Status:</label>
+                                    <input id="statusMtvMat" class="margemCampoEsq">
+                                </span>
+                            </td>
+                            <td>
+                                <input id="pesquisarMtvMat" title="Pesquisar" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div>
+                        <table style="width: 100%">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkAcoesMtvMat"></div>
+                                </td>
+                                <td style="text-align: center; width: 50%;">
+                                    <input id="novoMtvMat" title="Novo" />
+                                    <input id="relatorioMtvMat" title="Relatório" />
+                                </td>
+                                <td style="text-align: right; width: 25%">
+                                    <span class="linkSelecionados" id="linkSelecionadosMtvMat"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div class="gridCadBasic">
+                    <div id="gridMtvMat"></div>
+                </div>
+            </div>
+            @*fim*@
+            @*Motivo não Matricula*@
+            <div data-dojo-type="dijit/layout/ContentPane" title="Motivo Não Matrícula" id="tabMotivoNMatricula" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <label for="pesquisaMtvNMat">Descrição: </label>
+                                <input id="pesquisaMtvNMat" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 59%">
+                                <label class="AlinhaDireita;" for="inicioDescMtvNMat">Início:</label>
+                                <input type="checkbox" id="inicioDescMtvNMat" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                <span class="nowrap">
+                                    <label for="statusMtvNMat" class="AlinhaDireita;">Status:</label>
+                                    <input id="statusMtvNMat" class="margemCampoEsq">
+                                </span>
+                            </td>
+                            <td>
+                                <input id="pesquisarMtvNMat" title="Pesquisar" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div>
+                        <table style="width: 100%">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkAcoesMtvNMat"></div>
+                                </td>
+                                <td style="text-align: center; width: 50%;">
+                                    <input id="novoMtvNMat" title="Novo" />
+                                    <input id="relatorioMtvNMat" title="Relatório" />
+                                </td>
+                                <td style="text-align: right; width: 25%">
+                                    <span class="linkSelecionados" id="linkSelecionadosMtvNMat"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div class="gridCadBasic">
+                    <div id="gridMtvNMat"></div>
+                </div>
+            </div>
+            @*fim*@
+            @*fim*@
+            @*Motivo Bolsa*@
+            <div data-dojo-type="dijit/layout/ContentPane" title="Motivo Bolsa" id="tabMotivoBolsa" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <label for="pesquisaMtvBolsa">Descrição: </label>
+                                <input id="pesquisaMtvBolsa" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 59%">
+                                <label class="AlinhaDireita;" for="inicioDescMtvBolsa">Início:</label>
+                                <input type="checkbox" id="inicioDescMtvBolsa" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                <span class="nowrap">
+                                    <label for="statusMtvBolsa" class="AlinhaDireita;">Status:</label>
+                                    <input id="statusMtvBolsa" class="margemCampoEsq">
+                                </span>
+                            </td>
+                            <td>
+                                <input id="pesquisarMtvBolsa" title="Pesquisar" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div>
+                        <table style="width: 100%">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkAcoesMtvBolsa"></div>
+                                </td>
+                                <td style="text-align: center; width: 50%;">
+                                    <input id="novoMtvBolsa" title="Novo" />
+                                    <input id="relatorioMtvBolsa" title="Relatório" />
+                                </td>
+                                <td style="text-align: right; width: 25%">
+                                    <span class="linkSelecionados" id="linkSelecionadosMtvBolsa"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div class="gridCadBasic">
+                    <div id="gridMtvBolsa"></div>
+                </div>
+            </div>
+            @*fim*@
+            @*Motivo Cancelamento Bolsa*@
+            <div data-dojo-type="dijit/layout/ContentPane" title="Motivo Cancelamento Bolsa" id="tabMotivoCancelBolsa" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <label for="pesquisaMtvCancelBolsa">Descrição: </label>
+                                <input id="pesquisaMtvCancelBolsa" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 59%">
+                                <label class="AlinhaDireita;" for="inicioDescMtvCancelBolsa">Início:</label>
+                                <input type="checkbox" id="inicioDescMtvCancelBolsa" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                <span class="nowrap">
+                                    <label for="statusMtvCancelBolsa" class="AlinhaDireita;">Status:</label>
+                                    <input id="statusMtvCancelBolsa" class="margemCampoEsq">
+                                </span>
+                            </td>
+                            <td>
+                                <input id="pesquisarMtvCancelBolsa" title="Pesquisar" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div>
+                        <table style="width: 100%">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkAcoesMtvCancelBolsa"></div>
+                                </td>
+                                <td style="text-align: center; width: 50%;">
+                                    <input id="novoMtvCancelBolsa" title="Novo" />
+                                    <input id="relatorioMtvCancelBolsa" title="Relatório" />
+                                </td>
+                                <td style="text-align: right; width: 25%">
+                                    <span class="linkSelecionados" id="linkSelecionadosMtvCancelBolsa"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div class="gridCadBasic">
+                    <div id="gridMtvCancelBolsa"></div>
+                </div>
+            </div>
+            @*fim*@
+            @*Acao Follow Up*@
+            <div data-dojo-type="dijit/layout/ContentPane" title="Ação Follow-up" id="tabAcaoFollow" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <label for="descAcaoFollowUp">Descrição: </label>
+                                <input id="descAcaoFollowUp" name="descAcaoFollowUp" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 59%">
+                                <label class="AlinhaDireita;" for="inicioAcaoFollowUp">Início</label>
+                                <input type="checkbox" id="inicioAcaoFollowUp" name="inicioAcaoFollowUp" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                <span class="nowrap">
+                                    <label for="statusAcao" class="AlinhaDireita;">Status:</label>
+                                    <input id="statusAcao" class="margemCampoEsq">
+                                </span>
+                            </td>
+                            <td>
+                                <input id="pesquisarAcaoFollowUp" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div>
+                        <table style="width: 100%">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkAcoesAcaoFollowUp"></div>
+                                </td>
+                                <td style="text-align: center; width: 50%">
+                                    <input id="novaAcaoFollowUp" title="Novo" />
+                                    <input id="relatorioAcaoFollowUp" title="Relatório" />
+                                </td>
+                                <td style="text-align: right; width: 25%">
+                                    <span class="linkSelecionados" id="linkSelecionadosAcaoFollowUp"></span>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="linha_acoes" style="width: 100%"></div>
+                    </div>
+                    <div class="gridCadBasic">
+                        <div id="gridAcaoFollowUp"></div>
+                    </div>
+                </div>
+            </div>
+
+            @*Ano Escolar*@
+            <div data-dojo-type="dijit/layout/ContentPane" title="Ano Escolar" id="tabAnoEscolar" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <label for="escAnoEscolar">Escolaridade: </label>
+                                <select id="escAnoEscolar" name="escAnoEscolar" data-dojo-type="dijit/form/FilteringSelect" style="width: 31%;" required="false"></select>
+
+                                <label for="descAnoEscolar">Descrição: </label>
+                                <input id="descAnoEscolar" name="descAnoEscolar" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width:31%">
+
+                                <label class="AlinhaDireita;" for="inicioEscAnoEscolar">Início</label>
+                                <input type="checkbox" id="inicioEscAnoEscolar" name="inicioEscAnoEscolar" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                <span class="nowrap">
+                                    <label for="statusAcao" class="AlinhaDireita;">Status:</label>
+                                    <input id="statusAnoEscolar" class="margemCampoEsq">
+                                </span>
+                            </td>
+                            <td>
+                                <input id="pesquisarAnoEscolar" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="padding-top:10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div>
+                        <table style="width:100%">
+                            <tr style="width:100%">
+                                <td style="text-align:left; width:25%">
+                                    <div class="linkAcoes" id="linkAcoesAnoEscolar"></div>
+                                </td>
+                                <td style="text-align: center; width: 50%">
+                                    <input id="novoAnoEscolar" title="Novo" />
+                                    <input id="relatorioAnoEscolar" title="Relatório" />
+                                </td>
+                                <td style="text-align: right; width: 25%">
+                                    <span class="linkSelecionados" id="linkSelecionadosAnoEscolar"></span>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="linha_acoes" style="width: 100%"></div>
+                    </div>
+                    <div class="gridCadBasic">
+                        <div id="gridAnoEscolar"></div>
+                    </div>
+                </div>
+            </div>@*fim class="Abas"*@
+            @*Motivo Transferencia*@
+            <div data-dojo-type="dijit/layout/ContentPane" title="Motivo Transferencia" id="tabMotivoTransf" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <label for="pesquisaMtvTransf">Descrição: </label>
+                                <input id="pesquisaMtvTransf" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 59%">
+                                <label class="AlinhaDireita;" for="inicioDescMtvTransf">Início:</label>
+                                <input type="checkbox" id="inicioDescMtvTransf" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                <span class="nowrap">
+                                    <label for="statusMtvTransf" class="AlinhaDireita;">Status:</label>
+                                    <input id="statusMtvTransf" class="margemCampoEsq">
+                                </span>
+                            </td>
+                            <td>
+                                <input id="pesquisarMtvTransf" title="Pesquisar" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div>
+                        <table style="width: 100%">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkAcoesMtvTransf"></div>
+                                </td>
+                                <td style="text-align: center; width: 50%;">
+                                    <input id="novoMtvTransf" title="Novo" />
+                                    <input id="relatorioMtvTransf" title="Relatório" />
+                                </td>
+                                <td style="text-align: right; width: 25%">
+                                    <span class="linkSelecionados" id="linkSelecionadosMtvTransf"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div class="gridCadBasic">
+                    <div id="gridMtvTransf"></div>
+                </div>
+            </div>
+            @* Fim *@
+
+        </div>@*fim div 1*@
+    </div>@*fim container*@
+
+    @*Escolaridade*@
+    <div id="formularioEsc" data-dojo-type="dijit.Dialog" title="Cadastro de Escolaridade" class="Dialogo">
+        <div class="sessao_form" style="margin-left: -8px;">
+            <span id="counter_form">Sua sess&atilde;o expira em 59 min 59 seg</span>
+        </div>
+        <div class="corpo_interno">
+            <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" data-dojo-id="formEscolaridade" id="formEscolaridade" class="Formulario">
+                <div class="apresentadorMsg" id="apresentadorMensagemEsc" style="display: none;"></div>
+                <input id="cd_escolaridade" name="cd_escolaridade" type="hidden" value="0" />
+                <div class="CorpoForm">
+                    <label for="no_escolaridade">Descrição:</label>
+                    <input name="no_escolaridade" type="text" maxlength="32" id="no_escolaridade" size="300" data-dojo-type="dijit/form/ValidationTextBox" required="true" class="TextBox" />
+                    <label for="id_escolaridade_ativa">Ativa</label>
+                    <input name="id_escolaridade_ativa" type="checkbox" id="id_escolaridade_ativa" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+                </div>
+                <div class="CaixaAcao">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div class="Alinhamento">
+                        <span id="divIncluirEsc">
+                            <input id="incluirEsc" title="Salvar" />
+                        </span>
+                        <span id="divAlterarEsc">
+                            <input id="alterarEsc" title="Salvar" />
+                        </span>
+                        <span id="divExcluirEsc">
+                            <input type="button" id="deleteEsc" title="Apagar" />
+                        </span>
+                        <span id="divClearEsc">
+                            <input id="limparEsc" title="Limpar" />
+                        </span>
+                        <span id="divCancelarEsc">
+                            <input type="button" id="cancelarEsc" title="Cancelar" />
+                        </span>
+                        <span id="divFecharEsc">
+                            <input type="button" id="fecharEsc" title="Fechar" />
+                        </span>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    @*Fim*@
+
+    @*Midia*@
+    <div id="formularioMid" data-dojo-type="dijit.Dialog" title="Cadastro de Mídia" class="Dialogo">
+        <div class="sessao_form" style="margin-left: -8px;">
+            <span id="counter_form_1">Sua sess&atilde;o expira em 59 min 59 seg</span>
+        </div>
+        <div class="corpo_interno">
+            <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" data-dojo-id="formMidia" id="formMidia" class="Formulario">
+                <div class="apresentadorMsg" id="apresentadorMensagemMid" style="display: none;"></div>
+                <input id="cd_midia" name="cd_midia" type="hidden" value="0" />
+                <div class="CorpoForm">
+                    <label for="no_midia">Descrição:</label>
+                    <input name="no_midia" type="text" maxlength="32" id="no_midia" size="300" data-dojo-type="dijit/form/ValidationTextBox" required="true" class="TextBox" />
+                    <label for="id_midia_ativa">Ativa</label>
+                    <input name="id_midia_ativa" type="checkbox" id="id_midia_ativa" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+                </div>
+                <div class="CaixaAcao">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div class="Alinhamento">
+                        <span id="divIncluirMid">
+                            <input id="incluirMid" title="Salvar" />
+                        </span>
+                        <span id="divAlterarMid">
+                            <input id="alterarMid" title="Salvar" />
+                        </span>
+                        <span id="divExcluirMid">
+                            <input type="button" id="deleteMid" title="Apagar" />
+                        </span>
+                        <span id="divClearMid">
+                            <input id="limparMid" title="Limpar" />
+                        </span>
+                        <span id="divCancelarMid">
+                            <input type="button" id="cancelarMidia" title="Cancelar" />
+                        </span>
+                        <span id="divFecharMid">
+                            <input type="button" id="fecharMidia" title="Fechar" />
+                        </span>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    @*fim*@
+
+    @*Tipo Contato*@
+    <div id="formularioTpContato" data-dojo-type="dijit.Dialog" title="Cadastro de Tipo do Contato" class="Dialogo">
+
+        <div class="sessao_form" style="margin-left: -8px;">
+            <span id="counter_form_2">Sua sess&atilde;o expira em 59 min 59 seg</span>
+        </div>
+
+        <div class="corpo_interno">
+            <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" data-dojo-id="formTpContato" id="formTpContato" class="Formulario">
+                <div class="apresentadorMsg" id="apresentadorMensagemTpContato" style="display: none;"></div>
+                <input id="cd_tipo_contato" name="cd_tipo_contato" type="hidden" value="0" />
+                <div class="CorpoForm">
+                    <label for="no_midia">Descrição:</label>
+                    <input name="dc_tipo_contato" type="text" maxlength="32" id="dc_tipo_contato" size="300" data-dojo-type="dijit/form/ValidationTextBox" required="true" class="TextBox" />
+                    <label for="id_tipo_contato_ativo">Ativa</label>
+                    <input name="id_tipo_contato_ativo" type="checkbox" id="id_tipo_contato_ativo" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+                </div>
+                <div class="CaixaAcao">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div class="Alinhamento">
+                        <span id="divIncluirTpContato">
+                            <input id="incluirTpContato" title="Salvar" />
+                        </span>
+                        <span id="divAlterarTpContato">
+                            <input id="alterarTpContato" title="Salvar" />
+                        </span>
+                        <span id="divExcluirTpContato">
+                            <input type="button" id="deleteTpContato" title="Apagar" />
+                        </span>
+                        <span id="divClearTpContato">
+                            <input id="limparTpContato" title="Limpar" />
+                        </span>
+                        <span id="divCancelarTpContato">
+                            <input type="button" id="cancelarTpContato" title="Cancelar" />
+                        </span>
+                        <span id="divFecharTpContato">
+                            <input type="button" id="fecharTpContato" title="Fechar" />
+                        </span>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    @*fim*@
+
+    @*Motivo da Matricula*@
+    <div id="formularioMtvMat" data-dojo-type="dijit.Dialog" title="Cadastro de Motivo da Matrícula" class="Dialogo">
+
+        <div class="sessao_form" style="margin-left: -8px;">
+            <span id="counter_form_3">Sua sess&atilde;o expira em 59 min 59 seg</span>
+        </div>
+
+        <div class="corpo_interno">
+            <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" data-dojo-id="formMtvMat" id="formMtvMat" class="Formulario">
+                <div class="apresentadorMsg" id="apresentadorMensagemMtvMat" style="display: none;"></div>
+                <input id="cd_motivo_matricula" name="cd_motivo_matricula" type="hidden" value="0" />
+                <div class="CorpoForm">
+                    <label for="dc_motivo_matricula">Descrição:</label>
+                    <input name="dc_motivo_matricula" type="text" maxlength="64" id="dc_motivo_matricula" size="300" data-dojo-type="dijit/form/ValidationTextBox" required="true" class="TextBox" />
+                    <label for="id_motivo_matricula_ativo">Ativa</label>
+                    <input name="id_motivo_matricula_ativo" type="checkbox" id="id_motivo_matricula_ativo" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+                </div>
+                <div class="CaixaAcao">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div class="Alinhamento">
+                        <span id="divIncluirMtvMat">
+                            <input id="incluirMtvMat" title="Salvar" />
+                        </span>
+                        <span id="divAlterarMtvMat">
+                            <input id="alterarMtvMat" title="Salvar" />
+                        </span>
+                        <span id="divExcluirMtvMat">
+                            <input type="button" id="deleteMtvMat" title="Apagar" />
+                        </span>
+                        <span id="divClearMtvMat">
+                            <input id="limparMtvMat" title="Limpar" />
+                        </span>
+                        <span id="divCancelarMtvMat">
+                            <input type="button" id="cancelarMtvMat" title="Cancelar" />
+                        </span>
+                        <span id="divFecharMtvMat">
+                            <input type="button" id="fecharMtvMat" title="Fechar" />
+                        </span>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    @*fim*@
+
+    @*Motivo nao matricula*@
+    <div id="formularioMtvNMat" data-dojo-type="dijit.Dialog" title="Cadastro de Motivo da Não Matrícula" class="Dialogo">
+
+        <div class="sessao_form" style="margin-left: -8px;">
+            <span id="counter_form_4">Sua sess&atilde;o expira em 59 min 59 seg</span>
+        </div>
+
+        <div class="corpo_interno">
+            <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" data-dojo-id="formMtvNMat" id="formMtvNMat" class="Formulario">
+                <div class="apresentadorMsg" id="apresentadorMensagemMtvNMat" style="display: none;"></div>
+                <input id="cd_motivo_nao_matricula" name="cd_motivo_matricula" type="hidden" value="0" />
+                <div class="CorpoForm">
+                    <label for="dc_motivo_nao_matricula">Descrição:</label>
+                    <input name="id_motivo_nao_matricula_ativo" type="text" maxlength="64" id="dc_motivo_nao_matricula" size="300" data-dojo-type="dijit/form/ValidationTextBox" required="true" class="TextBox" />
+                    <label for="id_motivo_nao_matricula_ativo">Ativa</label>
+                    <input name="id_motivo_matricula_ativo" type="checkbox" id="id_motivo_nao_matricula_ativo" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+                </div>
+                <div class="CaixaAcao">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div class="Alinhamento">
+                        <span id="divIncluirMtvNMat">
+                            <input id="incluirMtvNMat" title="Salvar" />
+                        </span>
+                        <span id="divAlterarMtvNMat">
+                            <input id="alterarMtvNMat" title="Salvar" />
+                        </span>
+                        <span id="divExcluirMtvNMat">
+                            <input type="button" id="deleteMtvNMat" title="Apagar" />
+                        </span>
+                        <span id="divClearMtvNMat">
+                            <input id="limparMtvNMat" title="Limpar" />
+                        </span>
+                        <span id="divCancelarMtvNMat">
+                            <input type="button" id="cancelarMtvNMat" title="Cancelar" />
+                        </span>
+                        <span id="divFecharMtvNMat">
+                            <input type="button" id="fecharMtvNMat" title="Fechar" />
+                        </span>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    @*fim*@
+
+    @*Motivo Bolsa*@
+    <div id="formularioMtvBolsa" data-dojo-type="dijit.Dialog" title="Cadastro de Motivo da Bolsa" class="Dialogo">
+
+        <div class="sessao_form" style="margin-left: -8px;">
+            <span id="counter_form_5">Sua sess&atilde;o expira em 59 min 59 seg</span>
+        </div>
+
+        <div class="corpo_interno">
+            <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" data-dojo-id="formMtvBolsa" id="formMtvBolsa" class="Formulario">
+                <div class="apresentadorMsg" id="apresentadorMensagemMtvBolsa" style="display: none;"></div>
+                <input id="cd_motivo_bolsa" name="cd_motivo_bolsa" type="hidden" value="0" />
+                <div class="CorpoForm">
+                    <label for="dc_motivo_bolsa">Descrição:</label>
+                    <input name="dc_motivo_bolsa" type="text" maxlength="64" id="dc_motivo_bolsa" size="300" data-dojo-type="dijit/form/ValidationTextBox" required="true" class="TextBox" />
+                    <label for="id_motivo_bolsa_ativo">Ativa</label>
+                    <input name="id_motivo_bolsa_ativo" type="checkbox" id="id_motivo_bolsa_ativo" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+                </div>
+                <div class="CaixaAcao">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div class="Alinhamento">
+                        <span id="divIncluirMtvBolsa">
+                            <input id="incluirMtvBolsa" title="Salvar" />
+                        </span>
+                        <span id="divAlterarMtvBolsa">
+                            <input id="alterarMtvBolsa" title="Salvar" />
+                        </span>
+                        <span id="divExcluirMtvBolsa">
+                            <input type="button" id="deleteMtvBolsa" title="Apagar" />
+                        </span>
+                        <span id="divClearMtvBolsa">
+                            <input id="limparMtvBolsa" title="Limpar" />
+                        </span>
+                        <span id="divCancelarMtvBolsa">
+                            <input type="button" id="cancelarMtvBolsa" title="Cancelar" />
+                        </span>
+                        <span id="divFecharMtvBolsa">
+                            <input type="button" id="fecharMtvBolsa" title="Fechar" />
+                        </span>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    @*fim*@
+
+    @*Motivo cancelameto da Bolsa*@
+    <div id="formularioMtvCancelBolsa" data-dojo-type="dijit.Dialog" title="Cadastro de Motivo do Cancelamento da Bolsa" class="Dialogo">
+
+        <div class="sessao_form" style="margin-left: -8px;">
+            <span id="counter_form_6">Sua sess&atilde;o expira em 59 min 59 seg</span>
+        </div>
+
+        <div class="corpo_interno">
+            <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" data-dojo-id="formMtvCancelBolsa" id="formMtvCancelBolsa" required="true" class="Formulario">
+                <div class="apresentadorMsg" id="apresentadorMensagemMtvCancelBolsa" style="display: none;"></div>
+                <input id="cd_motivo_cancelamento_bolsa" name="cd_motivo_cancelamento_bolsa" type="hidden" value="0" />
+                <div class="CorpoForm">
+                    <label for="dc_motivo_cancelamento_bolsa">Descrição:</label>
+                    <input name="dc_motivo_cancelamento_bolsa" type="text" maxlength="64" id="dc_motivo_cancelamento_bolsa" size="300" data-dojo-type="dijit/form/ValidationTextBox" required="true" class="TextBox" />
+                    <label for="id_motivo_cancelamento_bolsa_ativo">Ativa</label>
+                    <input name="id_motivo_cancelamento_bolsa_ativo" type="checkbox" id="id_motivo_cancelamento_bolsa_ativo" data-dojo-type="dijit/form/CheckBox" checked="checked">
+                </div>
+                <div class="Alinhamento">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div class="Alinhamento">
+                        <span id="divIncluirMtvCancelBolsa">
+                            <input id="incluirMtvCancelBolsa" title="Salvar" />
+                        </span>
+                        <span id="divAlterarMtvCancelBolsa">
+                            <input id="alterarMtvCancelBolsa" title="Salvar" />
+                        </span>
+                        <span id="divExcluirMtvCancelBolsa">
+                            <input type="button" id="deleteMtvCancelBolsa" title="Apagar" />
+                        </span>
+                        <span id="divClearMtvCancelBolsa">
+                            <input id="limparMtvCancelBolsa" title="Limpar" />
+                        </span>
+                        <span id="divCancelarMtvCancelBolsa">
+                            <input type="button" id="cancelarMtvCancelBolsa" title="Cancelar" />
+                        </span>
+                        <span id="divFecharMtvCancelBolsa">
+                            <input type="button" id="fecharMtvCancelBolsa" title="Fechar" />
+                        </span>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    @*fim*@
+
+    @*Ação Follow-up*@
+    <div id="formularioAcaoFollowup" data-dojo-type="dijit.Dialog" title="Cadastro Ação Follow-up" class="Dialogo">
+        <div class="sessao_form" style="margin-left: -8px;">
+            <span id="counter_form_7">Sua sess&atilde;o expira em 59 min 59 seg</span>
+        </div>
+        <div class="corpo_interno">
+            <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" data-dojo-id="formAcaoFollowup" id="formAcaoFollowup" class="Formulario">
+                <div class="apresentadorMsg" id="apresentadorMensagemAcaoFollowUp" style="display: none;"></div>
+                <input id="cd_acao_follow_up" name="cd_acao_follow_up" type="hidden" value="0" />
+                <div class="CorpoForm">
+                    <label for="dc_acao_follow_up">Descrição:</label>
+                    <input name="dc_acao_follow_up" type="text" maxlength="32" id="dc_acao_follow_up" size="300" data-dojo-type="dijit/form/ValidationTextBox" required="true" class="TextBox" />
+                    <label for="id_acao_ativa">Ativa</label>
+                    <input name="id_acao_ativa" type="checkbox" id="id_acao_ativa" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+                </div>
+                <div class="CaixaAcao">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div class="Alinhamento">
+                        <span id="divIncluirAcaoFollow">
+                            <input id="incluirAcaoFollow" title="Salvar" />
+                        </span>
+                        <span id="divAlterarAcaoFollow">
+                            <input id="alterarAcaoFollow" title="Salvar" />
+                        </span>
+                        <span id="divExcluirAcaoFollow">
+                            <input type="button" id="deleteAcaoFollow" title="Apagar" />
+                        </span>
+                        <span id="divClearAcaoFollow">
+                            <input id="limparAcaoFollow" title="Limpar" />
+                        </span>
+                        <span id="divCancelarAcaoFollow">
+                            <input type="button" id="cancelarAcaoFollow" title="Cancelar" />
+                        </span>
+                        <span id="divFecharAcaoFollow">
+                            <input type="button" id="fecharAcaoFollow" title="Fechar" />
+                        </span>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    @*Fim*@
+
+    @* Novo Ano Escolar *@
+    <div id="formNovoAnoEscolar" data-dojo-type="dijit.Dialog" title="Cadastro Ano Escolar" class="Dialogo">
+        <div class="sessao_form" style="margin-left:-8px;">
+            <span id="counter_form_8">Sua sess&atilde;o expira em 59 min 59 seg</span>
+        </div>
+        <div class="corpo_interno">
+            <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" data-dojo-id="formAnoEscolar" id="formAnoEscolar" class="Formulario">
+                <div class="apresentadorMsg" id="apresentadorMensagemAnoEscolar" style="display:none;"></div>
+                <input id="cd_ano_escolar" name="cd_ano_escolar" type="hidden" value="0" />
+
+                <table border="0" id="tableSubgrupoContas" class="TableModel">
+                    <tr>
+                        <td class="tdRight" style="width: 20%;">
+                            <label for="cd_escolaridade_ano_escolar">Escolaridade:</label>
+                        </td>
+                        <td class="dojoTextBoxIECorrect" style="width: 75%;">
+                            <select id="cd_escolaridade_ano_escolar" name="cd_escolaridade_ano_escolar" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" required="true"></select>
+                        </td>
+                        <td style="width:5%;"></td>
+                    </tr>
+                    <tr>
+                        <td class="tdRight" style="width: 20%;">
+                            <label for="descNovoAnoEscolar">Descrição: </label>
+                        </td>
+                        <td class="dojoTextBoxIECorrect" style="width: 75%;">
+                            <input id="dc_ano_escolar" name="dc_ano_escolar" maxlength="128" type="text" data-dojo-type="dijit/form/ValidationTextBox" style="width:100%" required="true">
+                        </td>
+                        <td style="width:5%;"></td>
+                    </tr>
+                    <tr>
+                        <td class="tdRight" style="width: 20%;">
+                            <label>N° Ordem:</label>
+                        </td>
+                        <td class="dojoTextBoxIECorrect" style="width: 20%;">
+                            <input type="text"
+                                   id="nm_ordem"
+                                   name="nm_ordem"
+                                   data-dojo-type="dijit/form/NumberSpinner"
+                                   maxlength="7"
+                                   data-dojo-props="smallDelta:1, constraints:{min:1,max:9999999}" />
+                        </td>
+                        <td style="width:5%;"></td>
+                    </tr>
+                    <tr id="trSuggrupo1">
+                        <td class="tdRight" style="width: 20%;">
+                            <label for="id_ativo">Ativa</label>
+                        </td>
+                        <td class="dojoTextBoxIECorrect" style="width: 75%;">
+                            <input name="id_ativo" type="checkbox" id="id_ativo" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+                        </td>
+                        <td style="width:5%;"></td>
+                    </tr>
+                </table>
+
+                <div class="CaixaAcao">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div class="Alinhamento">
+                        <span id="divIncluirAnoEscolar"><input id="incluirAnoEscolar" title="Salvar" /></span>
+                        <span id="divAlterarAnoEscolar"><input id="alterarAnoEscolar" title="Salvar" /></span>
+                        <span id="divExcluirAnoEscolar"><input type="button" id="deleteAnoEscolar" title="Apagar" /></span>
+                        <span id="divClearAnoEscolar"><input id="limparAnoEscolar" title="Limpar" /></span>
+                        <span id="divCancelarAnoEscolar"><input type="button" id="cancelarAnoEscolar" title="Cancelar" /></span>
+                        <span id="divFecharAnoEscolar"><input type="button" id="fecharAnoEscolar" title="Fechar" /></span>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    @* Fim *@
+    @*Motivo Transferencia*@
+    <div id="formularioMtvTransf" data-dojo-type="dijit.Dialog" title="Cadastro de Motivo de Transferencia Aluno" class="Dialogo">
+
+        <div class="sessao_form" style="margin-left: -8px;">
+            <span id="counter_form_4">Sua sess&atilde;o expira em 59 min 59 seg</span>
+        </div>
+
+        <div class="corpo_interno">
+            <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" data-dojo-id="formMtvTransf" id="formMtvTransf" class="Formulario">
+                <div class="apresentadorMsg" id="apresentadorMensagemMtvTransf" style="display: none;"></div>
+                <input id="cd_motivo_transferencia_aluno" name="cd_motivo_transferencia" type="hidden" value="0" />
+                <div class="CorpoForm">
+                    <label for="dc_motivo_transferencia_aluno">Descrição:</label>
+                    <input name="dc_motivo_transferencia_aluno_ativo" type="text" maxlength="255" id="dc_motivo_transferencia_aluno" size="300" data-dojo-type="dijit/form/ValidationTextBox" required="true" class="TextBox" />
+                    <label for="id_motivo_transferencia_ativo">Ativa</label>
+                    <input name="id_motivo_transferencia_ativo" type="checkbox" id="id_motivo_transferencia_ativo" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+                </div>
+                <div class="CaixaAcao">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div class="Alinhamento">
+                        <span id="divIncluirMtvTransf">
+                            <input id="incluirMtvTransf" title="Salvar" />
+                        </span>
+                        <span id="divAlterarMtvTransf">
+                            <input id="alterarMtvTransf" title="Salvar" />
+                        </span>
+                        <span id="divExcluirMtvTransf">
+                            <input type="button" id="deleteMtvTransf" title="Apagar" />
+                        </span>
+                        <span id="divClearMtvTransf">
+                            <input id="limparMtvTransf" title="Limpar" />
+                        </span>
+                        <span id="divCancelarMtvTransf">
+                            <input type="button" id="cancelarMtvTransf" title="Cancelar" />
+                        </span>
+                        <span id="divFecharMtvTransf">
+                            <input type="button" id="fecharMtvTransf" title="Fechar" />
+                        </span>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    @*fim*@
+

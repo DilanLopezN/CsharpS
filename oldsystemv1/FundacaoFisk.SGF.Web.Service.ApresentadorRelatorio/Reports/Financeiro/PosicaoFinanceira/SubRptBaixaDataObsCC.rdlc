@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <Body>
+    <ReportItems>
+      <Tablix Name="Tablix1">
+        <TablixBody>
+          <TablixColumns>
+            <TablixColumn>
+              <Width>249.87783mm</Width>
+            </TablixColumn>
+          </TablixColumns>
+          <TablixRows>
+            <TablixRow>
+              <Height>6mm</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="dc_obs_conta_corrente">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!dc_obs_conta_corrente.Value</Value>
+                              <Style>
+                                <FontFamily>Verdana</FontFamily>
+                                <FontSize>8pt</FontSize>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style />
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>dc_obs_conta_corrente</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Style>None</Style>
+                        </Border>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+              </TablixCells>
+            </TablixRow>
+          </TablixRows>
+        </TablixBody>
+        <TablixColumnHierarchy>
+          <TablixMembers>
+            <TablixMember />
+          </TablixMembers>
+        </TablixColumnHierarchy>
+        <TablixRowHierarchy>
+          <TablixMembers>
+            <TablixMember />
+          </TablixMembers>
+        </TablixRowHierarchy>
+        <DataSetName>DataSetSubReport</DataSetName>
+        <Height>6mm</Height>
+        <Width>249.87783mm</Width>
+        <Style>
+          <Border>
+            <Color>White</Color>
+            <Style>None</Style>
+          </Border>
+          <FontFamily>Verdana</FontFamily>
+          <FontSize>8pt</FontSize>
+          <Color>White</Color>
+        </Style>
+      </Tablix>
+    </ReportItems>
+    <Height>0.25185in</Height>
+    <Style>
+      <Border>
+        <Style>None</Style>
+      </Border>
+    </Style>
+  </Body>
+  <Width>9.83771in</Width>
+  <Page>
+    <PageHeight>21cm</PageHeight>
+    <PageWidth>29.7cm</PageWidth>
+    <LeftMargin>0cm</LeftMargin>
+    <RightMargin>0cm</RightMargin>
+    <TopMargin>0cm</TopMargin>
+    <BottomMargin>0cm</BottomMargin>
+    <ColumnSpacing>0.13cm</ColumnSpacing>
+    <Style>
+      <Border>
+        <Color>White</Color>
+        <Style>None</Style>
+      </Border>
+    </Style>
+  </Page>
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="FundacaoFiskSGFWebServicesFinanceiroModel">
+      <ConnectionProperties>
+        <DataProvider>System.Data.DataSet</DataProvider>
+        <ConnectString>/* Local Connection */</ConnectString>
+      </ConnectionProperties>
+      <rd:DataSourceID>8c67848a-d3e6-4046-b9a6-60156dc352c8</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSetSubReport">
+      <Query>
+        <DataSourceName>FundacaoFiskSGFWebServicesFinanceiroModel</DataSourceName>
+        <CommandText>/* Local Query */</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="BaixaTitulo">
+          <DataField>BaixaTitulo</DataField>
+          <rd:TypeName>FundacaoFisk.SGF.GenericModel.BaixaTitulo</rd:TypeName>
+        </Field>
+        <Field Name="cd_baixa_titulo">
+          <DataField>cd_baixa_titulo</DataField>
+          <rd:TypeName>System.Nullable`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]</rd:TypeName>
+        </Field>
+        <Field Name="cd_conta_corrente">
+          <DataField>cd_conta_corrente</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="cd_local_destino">
+          <DataField>cd_local_destino</DataField>
+          <rd:TypeName>System.Nullable`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]</rd:TypeName>
+        </Field>
+        <Field Name="cd_local_origem">
+          <DataField>cd_local_origem</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="cd_movimentacao_financeira">
+          <DataField>cd_movimentacao_financeira</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="cd_pessoa_empresa">
+          <DataField>cd_pessoa_empresa</DataField>
+          <rd:TypeName>System.Nullable`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]</rd:TypeName>
+        </Field>
+        <Field Name="cd_plano_conta">
+          <DataField>cd_plano_conta</DataField>
+          <rd:TypeName>System.Nullable`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]</rd:TypeName>
+        </Field>
+        <Field Name="dc_obs_conta_corrente">
+          <DataField>dc_obs_conta_corrente</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="dta_conta_corrente">
+          <DataField>dta_conta_corrente</DataField>
+          <rd:TypeName>System.Nullable`1[[System.DateTime, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]</rd:TypeName>
+        </Field>
+        <Field Name="Empresa">
+          <DataField>Empresa</DataField>
+          <rd:TypeName>FundacaoFisk.SGF.GenericModel.Escola</rd:TypeName>
+        </Field>
+        <Field Name="id_tipo_movimento">
+          <DataField>id_tipo_movimento</DataField>
+          <rd:TypeName>System.Byte</rd:TypeName>
+        </Field>
+        <Field Name="LocalMovtoDestino">
+          <DataField>LocalMovtoDestino</DataField>
+          <rd:TypeName>FundacaoFisk.SGF.GenericModel.LocalMovto</rd:TypeName>
+        </Field>
+        <Field Name="LocalMovtoOrigem">
+          <DataField>LocalMovtoOrigem</DataField>
+          <rd:TypeName>FundacaoFisk.SGF.GenericModel.LocalMovto</rd:TypeName>
+        </Field>
+        <Field Name="MovimentacaoFinanceira">
+          <DataField>MovimentacaoFinanceira</DataField>
+          <rd:TypeName>FundacaoFisk.SGF.GenericModel.MovimentacaoFinanceira</rd:TypeName>
+        </Field>
+        <Field Name="PlanoContas">
+          <DataField>PlanoContas</DataField>
+          <rd:TypeName>FundacaoFisk.SGF.GenericModel.PlanoConta</rd:TypeName>
+        </Field>
+        <Field Name="vl_conta_corrente">
+          <DataField>vl_conta_corrente</DataField>
+          <rd:TypeName>System.Nullable`1[[System.Decimal, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]</rd:TypeName>
+        </Field>
+      </Fields>
+      <rd:DataSetInfo>
+        <rd:DataSetName>FundacaoFisk.SGF.GenericModel</rd:DataSetName>
+        <rd:TableName>ContaCorrente</rd:TableName>
+        <rd:ObjectDataSourceType>FundacaoFisk.SGF.GenericModel.ContaCorrente, FundacaoFisk.SGF.GenericModel, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</rd:ObjectDataSourceType>
+      </rd:DataSetInfo>
+    </DataSet>
+  </DataSets>
+  <ReportParameters>
+    <ReportParameter Name="cd_baixa_titulo">
+      <DataType>Integer</DataType>
+      <Nullable>true</Nullable>
+      <Prompt>ReportParameter1</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="cd_conta_corrente">
+      <DataType>Integer</DataType>
+      <Nullable>true</Nullable>
+      <Prompt>ReportParameter1</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <Language>pt-BR</Language>
+  <rd:ReportUnitType>Cm</rd:ReportUnitType>
+  <rd:ReportID>465396c0-bfbe-45e2-bb21-5ec43c634909</rd:ReportID>
+</Report>

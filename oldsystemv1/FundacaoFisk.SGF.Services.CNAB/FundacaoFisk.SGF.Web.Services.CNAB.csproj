@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D583454B-1D8D-4636-BE4D-CA57F47740BB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FundacaoFisk.SGF.Services.CNAB</RootNamespace>
+    <AssemblyName>FundacaoFisk.SGF.Services.CNAB</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Componentes.ApresentadorRelatorio">
+      <HintPath>..\lib\Componentes\Componentes.ApresentadorRelatorio.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericBusiness, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Componentes\Componentes.GenericBusiness.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericController">
+      <HintPath>..\lib\Componentes\Componentes.GenericController.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericDataAccess, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Componentes\Componentes.GenericDataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Componentes\Componentes.GenericModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.Utils, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Componentes\Componentes.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.4.0.20710.0\lib\net40\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.4.0.20710.0\lib\net40\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.4.0.20710.0\lib\net40\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Business\BoletoBusiness.cs" />
+    <Compile Include="Business\BoletoBusinessException.cs" />
+    <Compile Include="Business\CnabBusiness.cs" />
+    <Compile Include="Business\CnabBusinessException.cs" />
+    <Compile Include="Comum\IBusiness\ICnabBusiness.cs" />
+    <Compile Include="Comum\IBusiness\IBoletoBusiness.cs" />
+    <Compile Include="Comum\IDataAccess\IDespesaTituloCnabDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ITituloRetornoCnabDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IRetornoCNABDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ICarteiraCnabDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ICnabDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ITituloCnabDataAccess.cs" />
+    <Compile Include="Controllers\BoletoController.cs" />
+    <Compile Include="Controllers\CnabController.cs" />
+    <Compile Include="DataAccess\CnabDataAccess.cs" />
+    <Compile Include="DataAccess\CarteiraCnabDataAccess.cs" />
+    <Compile Include="DataAccess\DespesaTituloCnabDataAccess.cs" />
+    <Compile Include="DataAccess\TituloRetornoCNABDataAccess.cs" />
+    <Compile Include="DataAccess\RetornoCNABDataAccess.cs" />
+    <Compile Include="DataAccess\TituloCnabDataAccess.cs" />
+    <Compile Include="Model\RptTitulosCnab.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="App.Config" />
+    <None Include="packages.config" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.CNAB.Model.RptTitulosCnab.datasource" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Boleto.Net\Boleto.Net.csproj">
+      <Project>{f173e80b-e36b-48ad-b483-a27f8ca86f3c}</Project>
+      <Name>Boleto.Net</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.GenericDataAccess\FundacaoFisk.SGF.GenericDataAccess.csproj">
+      <Project>{dd863842-024f-44b6-bcdf-952c5172f5f4}</Project>
+      <Name>FundacaoFisk.SGF.GenericDataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.GenericModel\FundacaoFisk.SGF.GenericModel.csproj">
+      <Project>{452b08af-98c4-4036-81d9-537bc4818afd}</Project>
+      <Name>FundacaoFisk.SGF.GenericModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Services.InstituicaoEnsino\FundacaoFisk.SGF.Web.Services.InstituicaoEnsino.csproj">
+      <Project>{cd7be3b3-f32b-4ac4-88f2-ad819c6be5f1}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.InstituicaoEnsino</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Utils\FundacaoFisk.SGF.Utils.csproj">
+      <Project>{00a8d0a9-82e8-410b-86bd-dd2b80245e95}</Project>
+      <Name>FundacaoFisk.SGF.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Coordenacao\FundacaoFisk.SGF.Web.Services.Coordenacao.csproj">
+      <Project>{e91c3699-46d7-4199-8450-1579c6ac9658}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Coordenacao</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Empresa\FundacaoFisk.SGF.Web.Services.Empresa.csproj">
+      <Project>{1c4c8266-2d64-425e-8161-812a055d0b8b}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Empresa</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Financeiro\FundacaoFisk.SGF.Web.Services.Financeiro.csproj">
+      <Project>{b4a36be3-38a0-4cc7-90ad-660e591d7f6a}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Financeiro</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Usuario\FundacaoFisk.SGF.Web.Services.Usuario.csproj">
+      <Project>{e177ace4-c36a-4f5f-88f1-8ac1c8aa24d0}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Usuario</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,1090 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{452B08AF-98C4-4036-81D9-537BC4818AFD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FundacaoFisk.SGF.GenericModel</RootNamespace>
+    <AssemblyName>FundacaoFisk.SGF.GenericModel</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Componentes.GenericDataAccess, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Componentes\Componentes.GenericDataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericModel">
+      <HintPath>..\lib\Componentes\Componentes.GenericModel.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AcaoFollowUp.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Aditamento.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AditamentoBolsa.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AliquotaUF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Aluno.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AlunoAulaReposicao.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AlunoBolsa.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AlunoEvento.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AlunoMotivoMatricula.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AlunoRestricao.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AlunoTurma.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AnoEscolar.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Atividade.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AtividadeAluno.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AtividadeCurso.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AtividadeEscolaAtividade.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AtividadeExtra.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AtividadeProspect.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AtividadeRecorrencia.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Atributos.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AulaPersonalizada.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AulaPersonalizadaAluno.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AulaReposicao.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Avaliacao.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AvaliacaoAluno.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AvaliacaoAlunoParticipacao.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AvaliacaoCurso.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AvaliacaoParticipacao.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AvaliacaoParticipacaoVinc.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AvaliacaoTurma.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BaixaAutomatica.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BaixaTitulo.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Banco.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Biblioteca.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CalendarioAcademico.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CalendarioEvento.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CargaProfessor.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CarteiraCnab.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CFOP.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Cheque.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChequeBaixa.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChequeTransacao.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Circular.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ClasseTelefoneSGF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Cnab.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Conceito.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ContaCorrente.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Contrato.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ControleFaltas.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ControleFaltasAluno.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CriterioAvaliacao.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Curso.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CursoContrato.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DadosNF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DescontoContrato.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DescontoTituloCNAB.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Desistencia.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DespesaTituloCnab.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DiarioAula.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DiasPolitica.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Duracao.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EmpresaValorServico.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Emprestimo.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EnderecoSGF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Escola.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Escolaridade.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EstadoCivilSGF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EstadoSGF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Estagio.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Evento.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Faq.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Fechamento.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Feriado.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="FeriadoDesconsiderado.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="FichaSaude.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="FollowUp.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="FollowUpEscola.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="FollowUpUsuario.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="FuncionarioComissao.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="FuncionarioSGF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GrupoConta.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GrupoEstoque.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GrupoSituacao.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="HabilitacaoProfessor.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="HistoricoAluno.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Horario.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="HorarioProfessorTurma.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ImportacaoXML.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Item.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ItemCurso.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ItemEscola.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ItemKit.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ItemMovimento.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ItemMovimentoKit.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ItemMovItemKit.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ItemPolitica.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ItemProgramacao.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ItemSubgrupo.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="JsonTeste.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Kardex.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ListaEnderecoMala.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ListaNaoInscrito.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="LivroCyber.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="LocalidadeSGF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="LocalMovto.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="LogGeral.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="LogGeralDetalhe.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="LogradouroCEP.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MalaDireta.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MalaDiretaCadastro.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MalaDiretaCurso.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MalaDiretaPeriodo.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MalaDiretaProduto.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ManagerRepository.cs" />
+    <Compile Include="MensagemAvaliacao.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MensagemAvaliacaoAluno.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Midia.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Modalidade.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MotivoBolsa.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MotivoCancelamentoBolsa.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MotivoDesistencia.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MotivoFalta.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MotivoMatricula.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MotivoNaoMatricula.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MotivoTransferenciaAluno.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MovimentacaoFinanceira.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Movimento.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Nivel.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="NomeContrato.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ObsSaldoCaixa.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Operadora.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="OrgaoExpedidor.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="OrgaoFinanceiro.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Origem.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PaisSGF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PapelSGF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Parametro.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Partial\AditamentoBolsa.cs" />
+    <Compile Include="Partial\AlunoRestricao.cs" />
+    <Compile Include="Partial\AlunoApiCyberBdUI.cs" />
+    <Compile Include="Partial\AlunoTurma.cs" />
+    <Compile Include="Partial\AnoEscolar.cs" />
+    <Compile Include="Partial\AtividadeEscolaAtividade.cs" />
+    <Compile Include="Partial\AtividadeRecorrencia.cs" />
+    <Compile Include="Partial\AulaReposicao.cs" />
+    <Compile Include="Partial\Avaliacao.cs" />
+    <Compile Include="Partial\AvaliacaoAluno.cs" />
+    <Compile Include="Partial\AvaliacaoCurso.cs" />
+    <Compile Include="Partial\AvaliacaoParticipacao.cs" />
+    <Compile Include="Partial\AvaliacaoTurma.cs" />
+    <Compile Include="Partial\BaixaAutomatica.cs" />
+    <Compile Include="Partial\BaixaTitulo.cs" />
+    <Compile Include="Partial\CalendarioEvento.cs" />
+    <Compile Include="Partial\CargaProfessor.cs" />
+    <Compile Include="Partial\AlunoTurmaRematricula.cs" />
+    <Compile Include="Partial\ContratoComboUI.cs" />
+    <Compile Include="Partial\CursoContrato.cs" />
+    <Compile Include="Partial\DocumentoDigitalizadoEditUI.cs" />
+    <Compile Include="Partial\EmpresaValorServico.cs" />
+    <Compile Include="Partial\EscolaApiAreaRestritaBdUI.cs" />
+    <Compile Include="Partial\EscolaApiCyberBdUI.cs" />
+    <Compile Include="Partial\Faq.cs" />
+    <Compile Include="Partial\FichaSaudeUI.cs" />
+    <Compile Include="Partial\FuncionarioCyberBdUI.cs" />
+    <Compile Include="Partial\ImportacaoXML.cs" />
+    <Compile Include="Partial\LivroAlunoUpdateApiCyberBdUI.cs" />
+    <Compile Include="Partial\MensagemAvaliacao.cs" />
+    <Compile Include="Partial\MotivoTransferenciaAluno.cs" />
+    <Compile Include="Partial\NotasVendaMaterialUI.cs" />
+    <Compile Include="Partial\OrgaoFinanceiro.cs" />
+    <Compile Include="Partial\LivroAlunoApiCyberBdUI.cs" />
+    <Compile Include="Partial\ParametrosCarneUI.cs" />
+    <Compile Include="Partial\Cheque.cs" />
+    <Compile Include="Partial\Circular.cs" />
+    <Compile Include="Partial\ClasseTelefoneSGF.cs" />
+    <Compile Include="Partial\Conceito.cs" />
+    <Compile Include="Partial\Aluno.cs" />
+    <Compile Include="Partial\Atividade.cs" />
+    <Compile Include="Partial\AlunoBolsa.cs" />
+    <Compile Include="Partial\Contrato.cs" />
+    <Compile Include="Partial\Aditamento.cs" />
+    <Compile Include="Partial\Banco.cs" />
+    <Compile Include="Partial\AtividadeExtra.cs" />
+    <Compile Include="Partial\AlunoEvento.cs" />
+    <Compile Include="Partial\ContaCorrente.cs" />
+    <Compile Include="Partial\Cnab.cs" />
+    <Compile Include="Partial\CarteiraCnab.cs" />
+    <Compile Include="Partial\AulaPersonalizada.cs" />
+    <Compile Include="Partial\AulaPersonalizadaAluno.cs" />
+    <Compile Include="Partial\AvaliacaoParticipacaoVinc.cs" />
+    <Compile Include="Partial\AvaliacaoAlunoParticipacao.cs" />
+    <Compile Include="Partial\CalendarioAcademico.cs" />
+    <Compile Include="Partial\ControleFaltas.cs" />
+    <Compile Include="Partial\ControleFaltasAluno.cs" />
+    <Compile Include="Partial\FuncionarioComissao.cs" />
+    <Compile Include="Partial\ItemMovimentoKit.cs" />
+    <Compile Include="Partial\JsonTeste.cs" />
+    <Compile Include="Partial\Nivel.cs" />
+    <Compile Include="Partial\ParametrosPercentualFaltaGrupoAvancadoUI.cs" />
+    <Compile Include="Partial\ParametrosReciboUI.cs" />
+    <Compile Include="Partial\PessoaCoordenadorCyberBdUI.cs" />
+    <Compile Include="Partial\PessoaRaf.cs" />
+    <Compile Include="Partial\ProfessorCargaHorariaMaximaResultUI.cs" />
+    <Compile Include="Partial\PromocaoIntercambioParams.cs" />
+    <Compile Include="Partial\PromocaoIntercambioResponse.cs" />
+    <Compile Include="Partial\ReajusteTurma.cs" />
+    <Compile Include="Partial\ReajusteAluno.cs" />
+    <Compile Include="Partial\ReajusteCurso.cs" />
+    <Compile Include="Partial\ReajusteAnual.cs" />
+    <Compile Include="Partial\ObsSaldoCaixa.cs" />
+    <Compile Include="Partial\Participacao.cs" />
+    <Compile Include="Partial\DescontoTituloCNAB.cs" />
+    <Compile Include="Partial\ListaEnderecoMala.cs" />
+    <Compile Include="Partial\ListaNaoInscrito.cs" />
+    <Compile Include="Partial\LogGeral.cs" />
+    <Compile Include="Partial\LogGeralDetalhe.cs" />
+    <Compile Include="Partial\MalaDireta.cs" />
+    <Compile Include="Partial\MalaDiretaCurso.cs" />
+    <Compile Include="Partial\MalaDiretaProduto.cs" />
+    <Compile Include="Partial\Operadora.cs" />
+    <Compile Include="Partial\PessoaJuridicaSGF.cs" />
+    <Compile Include="Partial\PoliticaTurma.cs" />
+    <Compile Include="Partial\PoliticaAluno.cs" />
+    <Compile Include="Partial\Professor.cs" />
+    <Compile Include="Partial\AliquotaUF.cs" />
+    <Compile Include="Partial\AcaoFollowUp.cs" />
+    <Compile Include="Partial\LocalidadeSGF.cs" />
+    <Compile Include="Partial\DadosNF.cs" />
+    <Compile Include="Partial\RelacionamentoSGF.cs" />
+    <Compile Include="Partial\ReportPagamentoProfessor.cs" />
+    <Compile Include="Partial\sp_RptAtividadeExtraAluno_Result.cs" />
+    <Compile Include="Partial\sp_RptAtividadeExtra_Result.cs" />
+    <Compile Include="Partial\sp_RptAvaliacaoEstagio_Result.cs" />
+    <Compile Include="Partial\sp_RptAvaliacaoTurma_Result.cs" />
+    <Compile Include="Partial\sp_RptCartaQuitacao_Result.cs" />
+    <Compile Include="Partial\sp_RptControleFaltas_Result.cs" />
+    <Compile Include="Partial\sp_RptDiarioAluno_Result.cs" />
+    <Compile Include="Partial\sp_RptEventoAluno_Result.cs" />
+    <Compile Include="Partial\sp_RptInventario_Result.cs" />
+    <Compile Include="Partial\st_RptFaixaEtaria_Result.cs" />
+    <Compile Include="Partial\sp_RptHistoricoAlunoM_Result.cs" />
+    <Compile Include="Partial\sp_RptHistoricoAluno_Result.cs" />
+    <Compile Include="Partial\sp_RptHistoricoAtividade_Result.cs" />
+    <Compile Include="Partial\sp_RptHistoricoConceito_Result.cs" />
+    <Compile Include="Partial\sp_RptHistoricoEstagio_Result.cs" />
+    <Compile Include="Partial\sp_RptHistoricoFollow_Result.cs" />
+    <Compile Include="Partial\sp_RptHistoricoItem_Result.cs" />
+    <Compile Include="Partial\sp_RptHistoricoObs_Result.cs" />
+    <Compile Include="Partial\sp_RptHistoricoTitulos_Result.cs" />
+    <Compile Include="Partial\sp_RptTurmaControleFalta_Result.cs" />
+    <Compile Include="Partial\sp_RptTurmasAvaliacoes_Result.cs" />
+    <Compile Include="Partial\st_RptEtiqueta_Result.cs" />
+    <Compile Include="Partial\SysGrupo.cs" />
+    <Compile Include="Partial\SysGrupoUsuario.cs" />
+    <Compile Include="Partial\SysMenu.cs" />
+    <Compile Include="Partial\TelefoneSGF.cs" />
+    <Compile Include="Partial\TipoEnderecoSGF.cs" />
+    <Compile Include="Partial\TipoLocalidadeSGF.cs" />
+    <Compile Include="Partial\TipoLog.cs" />
+    <Compile Include="Partial\TipoLogradouroSGF.cs" />
+    <Compile Include="Partial\TipoNotaFiscal.cs" />
+    <Compile Include="Partial\SituacaoTributaria.cs" />
+    <Compile Include="Partial\ItemSubgrupo.cs" />
+    <Compile Include="Partial\Prospect.cs" />
+    <Compile Include="Partial\TipoTelefoneSGF.cs" />
+    <Compile Include="Partial\TituloRetornoCNAB.cs" />
+    <Compile Include="Partial\RetornoCNAB.cs" />
+    <Compile Include="Partial\ItemPolitica.cs" />
+    <Compile Include="Partial\SaldoItem.cs" />
+    <Compile Include="Partial\Fechamento.cs" />
+    <Compile Include="Partial\Item.cs" />
+    <Compile Include="Partial\PlanoConta.cs" />
+    <Compile Include="Partial\DescontoContrato.cs" />
+    <Compile Include="Partial\Kardex.cs" />
+    <Compile Include="Partial\ItemMovimento.cs" />
+    <Compile Include="Partial\PoliticaComercial.cs" />
+    <Compile Include="Partial\Emprestimo.cs" />
+    <Compile Include="Partial\DiarioAula.cs" />
+    <Compile Include="Partial\HistoricoAluno.cs" />
+    <Compile Include="Partial\LocalMovto.cs" />
+    <Compile Include="Partial\EnderecoSGF.cs" />
+    <Compile Include="Partial\Movimento.cs" />
+    <Compile Include="Partial\Titulo.cs" />
+    <Compile Include="Partial\DiasPolitica.cs" />
+    <Compile Include="Partial\FeriadoDesconsiderado.cs" />
+    <Compile Include="Partial\NomeContrato.cs" />
+    <Compile Include="Partial\Parametro.cs" />
+    <Compile Include="Partial\ProgramacaoTurma.cs" />
+    <Compile Include="Partial\Escola.cs" />
+    <Compile Include="Partial\PapelSGF.cs" />
+    <Compile Include="Partial\ProfessorTurma.cs" />
+    <Compile Include="Partial\SubgrupoConta.cs" />
+    <Compile Include="Partial\GrupoConta.cs" />
+    <Compile Include="Partial\ProspectMotivoNaoMatricula.cs" />
+    <Compile Include="Partial\FollowUp.cs" />
+    <Compile Include="Partial\PessoaFisicaSGF.cs" />
+    <Compile Include="Partial\FuncionarioSGF.cs" />
+    <Compile Include="Partial\Horario.cs" />
+    <Compile Include="Partial\TipoAvaliacao.cs" />
+    <Compile Include="Partial\CriterioAvaliacao.cs" />
+    <Compile Include="Partial\TituloCnab.cs" />
+    <Compile Include="Partial\TransacaoFinanceira.cs" />
+    <Compile Include="Partial\TransferenciaAluno.cs" />
+    <Compile Include="Partial\Turma.cs" />
+    <Compile Include="Partial\PoliticaDesconto.cs" />
+    <Compile Include="Partial\TipoItem.cs" />
+    <Compile Include="Partial\Curso.cs" />
+    <Compile Include="Partial\Estagio.cs" />
+    <Compile Include="Partial\Feriado.cs" />
+    <Compile Include="Partial\PessoaSGF.cs" />
+    <Compile Include="Partial\TipoAtividadeExtra.cs" />
+    <Compile Include="Partial\Duracao.cs" />
+    <Compile Include="Partial\Evento.cs" />
+    <Compile Include="Partial\Modalidade.cs" />
+    <Compile Include="Partial\MotivoDesistencia.cs" />
+    <Compile Include="Partial\MotivoFalta.cs" />
+    <Compile Include="Partial\Produto.cs" />
+    <Compile Include="Partial\Regime.cs" />
+    <Compile Include="Partial\Sala.cs" />
+    <Compile Include="Partial\TipoDesconto.cs" />
+    <Compile Include="Partial\TipoFinanceiro.cs" />
+    <Compile Include="Partial\TipoLiquidacao.cs" />
+    <Compile Include="Partial\MovimentacaoFinanceira.cs" />
+    <Compile Include="Partial\GrupoEstoque.cs" />
+    <Compile Include="Partial\MotivoCancelamentoBolsa.cs" />
+    <Compile Include="Partial\MotivoBolsa.cs" />
+    <Compile Include="Partial\MotivoNaoMatricula.cs" />
+    <Compile Include="Partial\MotivoMatricula.cs" />
+    <Compile Include="Partial\TipoContato.cs" />
+    <Compile Include="Partial\Midia.cs" />
+    <Compile Include="Partial\Escolaridade.cs" />
+    <Compile Include="Partial\TurmaApiCyberBdUI.cs" />
+    <Compile Include="Partial\TurmaEscola.cs" />
+    <Compile Include="Partial\UnidadeApiCyberBdUI.cs" />
+    <Compile Include="Partial\UsuarioAreaRestritaUI.cs" />
+    <Compile Include="Partial\UsuarioEmpresaSGF.cs" />
+    <Compile Include="Partial\UsuarioWebSGF.cs" />
+    <Compile Include="Partial\Video.cs" />
+    <Compile Include="Partial\vi_contrato.cs" />
+    <Compile Include="Partial\vi_diario_aula.cs" />
+    <Compile Include="Participacao.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PerdaMaterial.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PessoaCarta.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PessoaEscola.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PessoaFisicaSGF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PessoaJuridicaSGF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PessoaPromocao.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PessoaRaf.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PessoaSGF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PlanoConta.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PlanoTitulo.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PoliticaAluno.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PoliticaComercial.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PoliticaDesconto.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PoliticaTurma.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Produto.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProdutoFuncionario.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Professor.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProfessorTurma.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProgramacaoCurso.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProgramacaoTurma.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Prospect.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProspectDia.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProspectMotivoNaoMatricula.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProspectPeriodo.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProspectProduto.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProspectSite.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="QualifRelacionamento.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ReajusteAluno.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ReajusteAnual.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ReajusteCurso.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ReajusteTitulo.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ReajusteTurma.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Regime.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RelacionamentoSGF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ReportPagamentoProfessor.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RetornoCNAB.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Sala.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SaldoItem.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SGFWebModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SGFWebModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SGFWebModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SituacaoTributaria.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_getRptMediaAlunos_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_listar_horario_aula_reposicao_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_login_escolas_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptAlunoRestricao_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptAtividadeExtraAluno_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptAtividadeExtra_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptAulaReposicaoAluno_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptAulaReposicao_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptAvaliacaoEstagio_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptAvaliacaoSub_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptAvaliacaoTurmaConceito_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptAvaliacaoTurma_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptAvaliacao_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptCartaQuitacao_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptControleFaltas_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptDiarioAluno_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptEventoAluno_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptHistoricoAlunoM_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptHistoricoAluno_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptHistoricoAtividade_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptHistoricoConceito_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptHistoricoEstagio_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptHistoricoFollow_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptHistoricoItem_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptHistoricoObs_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptHistoricoTitulos_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptInventario_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_Rptmatriculas_outros_produtos_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptTurmaControleFalta_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_RptTurmasAvaliacoes_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="st_RptFaixaEtaria_Result.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SubgrupoConta.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SysApp.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SysDireitoGrupo.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SysDireitoUsuario.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SysGrupo.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SysGrupoUsuario.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SysMenu.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TabelaPreco.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TaxaBancaria.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TaxaMatricula.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TelefoneSGF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TipoAtividadeExtra.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TipoAvaliacao.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TipoContato.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TipoDesconto.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TipoDescontoEscola.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TipoEnderecoSGF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TipoFinanceiro.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TipoItem.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TipoLiquidacao.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TipoLog.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TipoLogradouroSGF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TipoNotaFiscal.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TipoSociedade.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TipoTelefoneSGF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Titulo.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TituloAditamento.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TituloCnab.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TituloRetornoCNAB.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TitulosBaixaAutomatica.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TransacaoFinanceira.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TransferenciaAluno.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TratamentoPessoa.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Turma.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TurmaEscola.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="T_DESCONTO.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="UsuarioEmpresaSGF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="UsuarioWebSGF.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Video.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vi_aluno_sem_aula.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vi_carga_aluno.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vi_carga_horaria.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vi_contrato.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vi_curso_ordem.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vi_desistencia_carga.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vi_diario_aula.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vi_livro_devolvido.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vi_qt_avaliacao_curso.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vi_qt_programacao_curso.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vi_raf_com_diario.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vi_raf_sem_diario.cs">
+      <DependentUpon>SGFWebModel.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Properties\DataSources\Aluno.datasource" />
+    <None Include="Properties\DataSources\sp_RptInventario_Result.datasource" />
+    <None Include="SGFWebModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>SGFWebModel.Context.cs</LastGenOutput>
+    </None>
+    <None Include="SGFWebModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>SGFWebModel.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FundacaoFisk.SGF.GenericDataAccess\FundacaoFisk.SGF.GenericDataAccess.csproj">
+      <Project>{dd863842-024f-44b6-bcdf-952c5172f5f4}</Project>
+      <Name>FundacaoFisk.SGF.GenericDataAccess</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="GenericRepository\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

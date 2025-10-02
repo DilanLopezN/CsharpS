@@ -1,0 +1,451 @@
+@{
+    ViewBag.Title = "Item";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/item")
+    @Scripts.Render("~/bundles/pessoaFK")
+
+}
+
+@section scriptsBody{    
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Item/Serviço";
+
+        //**** Requerires para a Tabulação ****\\
+        require([
+                "dojo/NodeList-traverse",
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager"
+        ]);
+        montarCadastroItem();
+    </script>
+}
+
+<div style="width: 100%;">
+    <input type="hidden" id="link" value="" />
+    <div class="apresentadorMsg" id="apresentadorMensagem"  style="display:none;"></div>
+    <script type="text/javascript">
+        showCarregando();
+    </script>
+    <div class="EspacoCaixa caixaPesquisa">
+        <input id="isMasterGeral" name="" type="hidden"/>
+		  <table class="Table">
+              <tr style="vertical-align: middle;">
+                  <td class="tdRight" style="width: 0px;">
+                      <label for="pesquisaItemServico">Descrição: </label>
+                  </td>
+                  <td style="width: 40%;">
+                      <input id="pesquisaItemServico" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 98%"></td>
+                  <td class="tdRight" style="width: 0px;">
+                      <label class="AlinhaDireita;">Início:</label></td>
+                  <td>
+                      <input type="checkbox" id="inicioItemServico" data-dojo-type="dijit/form/CheckBox" class="Check" /></td>
+                  <td class="tdRight" style="width: 0px;">
+                      <label for="statusItemServico">Status:</label></td>
+                  <td>
+                      <input id="statusItemServico" class="margemCampoEsq"></td>
+                  <td rowspan="2" style="text-align: right;">
+                      <input id="pesquisarItemServico" title="Pesquisar" /></td>
+              </tr>
+              <tr>
+                  <td class="tdRight" style="width: 0px;">
+                      <label for="grupo" style="margin-left: 2%">Grupo:</label></td>
+                  <td>
+                      <input data-dojo-type="dijit/form/FilteringSelect" id="grupoPes" required="false" style="width: 98%;" /></td>
+                  <td class="tdRight" style="width: 0px;">
+                      <label for="tipo" style="margin-left: 2%">Tipo: </label>
+                  </td>
+                  <td>
+                      <input data-dojo-type="dijit/form/FilteringSelect" id="tipo" maxlength="6" /></td>
+                  <td class="tdRight" style="width: 0px;">
+                      <label for="categoria" style="margin-left: 2%">Categoria: </label>
+                  </td>
+                  <td>
+                      <input data-dojo-type="dijit/form/FilteringSelect" id="categoria" maxlength="6" /></td>
+            </tr>
+        </table>
+    </div>
+    <div style="padding-top: 10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%">
+            <tr style="width: 100%">
+                <td style="text-align:left; width: 25%">
+                    <div class="linkAcoes" id="linkAcoesItemServico"></div>
+                </td>
+                <td style="text-align:center; width: 50%">
+                    <input id="novoItemServico" title="Novo" />
+                    <input id="relatorioItemServico" title="Relatório" />
+                </td>
+                <td style="text-align: right; width: 25%">
+                    <span class="linkSelecionados" id="linkSelecionadosItemServico"></span>
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+     <div data-dojo-type="dijit/layout/ContentPane" style="padding-left: 0px; width: 100%">
+        <div class="gridCadBasic">
+            <div id="gridItemServico"></div>
+        </div>
+    </div>
+</div>
+
+<div id="cadItemServico" data-dojo-type="dijit.Dialog" title="Cadastro de Item/Serviço" class="Dialogo">
+
+    <div class="sessao_form" style="margin-left: -18px;">
+        <span id="counter_form">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    <div class="corpo_interno" style="max-width: 672px;">
+        <div class="scroll" style="height: 455px;">
+            <div class="apresentadorMsg" id="apresentadorMensagemItemServico" style="display: none;"></div>
+
+            <div data-dojo-type="dijit/layout/TabContainer" id="tabContainerItemServico" style="min-width: 200px; width: 100%; height: 455px;" onclick="selecionaTab">
+
+                <div data-dojo-type="dijit/layout/ContentPane" title="Principal" id="tabPrincipal">
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Item/Serviço'">
+                        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" id="formItemServico" data-dojo-id="formItemServico" class="Formulario">
+                            <input id="cd_item" name="cd_item" type="hidden" value="0" />
+                            <input id="abriuEscola" name="abriuEscola" type="hidden" value="false" />
+                            <input id="abriuPlano" name="abriuPlano" type="hidden" value="false" />
+                            <table class="Table">
+                                <tr>
+                                    <td class="tdRight" style="width: 15%">Tipo Item:</td>
+                                    <td style="width: 45%" class="dojoTextBoxIECorrect">
+                                        <input id="tipoItens" data-dojo-type="dijit/form/FilteringSelect" name="tipoItens" class="alignDojoData" style="width: 100%;" required="true" />
+                                    </td>
+                                    <td class="tdRight" style="width: 15%">Grupo Item:</td>
+                                    <td style="width: 25%" class="dojoTextBoxIECorrect">
+                                        <input id="categoriaGrupoCad" name="categoriaGrupoCad" type="hidden" value="0" />
+                                        <input data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" id="grupoItem" name="grupoItem" required="true" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tdRight">Nome:</td>
+                                    <td class="dojoTextBoxIECorrect">
+                                        <input data-dojo-type="dijit/form/ValidationTextBox" style="width: 100%;" id="nome" name="nome" required="true" maxlength="128" />
+                                    </td>
+                                    <td class="tdRight" id="lbSigla">Sigla:</td>
+                                    <td class="dojoTextBoxIECorrect" id="tdSigla">
+                                        <input data-dojo-type="dijit/form/TextBox" style="width: 100%;" id="sigla" name="sigla" maxlength="2" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tdRight nowrap" id="lbCdBarra">Código Barras:</td>
+                                    <td class="dojoTextBoxIECorrect" id="tdCdBarra">
+                                        <input data-dojo-type="dijit/form/ValidationTextBox"
+                                               style="width: 100%;"
+                                               id="codigoBarras"
+                                               required="false"
+                                               value=""
+                                               maxlength="32"
+                                               data-dojo-props="smallDelta:1, constraints:{min:0,max:32,places:0,pattern:'0'}"
+                                               onkeypress="mascaraInt(document.getElementById('codigoIntegracao'));" />
+                                    </td>
+
+                                    <td class="tdRight nowrap">Ativo:</td>
+                                    <td class="dojoTextBoxIECorrect">
+                                        <input data-dojo-type="dijit/form/CheckBox" checked="checked" id="ativo" name="ativo" />
+                                    </td>
+                                </tr>
+                                <tr id="trCodigos">
+                                    <td class="tdRight nowrap" id="lbCodigos">Cód.Integração:</td>
+                                    <td class="dojoTextBoxIECorrect" id="tdCodigos">
+                                        <input data-dojo-type="dijit/form/ValidationTextBox"
+                                               style="width: 100%;"
+                                               id="codigoIntegracao"
+                                               value="0"
+                                               maxlength="10"
+                                               data-dojo-props="smallDelta:1, constraints:{min:0,max:31,places:0,pattern:'0'}"
+                                               onkeypress="mascaraInt(document.getElementById('codigoIntegracao'));" />
+                                    </td>
+                                    <td class="tdRight nowrap" id="lbMaterial" >Vinculável ao Curso:</td>
+                                    <td class="dojoTextBoxIECorrect" id="tdMaterial" >
+                                        <input data-dojo-type="dijit/form/CheckBox" disabled="disabled" id="idMaterial" name="idMaterial" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tdRight nowrap" id="lbVoucher">Item Voucher:</td>
+                                    <td class="dojoTextBoxIECorrect" id="tdVoucher">
+                                        <input data-dojo-type="dijit/form/CheckBox" disabled="disabled" id="idVoucher" name="idVoucher" />
+                                    </td>
+                                    <td class="tdRight nowrap" id="lbqtVoucher">Carga(horas):</td>
+                                    <td class="dojoTextBoxIECorrect" id="tdqtVoucher">
+                                        <input data-dojo-type="dijit/form/NumberTextBox" disabled="disabled" id="idqtVoucher" name="idqtVoucher" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Dados Fiscais'" id="tagFiscal">
+                        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" id="formDadosFiscais" data-dojo-id="formDadosFiscais" class="Formulario">
+                            <table class="Table">
+                                <tr>
+                                    <td class="tdRight" style="width: 15%">Origem:</td>
+                                    <td style="width: 35%" class="dojoTextBoxIECorrect">
+                                        <input id="origem" name="origem" class="alignDojoData" style="width: 100%;" />
+                                    </td>
+                                    <td class="tdRight" style="width: 15%">Classificação:</td>
+                                    <td style="width: 35%" class="dojoTextBoxIECorrect">
+                                        <input data-dojo-type="dijit/form/ValidationTextBox" style="width: 100%;" id="dc_classificacao" name="classificacao" maxlength="16" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tdRight" style="width: 15%">CEST:</td>
+                                    <td style="width: 35%" class="dojoTextBoxIECorrect">
+                                         <input
+                                            data-dojo-type="dijit/form/ValidationTextBox"
+                                            style="width: 50%;"
+                                            id="nm_codigo_cest"
+                                            value=""
+                                            maxlength="10"
+                                            data-dojo-props="smallDelta:1, constraints:{min:0,max:31,places:0,pattern:'0'}"
+                                            onkeypress="mascaraInt(document.getElementById('nm_codigo_cest'));" />
+                                    </td>
+                                    <td class="tdRight" style="width: 15%">NCM:</td>
+                                    <td style="width: 35%" class="dojoTextBoxIECorrect">
+                                        <input data-dojo-type="dijit/form/ValidationTextBox" style="width: 100%;" id="dc_classificacao_fiscal" name="classificacao" maxlength="16" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Alíquotas'" id="PanelAliquotas">
+                        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" id="formAliquotas" data-dojo-id="formAliquotas" class="Formulario">
+                            <table class="Table">
+                                <tr>
+                                    <td style="width: 15%" class="tdRight" style="width: 20%">%ICMS:</td>
+                                    <td style="width: 35%" class="dojoTextBoxIECorrect">
+                                        <input id="icms"
+                                            name="icms"
+                                            data-dojo-type="dijit/form/NumberTextBox"
+                                            style="width: 100%;"
+                                            data-dojo-props="smallDelta:1"
+                                            constraints="{min:0, max:100, pattern: '000.##'}"
+                                            onkeypress="mascaraFloat(document.getElementById('icms'));" />
+                                    </td>
+                                    <td style="width: 15%" class="tdRight">%ISS:</td>
+                                    <td style="width: 35%" class="dojoTextBoxIECorrect">
+                                        <input id="iss"
+                                            name="iss"
+                                            data-dojo-type="dijit/form/NumberTextBox"
+                                            style="width: 100%;"
+                                            data-dojo-props="smallDelta:1"
+                                            constraints="{min:0, max:100, pattern: '000.##'}"
+                                            onkeypress="mascaraFloat(document.getElementById('iss'));" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Valores da Escola'" id="valoresEscola">
+                        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" id="formValoresEscola" data-dojo-id="formValoresEscola" class="Formulario">
+                            <table class="Table">
+                                <tr>
+                                    <td style="width: 15%" class="tdRight">Quantidade:</td>
+                                    <td style="width: 35%" class="dojoTextBoxIECorrect">
+                                        <input id="quantidade"
+                                            name="quantidade"
+                                            data-dojo-type="dijit/form/NumberSpinner"
+                                            value="0"
+                                            maxlength="10"
+                                            style="width: 100%;"
+                                            data-dojo-props="smallDelta:1, constraints:{min:-2147483647,max:2147483647,places:0,pattern:'0000000000'}"
+                                            onkeypress="mascaraInt(document.getElementById('quantidade'));" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 15%" class="tdRight">Venda:</td>
+                                    <td style="width: 35%" class="dojoTextBoxIECorrect">
+                                        <input id="venda"
+                                            name="venda"
+                                            value="0"
+                                            data-dojo-type="dijit/form/NumberTextBox" disabled="true"
+                                            style="width: 100%;"
+                                            data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'##.00'}"
+                                            onkeypress="mascaraFloat(document.getElementById('venda'));" />
+                                    </td>
+                                    <td style="width: 15%" class="tdRight">Custo:</td>
+                                    <td style="width: 35%" class="dojoTextBoxIECorrect">
+                                        <input id="custo"
+                                            name="custo"
+                                            value="0"
+                                            data-dojo-type="dijit/form/NumberTextBox"
+                                            style="width: 100%;"
+                                            data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'##.00'}"
+                                            onkeypress="mascaraFloat(document.getElementById('custo'));" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Biblioteca'" id="PanelBiblioteca">
+                        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" id="formItemBiblioteca" data-dojo-id="formItemBiblioteca" class="Formulario">
+                            <table class="Table">
+                                <tr>
+                                    <td style="width: 15%" class="tdRight" style="width: 20%">Título:</td>
+                                    <td colspan="3" style="width: 85%" class="dojoTextBoxIECorrect">
+                                        <input data-dojo-type="dijit/form/ValidationTextBox" style="width: 100%;" id="titulo" name="titulo" required="true" maxlength="128" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 15%" class="tdRight">Autor:</td>
+                                    <td colspan="3" style="width: 85%" class="dojoTextBoxIECorrect">
+                                        <input data-dojo-type="dijit/form/ValidationTextBox" style="width: 100%;" id="autor" name="autor" maxlength="128" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 15%" class="tdRight">Assunto:</td>
+                                    <td style="width: 35%" class="dojoTextBoxIECorrect">
+                                        <input data-dojo-type="dijit/form/ValidationTextBox" style="width: 100%;" id="assunto" name="assunto" maxlength="64" />
+                                    </td>
+                                    <td style="width: 15%" class="tdRight">Local:</td>
+                                    <td style="width: 35%" class="dojoTextBoxIECorrect">
+                                        <input data-dojo-type="dijit/form/ValidationTextBox" style="width: 100%;" id="local" name="local" maxlength="32" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" title="Plano de Contas" id="planoContentPane">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%" class="Alinhamento">
+                        <tr style="width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkPlano"></div>
+                            </td>
+                            <td style="text-align: center; width: 50%">
+                                <div id="btnaddPlano"></div>
+                            </td>
+                            <td style="text-align: center; width: 25%">
+                                <div style="text-align: right; width: 25%;"></div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div data-dojo-type="dijit/layout/ContentPane" id="tabPlanoContas" style="width: 100%; height: 80%; padding-left: 0px">
+                        <div id="gridPlano"></div>
+                    </div>
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" title="Escola" id="escolaContentPane">
+                    <div id="grupoAcoesProf">
+                        <div class="linha_acoes" style="width: 100%"></div>
+                        <table style="width: 100%" class="Alinhamento" id=" ">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkSelecionadosEscola"></div>
+                                </td>
+                                <td style="text-align: center; width: 50%">
+                                    <input id="incluirEscolaFK" />
+                                </td>
+                                <td style="text-align: center; width: 25%">
+                                    <div style="text-align: right; width: 25%;"></div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="linha_acoes" style="width: 100%"></div>
+                    </div>
+                    @*<div id="paiGridEscolas" style="height: 275px;">*@
+                    <div data-dojo-type="dijit/layout/ContentPane" id="panelEscolasFK" style="width: 100%; height: 362px; padding-left: 0px; padding: 0px; padding-top: 3px;">
+                        <div id="gridEscolas"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="CaixaAcao" style="padding-top: 5px; padding-right:8px">
+        <div class="linha_acoes" style="width: 98%"></div>
+        <div class="Alinhamento">
+            <span id="divIncluirItemServico">
+                <input id="incluirItemServico" title="Salvar" /></span>
+            <span id="divAlterarItemServico">
+                <input id="alterarItemServico" title="Salvar" /></span>
+            <span id="divExcluirItemServico">
+                <input type="button" id="deleteItemServico" title="Apagar" /></span>
+            <span id="divLimparItemServico">
+                <input id="limparItemServico" title="Limpar" /></span>
+            <span id="divCancelarItemServico">
+                <input type="button" id="cancelarItemServico" title="Cancelar" /></span>
+            <span id="divFecharItemServico">
+                <input id="fecharItemServico" title="Fechar" type="button" /></span>
+        </div>
+        <div class="linha_acoes" style="width: 98%"></div>
+    </div>
+</div>
+
+
+<div id="dialogPlano" data-dojo-type="dijit/Dialog"  title="Tipo Movimento x SubGrupo" style="width: 700px;">
+	<div class="corpo_interno">
+        <div class="apresentadorMsg" id="apresentadorMensagemPlano" style="display: none;"></div>
+        <input id="cd_subgrupo_tp" name="cd_subgrupo_tp" type="hidden" value="0" />
+		<table style="width: 100%" class="Alinhamento">
+			<tr style="width: 100%">
+				<td class="tdRight" style="width:12%">Tipo Movimento:</td>
+				<td style="width:20%" class="dojoTextBoxIECorrect">
+					<input id="tipoMovs" name="tpoMovs" class="alignDojoData" style="width: 100%;"/>
+				</td>
+				<td class="CorpoFormAux tdRight nowrap" style="width: 8%">
+					<label">SubGrupo: </label>
+				</td>
+				<td style="width: 45%" class="nowrap">
+                    <input type="hidden" id="nivel" value="0" />
+                    <input type="hidden" id="cd_subgrupo2" value="0" />
+                    <input id="cbSubGrupo2" style="width: 90%;"  data-dojo-type="dijit/form/ValidationTextBox" readonly="true" required="true">
+                    <input id="btSubGrupo2" style="min-width: 18px;" />
+                </td>
+			</tr>
+			<tr>
+				<td  class="tdRight nowrap">Manter Cadastro:</td>
+				<td style="text-align: left" class="dojoTextBoxIECorrect">
+					<input data-dojo-type="dijit/form/CheckBox" id="ckManterCad" name="ckManterCad" checked="checked"/>
+				</td>
+			</tr>
+		</table>
+		<div class="containerCrud">
+			<div class="linha_acoes" style="width: 100%"></div>
+			<div style="text-align: center">
+				<span id="divIncluirPlano">
+					<input id="incluirPlano" title="incluir" /></span>
+                <span id="divAlterarPlano">
+					<input id="alterarPlano" title="incluir" /></span>
+                <span id="divExcluirPlano">
+                <input type="button" id="deletePlano" title="Apagar" /></span>
+				<span id="divCancelarPlano">
+					<input type="button" id="cancelarPlano" title="Cancelar" /></span>
+				<span id="divLimparPlano">
+					<input id="limparPlano" title="Limpar" /></span>
+				<span id="divFecharPlano">
+				<input type="button" id="fecharPlano" title="Fechar" /></span>
+			</div>
+			<div class="linha_acoes" style="width: 100%"></div>
+		</div>
+	</div>
+</div>
+
+<div id="fkPessoaPesq" data-dojo-type="dijit.Dialog" title="Pesquisar Pessoa" style="display: none; width: 800px; height: 590px;">
+   <div style="height:590px;width:780px">
+        @Html.Partial("../Pessoa/PessoaFK")
+    </div>
+</div>
+
+<div id="cadPlanoContas" data-dojo-type="dijit.Dialog" title="Pesquisar Plano de Contas" style="display: none; width: 700px; height: 590px;">
+    <div style="width: 685px; height: 590px;">
+        @Html.Partial("../Financeiro/PlanoContasFK")
+    </div>
+</div>
+
+<div id="cadSubGrupo" data-dojo-type="dijit.Dialog" title="Pesquisar SubGrupo de Contas" style="display: none; width: 720px; height: 590px;">
+    <div style="width: 685px; height: 590px;">
+        @Html.Partial("../Financeiro/subgrupoContasFK")
+    </div>
+</div>

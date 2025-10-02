@@ -1,0 +1,220 @@
+﻿@{
+    ViewBag.Title = "Circulares";
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+
+@section scripts {
+    @Scripts.Render("~/bundles/circulares")
+    <link href="~/Content/themes/base/dojo1.8.5r/dojox/form/resources/CheckedMultiSelect.css" rel="stylesheet" />
+}
+
+@section scriptsBody{
+
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Circulares";
+
+        //**** Requerires para a Tabulação ****\\
+        require([
+            "dojo/_base/event",
+            "dojox/validate/web",
+            "dojox/validate/check",
+            "dijit/form/NumberTextBox",
+            "dijit/form/ValidationTextBox",
+            "dijit/form/Form",
+            "dojox/form/Manager",
+            "dijit/form/TimeTextBox",
+            "dijit/form/DateTextBox"
+        ]);
+        montarCadastroCirculares();
+
+    </script>
+}
+
+<div class="apresentadorMsg" id="apresentadorMensagem" style="display: none;"></div>
+
+<div id="content">
+    <table class="Table" style="width: 100%" id="content-table">
+        <tr>
+            <td id="tbl-border-left"></td>
+            <td style="height: 100%;">
+                <!--  start content-table-inner ...................................................................... START -->
+                <div id="content-table-inner">
+                    <div class="EspacoCaixa caixaPesquisa">
+                        <table id="tableConceito" class="table">
+                            <tr style="vertical-align: middle;">
+                                <td class="tdRight" style="width: 10%;">
+                                    <label for="nome">Nome:</label>
+                                </td>
+                                <td style="width: 20%;" class="dojoTextBoxIECorrect">
+                                    <input type="text" id="nome" name="Nome" style="width: 100%;" maxlength="254" data-dojo-type="dijit/form/TextBox" />
+                                </td>
+                                <td class="tdRight" style="width: 10%;">
+                                    <label for="numero">Nº da Circular:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 20%;">
+                                    <input onkeypress="mascaraInt(dojo.byId('numero'));" required="false" id="numero" name="numero" size="61" maxlength="12" style="width: 100%;" data-dojo-props="smallDelta:1, constraints:{min:0,max:255,places:0}" data-dojo-type="dijit/form/ValidationTextBox" />
+                                </td>
+                                <td class="tdRight" style="width: 7%;">
+                                    <label>Ano:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 10%;">
+                                    <input onkeypress="mascaraInt(dojo.byId('nm_ano'));" required="false" id="nm_ano" name="nm_ano" size="61" maxlength="4" style="width: 100%;" data-dojo-props="smallDelta:1, constraints:{min:0,max:255,places:0}" data-dojo-type="dijit/form/ValidationTextBox" />
+                                </td>
+                                <td rowspan="2" class="AlinhaDireita" style="width: 15%;">
+                                    <input id="pesquisarCircular" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdRight" style="width: 7%;">
+                                    <label>Mês:</label>
+                                </td>
+                                <td class="alignDojoData" style="width: 20%;">
+                                    <select id="cbMes"
+                                            data-dojo-id="cbMes"
+                                            data-dojo-props='dropDown:true'
+                                            name="cbMes"
+                                            multiple="true"
+                                            data-dojo-type="dojox/form/CheckedMultiSelect" style="width: 100%;"></select>
+                                </td>
+                                <td class="tdRight" style="width: 7%;">
+                                    <label>Menu:</label>
+                                </td>
+                                <td class="alignDojoData" style="width: 20%;">
+                                    <select id="cbMenu"
+                                            data-dojo-id="cbMenu"
+                                            data-dojo-props='dropDown:true'
+                                            name="cbMenu"
+                                            multiple="true"
+                                            data-dojo-type="dojox/form/CheckedMultiSelect" style="width: 100%;"></select>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="padding-top: 10px">
+                        <div class="linha_acoes" style="width: 100%"></div>
+                        <table style="width: 100%" class="Alinhamento">
+                            <tr style="width: 100%">
+                                <td style="text-align: left; width: 25%">
+                                    <div class="linkAcoes" id="linkAcoes"></div>
+                                </td>
+                                <td style="text-align: center; width: 50%">
+                                    <input id="novaCircular" title="Novo" />
+                                </td>
+                                <td style="text-align: right; width: 25%">
+                                    <span class="linkSelecionados" id="linkSelecionados"></span>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="linha_acoes" style="width: 100%"></div>
+                    </div>
+                    <div data-dojo-type="dijit/layout/ContentPane" id="ContentGridCurso" style="padding-left: 0px; padding-right: 0px;">
+                        <div class="gridCadBasic" style="height: 350px">
+                            <div id="gridCirculares"></div>
+                        </div>
+                    </div>
+                    <div id="DialogCadastroCirculares" data-dojo-type="dijit/Dialog" title="Cadastro de Circulares" class="Dialogo">
+                        <div class="apresentadorMsg" id="apresentadorMensagemCircular" style="display: none;"></div>
+                        <div class="corpo_interno" style="max-width: 800px;">
+                            <input id="cd_circular" name="cd_circular" type="hidden" value="0" />
+
+                            <div class="scroll">
+                                <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" class="Formulario" id="formCiruclar">
+
+                                    <div style="width: 98%; height: 100px;" class="scroll">
+                                        <table class="Table">
+                                            <tr>
+                                                <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 5%">
+                                                    <label>Nº da Circular:</label>
+                                                </td>
+                                                <td class="nowrap" style="width: 5%">
+                                                    <input onkeypress="mascaraInt(dojo.byId('circularNro'));" required="true" id="circularNro" name="circularNro" size="61" maxlength="12" style="width: 100%;" data-dojo-props="smallDelta:1, constraints:{min:0,max:255,places:0}" data-dojo-type="dijit/form/ValidationTextBox" />
+                                                </td>
+                                                <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 5%">
+                                                    <label>Nome:</label>
+                                                </td>
+                                                <td class="nowrap" style="width: 20%">
+                                                    <input required="required" id="circularNome" name="circularNome" size="61" maxlength="254" style="width: 100%;" data-dojo-type="dijit/form/ValidationTextBox" />
+                                                </td>
+                                                <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 5%">
+                                                    <label>Menu:</label>
+                                                </td>
+                                                <td class="nowrap" style="width: 15%">
+                                                    <select required="required" id="cbMenuCad" name="cbMenuCad" data-dojo-type="dijit/form/FilteringSelect" style="width: 90%;"></select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 5%">
+                                                    <label>Ano:</label>
+                                                </td>
+                                                <td class="nowrap" style="width: 5%">
+                                                    <input onkeypress="mascaraInt(dojo.byId('anoCircular'));" maxlength="4" required="required" id="anoCircular" name="cbAnoCad" style="width: 100%;" data-dojo-type="dijit/form/ValidationTextBox" />
+                                                </td>
+                                                <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 5%">
+                                                    <label>Mês:</label>
+                                                </td>
+                                                <td class="nowrap" style="width: 20%">
+                                                    <select required="required" id="cbMesCad" name="cbMesCad" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;"></select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 5%">
+                                                    <label>Arquivo:</label>
+                                                </td>
+                                                <td colspan="4" class="nowrap" style="width: 20%">
+                                                    <input id="NomeArquivo" name="NomeArquivo" size="61" style="width: 100%;" required="required"
+                                                           data-dojo-type="dijit/form/ValidationTextBox" readonly="true" />
+
+                                                    <input data-dojo-props='iconClass:"dijitEditorIcon dijitEditorIconUpload" '
+                                                           id="uploaderCircularIncluir"></input>
+
+                                                    <input data-dojo-props='iconClass:"dijitEditorIcon dijitEditorIconUpload" '
+                                                           id="uploaderCircularEditar"></input>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+
+                                        </table>
+                                    </div>
+                                    <br />
+                                    <div class="containerCrud" style="width: 100%; padding-top: 20px;">
+                                        <div class="linha_acoes" style="width: 100%"></div>
+                                        <div style="text-align: center">
+                                            <span id="Span7">
+                                                <span id="divIncluirCircular">
+                                                    <input type="button" id="incluirCircular" title="incluir" />
+                                                </span>
+                                                <span id="divAlterarCircular" style="display: none;">
+                                                    <input type="button" id="alterarCircular" title="Alterar" />
+                                                </span>
+                                                <span id="divExcluirCircular" style="display: none;">
+                                                    <input type="button" id="deleteCircular" title="Excluir" />
+                                                </span>
+                                                <span id="divClearCircular">
+                                                    <input type="button" id="limparCircular" title="Limpar" />
+                                                </span>
+                                                <span id="divCancelarCircular" style="display: none;">
+                                                    <input type="button" id="cancelarCircular" title="Cancelar" />
+                                                </span>
+                                                <span id="divFecharCircular">
+                                                    <input type="button" id="fecharCircular" title="Fechar" />
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <div class="linha_acoes" style="width: 100%"></div>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!--  end content-table-inner ............................................END  -->
+            </td>
+            <td id="tbl-border-right"></td>
+        </tr>
+        <tr>
+            <th class="sized bottomleft"></th>
+            <td id="tbl-border-bottom">&nbsp;</td>
+            <th class="sized bottomright"></th>
+        </tr>
+    </table>
+</div>

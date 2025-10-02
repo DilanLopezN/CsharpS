@@ -1,0 +1,171 @@
+﻿@{
+    ViewBag.Title = "Mensagens";
+}
+	<div>
+		<div class="cabecalho_backgroud" style="height:92px">
+			<div style="min-width:770px;">
+                <div class="cabecalho_background_esc">
+			    </div>
+			    <div class="cabecalho_background_cent"></div>
+                <div class="cabecalho_background_dir"></div>
+            </div>
+		</div>
+		<div class="cabecalho_up">
+			<div class="cabecalho_up_outer">
+				<div class="logo_empresa">
+					<a href="@EnderecoRelativoWeb/" style="display:block;margin: 35px 0 0 10px;"><img src="~/images/shared/logo_sgf_branco.png" border="0"/></a>
+				</div>
+				<div class="cabecalho_back">
+                    <strong><label id="empresaLogo" style="font-family: Arial;" class="corBranco">SISTEMA DE GEST&Atilde;O FISK</label></strong>
+				</div>
+                <div class="cabecalho_background_outer" style="float:right; width:50%; position:relative">
+					<div class="cabecalho_dir_super" style="text-align:right;"><img src="~/images/shared/logo_empresa_dir.png" style="margin-top:7px; margin-right:7px" border="0"/></div>
+                    <div class="cabecalho_background_inf" style="float:right;">
+                        <div id="nav-left" style="width:100%">
+                           &nbsp; 
+                        </div>
+                    </div>
+				</div>
+			</div>
+		</div>
+    </div>
+    <div id="Parte">
+	   @section scripts{
+            <script src="~/Content/themes/base/dojo1.8.5r/dojo/dojo.js" data-dojo-config="async: true, isDebug: true, parseOnLoad: true"></script>
+            @Styles.Render("~/Content/themes/base/css")
+            @Styles.Render("~/Content/css")
+            @Scripts.Render("~/bundles/util")
+            <link href="~/Content/screen.css" rel="stylesheet" />
+            <script type="text/javascript">
+                var erroPagina;
+                require([
+                          "dojo/_base/xhr",
+                          "dijit/registry",
+                          "dojo/store/JsonRest",
+                          "dojox/data/JsonRestStore",
+                          "dojo/data/ObjectStore",
+                          "dojo/store/Cache",
+                          "dojo/store/Memory",
+                          "dojo/domReady!",
+                          "dojo/parser"
+                ], function (xhr, _registry, JsonRest, JsonRestStore, ObjectStore, Cache, Memory) {
+                    xhr.get({
+                        url: "@EnderecoRelativoWeb/Erro/RecuperaErro",
+                        handleAs: "json",
+                        headers: { "Accept": "application/json", "Authorization": "BEARER @ApiAccessToken" }
+                    }).then(function (data) {
+                        retornaValoresErro(data);
+                    })
+                });
+
+                // retorna valores de erro para a página
+                function retornaValoresErro(data) {
+                    var results = data.retorno.split("#@@@@#");
+                    for (i = 0; i < results.length; i++) {
+                        if (i == 0) {
+                            dojo.byId("erroApp").innerHTML = results[i];
+                        } else {
+                            dojo.byId("erro").innerHTML = results[i];
+                        }
+                        //document.write("<br /> Element " + i + " = " + results[i]);
+                    }
+                }
+            </script>
+        }
+	</div>
+	<!-- start content-outer ........................................................................................................................START -->
+	<div id="content-outer">
+		<div id="content">
+			<div id="page-heading" >
+				<label id="labelTitulos"></label>
+			 </div>
+			 <table class="Table" style="width:100%" id="content-table">
+				<tr>
+					<th rowspan="3" class="sized"><img src="~/images/shared/side_shadowleft.jpg" width="20" height="300" alt="" /></th>
+					<th class="topleft"></th>
+					<td id="tbl-border-top">&nbsp;</td>
+					<th class="topright"></th>
+					<th rowspan="3" class="sized"><img src="~/images/shared/side_shadowright.jpg" width="20" height="300" alt="" /></th>
+				</tr>
+				<tr>
+					<td id="tbl-border-left"></td>
+					<td style="height:100%;">
+					<!--  start content-table-inner ...................................................................... START -->
+					<div id="content-table-inner">
+					
+                            <div id="apresentadorMensagemEsc">
+                                <table class="tituloMensagensErro Table" style="width: 100%; height: 100%">
+                                    <tbody>
+                                        <tr>
+                                            <td id="erroSistema"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table class="mensagens" id="messagensErro" style="width: 100%; height: 100%">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width:2%">
+                                                <img src="~/images/erroMsg.gif">
+                                            </td>
+                                            <td class="tbErro1">
+                                                <div class="erro">
+                                                    <a href="#" onclick="show('div_error0')">
+                                                        <div id="erroApp"></div>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="mensagens" id="div_error0" style="display: none">
+                                            <td colspan="2" class="tbErro2">
+                                                <div class="erro">
+                                                    <div id="erro" />
+                                                </div>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                        <tr></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+					    <div class="clear"></div>
+					 
+					</div>
+					<!--  end content-table-inner ............................................END  -->
+					</td>
+					<td id="tbl-border-right"></td>
+				</tr>
+				<tr>
+					<th class="sized bottomleft"></th>
+					<td id="tbl-border-bottom">&nbsp;</td>
+					<th class="sized bottomright"></th>
+				</tr>
+			</table>
+
+		</div>
+	</div>
+
+	<div id="footer">
+		@Html.Partial("footer")
+   </div>
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-97448037-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+    <script>
+        var _prum = [['id', '570d92daabe53d3930288c12'],
+                     ['mark', 'firstbyte', (new Date()).getTime()]];
+        (function () {
+            var s = document.getElementsByTagName('script')[0]
+              , p = document.createElement('script');
+            p.async = 'async';
+            p.src = '//rum-static.pingdom.net/prum.min.js';
+            s.parentNode.insertBefore(p, s);
+        })();
+    </script>

@@ -1,0 +1,1295 @@
+@{
+    ViewBag.Title = "Financeiro";
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/financeiro")
+    <script src="~/Scripts/jquery.maskMoney.js"></script>
+    @Scripts.Render("~/bundles/pessoaFK")
+}
+
+@section scriptsBody{
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Financeiro";
+
+        //**** Requerires para a Tabulação ****\\
+        require([
+                "dojo/NodeList-traverse",
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager"
+        ]);
+
+        //*** Segurança do Formulário ***\\
+        mostraTabs('@Permissoes');
+        montarCadastroGrupoEstoque();
+        require([
+          "dijit/registry",
+          "dojo/ready",
+          "dojo/require"
+        ], function (registry, ready) {
+            ready(function () {
+                $("#percentual").maskMoney({
+                    showSymbol: false,
+                    //symbol: "R$",
+                    //thousands: ".",
+                    decimal: ","
+                });
+            });
+        });
+
+    </script>
+    <style type="text/css">
+        #percentual {
+            width: 5%;
+        }
+    </style>
+}
+<div id="container">
+    <input type="hidden" id="link" value="" />
+    <div class="apresentadorMsg" id="apresentadorMensagem" style="display:none;"></div>
+    <script type="text/javascript">
+        showCarregando();
+    </script>
+    <div id="div 1" style="max-width:1400px;">
+        <div data-dojo-type="dijit/layout/TabContainer" id="tabContainer" onclick="selecionaTab" class="Abas">
+            @*Grupo Estoque*@
+            <div data-dojo-type="dijit/layout/ContentPane" title="Grupo de Item" id="tabGrupoEstoque" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <table class="Table">
+                                    <tr>
+                                        <td class="tdRight" style="width: 1%;">
+                                            <label for="nome">Descrição:</label>
+                                        </td>
+                                        <td style="width: 39%;" class="dojoTextBoxIECorrect">
+                                            <input id="pesquisaGrupoEst" maxlength="32" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 100%;">
+                                        </td>
+                                        <td class="tdRight" style="width: 7%;">
+                                            <label class="AlinhaDireita">Início:</label>
+                                        </td>
+                                        <td class="dojoTextBoxIECorrect">
+                                            <input type="checkbox" id="inicioDescGrupoEst" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                                        </td>
+                                        <td class="tdRight" style="width: 10%;">
+                                            <label for="statusGrupoEstoque" class="AlinhaDireita;">Status:</label>
+                                        </td>
+                                        <td style="width: 7%;" class="dojoTextBoxIECorrect">
+                                            <input id="statusGrupoEstoque" class="margemCampoEsq">
+                                            </td>
+                                        <td class="tdRight" style="width: 10%;">
+                                            <label class="AlinhaDireita tdRight">Categoria:</label>
+                                        </td>
+                                        <td style="width: 20%;" class="dojoTextBoxIECorrect">
+                                            <select id="categoria_grupo_item" class="alignDojoData" data-dojo-type="dijit/form/FilteringSelect"></select>
+                                        </td>
+                                        <td style="width: 5%; text-align: center">
+                                            <input id="pesquisarGrupoEst" title="Pesquisar" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+
+                        </tr>
+                    </table>
+                </div>
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%">
+                        <tr style="width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkAcoesGrupoEstoque"></div>
+                            </td>
+                            <td style="text-align: center; width: 50%">
+
+                                <input id="novoGrupoEst" title="Novo" />
+                                <input id="relatorioGrupoEstoque" title="Relatório" />
+                            </td>
+                            <td style="text-align: right; width: 25%">
+                                <span class="linkSelecionados" id="linkSelecionadosGruposEstoque"></span>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div class="gridCadBasic">
+                    <div id="gridGrupoEst"></div>
+                </div>
+            </div>
+            @*fim*@
+
+            @*Movimentação Financeira*@
+            <div data-dojo-type="dijit/layout/ContentPane" title="Movimentação Financeira" id="tabMovFinanceira" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <label for="pesquisaMovFinan">Descrição: </label>
+                                <input id="pesquisaMovFinan" maxlength="64" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 59%">
+                                <label class="AlinhaDireita">Início:</label>
+                                <input type="checkbox" id="inicioDescMovFinan" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                <span class="nowrap">
+                                    <label for="statusMovFinan" class="AlinhaDireita;">Status:</label>
+                                    <input id="statusMovFinan" class="margemCampoEsq">
+                                </span>
+                            </td>
+                            <td>
+                                <input id="pesquisarMovFinan" title="Pesquisar" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%">
+                        <tr style="width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkAcoesMovimentacaoFinanceira"></div>
+                            </td>
+                            <td style="text-align: center; width: 50%">
+
+                                <input id="novoMovFinan" title="Novo" />
+                                <input id="relatorioMovFinan" title="Relatório" />
+                            </td>
+                            <td style="text-align: right; width: 25%">
+                                <span class="linkSelecionados" id="linkSelecionadosMovimentacoesFinanceiras"></span>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div class="gridCadBasic">
+                    <div id="gridMovFinan"></div>
+                </div>
+            </div>
+            @*fim*@
+
+            @*Tipo Liquidação*@
+            <div data-dojo-type="dijit/layout/ContentPane" title="Tipo Liquidação" id="tabTpLiquidacao" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <label for="pesquisaTpLiquidacao">Descrição: </label>
+                                <input id="pesquisaTpLiquidacao" maxlength="32" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 59%">
+                                <label class="AlinhaDireita">Início:</label>
+                                <input type="checkbox" id="inicioDescTpLiquidacao" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                <span class="nowrap">
+                                    <label for="statusTpLiquidacao" class="AlinhaDireita;">Status:</label>
+                                    <input id="statusTpLiquidacao" class="margemCampoEsq">
+                                </span>
+                            </td>
+                            <td>
+                                <input id="pesquisarTpLiquidacao" title="Pesquisar" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%">
+                        <tr style="width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkAcoesTipoLiquidacao"></div>
+                            </td>
+                            <td style="text-align: center; width: 50%">
+                                <input id="novoTpLiquidacao" title="Novo" />
+                                <input id="relatorioTpLiquidacao" title="Relatório" />
+                            </td>
+                            <td style="text-align: right; width: 25%">
+                                <span class="linkSelecionados" id="linkSelecionadosTiposLiquidacoes"></span>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div class="gridCadBasic">
+                    <div id="gridTipoLiquidacao"></div>
+                </div>
+            </div>
+            @*fim*@
+
+            @*Tipo Financeiro*@
+            <div data-dojo-type="dijit/layout/ContentPane" title="Tipo Financeiro" id="tabTipoFinanceiro" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <label for="pesquisaTipoFinanceiro">Descrição: </label>
+                                <input id="pesquisaTipoFinanceiro" maxlength="32" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 59%">
+                                <label class="AlinhaDireita">Início:</label>
+                                <input type="checkbox" id="inicioDescTipoFinanceiro" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                <span class="nowrap">
+                                    <label for="statusTipoFinanceiro" class="AlinhaDireita;">Status:</label>
+                                    <input id="statusTipoFinanceiro" class="margemCampoEsq">
+                                </span>
+                            </td>
+                            <td>
+                                <input id="pesquisarTipoFinanceiro" title="Pesquisar" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%">
+                        <tr style="width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkAcoesTipoFinanceiro"></div>
+                            </td>
+                            <td style="text-align: center; width: 50%">
+
+                                <input id="novoTipoFinanceiro" title="Novo" />
+                                <input id="relatorioTipoFinanceiro" title="Relatório" />
+                            </td>
+                            <td style="text-align: right; width: 25%">
+                                <span class="linkSelecionados" id="linkSelecionadosTipoFinanceiro"></span>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div class="gridCadBasic">
+                    <div id="gridTipoFinanceiro"></div>
+                </div>
+            </div>
+            @*fim*@
+
+            @*Tipo Desconto*@
+            <div data-dojo-type="dijit/layout/ContentPane" title="Tipo de Desconto" id="tabTipoDesconto" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td class="tdRight" style="width:0px;"><label for="pesquisaTipoDesconto">Descrição: </label></td>
+                            <td style=" width:40%;"><input id="pesquisaTipoDesconto" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width:100%"></td>
+                            <td class="tdRight" style="width:0px;"><label class="AlinhaDireita;">Início:</label></td>
+                            <td><input type="checkbox" id="inicioDescTipoDesconto" data-dojo-type="dijit/form/CheckBox" class="Check" /></td>
+                            <td class="tdRight" style="width:0px;"><label for="statusTipoDesconto">Status:</label></td>
+                            <td><input id="statusTipoDesconto" class="margemCampoEsq"></td>
+                            <td rowspan="2" style="text-align:right;"><input id="pesquisarTipoDesconto" title="Pesquisar" /></td>
+                        </tr>
+                        <tr>
+                            <td class="tdRight" style="width:0px;"><label for="incideBaixa">Incide&nbsp;Baixa:</label></td>
+                            <td><input id="incideBaixa"></td>
+                            @*                            <td class="tdRight" style="width:0px;"><label for="pparc" style="margin-left: 2%">1º&nbsp;Parcela:</label></td>
+                                <td><input id="pparc"></td>*@
+                            <td class="tdRight" style="width:0px;"><label for="percentual" style="margin-left: 2%">Percentual: </label></td>
+                            <td><input type="text" id="percentual" maxlength="6" data-dojo-type="dijit/form/TextBox" @* onkeypress="mascaraFloat(document.getElementById('percentual')); *@></td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%">
+                        <tr style="width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkAcoesTipoDesconto"></div>
+                            </td>
+                            <td style="text-align: center; width: 50%">
+
+                                <input id="novoTipoDesconto" title="Novo" />
+                                <input id="relatorioTipoDesconto" title="Relatório" />
+                            </td>
+                            <td style="text-align: right; width: 25%">
+                                <span class="linkSelecionados" id="linkSelecionadosTiposDesconto"></span>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" id="ContentGridTipoDesconto" style="padding-left:0px; padding-right:0px;">
+                    <div class="gridCadTipoDeDesconto">
+                        <div id="gridTipoDesconto"></div>
+                    </div>
+                </div>
+
+            </div>
+            @* fim tipo desconto*@
+            @*Tipo Desconto*@
+            <div data-dojo-type="dijit/layout/ContentPane" title="Grupo de Contas" id="tabGrupoContas" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <label for="pesquisaGrupoContas">Nome:</label>
+                                <input id="pesquisaGrupoContas" maxlength="32" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 49%">
+                                <label class="AlinhaDireita">Início:</label>
+                                <input type="checkbox" id="inicioDescGrupoContas" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                                <label class="AlinhaDireita">Tipo:</label>
+                                <select id="tipo_grupo_conta" class="alignDojoData" data-dojo-type="dijit/form/FilteringSelect"></select>
+
+                            </td>
+                            <td>
+                                <input id="pesquisarGrupoContas" title="Pesquisar" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%">
+                        <tr style="width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkAcoesGrupoContas"></div>
+                            </td>
+                            <td style="text-align: center; width: 50%">
+
+                                <input id="novoGrupoContas" title="Novo" />
+                                <input id="relatorioGrupoContas" title="Relatório" />
+                            </td>
+                            <td style="text-align: right; width: 25%">
+                                <span class="linkSelecionados" id="linkSelecionadosGrupoContas"></span>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div class="gridCadBasic">
+                    <div id="gridGrupoContas"></div>
+                </div>
+            </div>
+
+            <div data-dojo-type="dijit/layout/ContentPane" title="Subgrupo de Contas" id="tabSubgrupoConta" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td class="tdRight" style="width:10%;">
+                                <label class="AlinhaDireita">Grupo de Contas:</label>
+                            </td>
+                            <td class="dojoTextBoxIECorrect" style="width: 22%" ;>
+                                <select id="grupo_conta" data-dojo-type="dijit/form/FilteringSelect" style="width:100%;"></select>
+                            </td>
+                            <td class="tdRight" style="width:12%;">
+                                <label for="pesquisaSubgrupoConta">Subgrupo de Contas:</label>
+                            </td>
+                            <td class="dojoTextBoxIECorrect" style="width: 22%;">
+                                <input id="pesquisaSubgrupoConta" maxlength="32" type="text" data-dojo-type="dijit/form/TextBox" class="elementosCompletos">
+                            </td>
+                            <td class="tdRight" style="width: 4%;">
+                                <label class="AlinhaDireita">Nível:</label>
+                            </td>
+                            <td class="dojoTextBoxIECorrect" style="width: 14%;">
+                                <select id="nivel" class="elementosCompletos" data-dojo-type="dijit/form/FilteringSelect"></select>
+                            </td>
+                            <td class="tdRight" style="width:5%;">
+                                <label class="AlinhaDireita">Início:</label>
+                            </td>
+                            <td class="dojoTextBoxIECorrect" style="width: 5%;">
+                                <input type="checkbox" id="inicioDescSubgrupoConta" data-dojo-type="dijit/form/CheckBox" class="Check elementosCompletos" />
+                            </td>
+                            <td rowspan="1" class="AlinhaDireita" style="width: 6%;">
+                                <input id="pesquisarSubgrupoConta" title="Pesquisar" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%">
+                        <tr style="width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkAcoesSubgrupoConta"></div>
+                            </td>
+                            <td style="text-align: center; width: 50%">
+
+                                <input id="novoSubgrupoConta" title="Novo" />
+                                <input id="relatorioSubgrupoConta" title="Relatório" />
+                            </td>
+                            <td style="text-align: right; width: 25%">
+                                <span class="linkSelecionados" id="linkSelecionadosSubgrupoConta"></span>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div class="gridCadBasic">
+                    <div id="gridSubgrupoConta"></div>
+                </div>
+            </div>
+
+            <div data-dojo-type="dijit/layout/ContentPane" title="Banco" id="tabBanco" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td style="width: 95%;">
+                                <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Filtros'" id="panePesqGeral" open="true">
+                                    <table class="Table">
+                                        <tr>
+                                            <td class="Pesquisa tdRight" style="width: 5%">
+                                                <label for="descBanco" class="AlinhaDireita">Nome:</label>
+                                            </td>
+                                            <td class="dojoTextBoxIECorrect" style="width: 60%;">
+                                                <input id="descBanco" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 100%">
+                                            </td>
+                                            <td class="Pesquisa tdRight" style="width: 5%">
+                                                <label for="numBanco" class="AlinhaDireita">Número:</label>
+                                            </td>
+                                            <td class="dojoTextBoxIECorrect" style="width: 10%;">
+                                                <input id="numBanco" required="false"
+                                                       style="width: 100%;"
+                                                       maxlength="3"
+                                                       data-dojo-type="dijit/form/NumberSpinner"
+                                                       onkeypress="mascaraInt(document.getElementById('numBanco'));" />
+                                            </td>
+                                            <td class="tdRight" style="width: 5%">
+                                                <label class="AlinhaDireita;" for="inicioBanco">Início:</label>
+                                            </td>
+                                            <td style="width: 5%" class="dojoTextBoxIECorrect">
+                                                <input type="checkbox" id="inicioBanco" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </td>
+                            <td style="width: 5%; text-align: center">
+                                <input id="pesquisarBanco" title="Pesquisar" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%">
+                        <tr style="width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkAcoesBanco"></div>
+                            </td>
+                            <td style="text-align: center; width: 50%">
+                                <input id="novoBanco" title="Novo" />
+                                <input id="relatorioBanco" title="Relatório" />
+                            </td>
+                            <td style="text-align: right; width: 25%">
+                                <span class="linkSelecionados" id="linkSelecionadosBanco"></span>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" style="padding-left: 0px; width: 100%">
+                    <div class="gridCadBasic" style="height: 470px">
+                        <div id="gridBanco"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div data-dojo-type="dijit/layout/ContentPane" title="Carteira CNAB" id="tabCarteira" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="table">
+                        <tr>
+                            <td class="tdRight" style="width: 5%;">
+                                <label for="descCarteira">Nome: </label>
+                            </td>
+                            <td style="width: 40%;">
+                                <input id="descCarteira" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 100%">
+                            </td>
+                            <td class="tdRight" style="width: 5%;">
+                                <label class="AlinhaDireita;" for="ckInicio">Início:</label>
+                            </td>
+                            <td>
+                            <td>
+                                <input type="checkbox" id="ckInicio" data-dojo-type="dijit/form/CheckBox" class="Check" />
+                            </td>
+                            <td class="tdRight" style="width: 10%;">
+                                <label class="AlinhaDireita;">Banco:</label>
+                            </td>
+                            <td>
+                            <td style="width: 20%" class="dojoTextBoxIECorrect">
+                                <input data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" id="cdBancoPesq" />
+                            </td>
+                            <td class="tdRight" style="width: 5%">
+                                <label for="statusCarteira" class="AlinhaDireita;">Status:</label>
+                            </td>
+                            <td style="width: 5%;" class="dojoTextBoxIECorrect">
+                                <input id="statusCarteira" class="margemCampoEsq">
+                            </td>
+                            <td rowspan="2" class="AlinhaDireita" style="width: 15%;">
+                                <input id="pesquisarCarteira" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%" class="Alinhamento">
+                        <tr style="width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkAcoesCarteira"></div>
+                            </td>
+                            <td style="text-align: center; width: 50%">
+                                <input id="novaCarteira" title="Novo" />
+                                <input id="relatorioCarteira" title="Relatório" />
+                            </td>
+                            <td style="text-align: right; width: 25%">
+                                <span class="linkSelecionados" id="linkSelecionadosCarteira"></span>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div class="gridCadBasic" style="height: 77%">
+                    <div id="gridCarteira"></div>
+                </div>
+            </div>
+            @*Orgão Financeiro*@
+            <div data-dojo-type="dijit/layout/ContentPane" title="Orgão Financeiro" id="tabOrgaoFinanceiro" class="ContentPane">
+                <div class="EspacoCaixa caixaPesquisa">
+                    <table class="Table">
+                        <tr>
+                            <td class="Pesquisa">
+                                <label for="pesquisaOrgaoFinanceiro">Descrição: </label>
+                                <input id="pesquisaOrgaoFinanceiro" maxlength="32" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 59%">
+                                <label class="AlinhaDireita">Início:</label>
+                                <input type="checkbox" id="inicioDescOrgaoFinanceiro" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                <span class="nowrap">
+                                    <label for="statusOrgaoFinanceiro" class="AlinhaDireita;">Status:</label>
+                                    <input id="statusOrgaoFinanceiro" class="margemCampoEsq">
+                                </span>
+                            </td>
+                            <td>
+                                <input id="pesquisarOrgaoFinanceiro" title="Pesquisar" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="padding-top: 10px">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%">
+                        <tr style="width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkAcoesOrgaoFinanceiro"></div>
+                            </td>
+                            <td style="text-align: center; width: 50%">
+                                <input id="novoOrgaoFinanceiro" title="Novo" />
+                                <input id="relatorioOrgaoFinanceiro" title="Relatório" />
+                            </td>
+                            <td style="text-align: right; width: 25%">
+                                <span class="linkSelecionados" id="linkSelecionadosOrgaoFinanceiro"></span>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+                <div class="gridCadBasic">
+                    <div id="gridOrgaoFinanceiro"></div>
+                </div>
+            </div>
+            @*fim*@
+        </div>
+    </div>
+    @*fim div 1*@
+</div>@*Fim container*@
+
+
+@*Inicio dos Formulários de Persistência*@
+@*Grupo Estoque*@
+<div id="cadGrupoEstoque" data-dojo-type="dijit.Dialog" title="Cadastro de Grupo de Item" class="Dialogo">
+
+    <div class="sessao_form" style="margin-left: -8px;">
+        <span id="counter_form">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    <div class="corpo_interno">
+        <form data-dojo-type="dojox/form/Manager" id="formGrupoEstoque" data-dojo-id="formGrupoEstoque" enctype="multipart/form-data" class="Formulario">
+            <div class="apresentadorMsg" id="apresentadorMensagemGrupoEst" style="display:none;"></div>
+            <input id="cd_grupo_estoque" name="cd_grupo_estoque" type="hidden" value="0" />
+            <div class="CorpoForm">
+                <table class="Table">
+                    <tr>
+                        <td class="tdRight" style="width: 7%">
+                            <label for="no_grupo_estoque">Descrição:</label>
+                        </td>
+                        <td style="width: 49%" class="dojoTextBoxIECorrect">
+                            <input name="no_grupo_estoque" type="text" maxlength="32" id="no_grupo_estoque" style="width: 95%" size="300" data-dojo-type="dijit/form/ValidationTextBox" required="true" class="TextBox" />
+                        </td>
+                        <td class="tdRight" style="width: 7%">
+                            <label for="id_categoria_grupo">Categoria:</label>
+                        </td>
+                        <td style="width: 20%" class="dojoTextBoxIECorrect">
+                            <select id="id_categoria_grupo" name="id_categoria_grupo" required="true" class="alignDojoData" data-dojo-type="dijit/form/FilteringSelect"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdRight" style="width: 7%">
+                            <label for="id_grupo_estoque_ativo">Ativa:</label>
+                        </td>
+                        <td style="width: 10%" class="dojoTextBoxIECorrect">
+                            <input name="id_grupo_estoque_ativo" type="checkbox" id="id_grupo_estoque_ativo" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+                        </td>
+                        <td class="tdRight nowrap" style="width: 7%">
+                            <label for="id_eliminar_inventario">Eliminar Inventário:</label>
+                        </td>
+                        <td style="width: 10%" class="dojoTextBoxIECorrect">
+                            <input name="id_eliminar_inventario" type="checkbox" id="id_eliminar_inventario" data-dojo-type="dijit/form/CheckBox" />
+                        </td>
+
+                    </tr>
+                </table>
+            </div>
+            <div class="CaixaAcao">
+                <div class="linha_acoes" style="width: 100%"></div>
+                <div class="Alinhamento">
+                    <span id="divIncluirGrupoEst">
+                        <input id="incluirGrupoEst" title="Salvar" />
+                    </span>
+                    <span id="divAlterarGrupoEst">
+                        <input id="alterarGrupoEst" title="Salvar" />
+                    </span>
+                    <span id="divExcluirGrupoEst">
+                        <input type="button" id="deleteGrupoEst" title="Apagar" />
+                    </span>
+                    <span id="divLimparGrupoEst">
+                        <input id="limparGrupoEst" title="Limpar" />
+                    </span>
+                    <span id="divCancelarGrupoEst">
+                        <input type="button" id="cancelarGrupoEst" title="Cancelar" />
+                    </span>
+                    <span id="divFecharGrupoEst">
+                        <input type="button" id="fecharGrupoEst" title="Fechar" />
+                    </span>
+                </div>
+                <div class="linha_acoes" style="width: 100%"></div>
+            </div>
+        </form>
+    </div>
+</div>
+@*fim*@
+
+@*Movimentação Financeira*@
+<div id="cadMovFinan" data-dojo-type="dijit.Dialog" title="Cadastro de Movimentação Financeira" class="Dialogo">
+
+    <div class="sessao_form" style="margin-left: -8px;">
+        <span id="counter_form_1">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    <div class="corpo_interno">
+        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" id="formMovFinanceira" data-dojo-id="formMovFinanceira" class="Formulario">
+            <div class="apresentadorMsg" id="apresentadorMensagemMovFinan" style="display:none;"></div>
+            <input id="cd_movimentacao_financeira" name="cd_movimentacao_financeira" type="hidden" value="0" />
+            <div class="CorpoForm">
+                <label for="dc_movimentacao_financeira">Descrição:</label>
+                <input name="dc_movimentacao_financeira" type="text" maxlength="64" id="dc_movimentacao_financeira" size="300" data-dojo-type="dijit/form/ValidationTextBox" required="true" class="TextBox" />
+                <label for="id_mov_financeira_ativa">Ativa:</label>
+                <input name="id_mov_financeira_ativa" type="checkbox" id="id_mov_financeira_ativa" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+            </div>
+            <div class="CaixaAcao">
+                <div class="linha_acoes" style="width: 100%"></div>
+                <div class="Alinhamento">
+                    <span id="divIncluirMovFinan">
+                        <input id="incluirMovFinan" title="Salvar" />
+                    </span>
+                    <span id="divAlterarMovFinan">
+                        <input id="alterarMovFinan" title="Salvar" />
+                    </span>
+                    <span id="divExcluirMovFinan">
+                        <input id="deleteMovFinan" title="Apagar" type="button" />
+                    </span>
+                    <span id="divLimparMovFinan">
+                        <input id="limparMovFinan" title="Limpar" />
+                    </span>
+                    <span id="divCancelarMovFinan">
+                        <input type="button" id="cancelarMovFinan" title="Cancelar" />
+                    </span>
+                    <span id="divFecharMovFinan">
+                        <input id="fecharMovFinan" title="Fechar" type="button" />
+                    </span>
+                </div>
+                <div class="linha_acoes" style="width: 100%"></div>
+            </div>
+        </form>
+    </div>
+</div>
+@*fim*@
+
+@*Tipo Liquidação*@
+<div id="cadTipoLiquidacao" data-dojo-type="dijit.Dialog" title="Cadastro de Tipo Liquidação" class="Dialogo">
+
+    <div class="sessao_form" style="margin-left: -8px;">
+        <span id="counter_form_2">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    <div class="corpo_interno">
+        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" id="formTipoLiquidacao" data-dojo-id="formTipoLiquidacao" class="Formulario">
+            <div class="apresentadorMsg" id="apresentadorMensagemTpLiquidacao" style="display:none;"></div>
+            <input id="cd_tipo_liquidacao" name="cd_tipo_liquidacao" type="hidden" value="0" />
+            <div class="CorpoForm">
+                <label for="dc_tipo_liquidacao">Descrição:</label>
+                <input name="dc_tipo_liquidacao" type="text" maxlength="32" id="dc_tipo_liquidacao" size="300" data-dojo-type="dijit/form/ValidationTextBox" required="true" class="TextBox">
+                <label for="id_tipo_liquidacao_ativa">Ativa:</label>
+                <input name="id_tipo_liquidacao_ativa" type="checkbox" id="id_tipo_liquidacao_ativa" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+            </div>
+            <div class="CaixaAcao">
+                <div class="linha_acoes" style="width: 100%"></div>
+                <div class="Alinhamento">
+                    <span id="divIncluirTpLiquidacao">
+                        <input id="incluirTpLiquidacao" title="Salvar" />
+                    </span>
+                    <span id="divAlterarTpLiquidacao">
+                        <input id="alterarTpLiquidacao" title="Salvar" />
+                    </span>
+                    <span id="divExcluirTpLiquidacao">
+                        <input id="deleteTpLiquidacao" title="Apagar" type="button" />
+                    </span>
+                    <span id="divLimparTpLiquidacao">
+                        <input id="limparTpLiquidacao" title="Limpar" />
+                    </span>
+                    <span id="divCancelarTpLiquidacao">
+                        <input type="button" id="cancelarTpLiquidacao" title="Cancelar" />
+                    </span>
+                    <span id="divFecharTpLiquidacao">
+                        <input id="fecharTpLiquidacao" title="Fechar" type="button" />
+                    </span>
+                </div>
+                <div class="linha_acoes" style="width: 100%"></div>
+            </div>
+        </form>
+    </div>
+</div>
+@*fim*@
+
+@*Tipo Financeiro*@
+<div id="cadTipoFinanceiro" data-dojo-type="dijit.Dialog" title="Cadastro de Tipo Financeiro" class="Dialogo">
+
+    <div class="sessao_form" style="margin-left: -8px;">
+        <span id="counter_form_3">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    <div class="corpo_interno">
+        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" id="formTipoFinanceiro" data-dojo-id="formTipoFinanceiro" class="Formulario">
+            <div class="apresentadorMsg" id="apresentadorMensagemTipoFinanceiro" style="display:none;"></div>
+            <input id="cd_tipo_financeiro" name="cd_tipo_financeiro" type="hidden" value="0" />
+            <div class="CorpoForm">
+                <label for="dc_tipo_financeiro">Descrição:</label>
+                <input name="dc_tipo_financeiro" type="text" maxlength="32" id="dc_tipo_financeiro" size="300" data-dojo-type="dijit/form/ValidationTextBox" required="true" class="TextBox" />
+                <label for="id_tipo_financeiro_ativo">Ativa:</label>
+                <input name="id_tipo_financeiro_ativo" type="checkbox" id="id_tipo_financeiro_ativo" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+            </div>
+            <div class="CaixaAcao">
+                <div class="linha_acoes" style="width: 100%"></div>
+                <div class="Alinhamento">
+                    <span id="divIncluirTipoFinanceiro">
+                        <input id="incluirTipoFinanceiro" title="Salvar" />
+                    </span>
+                    <span id="divAlterarTipoFinanceiro">
+                        <input id="alterarTipoFinanceiro" title="Salvar" />
+                    </span>
+                    <span id="divExcluirTipoFinanceiro">
+                        <input type="button" id="deleteTipoFinanceiro" title="Apagar" />
+                    </span>
+                    <span id="divLimparTipoFinanceiro">
+                        <input id="limparTipoFinanceiro" title="Limpar" />
+                    </span>
+                    <span id="divCancelarTipoFinanceiro">
+                        <input type="button" id="cancelarTipoFinanceiro" title="Cancelar" />
+                    </span>
+                    <span id="divFecharTipoFinanceiro">
+                        <input id="fecharTipoFinanceiro" title="Fechar" type="button" />
+                    </span>
+                </div>
+                <div class="linha_acoes" style="width: 100%"></div>
+            </div>
+        </form>
+    </div>
+</div>
+@*fim*@
+
+@*Tipo Desconto*@
+<div id="cadTipoDesconto" data-dojo-type="dijit.Dialog" title="Cadastro de Tipo Desconto" class="Dialogo">
+
+    <div class="sessao_form" style="margin-left: -8px;">
+        <span id="counter_form_4">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    <div class="corpo_interno" style="min-width:360px; max-width: 665px;">
+        <div class="apresentadorMsg" id="apresentadorMensagemTipoDesconto" style="display: none;"></div>
+        <input id="abriuEscola" name="abriuEscola" type="hidden" value="false" />
+        <div data-dojo-type="dijit/layout/TabContainer" id="tabContainerTpDesc" class="Abas" style="min-height: 440px; max-height: 600px; height: 100%;" onclick="selecionaTab">
+            <div data-dojo-type="dijit/layout/ContentPane" title="Principal" onclick="selecionaTab" style="height: 100%;" id="tabPrincipalTpDesc">
+                <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" id="formTipoDesconto" data-dojo-id="formTipoDesconto" class="Formulario">
+                    <input id="cd_tipo_desconto" name="cd_tipo_desconto" type="hidden" value="0" />
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Tipo'">
+                        <table id="tableTpDesc" class="TableModel">
+                            <tr>
+                                <td class="tdRight">
+                                    <label for="dc_tipo_Desconto">Descrição:</label>
+                                </td>
+                                <td>
+                                    <input name="dc_tipo_desconto" style="width: 400px" type="text" maxlength="32" id="dc_tipo_desconto" size="300" data-dojo-type="dijit/form/ValidationTextBox" required="true" class="TextBox" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Dados da Escola'">
+                        <table id="tbDadosEscola" class="TableModel">
+                            <tr>
+                                <td class="tdRight">
+                                    <label for="id_tipo_desconto_ativo">Ativo:</label>
+                                </td>
+                                <td>
+                                    <input name="id_tipo_desconto_ativo" type="checkbox" id="id_tipo_desconto_ativo" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+                                </td>
+                            </tr>
+                            <tr>
+                                @*                                         <td class="tdRight">
+                                        <label for="id_incide_parcela_1">Incide&nbsp;1ºParcela:</label></td>
+                                    <td>
+                                        <input name="id_incide_parcela_1" type="checkbox" id="id_incide_parcela_1" data-dojo-type="dijit/form/CheckBox" /></td>*@
+                                <td class="tdRight">
+                                    <label for="id_incide_baixa">Incide&nbsp;Baixa:</label>
+                                <td>
+                                    <input name="id_incide_baixa" type="checkbox" id="id_incide_baixa" data-dojo-type="dijit/form/CheckBox" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdRight">
+                                    <label for="pc_desconto">Percentual:</label>
+                                </td>
+                                <td>
+                                    <input id="pc_desconto"
+                                           style="width: 20%;"
+                                           maxlength="6"
+                                           data-dojo-type="dijit/form/NumberTextBox"
+                                           data-dojo-props="smallDelta:1, constraints:{min:0, pattern:'##.00', max:100}"
+                                           onkeypress="mascaraFloat(document.getElementById('pc_desconto'));"
+                                           name="pc_desconto" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+            </div>
+            <div data-dojo-type="dijit/layout/ContentPane" title="Escola" id="tabEscolaTpDesc">
+                <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" id="formEscTpDesc" data-dojo-id="formEscTpDesc" class="Formulario">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%" class="Alinhamento">
+                        <tr style="text-align: center; width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkEscola"></div>
+                            </td>
+                            <!--<td class="Alinhamento">-->
+                            <td style="text-align: center; width: 50%">
+                                <div id="btnaddEscola"></div>
+                            </td>
+                            <td style="text-align: center; width: 50%"></td>
+                        </tr>
+                    </table>
+                </form>
+                <div class="linha_acoes" style="width: 100%"></div>
+                <div data-dojo-type="dijit/layout/ContentPane" id="tabContainerGridEscola" style="width: 100%; height: 85%; padding-left: 0px">
+                    <div id="gridEscola"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="containerCrud" style="width: 100%; padding-top: 10px;">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <div class="Alinhamento">
+                <span id="divIncluirTipoDesconto">
+                    <input id="incluirTipoDesconto" title="Salvar" />
+                </span>
+                <span id="divAlterarTipoDesconto">
+                    <input id="alterarTipoDesconto" title="Salvar" />
+                </span>
+                <span id="divExcluirTipoDesconto">
+                    <input type="button" id="deleteTipoDesconto" title="Apagar" />
+                </span>
+                <span id="divLimparTipoDesconto">
+                    <input id="limparTipoDesconto" title="Limpar" />
+                </span>
+                <span id="divCancelarTipoDesconto">
+                    <input type="button" id="cancelarTipoDesconto" title="Cancelar" />
+                </span>
+                <span id="divFecharTipoDesconto">
+                    <input id="fecharTipoDesconto" title="Fechar" type="button" />
+                </span>
+            </div>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+
+    </div>
+</div>
+
+@*Grupo de Contas*@
+<div id="cadGrupoContas" data-dojo-type="dijit.Dialog" title="Cadastro de Grupo de Contas" class="Dialogo">
+    <div class="sessao_form" style="margin-left: -8px;">
+        <span id="counter_form_5">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+    <div class="corpo_interno">
+        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" id="formGrupoContas" data-dojo-id="formGrupoContas" class="Formulario">
+            <div class="apresentadorMsg" id="apresentadorMensagemGrupoContas" style="display:none;"></div>
+            <input id="cd_grupo_conta" name="cd_grupo_conta" type="hidden" value="0" />
+            <table border="0" id="tableGrupoContas" class="TableModel">
+                <tr>
+                    <td class="CorpoFormAux AlinhaDireita" style="width:12%;">
+                        <label>Nome:</label>
+                    </td>
+                    <td class="dojoTextBoxIECorrect" style="width:40%;">
+                        <input name="no_grupo_conta" id="no_grupo_conta" data-dojo-type="dijit/form/ValidationTextBox" required="true" maxlength="32" style="width: 100%;" />
+                    </td>
+                    <td class="CorpoFormAux AlinhaDireita" style="width:19%;">
+                        <label class="AlinhaDireita">Tipo:</label>
+                    </td>
+                    <td class="dojoTextBoxIECorrect" style="width:36%;">
+                        <select id="id_tipo_grupo_conta" name="id_tipo_grupo_conta" class="alignDojoData" data-dojo-type="dijit/form/FilteringSelect"></select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="CorpoFormAux AlinhaDireita" style="width:15%;">
+                        <label>Ordem:</label>
+                    </td>
+                    <td class="dojoTextBoxIECorrect" style="width: 30%">
+                        <input type="text"
+                               id="ordem"
+                               name="ordem"
+                               data-dojo-type="dijit/form/NumberSpinner"
+                               maxlength="3"
+                               required="false"
+                               data-dojo-props="smallDelta:1, constraints:{min:1,max:999}" />
+                    </td>
+                    <td class="CorpoFormAux AlinhaDireita" style="width:10%;">&nbsp;</td>
+                    <td style="width: 20%" class="dojoTextBoxIECorrect">&nbsp;</td>
+                </tr>
+            </table>
+            <div class="CaixaAcao">
+                <div class="linha_acoes" style="width: 100%"></div>
+                <div class="Alinhamento">
+                    <span id="divIncluirGrupoContas">
+                        <input id="incluirGrupoContas" title="Salvar" />
+                    </span>
+                    <span id="divAlterarGrupoContas">
+                        <input id="alterarGrupoContas" title="Salvar" />
+                    </span>
+                    <span id="divExcluirGrupoContas">
+                        <input type="button" id="deleteGrupoContas" title="Apagar" />
+                    </span>
+                    <span id="divLimparGrupoContas">
+                        <input id="limparGrupoContas" title="Limpar" />
+                    </span>
+                    <span id="divCancelarGrupoContas">
+                        <input type="button" id="cancelarGrupoContas" title="Cancelar" />
+                    </span>
+                    <span id="divFecharGrupoContas">
+                        <input id="fecharGrupoContas" title="Fechar" type="button" />
+                    </span>
+                </div>
+                <div class="linha_acoes" style="width: 100%"></div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@*Subgrupo de Contas*@
+<div id="cadSubgrupoConta" data-dojo-type="dijit.Dialog" title="Cadastro de Subgrupo de Contas" class="Dialogo">
+
+    <div class="sessao_form" style="margin-left: -8px;">
+        <span id="counter_form_6">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    <div class="corpo_interno">
+        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" id="formSubgrupoContas" data-dojo-id="formSubgrupoContas" class="Formulario" style="margin-right:50px;">
+            <div class="apresentadorMsg" id="apresentadorMensagemSubgrupoContas" style="display:none;"></div>
+            <input id="cd_subgrupo_conta" name="cd_subgrupo_conta" type="hidden" value="0" />
+            <input id="cd_subgrupo_pai" name="cd_subgrupo_pai" type="hidden" value="0" />
+            <table border="0" id="tableSubgrupoContas" class="TableModel">
+                <tr>
+                    <td class="tdRight" style="width: 20%;">
+                        <label class="AlinhaDireita">Nível:</label>
+                    </td>
+                    <td class="dojoTextBoxIECorrect" style="width: 75%;">
+                        <select id="cadNivel" name="cadNivel" class="elementosCompletos" data-dojo-type="dijit/form/FilteringSelect" required="required"></select>
+                    </td>
+                    <td style="width:5%;"></td>
+                </tr>
+                <tr>
+                    <td class="tdRight" style="width: 20%;">
+                        <label>Grupo de Contas:</label>
+                    </td>
+                    <td class="dojoTextBoxIECorrect" style="width: 75%;">
+                        <select name="cd_grupo_subgrupo" id="cd_grupo_subgrupo" data-dojo-type="dijit/form/FilteringSelect" required="true" style="width: 100%;"></select>
+                    </td>
+                    <td style="width:5%;"></td>
+                </tr>
+                <tr id="trSuggrupo1">
+                    <td class="tdRight" style="width: 20%;">
+                        <label>Subgrupo 1 de Contas:</label>
+                    </td>
+                    <td class="dojoTextBoxIECorrect" style="width: 75%;">
+                        <select name="subgrupo1contas" id="subgrupo1contas" data-dojo-type="dijit/form/FilteringSelect" required="true" style="width: 100% " disabled="disabled"></select>
+                    </td>
+                    <td style="width:5%;"></td>
+                </tr>
+                <tr>
+                    <td class="tdRight" style="width: 20%;">
+                        <label id="lblSubgrupo">Subgrupo 2 de Contas:</label>
+                    </td>
+                    <td class="dojoTextBoxIECorrect" style="width: 75%;">
+                        <input name="no_subgrupo_conta" id="no_subgrupo_conta" style="width: 100%;" required="true" maxlength="32" data-dojo-type="dijit/form/ValidationTextBox" />
+                    </td>
+                    <td style="width:5%;"></td>
+                </tr>
+                <tr>
+                    <td class="tdRight" style="width: 20%;">
+                        <label>Ordem:</label>
+                    </td>
+                    <td style="width: 75%;" class="dojoTextBoxIECorrect">
+                        <table class="Table">
+                            <tr>
+                                <td style="width: 30%;">
+                                    <input type="text"
+                                           id="ordem_subgrupo"
+                                           name="ordem_subgrupo"
+                                           data-dojo-type="dijit/form/NumberSpinner"
+                                           maxlength="7"
+                                           required="false"
+                                           data-dojo-props="smallDelta:1, constraints:{min:1,max:9999999}" />
+                                </td>
+                                <td class="tdRight" style="width: 40%;">
+                                    <label>Cod. Integração Plano:</label>
+                                </td>
+                                <td style="width: 30%;">
+                                    <input name="descCdIntegracaoPlano" id="descCdIntegracaoPlano" required="true" style="width: 100%;" maxlength="32" data-dojo-type="dijit/form/ValidationTextBox" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td style="width: 5%;"></td>
+                </tr>
+            </table>
+        </form>
+        <div class="containerCrud">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <div style="text-align: center">
+                <span id="divIncluirSubgrupoConta">
+                    <input type="button" id="incluirSubgrupoConta" title="incluir" />
+                </span>
+                <span id="divAlterarSubgrupoConta" style="display: none;">
+                    <input type="button" id="alterarSubgrupoConta" title="Alterar" />
+                </span>
+                <span id="divExcluirSubgrupoConta" style="display: none;">
+                    <input type="button" id="deleteSubgrupoConta" title="Excluir" />
+                </span>
+                <span id="divClearSubgrupoConta">
+                    <input type="button" id="limparSubgrupoConta" title="Limpar" />
+                </span>
+                <span id="divCancelarSubgrupoConta" style="display: none;">
+                    <input type="button" id="cancelarSubgrupoConta" title="Cancelar" />
+                </span>
+                <span id="divFecharSubgrupoConta">
+                    <input type="button" id="fecharSubgrupoConta" title="Fechar" />
+                </span>
+            </div>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+    </div>
+</div>
+
+
+<div id="cadBanco" data-dojo-type="dijit.Dialog" title="Cadastro de Banco" class="Dialogo">
+    <div class="sessao_form" style="margin-left: -8px;">
+        <span id="counter_form_7">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    <div class="corpo_interno">
+        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" id="formBanco" data-dojo-id="formBanco" class="Formulario">
+            <div class="apresentadorMsg" id="apresentadorMensagemBanco" style="display:none;"></div>
+            <input id="cd_banco" name="cd_banco" type="hidden" value="0" />
+            <div class="CorpoForm">
+                <table class="Table">
+                    <tr>
+                        <td class="tdRight" style="width: 15%">Nome:</td>
+                        <td style="width: 40%" class="dojoTextBoxIECorrect">
+                            <input name="no_banco" type="text" style="width: 100%" maxlength="32" id="no_banco" size="300" data-dojo-type="dijit/form/ValidationTextBox" required="true" class="TextBox" />
+                        </td>
+                        <td class="tdRight" style="width: 15%">Número:</td>
+                        <td style="width: 20%" class="dojoTextBoxIECorrect">
+                            <input id="nm_banco"
+                                   style="width: 100%;"
+                                   maxlength="3"
+                                   data-dojo-type="dijit/form/ValidationTextBox"
+                                   data-dojo-props="smallDelta:1, constraints:{min:1, pattern:'000', max:999}"
+                                   onkeypress="mascaraInt(document.getElementById('nm_banco'));"
+                                   name="nm_banco" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="CaixaAcao">
+                <div class="linha_acoes" style="width: 100%"></div>
+                <div class="Alinhamento">
+                    <span id="divIncluirBanco">
+                        <input id="incluirBanco" title="incluir" />
+                    </span>
+                    <span id="divAlterarBanco">
+                        <input id="alterarBanco" title="Salvar" />
+                    </span>
+                    <span id="divExcluirBanco">
+                        <input id="deleteBanco" title="Apagar" type="button" />
+                    </span>
+                    <span id="divLimparBanco">
+                        <input id="limparBanco" title="Limpar" />
+                    </span>
+                    <span id="divCancelarBanco">
+                        <input type="button" id="cancelarBanco" title="Cancelar" />
+                    </span>
+                    <span id="divFecharBanco">
+                        <input type="button" id="fecharBanco" title="Fechar" />
+                    </span>
+                </div>
+                <div class="linha_acoes" style="width: 100%"></div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="cadCarteira" data-dojo-type="dijit/Dialog" class="Dialogo" title="Cadastro de Carteira CNAB">
+    <div class="sessao_form" style="margin-left: -8px;">
+        <span id="counter_form_8">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+    <div class="corpo_interno">
+        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" class="Formulario" id="formCarteira">
+            <div class="apresentadorMsg" id="apresentadorMensagemCarteira" style="display:none;"></div>
+            <input id="cd_carteira_cnab" name="cd_carteira_cnab" type="hidden" value="0" />
+            <div class="CorpoForm">
+                <table class="Table">
+                    <tr>
+                        <td class="CorpoFormAux AlinhaDireita" style="width: 5%;">
+                            <label>Nome:</label>
+                        </td>
+                        <td class="dojoTextBoxIECorrect" style="width: 30%" colspan="3">
+                            <input name="no_carteira" id="no_carteira" data-dojo-type="dijit/form/ValidationTextBox" required="true" style="width: 100%;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="CorpoFormAux AlinhaDireita" style="width: 5%;">
+                            <label>Número:</label>
+                        </td>
+                        <td>
+                            <table style="width: 100%">
+                                <tr>
+                                    <td class="dojoTextBoxIECorrect" style="width: 30%">
+                                        <input name="nm_carteira" id="nm_carteira" data-dojo-type="dijit/form/ValidationTextBox" required="true" style="width: 100%;" maxlength="7" />
+                                    </td>
+                                    <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 35%;" for="ckRegristrada">Registrada:</td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 10%;">
+                                        <input data-dojo-type="dijit/form/CheckBox" id="ckRegristrada" name="ckRegristrada" />
+                                    </td>
+                                    <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 10%;" for="ckCarteiraAtiva">Ativa:</td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 5%;">
+                                        <input data-dojo-type="dijit/form/CheckBox" id="ckCarteiraAtiva" name="ckCarteiraAtiva" checked="true" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 5%;">
+                            <label for="nmColuna">Colunas: </label>
+                        </td>
+                        <td style="width: 20%">
+                            <select id="nmColuna" name="nmColuna" style="width: 40%" required="true" class="alignDojoData" data-dojo-type="dijit/form/FilteringSelect"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 5%;">
+                            <label for="tpImp">Impressão: </label>
+                        </td>
+                        <td style="width: 20%">
+                            <input id="tpImp" name="tipoLocalCad" class="alignDojoData" style="width: 40%;" />
+                        </td>
+                        <td class="CorpoFormAux AlinhaDireita" style="width: 10%;">
+                            <label>Banco:</label>
+                        </td>
+                        <td style="width: 20%" class="dojoTextBoxIECorrect">
+                            <input data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;" name="cdBanco" id="cdBanco" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="CaixaAcao">
+                <div class="linha_acoes" style="width: 100%"></div>
+                <div style="text-align: center">
+                    <span id="divIncluirCarteira">
+                        <input id="incluirCarteira" title="incluir" />
+                    </span>
+                    <span id="divAlterarCarteira" style="display: none;">
+                        <input id="alterarCarteira" title="Alterar" />
+                    </span>
+                    <span id="divExcluirCarteira" style="display: none;">
+                        <input id="deleteCarteira" title="Excluir" />
+                    </span>
+                    <span id="divClearCarteira">
+                        <input id="limparCarteira" title="Limpar" />
+                    </span>
+                    <span id="divCancelarCarteira" style="display: none;">
+                        <input type="button" id="cancelarCarteira" title="Cancelar" />
+                    </span>
+                    <span id="divFecharCarteira">
+                        <input id="fecharCarteira" title="Fechar" />
+                    </span>
+                </div>
+                <div class="linha_acoes" style="width: 100%"></div>
+            </div>
+        </form>
+
+    </div>
+</div>
+@* fim *@
+
+
+@*Orgão Financeiro*@
+<div id="cadOrgaoFinanceiro" data-dojo-type="dijit.Dialog" title="Cadastro de Orgão Financeiro" class="Dialogo">
+
+    <div class="sessao_form" style="margin-left: -8px;">
+        <span id="counter_form_2">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    <div class="corpo_interno">
+        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" id="formOrgaoFinanceiro" data-dojo-id="formOrgaoFinanceiro" class="Formulario">
+            <div class="apresentadorMsg" id="apresentadorMensagemOrgaoFinanceiro" style="display:none;"></div>
+            <input id="cd_orgao_financeiro" name="cd_orgao_financeiro" type="hidden" value="0" />
+            <div class="CorpoForm">
+                <label for="dc_orgao_financeiro">Descrição:</label>
+                <input name="dc_orgao_financeiro" type="text" maxlength="32" id="dc_orgao_financeiro" size="300" data-dojo-type="dijit/form/ValidationTextBox" required="true" class="TextBox">
+                <label for="id_orgao_financeiro_ativo">Ativa:</label>
+                <input name="id_orgao_financeiro_ativo" type="checkbox" id="id_orgao_financeiro_ativo" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+            </div>
+            <div class="CaixaAcao">
+                <div class="linha_acoes" style="width: 100%"></div>
+                <div class="Alinhamento">
+                    <span id="divIncluirOrgaoFinanceiro">
+                        <input id="incluirOrgaoFinanceiro" title="Salvar" />
+                    </span>
+                    <span id="divAlterarOrgaoFinanceiro">
+                        <input id="alterarOrgaoFinanceiro" title="Salvar" />
+                    </span>
+                    <span id="divExcluirOrgaoFinanceiro">
+                        <input id="deleteOrgaoFinanceiro" title="Apagar" type="button" />
+                    </span>
+                    <span id="divLimparOrgaoFinanceiro">
+                        <input id="limparOrgaoFinanceiro" title="Limpar" />
+                    </span>
+                    <span id="divCancelarOrgaoFinanceiro">
+                        <input type="button" id="cancelarOrgaoFinanceiro" title="Cancelar" />
+                    </span>
+                    <span id="divFecharOrgaoFinanceiro">
+                        <input id="fecharOrgaoFinanceiro" title="Fechar" type="button" />
+                    </span>
+                </div>
+                <div class="linha_acoes" style="width: 100%"></div>
+            </div>
+        </form>
+    </div>
+</div>
+@*fim*@
+
+<div id="fkPessoaEsc" data-dojo-type="dijit.Dialog" title="Pesquisar Pessoa" style="display: none; width: 800px; height: 590px;">
+    <div style="height:590px;width:780px">
+        @Html.Partial("../Pessoa/PessoaFK")
+    </div>
+</div>

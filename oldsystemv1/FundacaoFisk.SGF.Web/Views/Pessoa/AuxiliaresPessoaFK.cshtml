@@ -1,0 +1,67 @@
+﻿<div class="corpo_interno">
+    <div class="apresentadorMsg" id="descApresAuxiliarPessoaFKMsg" style="display: none;"></div>
+    <form id="pesquisaAuxiliaresPessoa">
+        <div class="EspacoCaixa caixaPesquisa">
+            <table class="Table">
+                <tr>
+                    <td class="tdRight" style="width: 5%">
+                        <label for="desAtividadeFK">Nome: </label>
+                    </td>
+                    <td class="dojoTextBoxIECorrect" style="width: 40%;">
+                        <input id="desAtividadeFK" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 100%">
+                    </td>
+                    <td class="tdRight" style="width: 5%">
+                        <label class="AlinhaDireita;" for="ckInicioAtividadeFK">Início:</label>
+                    </td>
+                    <td class="dojoTextBoxIECorrect" style="width: 10%;">
+                        <input type="checkbox" id="ckInicioAtividadeFK" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                    </td>
+                    <td class="tdRight">
+                        <span class="nowrap">
+                            <label for="statusAtividadeFK" class="AlinhaDireita;">Status:</label>
+                            <input id="statusAtividadeFK" class="margemCampoEsq">
+                        </span>
+                    </td>
+                    <td style="width: 10%" class="tdRight" rowspan="3">
+                        <input id="pesquisarAtividadeFK" title="Pesquisar" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdRight" style="width: 5%">
+                        <label for="naturezaAtividadeFK">Natureza:</label>
+                    </td>
+                    <td class="dojoTextBoxIECorrect" style="width: 40%;">
+                        <input id="naturezaAtividadeFK" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%">
+                    </td>
+                    <td class="tdRight" style="width: 5%">
+                        <label for="cnaeFK">CNAE: </label>
+                    </td>
+                    <td class="dojoTextBoxIECorrect" style="width: 10%;">
+                        <input id="cnaeFK" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 100%">
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="padding-top: 5px; width: 100%">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <table style="width: 100%">
+                <tr style="width: 100%">
+                    <td style="text-align: center; width: 100%;">
+                        <input id="selecionarAtividadeFK" />
+                        <input id="fecharAtividadeFK" />
+                    </td>
+                </tr>
+            </table>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+
+        <div style="width: 100%; height: 425px;">
+            <div data-dojo-type="dijit/layout/ContentPane" style="width: 100%; height: 98%; min-width: 560px; padding-top: 5px; padding-left: 0px">
+                <div id="gridAuxiliaresPessoaFK"></div>
+            </div>
+        </div>
+    </form>
+</div>

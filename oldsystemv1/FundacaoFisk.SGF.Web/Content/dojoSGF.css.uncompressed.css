@@ -1,0 +1,301 @@
+﻿/* Corrige as falhas de layout do dojo para o IE 7*/
+.dojoTextBoxIECorrect{
+    padding-right:4px; /*Firefox Chrome*/
+}
+
+/* Sobrescreve todos os tamanhos dos botões do dojo para ter botões padrão. Sobrescreve os botões do dojo do filtro da grade.*/
+.claro .dijitButton .dijitButtonNode,
+.claro .dijitDropDownButton .dijitButtonNode,
+.claro .dijitComboButton .dijitButtonNode,
+.claro .dijitToggleButton .dijitButtonNode
+{
+    min-width: 80px;
+
+    text-align: center;
+    font-size: 10px;
+    font-style: normal;
+    color: #000000;
+}
+
+.dojoxGridFDPane .dijitButton .dijitButtonNode
+{
+    min-width: 0px;
+}
+
+.dojoxGridFBarBtnTD .dijitButton .dijitButtonNode
+{
+    min-width: 0px;
+}
+
+.dojoxGridFDPaneBtns .dijitButton  .dijitButtonNode
+{
+    min-width: 60px;
+}
+
+/* Estilos dos calendarios: (estilo do vermelho e o default do dojo)*/
+.claro .dojoxCalendarEvent.Calendar1 .bg.bg {
+	background: #2095B4;
+}
+
+.claro .dojoxCalendarEvent.Calendar1.Hovered .bg.bg {
+	background: #24A5C8;
+}
+
+.claro .dojoxCalendarEvent.Calendar1.Selected .bg.bg {
+	background: #166B81;
+}
+
+.claro .dojoxCalendarColumnView .dojoxCalendarEvent.Calendar1 .startTime {
+  font-weight: bold;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -moz-border-top-right-radius: 5px;
+  -moz-border-top-left-radius: 5px;
+  background-color: #00768F;
+  white-space: nowrap;
+  padding: 1px 2px 2px 1px;
+  border-top: 1px solid #260000;
+  border-left: 1px solid #260000;
+  border-right: 1px solid #260000;
+}
+.claro .dojoxCalendarColumnView .dojoxCalendarEvent.Calendar1.Focused .startTime {
+  font-weight: bold;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -moz-border-top-right-radius: 5px;
+  -moz-border-top-left-radius: 5px;
+  background-color: #6c0000;
+  white-space: nowrap;
+  padding: 1px 2px 2px 1px;
+  border-top: dashed 1px #ffffff;
+  border-left: dashed 1px #ffffff;
+  border-right: dashed 1px #ffffff;
+}
+.claro .dojoxCalendarColumnView .dojoxCalendarEvent.Calendar1.Hovered .startTime {
+  background-color: #0094B4;
+}
+.claro .dojoxCalendarColumnView .dojoxCalendarEvent.Calendar1.Selected .startTime {
+  background-color: #005A6D;
+}
+.claro .dojoxCalendarColumnView .dojoxCalendarEvent.Calendar1.Edited .startTime {
+  background-color: #0095b4;
+  border-top: dashed 1px #ffffff;
+  border-left: dashed 1px #ffffff;
+  border-right: dashed 1px #ffffff;
+}
+
+/*css para coloar a cor banca na descricao drowDown do menu*/
+.claro .dijitMenuBar .dijitMenuItem {
+    color: #000000;
+}
+
+.claro .dijitMenuBar .dijitMenuItemHover, .claro .dijitMenuBar .dijitMenuItemSelected
+{
+    color: #fff;
+}
+
+.claro .dijitSelectMenu .dijitMenuItemHover td,
+.claro .dijitSelectMenu .dijitMenuItemSelected td,
+.claro .dijitMenuItemHover,
+.claro .dijitMenuItemSelected
+{
+    color: #fff;
+}
+
+.claro .dijitToggleButton .dijitButtonNode
+{
+    min-width: 80px;
+}
+
+.claro .dijitMenuTable {
+    background-image: url("themes/base/dojo1.8.5r/dijit/themes/claro/images/standardGradient.png");
+    background-repeat: repeat-x;
+    background-image: -o-linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);
+    background-image: -ms-linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);
+  _background-image: none;
+}
+
+.claro .dijitMenuBar .dijitMenuItemHover, .claro .dijitMenuBar .dijitMenuItemSelected {
+  background-image: url("themes/base/dojo1.8.5r/dijit/themes/claro/images/standardGradient.png");
+  background-repeat: repeat-x;
+  background-image: -moz-linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 30%);
+  background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 30%);
+  background-image: -o-linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 30%);
+  background-image: -ms-linear-gradient(rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 30%);
+  _background-image: none;
+}
+
+/* imagens personalizadas: */
+.dijitEditorIconFindSGF { background-position: -827px; }
+.dijitEditorIconNewSGF { background-position: -844px; }
+.dijitEditorIconTabUp { background-position: -859px; }
+.dijitEditorIconTabDown { background-position: -877px; }
+.dijitEditorIconSelect { background-position: -895px; }
+.dijitEditorIconEmail { background-position: -912px; }
+.dijitEditorIconInsert { background-position: -929px; }
+.dijitEditorIconInsertAll { background-position: -946px; }
+.dijitEditorIconRemoveAll { background-position: -963px; }
+.dijitEditorIconUpload { background-position: -986px; }
+.dijitEditorIconDownload { background-position: -1008px; }
+
+.dijitInline {
+    font-weight: bold;
+}
+
+.claro .menuHorizontal .dijitSelectMenu .dijitMenuItemHover td,
+.claro .menuHorizontal .dijitSelectMenu .dijitMenuItemSelected td,
+.claro .menuHorizontal .dijitMenuItemHover,
+.claro .menuHorizontal .dijitMenuItemSelected,
+
+.claro #dijit_PopupMenuBarItem_0_dropdown .dijitSelectMenu .dijitMenuItemHover td,
+.claro #dijit_PopupMenuBarItem_0_dropdown .dijitSelectMenu .dijitMenuItemSelected td,
+.claro #dijit_PopupMenuBarItem_0_dropdown .dijitMenuItemHover,
+.claro #dijit_PopupMenuBarItem_0_dropdown .dijitMenuItemSelected,
+
+.claro #dijit_PopupMenuBarItem_1_dropdown .dijitSelectMenu .dijitMenuItemHover td,
+.claro #dijit_PopupMenuBarItem_1_dropdown .dijitSelectMenu .dijitMenuItemSelected td,
+.claro #dijit_PopupMenuBarItem_1_dropdown .dijitMenuItemHover,
+.claro #dijit_PopupMenuBarItem_1_dropdown .dijitMenuItemSelected,
+
+.claro #dijit_PopupMenuBarItem_2_dropdown .dijitSelectMenu .dijitMenuItemHover td,
+.claro #dijit_PopupMenuBarItem_2_dropdown .dijitSelectMenu .dijitMenuItemSelected td,
+.claro #dijit_PopupMenuBarItem_2_dropdown .dijitMenuItemHover,
+.claro #dijit_PopupMenuBarItem_2_dropdown .dijitMenuItemSelected,
+
+.claro #dijit_PopupMenuBarItem_3_dropdown .dijitSelectMenu .dijitMenuItemHover td,
+.claro #dijit_PopupMenuBarItem_3_dropdown .dijitSelectMenu .dijitMenuItemSelected td,
+.claro #dijit_PopupMenuBarItem_3_dropdown .dijitMenuItemHover,
+.claro #dijit_PopupMenuBarItem_3_dropdown .dijitMenuItemSelected,
+
+.claro #dijit_PopupMenuBarItem_4_dropdown .dijitSelectMenu .dijitMenuItemHover td,
+.claro #dijit_PopupMenuBarItem_4_dropdown .dijitSelectMenu .dijitMenuItemSelected td,
+.claro #dijit_PopupMenuBarItem_4_dropdown .dijitMenuItemHover,
+.claro #dijit_PopupMenuBarItem_4_dropdown .dijitMenuItemSelected,
+
+.claro #dijit_PopupMenuBarItem_5_dropdown .dijitSelectMenu .dijitMenuItemHover td,
+.claro #dijit_PopupMenuBarItem_5_dropdown .dijitSelectMenu .dijitMenuItemSelected td,
+.claro #dijit_PopupMenuBarItem_5_dropdown .dijitMenuItemHover,
+.claro #dijit_PopupMenuBarItem_5_dropdown .dijitMenuItemSelected,
+
+.claro #dijit_PopupMenuBarItem_6_dropdown .dijitSelectMenu .dijitMenuItemHover td,
+.claro #dijit_PopupMenuBarItem_6_dropdown .dijitSelectMenu .dijitMenuItemSelected td,
+.claro #dijit_PopupMenuBarItem_6_dropdown .dijitMenuItemHover,
+.claro #dijit_PopupMenuBarItem_6_dropdown .dijitMenuItemSelected,
+
+.claro #dijit_PopupMenuBarItem_7_dropdown .dijitSelectMenu .dijitMenuItemHover td,
+.claro #dijit_PopupMenuBarItem_7_dropdown .dijitSelectMenu .dijitMenuItemSelected td,
+.claro #dijit_PopupMenuBarItem_7_dropdown .dijitMenuItemHover,
+.claro #dijit_PopupMenuBarItem_7_dropdown .dijitMenuItemSelected,
+
+.claro #dijit_PopupMenuBarItem_8_dropdown .dijitSelectMenu .dijitMenuItemHover td,
+.claro #dijit_PopupMenuBarItem_8_dropdown .dijitSelectMenu .dijitMenuItemSelected td,
+.claro #dijit_PopupMenuBarItem_8_dropdown .dijitMenuItemHover,
+.claro #dijit_PopupMenuBarItem_8_dropdown .dijitMenuItemSelected,
+
+.claro #menuConfBar .dijitSelectMenu .dijitMenuItemHover td,
+.claro #menuConfBar .dijitSelectMenu .dijitMenuItemSelected td,
+.claro #menuConfBar .dijitMenuItemHover,
+.claro #menuConfBar .dijitMenuItemSelected,
+
+.claro #menuCadBasicBar .dijitSelectMenu .dijitMenuItemHover td,
+.claro #menuCadBasicBar .dijitSelectMenu .dijitMenuItemSelected td,
+.claro #menuCadBasicBar .dijitMenuItemHover,
+.claro #menuCadBasicBar .dijitMenuItemSelected,
+
+.claro #menuCadBasic_dropdown .dijitSelectMenu .dijitMenuItemHover td,
+.claro #menuCadBasic_dropdown .dijitSelectMenu .dijitMenuItemSelected td,
+.claro #menuCadBasic_dropdown .dijitMenuItemHover,
+.claro #menuCadBasic_dropdown .dijitMenuItemSelected,
+
+.claro #menuCasBasicConf_dropdown .dijitSelectMenu .dijitMenuItemHover td,
+.claro #menuCasBasicConf_dropdown .dijitSelectMenu .dijitMenuItemSelected td,
+.claro #menuCasBasicConf_dropdown .dijitMenuItemHover,
+.claro #menuCasBasicConf_dropdown .dijitMenuItemSelected,
+
+.claro #menuLogoutBar .dijitSelectMenu .dijitMenuItemHover td,
+.claro #menuLogoutBar .dijitSelectMenu .dijitMenuItemSelected td,
+.claro #menuLogoutBar .dijitMenuItemHover,
+.claro #menuLogoutBar .dijitMenuItemSelected,
+
+.claro #menuAjudaBar .dijitSelectMenu .dijitMenuItemHover td,
+.claro #menuAjudaBar .dijitSelectMenu .dijitMenuItemSelected td,
+.claro #menuAjudaBar .dijitMenuItemHover,
+.claro #menuAjudaBar .dijitMenuItemSelected
+{
+    background-color: #990000;
+    color:white;
+}
+
+.dojoxCheckedMultiSelectButton
+{
+    width: 102%;
+}
+
+.dojoxCalendarHeader
+{
+    display:none;
+}
+
+.claro .dojoxCalendarColumnView .dojoxCalendarMatrixView
+{
+    top: 0px !important;
+    border-top: 1px solid #cccccc !important;
+    height: 20px !important;
+}
+
+.claro .dojoxCalendarColumnView .dojoxCalendarScrollContainer
+{
+    top: 20px !important;
+}
+
+/*Mudar as cores dos horários alocados diferente de disponivies e alocados*/
+.claro .dojoxCalendarEvent.Calendar3 .bg {
+  background-color: #F4FA58;
+}
+.claro .dojoxCalendarEvent.Calendar3.Hovered .bg {
+  background-color: #F2F5A9;
+}
+.claro .dojoxCalendarEvent.Calendar3.Selected .bg {
+  background-color: #F4FA58;
+}
+
+.claro .dojoxCheckedMultiSelectButton .dijitArrowButton
+{
+    width: 18px;
+}
+
+.claro .dojoxCheckedMultiSelectButton .dijitButtonContents
+{
+    text-align: left;
+}
+
+.dijitEditorIconSearchSGF
+{
+    background-image: url("../images/search_over.png");
+    background-repeat: no-repeat;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+}
+
+.dijitDisabled .dijitEditorIconSearchSGF{
+    background-image: url("../images/search.png");
+}
+
+.dgrid_rigth
+{
+    text-align: right !important;
+}
+
+.dgrid_line
+{
+    height: 22px;
+}
+
+.dojoxGridHeader .dojoxGridCell {
+    font-weight: bold;
+}

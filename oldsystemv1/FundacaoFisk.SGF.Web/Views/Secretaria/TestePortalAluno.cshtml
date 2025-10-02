@@ -1,0 +1,93 @@
+﻿@{
+    ViewBag.Title = "Teste do Portal do Aluno";
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+
+
+@section scripts {
+}
+
+@section scriptsBody{
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Teste do Portal do Aluno";
+        //**** Requerires para a Tabulação ****\\
+        require([
+                "dojo/NodeList-traverse",
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager"
+        ]);
+        
+        require([
+                 "dojo/_base/xhr",
+                 "dojox/grid/EnhancedGrid",
+                 "dojox/grid/enhanced/plugins/Pagination",
+                 "dojo/store/JsonRest",
+                 "dojo/data/ObjectStore",
+                 "dojo/store/Cache",
+                 "dojo/store/Memory",
+                 "dijit/form/Button",
+                 "dojo/ready",
+                 "dojo/on",
+                 "dijit/form/FilteringSelect",
+                 "dojox/json/ref"
+            ], function (xhr, EnhancedGrid, Pagination, JsonRest, ObjectStore, Cache, Memory, Button, ready, on, FilteringSelect,ref) {
+                ready(function () {
+                    new Button({
+                        label: "", iconClass: 'dijitEditorIconSearchSGF', onClick: function () {
+                            dojo.xhr.get({
+                                url: Endereco() + "/escola/getBaixarPDFTitulosBoletosPortalTeste?cd_titulos_cnab=" + dojo.byId('cd_titulos_cnab').value + "&cd_escola=" + dojo.byId('cd_escola').value 
+                                    + "&id_mostrar_3_boletos=" + dijit.byId('id_mostrar_3_boletos').checked,
+                                sync: true,
+                                handleAs: "json",
+                                headers: { "Accept": "application/json", "Content-Type": "application/json", "Authorization": Token() }
+                            }).then(function (data) {
+                                try {
+                                    if (hasValue(data.erro))
+                                        apresentaMensagem('apresentadorMensagemCnab', data);
+                                    else
+                                        window.open(data);
+                                }
+                                catch (e) {
+                                    postGerarLog(e);
+                                }
+                            },
+                            function (error) {
+                                apresentaMensagem('apresentadorMensagemCnab', error);
+                            });
+
+                        }
+                    }, "testar");
+                });
+            });
+
+    </script>
+}
+
+<div style="width: 100%;">
+    <div class="EspacoCaixa caixaPesquisa">
+        <table id="tableConceito" class="table">
+            <tr style="vertical-align: middle;">
+                <td class="tdRight" style="width: 10%;">
+                    <label for="cd_titulos_cnab">cd_titulos_cnab:</label></td>
+                <td style="width: 20%;" class="dojoTextBoxIECorrect">
+                    <input type="text" id="cd_titulos_cnab" name="cd_titulos_cnab" style="width: 100%;" data-dojo-type="dijit/form/TextBox" /></td>
+                <td class="tdRight" style="width: 10%;">
+                    <label for="cd_escola">cd_escola:</label></td>
+                <td class="dojoTextBoxIECorrect" style="width: 20%;">
+                    <input type="text" id="cd_escola" name="cd_escola" style="width: 100%;" data-dojo-type="dijit/form/TextBox" /></td>
+                <td class="tdRight" style="width: 7%;">
+                    <label for="id_mostrar_3_boletos">id_mostrar_3_boletos:</label></td>
+                <td class="dojoTextBoxIECorrect" style="width: 1%;">
+                     <input type="checkbox" id="id_mostrar_3_boletos" name="id_mostrar_3_boletos" data-dojo-type="dijit/form/CheckBox" class="Check" /></td>
+                <td rowspan="2" class="AlinhaDireita" style="width: 15%;">
+                    <input id="testar" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

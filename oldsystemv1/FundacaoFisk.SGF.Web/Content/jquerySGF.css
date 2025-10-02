@@ -1,0 +1,9 @@
+﻿.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
+  color: #000000;
+  border-color: #bf5252;
+  background-color: #fd7171;
+  background-image: linear-gradient(rgba(255,255,255, 0.7) 0%, rgba(255,255,255, 0) 100%);
+  background-repeat: repeat-x;
+  border: solid #bf5252;
+  border-width: 1px 1px;
+}

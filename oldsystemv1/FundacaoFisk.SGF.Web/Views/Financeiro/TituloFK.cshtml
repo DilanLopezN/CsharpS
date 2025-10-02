@@ -1,0 +1,101 @@
+﻿<div class="corpo_interno">
+    <input id="tipoRetorno" type="hidden"/>
+    <div class="apresentadorMsg" id="apresentadorMensagemTituloFK" style="display:none;"></div>
+    <div class="EspacoCaixa caixaPesquisa">
+        <form id="formTituloFK" name="formTituloFK" data-dojo-type="dojox/form/Manager">
+            <table class="Table">
+                <tr>
+                    <td class="tdRight" style="width: 5%;">
+                        <label for="pessoaTituloFK" id="lblPessoaTituloFK">Cliente:</label></td>
+                    <td style="width: 60%;" class="nowrap">
+                        <input id="cdPessoaRespFK" type="hidden" />
+                        <table class="Table">
+                            <tr>
+                                <td class="dojoTextBoxIECorrect" style="width: 95%;">
+                                    <input type="text" id="pessoaTituloFK" name="pessoaTituloFK" disabled="disabled" style="width: 100%;" data-dojo-type="dijit/form/TextBox" />
+                                </td>
+                                <td style="width: 5%; text-align: left" class="nowrap">
+                                    <input id="pesProPessoaFKTituloFK" style="min-width: 18px" />
+                                    <input type="text" id="limparPessoaTituloFK" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="tdRight" style="width: 14%;">
+                        <label for="ckResponsavelPesq">Responsável:</label></td>
+                    <td class="dojoTextBoxIECorrect" style="width: 1%;">
+                        <input type="checkbox" id="ckResponsavelPesq" name="ckResponsavelPesq" data-dojo-type="dijit/form/CheckBox" class="Check" /></td>
+                    <td style="width:7%;" class="tdRight" rowspan="3">
+                        <input id="pesquisarTituloFK" title="Pesquisar" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdRight">
+                        <label for="localMovtoPesq" class="AlinhaDireita nowrap">Local de Movimento:</label>
+                    </td>
+                    <td style="width: 60%;" class="nowrap">
+                        <input id="localMovtoPesq" name="localMovtoPesq" required="false" data-dojo-type="dijit/form/FilteringSelect" style="width: 64%;">
+                        <label for="numero">Número:</label>
+                        <input type="text" id="numeroTitulo" name="numeroTitulo" style="width: 20%;"
+                            onkeypress="mascaraInt(document.getElementById('numeroTitulo'));"
+                            data-dojo-type="dijit/form/ValidationTextBox" maxlength="9"
+                            data-dojo-props="smallDelta:1, constraints:{min:1,max:900000000,places:0}" />
+                    </td>
+                    <td class="tdRight" style="width: 60%;" colspan="2">
+                        <label for="parcela">Parcela:</label>
+                         <input type="text" id="parcelaTitulo" name="parcelaTitulo" style="width: 50%;"
+                            onkeypress="mascaraInt(document.getElementById('parcelaTitulo'));"
+                            data-dojo-type="dijit/form/NumberSpinner" maxlength="3"
+                            data-dojo-props="smallDelta:1, constraints:{min:1,max:900,places:0}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdRight" style="width: 10%;">
+                        <label for="nome">Data Inicial:</label>
+                    </td>
+                    <td colspan="3">
+                        <table class="Table">
+                            <tr>
+                                <td>
+                                    <input
+                                        type="text"
+                                        id="dtInicial"
+                                        name="dtInicial" class="alignDojoData"
+                                        data-dojo-type="dijit.form.DateTextBox" style="width: 100%;"
+                                        onkeypress="mascaraDataHora(event, this)" maxlength="10"/>
+                                </td>
+                                <td style="text-align:right">
+                                    <label for="nome" style="width: 20%;">Data Final:</label>
+                                    <input
+                                        type="text"
+                                        id="dtFinal"
+                                        name="dtFinal"
+                                        class="alignDojoData"
+                                        data-dojo-type="dijit.form.DateTextBox" style="width: 80%;"
+                                        onkeypress="mascaraDataHora(event, this)" maxlength="10" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+	<div style="padding-top: 5px; width: 100%">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%">
+            <tr style="width: 100%">
+                <td style="text-align: center; width: 100%;">
+                    <input type="button" id="selecionaTituloFK" />&nbsp;
+                    <input type="button" id="fecharTituloFK" title="Fechar" />
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+    <div style="width: 100%; height: 432px;">
+        <div data-dojo-type="dijit/layout/ContentPane" id="gridPesquisaTituloPai" style="width: 100%; height: 430px; padding-top: 5px; padding-left: 0px">
+              <div id="gridPesquisaTituloFK"></div>
+        </div>
+    </div>
+</div>

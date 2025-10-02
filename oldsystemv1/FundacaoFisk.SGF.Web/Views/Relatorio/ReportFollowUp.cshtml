@@ -1,0 +1,143 @@
+﻿@{
+    ViewBag.Title = "Relatório Follow-Up";
+    Layout = "~/Views/Shared/_layout.cshtml";
+
+}
+
+@section scriptsBody{
+    @Scripts.Render("~/bundles/reportFollowUp")
+    @Scripts.Render("~/bundles/cadFollowUpPartial")
+    <script src="~/Scripts/jquery.maskedinput-1.3.js"></script>
+    <link href="~/Content/themes/base/dojo1.8.5r/dojox/form/resources/CheckedMultiSelect.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Follow-Up";
+
+        //**** Requerires para a Tabulação ****\\
+        require([
+            "dojo",
+            "dijit/layout/TabContainer",
+            "dijit/layout/ContentPane",
+            "dijit/form/TextBox",
+            "dijit/Dialog",
+            "dijit/form/Select",
+            "dojo/_base/array",
+            "dojo/_base/event",
+            "dojox/validate/web",
+            "dojox/validate/check",
+            "dijit/form/NumberTextBox",
+            "dijit/form/ValidationTextBox",
+            "dijit/form/Form",
+            "dojox/form/Manager",
+            "dojox/form/manager/_Mixin",
+            "dojox/form/manager/_NodeMixin",
+            "dojox/form/manager/_EnableMixin",
+            "dojox/form/manager/_ValueMixin",
+            "dojox/form/manager/_DisplayMixin",
+            "dijit/form/FilteringSelect",
+            "dijit/form/TimeTextBox",
+            "dojox/charting/Chart",
+            "dojox/charting/plot2d/Columns",
+            "dojox/charting/axis2d/Default",
+            "dojox/charting/widget/Legend",
+            "dojox/charting/themes/MiamiNice",
+            "dojox/grid/enhanced/plugins/Filter",
+            "dojo/parser"
+        ]);
+        montarMetodosReportFollowUp();
+    </script>
+}
+<div class="apresentadorMensagem" id="apresentadorMensagem" style="display:none;"></div>
+<script type="text/javascript">
+    showCarregando();
+</script>
+<div>
+    <input type="hidden" id="cdUsuarioOrgPesq" />
+    <input type="hidden" id="cdUsuarioDestinoPesq" />
+    <div class="EspacoCaixa caixaPesquisa">
+        <form data-dojo-type="dojox/form/Manager" id="formRptAlunoCliente" data-dojo-id="formRptAlunoCliente" enctype="multipart/form-data" class="Formulario">
+            <table class="Table">
+                <tr>
+                    <td style="width: 95%;">
+                        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Filtros'" id="panePesqGeral" open="true">
+                            <table class="Table">
+                                <tr>
+                                    <td class="tdRight nowrap" style="width: 10%;">
+                                        <label for="tipoFollowUpPesq">Tipo:</label>
+                                    </td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 25%;">
+                                        <input id="tipoFollowUpPesq" name="tipoFollowUpPesq" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width: 50%;" />
+                                    </td>
+
+                                    <td class="tdRight nowrap" style="width: 10%;">
+                                        <label for="usuarioOrgPesq">Usuário de Origem:</label>
+                                    </td>
+                                    <td class="dojoTextBoxIECorrect" style="width: 20%;">
+                                        <input type="text" id="usuarioOrgPesq" name="usuarioOrgPesq" style="width: 100%;" data-dojo-type="dijit/form/TextBox" />
+                                    </td>
+                                    <td style="width: 5%; text-align: left" class="nowrap">
+                                        <input id="FKUsuarioOrigemPesq" style="min-width: 18px;" />
+                                        <input type="text" id="limparUsuarioOrigemPesq" />
+                                    </td>
+                                </tr>
+                                <td class="tdRight" style="width: 8%;">
+                                    <label for="ckLidoPesq">Lido:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 19%;">
+                                    <input type="checkbox" id="lidoPesq" name="lidoPesq" data-dojo-type="dijit/form/FilteringSelect" style="width: 75%;" />
+                                </td>
+                                <td class="tdRight" style="width: 8%;">
+                                    <label for="ckResolvidoPesq">Resolvido:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 30%;">
+                                    <input type="checkbox" id="resolvidoPesq" name="resolvidoPesq" data-dojo-type="dijit/form/FilteringSelect" style="width: 50%;" />
+                                </td>
+                                <tr>
+                                </tr>
+                            </table>
+                        </div>
+                        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Período de Cadastro'" id="paneDataInicial" open="true">
+                            <table class="Table">
+                                <tr>
+                                    <td class="Pesquisa tdRight" style="width: 10%">
+                                        <label for="dtaInicialPesq">Data Inicial:</label>
+                                    </td>
+                                    <td style="width: 15%" class="dojoTextBoxIECorrect">
+                                        <input type="text" id="dtaInicialPesq" name="dtaInicialPesq" onkeypress="mascaraDataHora(event, this)" data-dojo-type="dijit/form/DateTextBox" class="alignDojoData" style="width: 100%;" />
+                                    </td>
+                                    <td class="tdRight" style="width: 10%">
+                                        <label for="dtaFinalPesq" class="AlinhaDireita">Data Final:</label>
+                                    </td>
+                                    <td style="width: 20%" class="dojoTextBoxIECorrect">
+                                        <input type="text" id="dtaFinalPesq" name="dtaFinalPesq" onkeypress="mascaraDataHora(event, this)" data-dojo-type="dijit/form/DateTextBox" class="alignDojoData" style="width: 100%;" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div style="padding-top: 10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%" class="Alinhamento">
+            <tr style="width: 100%">
+                <td style="text-align: center; width: 50%">
+                    <input type="button" id="relatorio" title="Relatório" />
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+</div>
+<div id="cadFollowUp" data-dojo-type="dijit/Dialog" title="Cadastro de Follow-Up" style="display: none; width: 800px; height: 600px;">
+    <div style="height: 600px; width: 785px">
+        @Html.Partial("../Secretaria/CadFollowUpPartial")
+    </div>
+</div>
+<div id="proAluno" data-dojo-type="dijit.Dialog" title="Pesquisar Aluno" style="display: none; width: 700px; height: 590px;">
+    <div style="width: 685px;height: 590px;">
+        @Html.Partial("../Secretaria/AlunoFK")
+    </div>
+</div>

@@ -1,0 +1,357 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E91C3699-46D7-4199-8450-1579C6AC9658}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FundacaoFisk.SGF.Services.Coordenacao</RootNamespace>
+    <AssemblyName>FundacaoFisk.SGF.Web.Services.Coordenacao</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Componentes.ApresentadorRelatorio">
+      <HintPath>..\lib\Componentes\Componentes.ApresentadorRelatorio.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericBusiness, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Componentes\Componentes.GenericBusiness.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericController">
+      <HintPath>..\lib\Componentes\Componentes.GenericController.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericDataAccess">
+      <HintPath>..\lib\Componentes\Componentes.GenericDataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.GenericModel">
+      <HintPath>..\lib\Componentes\Componentes.GenericModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Componentes.Utils">
+      <HintPath>..\lib\Componentes\Componentes.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="DALC4NET">
+      <HintPath>..\lib\DALC4NET.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.4.0.20710.0\lib\net40\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.4.0.20710.0\lib\net40\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.4.0.20710.0\lib\net40\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Compile Include="Business\ApiNewCyberBusiness.cs" />
+    <Compile Include="Business\ApiPromocaoIntercambioBusiness.cs" />
+    <Compile Include="Business\ApiPromocaoIntercambioException.cs" />
+    <Compile Include="Business\AulaReposicaoBusinessException.cs" />
+    <Compile Include="Business\CoordenacaoBusiness.cs" />
+    <Compile Include="Business\CoordenacaoBusinessException.cs" />
+    <Compile Include="Business\CursoBusinessException.cs" />
+    <Compile Include="Business\TurmaBusinessException.cs" />
+    <Compile Include="Business\ProgramacaoTurmaBusinessException.cs" />
+    <Compile Include="Business\CursoBusiness.cs" />
+    <Compile Include="Business\FuncionarioBusinessException.cs" />
+    <Compile Include="Business\ProfessorBusiness.cs" />
+    <Compile Include="Business\TurmaBusiness.cs" />
+    <Compile Include="Business\ApiNewCyberException.cs" />
+    <Compile Include="Comum\IBusiness\IApiNewCyberBusiness.cs" />
+    <Compile Include="Comum\IBusiness\IApiPromocaoIntercambioBusiness.cs" />
+    <Compile Include="Comum\IBusiness\ICursoBusiness.cs" />
+    <Compile Include="Comum\IBusiness\ICoordenacaoBusiness.cs" />
+    <Compile Include="Comum\IBusiness\IProfessorBusiness.cs" />
+    <Compile Include="Comum\IBusiness\ITurmaBusiness.cs" />
+    <Compile Include="Comum\IDataAccess\IAlunoAulaReposicaoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IAtividadeEscolaAtividadeDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IAtividadeProspectDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IAtividadeRecorrenciaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IAulaReposicaoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ICircular.cs" />
+    <Compile Include="Comum\IDataAccess\ICalendarioAcademico.cs" />
+    <Compile Include="Comum\IDataAccess\IAtividadeCursoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ICalendarioEvento.cs" />
+    <Compile Include="Comum\IDataAccess\ICargaProfessorDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IAvaliacaoAlunoParticipacaoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IControleFaltasDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IControleFaltasAlunoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IFaqDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IMensagemAvaliacaoAlunoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IMensagemAvaliacaoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\INivelDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IParticipacaoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IAvaliacaoParticipacaoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IAvaliacaoParticipacaoVincDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IAulaPersonalizadaAlunoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IAulaPersonalizadaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IItemProgramacaoCursoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IAlunoEventoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IFeriadoDesconsideradoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IHorarioProfessorTurmaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IAtividadeAlunoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IAtividadeExtraDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IAvaliacaoAlunoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IAvaliacaoCursoDataAccess.cs.cs" />
+    <Compile Include="Comum\IDataAccess\IAvaliacaoTurmaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IDiarioAulaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IPerdaMaterialDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IProdutoFuncionarioDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IProfessorDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IProfessorTurmaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IProgramacaoCursoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IAvaliacaoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IProgramacaoTurmaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ITipoAvaliacaoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ICriterioAvaliacaoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ITurmaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ICursoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IConceitoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IEstagioDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IFeriadoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ITipoAtividadeExtraDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IDuracaoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IModalidadeDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IMotivoDesistenciaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IMotivoFaltaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IRegimeDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ITurmaEscolaDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IVideoDataAccess.cs" />
+    <Compile Include="Controllers\CursoController.cs" />
+    <Compile Include="Controllers\ProfessorController.cs" />
+    <Compile Include="Controllers\TurmaController.cs" />
+    <Compile Include="DataAccess\AlunoAulaReposicaoDataAccess.cs" />
+    <Compile Include="DataAccess\AtividadeAlunoDataAccess.cs" />
+    <Compile Include="DataAccess\AtividadeCursoDataAccess.cs" />
+    <Compile Include="DataAccess\AtividadeEscolaAtividadeDataAccess.cs" />
+    <Compile Include="DataAccess\AtividadeExtraDataAccess.cs" />
+    <Compile Include="DataAccess\AtividadeProspectDataAccess.cs" />
+    <Compile Include="DataAccess\AtividadeRecorrenciaDataAccess.cs" />
+    <Compile Include="DataAccess\AulaReposicaoDataAccess.cs" />
+    <Compile Include="DataAccess\AvaliacaoAlunoDataAccess.cs" />
+    <Compile Include="DataAccess\AvaliacaoCursoDataAccess.cs" />
+    <Compile Include="DataAccess\AvaliacaoDataAccess.cs" />
+    <Compile Include="DataAccess\AvaliacaoTurmaDataAccess.cs" />
+    <Compile Include="DataAccess\CalendarioEventoDataAccess.cs" />
+    <Compile Include="DataAccess\ConceitoDataAccess.cs" />
+    <Compile Include="DataAccess\AulaPersonalizadaDataAccess.cs" />
+    <Compile Include="DataAccess\AulaPersonalizadaAlunoDataAccess.cs" />
+    <Compile Include="DataAccess\AvaliacaoParticipacaoDataAccess.cs" />
+    <Compile Include="DataAccess\AvaliacaoParticipacaoVincDataAccess.cs" />
+    <Compile Include="DataAccess\AvaliacaoAlunoParticipacaoDataAccess.cs" />
+    <Compile Include="DataAccess\CargaProfessorDataAccess.cs" />
+    <Compile Include="DataAccess\CalendarioAcademicoDataAccess.cs" />
+    <Compile Include="DataAccess\CircularDataAccess.cs" />
+    <Compile Include="DataAccess\ControleFaltasDataAccess.cs" />
+    <Compile Include="DataAccess\ControleFaltasAlunoDataAccess.cs" />
+    <Compile Include="DataAccess\FaqDataAccess.cs" />
+    <Compile Include="DataAccess\MensageAvaliacaoDataAccess.cs" />
+    <Compile Include="DataAccess\MensagemAvaliacaoAlunoDataAccess.cs" />
+    <Compile Include="DataAccess\NivelDataAccess.cs" />
+    <Compile Include="DataAccess\ParticipacaoDataAccess.cs" />
+    <Compile Include="DataAccess\ItemProgramacaoCursoDataAccess.cs" />
+    <Compile Include="DataAccess\FeriadoDesconsideradoDataAccess.cs" />
+    <Compile Include="DataAccess\HorarioProfessorTurmaDataAccess.cs" />
+    <Compile Include="DataAccess\DiarioAulaDataAccess.cs" />
+    <Compile Include="DataAccess\AlunoEventoDataAccess.cs" />
+    <Compile Include="DataAccess\PerdaMaterialDataAccess.cs" />
+    <Compile Include="DataAccess\ProdutoFuncionarioDataAccess.cs" />
+    <Compile Include="DataAccess\ProfessorDataAccess.cs" />
+    <Compile Include="DataAccess\ProfessorTurmaDataAccess.cs" />
+    <Compile Include="DataAccess\ProgramacaoCursoDataAccess.cs" />
+    <Compile Include="DataAccess\ProgramacaoTurmaDataAccess.cs" />
+    <Compile Include="DataAccess\TipoAvaliacaoDataAccess.cs" />
+    <Compile Include="DataAccess\CriterioAvaliacaoDataAccess.cs" />
+    <Compile Include="DataAccess\TurmaDataAccess.cs" />
+    <Compile Include="DataAccess\CursoDataAccess.cs" />
+    <Compile Include="DataAccess\EstagioDataAccess.cs" />
+    <Compile Include="DataAccess\FeriadoDataAccess.cs" />
+    <Compile Include="DataAccess\TipoAtividadeExtraDataAccess.cs" />
+    <Compile Include="DataAccess\DuracaoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IEventoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\IProdutoDataAccess.cs" />
+    <Compile Include="Comum\IDataAccess\ISalaDataAccess.cs" />
+    <Compile Include="Controllers\CoordenacaoController.cs" />
+    <Compile Include="DataAccess\EventoDataAccess.cs" />
+    <Compile Include="DataAccess\ModalidadeDataAccess.cs" />
+    <Compile Include="DataAccess\MotivoDesistenciaDataAccess.cs" />
+    <Compile Include="DataAccess\MotivoFaltaDataAccess.cs" />
+    <Compile Include="DataAccess\ProdutoDataAccess.cs" />
+    <Compile Include="DataAccess\RegimeDataAccess.cs" />
+    <Compile Include="DataAccess\SalaDataAccess.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataAccess\TurmaEscolaDataAccess.cs" />
+    <Compile Include="DataAccess\VideoDataAccess.cs" />
+    <Compile Include="Model\AlunoAulaReposicaoUI.cs" />
+    <Compile Include="Model\AlunoEventoReport.cs" />
+    <Compile Include="Model\AtividadeAlunoUI.cs" />
+    <Compile Include="Model\AtividadeCursoUI.cs" />
+    <Compile Include="Model\AtividadeExtraRecorrenciaUI.cs" />
+    <Compile Include="Model\AtividadeExtraUI.cs" />
+    <Compile Include="Model\AtividadeProspectUI.cs" />
+    <Compile Include="Model\AulaPersonalizadaReport.cs" />
+    <Compile Include="Model\AulaPersonalizadaUI.cs" />
+    <Compile Include="Model\AulaReposicaoUI.cs" />
+    <Compile Include="Model\AvaliacaoAlunos.cs" />
+    <Compile Include="Model\AvaliacaoOrdem.cs" />
+    <Compile Include="Model\avaliacaoParticipacaoUI.cs" />
+    <Compile Include="Model\AvaliacaoTurmaUI.cs" />
+    <Compile Include="Model\AvaliacaoUI.cs" />
+    <Compile Include="Model\BancoUI.cs" />
+    <Compile Include="Model\CargaProfessorSearchUI.cs" />
+    <Compile Include="Model\ContatoProspectAtividadeExtraUI.cs" />
+    <Compile Include="Model\ContratoComponentesBanco.cs" />
+    <Compile Include="Model\ContratoComponentesUI.cs" />
+    <Compile Include="Model\CursoContratoSearch.cs" />
+    <Compile Include="Model\DuracaoUI.cs" />
+    <Compile Include="Model\FaqSearchUI.cs" />
+    <Compile Include="Model\MensagemAvaliacaoAlunoUI.cs" />
+    <Compile Include="Model\MensagemAvaliacaoSearchUI.cs" />
+    <Compile Include="Model\PerdaMaterialUI.cs" />
+    <Compile Include="Model\ProfsemDiarioUI.cs" />
+    <Compile Include="Model\TurmaCancelaEncerramentoUI.cs" />
+    <Compile Include="Model\ContratoUI.cs" />
+    <Compile Include="Model\CircularSearchUI.cs" />
+    <Compile Include="Model\ControleFaltasAlunoUI.cs" />
+    <Compile Include="Model\ControleFaltasReportUI.cs" />
+    <Compile Include="Model\ControleFaltasUI.cs" />
+    <Compile Include="Model\AlunoTurmaRematricula.cs" />
+    <Compile Include="Model\ReportTurmaMatriculaMaterial.cs" />
+    <Compile Include="Model\DiarioAulaProgramcoesReport.cs" />
+    <Compile Include="Model\ReportControleSala.cs" />
+    <Compile Include="Model\ReportProgramacaoTurmaAluno.cs" />
+    <Compile Include="Model\ReportDiarioAula.cs" />
+    <Compile Include="Model\EventoHistoricoUI.cs" />
+    <Compile Include="Model\CursoSearch.cs" />
+    <Compile Include="Model\FuncionarioProfessorSearchUI.cs" />
+    <Compile Include="Model\FuncionarioUI.cs" />
+    <Compile Include="Model\LinkAtividadeExtra.cs" />
+    <Compile Include="Model\MediaAvaliacaoAlunoUI.cs" />
+    <Compile Include="Model\ProfessorUI.cs" />
+    <Compile Include="Model\Programacao.cs" />
+    <Compile Include="Model\ProgramacaoTurmaAbaUI.cs" />
+    <Compile Include="Model\ProgramacaoCursoUI.cs" />
+    <Compile Include="Model\ProgramacaoHorarioUI.cs" />
+    <Compile Include="Model\RptBolsistasAval.cs" />
+    <Compile Include="Model\RptComissaoSecretarias.cs" />
+    <Compile Include="Model\TipoAvaliacaoTurma.cs" />
+    <Compile Include="Model\TurmaSearch.cs" />
+    <Compile Include="Model\TurmaSearchUI.cs" />
+    <Compile Include="Model\ConceitoSearchUI.cs" />
+    <Compile Include="Model\CursoUI.cs" />
+    <Compile Include="Model\EstagioOrdem.cs" />
+    <Compile Include="Model\EstagioSearchUI.cs" />
+    <Compile Include="Model\SalaSearchUI.cs" />
+    <Compile Include="Model\TurmasHistoricoUI.cs" />
+    <Compile Include="Model\VideoSearchUI.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FundacaoFisk.SGF.GenericDataAccess\FundacaoFisk.SGF.GenericDataAccess.csproj">
+      <Project>{dd863842-024f-44b6-bcdf-952c5172f5f4}</Project>
+      <Name>FundacaoFisk.SGF.GenericDataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.GenericModel\FundacaoFisk.SGF.GenericModel.csproj">
+      <Project>{452b08af-98c4-4036-81d9-537bc4818afd}</Project>
+      <Name>FundacaoFisk.SGF.GenericModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Utils\FundacaoFisk.SGF.Utils.csproj">
+      <Project>{00a8d0a9-82e8-410b-86bd-dd2b80245e95}</Project>
+      <Name>FundacaoFisk.SGF.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Empresa\FundacaoFisk.SGF.Web.Services.Empresa.csproj">
+      <Project>{1c4c8266-2d64-425e-8161-812a055d0b8b}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Empresa</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Financeiro\FundacaoFisk.SGF.Web.Services.Financeiro.csproj">
+      <Project>{b4a36be3-38a0-4cc7-90ad-660e591d7f6a}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Financeiro</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Log\FundacaoFisk.SGF.Web.Services.Log.csproj">
+      <Project>{7a66a3d2-02e3-454b-9ebd-a0e0b672d6b9}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Log</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Pessoa\FundacaoFisk.SGF.Web.Services.Pessoa.csproj">
+      <Project>{b3845b50-1ab4-46ba-ad0c-0fcd6b9bd120}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Pessoa</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FundacaoFisk.SGF.Web.Services.Secretaria\FundacaoFisk.SGF.Web.Services.Secretaria.csproj">
+      <Project>{f8ebe765-4eec-448c-ac49-60b846f5afaf}</Project>
+      <Name>FundacaoFisk.SGF.Web.Services.Secretaria</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config" />
+    <None Include="packages.config" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.DiarioAula.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.GenericModel.st_RptEtiqueta_Result.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.SGF.Services.Coordenacao.Model.ReportDiarioAula.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.SGF.Services.Coordenacao.Model.ReportDiarioAula1.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.SGF.Services.Coordenacao.Model.ReportProgramacaoTurmaAluno.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.SGF.Services.Coordenacao.Model.TurmaSearch.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.AlunoEventoReport.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.DiarioAulaProgramcoesReport.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.DiarioAulaProgramcoesReport1.datasource" />
+    <None Include="Properties\DataSources\FundacaoFisk.SGF.Web.Services.Coordenacao.Model.ReportTurmaMatriculaMaterial.datasource" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

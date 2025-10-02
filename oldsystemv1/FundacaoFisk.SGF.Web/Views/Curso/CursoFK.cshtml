@@ -1,0 +1,82 @@
+﻿@Scripts.Render("~/bundles/cursoFK")
+<div class="corpo_interno">
+    <div class="EspacoCaixa caixaPesquisa">
+        <table class="Table">
+            <tr>
+                <td class="Pesquisa tdRight" style="width: 15%">
+                    <label for="descCurso" class="tdRight">Descrição: </label>
+                </td>
+                <td colspan="3" style="width: 60%" class="dojoTextBoxIECorrect">
+                    <input id="descCursoFK" maxlength="64" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande">
+                </td>
+                <td style="width: 15%; text-align: center" class="nowrap">
+                    <label class="tdRight;" for="inicioCurso">Início:</label>
+                    <input type="checkbox" id="inicioCursoFK" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                </td>
+                <td style="width: 10%" class="tdRight" rowspan="3">
+                    <input id="pesquisarCursoFK" title="Pesquisar" />
+                </td>
+            </tr>
+            <tr>
+                <td class="Pesquisa tdRight" style="width: 15%">
+                    <label for="cbPesqProduto" class="tdRight">Produto: </label>
+                </td>
+                <td style="width: 30%" class="dojoTextBoxIECorrect">
+                    <input data-dojo-type="dijit/form/FilteringSelect" id="cbPesqProdutoFK" required="false" /><!-- CONSULTA_ESTAGIO_HAS_CURSO = 2-->
+                </td>
+                <td class="Pesquisa tdRight" style="width: 15%">
+                    <label for="cbPesqEstagios" class="tdRight">Estágio:</label>
+                </td>
+                <td style="width: 30%" class="dojoTextBoxIECorrect">
+                    <input data-dojo-type="dijit/form/FilteringSelect" id="cbPesqEstagiosFK" required="false" />
+                </td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td class="Pesquisa tdRight" style="width: 15%">
+                    <label for="cbPesqModalidades" class="tdRight">Série: </label>
+                </td>
+                <td style="width: 30%" class="dojoTextBoxIECorrect">
+                    <input data-dojo-type="dijit/form/FilteringSelect" id="cbPesqModalidadesFK" required="false"/>
+                </td>
+                <td class="Pesquisa tdRight" style="width: 15%">
+                    <label for="statusCurso" class="tdRight;">Status:</label>
+                </td>
+                <td style="width: 30%">
+                    <input id="statusCursoFK" class="margemCampoEsq">
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="tdRight" style="width: 15%">
+                    <label for="cbPesqNivel" class="tdRight">Níveis:</label>
+                </td>
+                <td style="width: 30% class="dojoTextBoxIECorrect">
+                    <input data-dojo-type="dijit/form/FilteringSelect" id="cbPesqNivel" required="false" />
+                </td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+    </div>
+    <div style="padding-top: 5px; width: 100%">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%">
+            <tr style="width: 100%">
+                <td style="text-align: center; width: 100%;">
+                    <input type="button" id="selecionaCursoFK" />&nbsp;
+                    <input type="button" id="fecharCursoFK" title="Fechar" />&nbsp;
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+    <div style="width: 100%; height: 385px;padding-bottom:5px;">
+        <div data-dojo-type="dijit/layout/ContentPane" id="panelCursoFK" style="width: 100%; height: 385px; padding-top: 5px; padding-left: 0px">
+            <div id="gridPesquisaCurso"></div>
+        </div>
+    </div>
+</div>
+<input id="ehSelectGrade" type="hidden" value="false"/>

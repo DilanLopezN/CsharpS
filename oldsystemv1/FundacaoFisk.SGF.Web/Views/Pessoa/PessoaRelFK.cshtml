@@ -1,0 +1,60 @@
+﻿@Scripts.Render("~/bundles/pessoaRelFK")
+<script type="text/javascript">
+    montargridPesquisaPessoaRel(true);
+</script>
+
+<div class="corpo_interno">
+    <div class="apresentadorMsg" id="apresentadorMensagemProPessoaRel" style="display:none;"></div>
+    <div class="EspacoCaixa caixaPesquisa">
+        <table class="Table">
+            <tr>
+                <td class="tdRight" style="width:5%">
+                    <label>Nome:</label></td>
+                <td class="dojoTextBoxIECorrect" style="width: 20%">
+                    <input type="text" id="_nomePessoaRelFK" name="_nomePessoaRelFK" style="width: 100%;" data-dojo-type="dijit/form/TextBox" /></td>
+                <td class="tdRight nowrap" style="width:5%">
+                    <label>Nome Reduzido:</label></td>
+                <td class="dojoTextBoxIECorrect" style="width: 20%">
+                    <input type="text" id="_apelidoRel" name="_apelidoRel"  size="100" data-dojo-type="dijit/form/TextBox" style="width:100%;"/> </td>
+                 <td class="tdRight nowrap" style="width:5%">
+                    <label class="AlinhaDireita;" for="inicioPessoaRelFK">Início:</label></td>
+                <td class="dojoTextBoxIECorrect" style="width: 20%">
+                    <input type="checkbox" id="inicioPessoaRelFK" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                    <label>Natureza:</label>
+                    <input type="text" id="tipoPessoaRelFK" name="tipoPessoaRelFK" /></td>
+                 <td rowspan="2" class="tdRight" style="width:7%;">
+                    <input id="pesqPessoaRel"/>
+                </td>
+            </tr>
+            <tr>
+               <td class="tdRight" style="width:5%">
+                    <label>Papel:</label></td>
+                <td class="dojoTextBoxIECorrect" style="width: 20%">
+                    <input type="text" id="papelPessoaRelFK" name="Papel" /></td>
+                <td class="tdRight" style="width:5%">
+                    <label>Gênero:</label></td>
+                <td class="dojoTextBoxIECorrect"  style="width: 20%">
+                    <select id="sexoPessoaRelFK" name="sexoPessoaRelFK"  data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;"></select></td>
+                <td class="tdRight nowrap" style="width:5%">
+                    <label>CPF \ CNPJ:</label></td>
+                <td class="dojoTextBoxIECorrect"  style="width: 20%">
+                    <input type="text" id="CnpjCpfPessoaRel" name="CnpjCpf" size="11" data-dojo-type="dijit/form/TextBox" style="width:100%;"/></td>
+            </tr>
+        </table>
+    </div>
+    <div style="padding-top: 5px; width: 100%">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%">
+            <tr style="width: 100%">
+                <td style="text-align: center; width: 100%;">
+                    <input type="button" id="selecPessoaRel" />&nbsp;
+                    <input type="button" id="fecharRelFK" title="Fechar" />&nbsp;
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+    <div data-dojo-type="dijit/layout/ContentPane" id="panePessoaRelFK" style="height: 390px; padding-top: 5px; padding-left: 0px;">
+        <div id="gridPesquisaPessoaRel"></div>
+    </div>
+</div>

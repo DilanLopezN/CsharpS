@@ -1,0 +1,147 @@
+﻿<div class="corpo_interno">
+    <div class="EspacoCaixa caixaPesquisa">
+        <table class="Table">
+            <tr>
+                <td class="tdRight" style="width: 7%;">
+                    <label for="nomTurmaFK">Nome:</label>
+                </td>
+                <td style="width: 27%;" class="dojoTextBoxIECorrect">
+                    <input type="text" id="nomTurmaFK" name="_nomTurma" style="width: 100%;" data-dojo-type="dijit/form/TextBox" required="required" />
+                </td>
+                <td class="tdRight" style="width: 7%;">
+                    <label for="inicioTrumaFK">Apelido:</label>
+                </td>
+                <td style="width: 27%;">
+                    <table class="Table">
+                        <tr>
+                            <td style="width: 87%;" class="dojoTextBoxIECorrect">
+                                <input type="text" id="_apelidoFK" name="_apelido" style="width: 100%;" data-dojo-type="dijit/form/TextBox" required="required" />
+                            </td>
+                            <td class="tdRight" style="width: 08%; text-align: right;">
+                                <label for="inicioTrumaFK">Início:</label>
+                            </td>
+                            <td style="width: 5%; text-align: right;">
+                                <input type="checkbox" id="inicioTrumaFK" data-dojo-type="dijit/form/CheckBox" class="Check" required="required" />
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td class="tdRight" style="width: 7%;">
+                    <label for="tipoTurmaFK">Tipo Turma:</label>
+                </td>
+                <td class="dojoTextBoxIECorrect" style="width: 17%;">
+                    <select id="tipoTurmaFK" name="tipoTurmaFK" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;"></select>
+                </td>
+                <td class="tdRight" style="width: 8%;">
+                    <label id="lblTurmaFilhasFK" for="pesTurmasFilhasFK" style="display:none;">Turmas Filhas:</label>
+                </td>
+                <td class="dojoTextBoxIECorrect" style="width: 2%;">
+                    <div id="divPesTurmasFilhasFK" style="display:none;"><input type="checkbox" id="pesTurmasFilhasFK" data-dojo-type="dijit/form/CheckBox" class="Check" required="required" /></div>
+                </td>
+                <td rowspan="3" class="AlinhaDireita" style="width: 10%;">
+                    <input data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'dijitEditorIconSearchSGF'" type="button" id="pesquisarTurmaFK" />
+                </td>
+            </tr>
+            <tr>
+                <td class="tdRight" style="width: 7%;">
+                    <label>Curso:</label>
+                </td>
+                <td class="dojoTextBoxIECorrect">
+                    <select id="pesCursoFK" name="pesCursoFK" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;"></select>
+                </td>
+                <td class="tdRight" style="width: 7%;">
+                    <label>Carga Horária:</label>
+                </td>
+                <td class="dojoTextBoxIECorrect" style="">
+                    <select id="pesDuracaoFK" name="pesDuracaoFK" data-dojo-type="dijit/form/FilteringSelect" required="required" style="width: 100%;"></select>
+                </td>
+                <td class="tdRight" style="width: 10%;">
+                    <label>Produto:</label>
+                </td>
+                <td class="dojoTextBoxIECorrect" colspan="3">
+                    <select id="pesProdutoFK" name="pesProdutoFK" data-dojo-type="dijit/form/FilteringSelect" required="required" style="width: 100%;"></select>
+                </td>
+                <td class="AlinhaDireita"></td>
+            </tr>
+            <tr>
+                <td class="tdRight" style="width: 7%;">
+                    <label>Situação:</label>
+                </td>
+                <td class="dojoTextBoxIECorrect">
+                    <select id="pesSituacaoFK" name="pesSituacaoFK" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;"></select>
+                </td>
+                <td class="tdRight" style="width: 7%;">
+                    <label>Professor:</label>
+                </td>
+                <td class="dojoTextBoxIECorrect">
+                    <select id="pesProfessorFK" name="pesProfessorFK" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;"></select>
+                </td>
+                <td class="tdRight nowrap" style="width: 10%;">
+                    <label for="sPogramacaoFK">Programação:</label>
+                </td>
+                <td class="dojoTextBoxIECorrect" style="width: 20%;" colspan="3">
+                    <select id="sPogramacaoFK" name="sPogramacaoFK" data-dojo-type="dijit/form/FilteringSelect" required="required" style="width: 100%;"></select>
+                </td>
+            </tr>
+            @*<tr id="trEscolaTurmaFiltroFk">
+                <td class="tdRight" style="width: 7%;">
+                    <label for="escolaTurmaFiltroFK" id="lbEscolaTurmaFiltroFk">Escola:</label>
+                </td>
+                <td class="dojoTextBoxIECorrect">
+                    <select id="escolaTurmaFiltroFK" name="escolaTurmaFiltroFK" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;"></select>
+                </td>
+                <td colspan="4">
+                </td>
+            </tr>*@
+        <tr id="trAluno">
+            <td class="tdRight nowrap" style="width: 7%;">
+                <label for="noAluno">Aluno:</label>
+            </td>
+
+            <td colspan="3">
+                <input id="cdAlunoFKTurmaFK" type="hidden" />
+                <table class="Table">
+                    <tr>
+                        <td class="dojoTextBoxIECorrect" style="width: 95%;">
+                            <input id="noAlunoFKTurmaFK" name="nom_aluno" size="125" style="width: 100%;" required="true" data-dojo-type="dijit/form/ValidationTextBox" disabled="disabled" />
+                        </td>
+                        <td style="width: 5%; text-align: left" class="nowrap">
+                            <input id="pesAlunoTurmaFK" style="min-width: 18px" style="width: 100%;" />
+                            <input type="text" id="limparAlunoPesFKTurmaFK" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td class="tdRight nowrap" style="width: 10%;">
+                <label for="cbSala">Sala:</label>
+            </td>
+            <td class="dojoTextBoxIECorrect" style="width: 20%;" >
+                <select id="cbSalaFK" name="cbSalaFK" data-dojo-type="dijit/form/FilteringSelect" style="width: 100%;"></select>
+            </td>
+        </tr>
+        </table>
+
+    </div>
+    <div style="padding-top: 5px; width: 100%">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%">
+            <tr style="width: 100%">
+                <td style="text-align: center; width: 100%;">
+                    <input type="button" id="selecionaTurmaFK" />&nbsp;
+                    <input type="button" id="fecharTurmaFK" title="Fechar" />&nbsp;
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+     <input id="idOrigemCadastro" type="hidden" />
+    <input type="hidden" id="cd_usuario_professor" value="0" />
+    <input type="hidden" id="nome_usuario_professor" value="0" />
+    <div style="width: 100%; height: 100%;">
+        <div data-dojo-type="dijit/layout/ContentPane" id="panelTurmaFK" style="width: 100%; height: 355px; padding-top: 5px; padding-left: 0px">
+            <div id="gridPesquisaTurmaFK"></div>
+        </div>
+        <div id="legendTurmaFK" style="align-items: center;"></div>
+        <div id='chartTurmaFK' style="display: none"></div>
+    </div>
+</div>

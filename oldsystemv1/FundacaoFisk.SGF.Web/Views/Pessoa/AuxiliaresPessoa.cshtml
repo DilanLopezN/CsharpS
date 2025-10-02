@@ -1,0 +1,165 @@
+@{
+    ViewBag.Title = "Auxiliares Pessoa";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    @section scripts{
+        @*algumas funcionalidades estão nesse arquivo*@
+        @Scripts.Render("~/bundles/auxiliaresPessoa")
+    }
+    @section scriptsBody{
+            <script type="text/javascript">
+                //Titulo do Formulário
+                document.getElementById("labelTitulos").innerHTML = "Auxiliares Pessoa";
+
+                require([
+                    "dojo/NodeList-traverse",
+                    "dojo/_base/event",
+                    "dojox/validate/web",
+                    "dojox/validate/check",
+                    "dijit/form/NumberTextBox",
+                    "dijit/form/ValidationTextBox",
+                    "dijit/form/Form",
+                    "dojox/form/Manager"
+                ]);
+                //*** Segurança do Formulário ***\\
+                //      mostraTabs('@Permissoes');
+
+                montaAuxiliarPessoa();
+        </script>
+    }
+
+
+<div id="container">
+    <input type="hidden" id="link" value="" />
+    <div style="width: 100%; BACKGROUND-ATTACHMENT: fixed; OVERFLOW: auto; display: none;" id="apresentadorMensagem"></div>
+    @*<script type="text/javascript"> showCarregando(); </script>*@
+    <div id="div 1" style="max-width:1200px;">
+        <div data-dojo-type="dijit/layout/TabContainer" id="tabContainer" onclick="selecionaTab" class="Abas">
+           
+            <div data-dojo-type="dijit/layout/ContentPane" title="Atividade/Profissão" id="tabAtividade" class="ContentPane" style="height: 630px">
+                <div class="EspacoCaixa caixaPesquisa">
+					<table class="Table">
+						    <tr>
+						    	<td class="tdRight" style="width:5%">
+						    		<label for="pesquisaAtividade">Nome: </label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width:50%;">
+						    		<input id="pesquisaAtividade" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width:100%">
+                                </td>
+                                <td class="tdRight" style="width:5%">
+						    		<label class="AlinhaDireita;" for="inicioDescAtividade">Início:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width:5%;">
+						    		<input type="checkbox" id="inicioDescAtividade" data-dojo-type="dijit/form/CheckBox"  class="margemCampoEsq" />
+                                </td>
+                                <td>
+						    		<span class="nowrap">
+						    			<label for="statusAtividade" class="AlinhaDireita;">Status:</label>
+						    			<input id="statusAtividade" class="margemCampoEsq">
+						    		</span>
+						    	</td>
+                                <td style="width:10%" class="tdRight" rowspan="3">
+				                    <input id="pesquisarAtividade" title="Pesquisar" />
+			                    </td>
+                            </tr>
+
+                            <tr>
+                               <td class="tdRight" style="width:5%">
+						    		<label for="naturezaAtividade" class="AlinhaDireita;">Natureza:</label>
+                               </td>
+                               <td class="dojoTextBoxIECorrect" style="width:10%;">
+                                   <input id="naturezaAtividade" class="margemCampoEsq" style="width:100%">
+                               </td>
+						    	<td class="tdRight" style="width:5%">
+                                   <label for="cnae">CNAE: </label>
+                               </td>
+                               <td class="dojoTextBoxIECorrect" style="width:20%;">
+						    	    <input id="cnae" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width:100%">
+                               </td>
+                            </tr>
+					</table>
+				</div>
+
+                <div style="padding-top:2px">
+					<div class="linha_acoes" style="width: 100%"></div>
+					<div>
+						<table style="width:100%">
+							<tr style="width:100%">
+								<td style="text-align:left; width:25%">
+									<div class="linkAcoes" id="linkAcoesAtividade"></div>
+								</td>
+								<td style="text-align:center; width:50%;">
+									<input id="novoAtividade" title="Novo" />
+									<input id="relatorioAtividade" title="Relatório" />
+								</td>
+								<td style="text-align:right; width:25%">
+									<span class="linkSelecionados" id="linkSelecionadosAtividade"></span>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<div class="linha_acoes" style="width: 100%"></div>
+				</div>
+                <div class="gridCadBasic">
+                    <div id="gridAtividade"></div>
+                </div>
+            </div>
+     </div>@*fim class="Abas"*@
+    </div>@*fim div 1*@
+</div>@*fim container*@
+<div id="formularioAtividade" data-dojo-type="dijit.Dialog" title="Cadastro de Atividade/Profissão" class="Dialogo">
+    
+    <div class="sessao_form" style="margin-left: -8px;">
+        <span id="counter_form">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    <div class="corpo_interno">
+        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" data-dojo-id="formAtividade" id="formAtividade" class="Formulario">
+            <div class="apresentadorMsg" id="apresentadorMensagemAtividade"  style="display:none;"></div>
+            <input id="cd_atividade" name="cd_atividade" type="hidden" value="0" />
+            <table class="Table" id="tableAtividade">
+                <tr>
+                    <td class="tdRight" for="no_atividade">Nome:</td>
+                    <td class="dojoTextBoxIECorrect" style="width:50%">
+                        <input name="no_atividade" id="no_atividade" style ="width:100%"  maxlength="50"  required="true" data-dojo-type="dijit/form/ValidationTextBox" />
+                    </td>
+                    <td  class="tdRight" for="id_natureza_atividade">Natureza: </td>
+                    <td>
+                        <select id="id_natureza_atividade" name="id_natureza_atividade" required="true" class="alignDojoData" data-dojo-type="dijit/form/FilteringSelect" style="width: 97%"></select>
+                    </td> 
+                </tr>
+                <tr>
+                    <td class="tdRight" for="cd_cnae_atividade">CNAE: </td>
+                    <td class="dojoTextBoxIECorrect" style="width:50%">
+                        <input id="cd_cnae_atividade" name="cd_cnae" size="61"  maxlength="16" style="width: 100%;" data-dojo-type="dijit/form/ValidationTextBox" />
+                    </td>
+                    <td class="tdRight" for="atividade_ativa">Ativa:</td>
+                    <td >
+                        <input name="atividade_ativa" type="checkbox" id="atividade_ativa" data-dojo-type="dijit/form/CheckBox" checked="checked">
+                    </td>
+                </tr>
+            </table>
+            <div class="containerCrud">
+                <div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div style="text-align: center">
+                        <span id="divIncluirAtividade">
+                            <input id="incluirAtividade" title="Salvar" /></span>
+                        <span id="divAlterarAtividade">
+                            <input id="alterarAtividade" title="Salvar" /></span>
+                        <span id="divExcluirAtividade">
+                            <input type="button" id="deleteAtividade" title="Apagar" /></span>
+                        <span id="divLimparAtividade">
+                            <input id="limparAtividade" title="Limpar" /></span>
+                        <span id="divCancelarAtividade">
+                            <input id="cancelarAtividade" title="Cancelar" /></span>
+                        <span id="divFecharAtividade">
+                            <input id="fecharAtividade" title="Fechar" /></span>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                 </div>
+              </div>
+        </form>
+     </div>
+</div>

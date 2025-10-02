@@ -1,0 +1,150 @@
+﻿@model FundacaoFisk.SGF.Web.Services.Auth.Model.UserCredential
+@{
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@section scriptsBody{
+    <script type="text/javascript">
+        //Titulo do Formulário
+        document.getElementById("labelTitulos").innerHTML = "&nbsp;";
+
+
+        @*//Verifica se o usuário possui followup:
+        dojo.xhr.get({
+            url: Endereco() + "/api/secretaria/getExisteFollowUsuario",
+            preventCache: true,
+            handleAs: "json",
+            headers: { "Accept": "application/json", "Content-Type": "application/json", "Authorization": Token() }
+        }).then(function (data) {
+            data = jQuery.parseJSON(data);
+            try {
+                if (data.retorno != null && data.retorno == true) {
+                    //Se tem permissão de follow:
+                    if (possuiPermissao('flup', '@Permissoes'))
+                        caixaDialogo(DIALOGO_CONFIRMAR, msgMensagensPendentesFollow, function executaRetorno() {
+                            window.location = Endereco() + "/secretaria/FollowUp";
+                        });
+                    else
+                        caixaDialogo(DIALOGO_AVISO, msgMensagensPendentesFollowSemPermissao);
+                }
+            }
+            catch (e) {
+                postGerarLog(e);
+            }
+        },
+        function (error) {
+            apresentaMensagem(dojo.byId("descApresMsg").value, error);
+        });*@
+
+
+        @*//Verifica se existe prospects não consultados:
+       dojo.xhr.get({
+           url: Endereco() + "/api/secretaria/getExisteProspectNaoConsultado",
+           preventCache: true,
+           handleAs: "json",
+           headers: { "Accept": "application/json", "Content-Type": "application/json", "Authorization": Token() }
+       }).then(function (data) {
+           data = jQuery.parseJSON(data);
+           try {
+               if (data.retorno != null && data.retorno == true) {
+                   //Se tem permissão de Prospect:
+                   possuiPermissaoConsultaProspect();
+               }
+            }
+            catch (e) {
+                postGerarLog(e);
+            }
+        },
+        function (error) {
+            apresentaMensagem(dojo.byId("descApresMsg").value, error);
+        });
+
+
+       function possuiPermissaoConsultaProspect() {
+            //Verifica se o usuário possui permissão para pesquisa de prospects:
+            dojo.xhr.get({
+                url: Endereco() + "/api/secretaria/getPossuiPermissaoPesquisaProspect",
+                preventCache: true,
+                handleAs: "json",
+                headers: { "Accept": "application/json", "Content-Type": "application/json", "Authorization": Token() }
+            }).then(function (data) {
+                data = jQuery.parseJSON(data);
+                try {
+                    if (data.retorno != null && data.retorno == true) {
+                        //Se tem permissão de Prospect:
+                        caixaDialogo(DIALOGO_CONFIRMAR, msgProspectsNaoVisualizados, function executaRetorno() {
+                            setProspectsConsultado();
+                        });
+                    }else {
+                        caixaDialogo(DIALOGO_AVISO, msgProspectsNaoVisualizadosSemPermissao);
+                    }
+                }
+                catch (e) {
+                    postGerarLog(e);
+                }
+            },
+            function (error) {
+                apresentaMensagem(dojo.byId("descApresMsg").value, error);
+            });
+       }
+
+
+       function setProspectsConsultado() {
+           //se clicou em sim no popup seta todos registros como lido
+           dojo.xhr.post({
+               url: Endereco() + "/api/secretaria/setProspectsConsultado",
+               preventCache: true,
+               handleAs: "json",
+               headers: { "Accept": "application/json", "Content-Type": "application/json", "Authorization": Token() }
+           }).then(function (data) {
+               data = jQuery.parseJSON(data);
+               try {
+                   window.location = Endereco() + "/secretaria/Prospect?redirect=prospectsTesteMatricula";
+               }
+               catch (e) {
+                   postGerarLog(e);
+               }
+           },
+           function (error) {
+               apresentaMensagem(dojo.byId("descApresMsg").value, error);
+           });
+      } *@
+
+        dojo.xhr.get({
+            url: Endereco() + "/api/coordenacao/getExisteCargaHorariaProximaMaxima",
+            preventCache: true,
+            handleAs: "json",
+            headers: { "Accept": "application/json", "Content-Type": "application/json", "Authorization": Token() }
+        }).then(function (data) {
+                data = jQuery.parseJSON(data);
+                try {
+                    if (data.retorno != null && data.retorno != null && data.retorno != undefined &&
+                        data.retorno.cd_professor > 0 && data.retorno.existe_alunos_carga_maxima == true 
+                        //&& possuiPermissao('cocarho', '@Permissoes')
+                            ) {
+
+                        caixaDialogo(DIALOGO_CONFIRMAR, msgExisteAlunosCargaProximaMaxima, function executaRetorno() {
+                            window.location = Endereco() + "/coordenacao/ConsultarCargasHorarias?redirect=alunosCargaProximaMaxima&cd_professor=" + data.retorno.cd_professor;
+                        });
+                    }
+                }
+                catch (e) {
+                    postGerarLog(e);
+                }
+            },
+            function (error) {
+                apresentaMensagem(dojo.byId("descApresMsg").value, error);
+            });
+    </script>
+}
+<br />
+<!--input type="button" id="btnCallService" value="Call Service" /-->
+<!--input type="text" id="txtRefreshToken" /-->
+<!--input type="button" id="btnRefreshToken" value="Refresh Token" /-->
+
+<div class="apresentadorMsg" id="apresentadorMensagem" style="display:none;"></div>
+<span style="width:100%;height:100%;">&nbsp;</span>

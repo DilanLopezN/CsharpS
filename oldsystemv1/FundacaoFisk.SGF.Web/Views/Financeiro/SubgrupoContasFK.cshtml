@@ -1,0 +1,44 @@
+@Scripts.Render("~/bundles/subgrupoContasFK")
+<div class="apresentadorMsg" id="apresentadorMensagemSubgrupoContasFK" style="display:none;"></div>
+<div data-dojo-type="dijit/layout/ContentPane" title="Subgrupo de Contas" id="tabSubgrupoConta" class="Abas">
+
+    <div class="EspacoCaixa caixaPesquisa">
+        <table class="Table">
+            <tr>
+                <td class="tdRight" style="width:10%;">
+                    <label for="pesquisaSubgrupoContaFK">Descrição:</label>
+                </td>
+                <td class="dojoTextBoxIECorrect" style="width: 50%;">
+                    <input id="pesquisaSubgrupoContaFK" maxlength="32" type="text" data-dojo-type="dijit/form/TextBox" class="elementosCompletos">
+                </td>
+                <td class="tdRight" style="width: 20%;">
+                    <label class="AlinhaDireita">Início</label>
+                </td>
+                <td class="dojoTextBoxIECorrect" style="width: 20%;">
+                    <input type="checkbox" id="inicioDescSubgrupoContaFK" data-dojo-type="dijit/form/CheckBox" class="Check elementosCompletos" />
+                </td>
+                <td rowspan="2" class="AlinhaDireita">
+                    <input id="pesquisarSubgrupoContaFK" title="Pesquisar" />
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="padding-top: 5px; width: 100%">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <table style="width: 100%">
+            <tr style="width: 100%">
+                <td style="text-align: center; width: 100%;">
+                    <input type="button" id="selecionaSubgrupoContaFK" />&nbsp;
+                    <input type="button" id="fecharSubgrupoContFK" title="Fechar" />&nbsp;
+                </td>
+            </tr>
+        </table>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+
+     <div data-dojo-type="dijit/layout/ContentPane" id="panelSubgrupoContasFK" style="width: 100%; height: 410px; padding-top: 5px; padding-left: 0px">
+        <div id="gridSubgrupoContaFK" style="height: 400px"></div>
+    </div>
+
+</div>

@@ -1,0 +1,273 @@
+@{
+    ViewBag.Title = "Política Comercial";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/politicaComercial")
+}
+
+@section scriptsBody{    
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Política Comercial";
+
+        //**** Requerires para a Tabulação ****\\
+        require([
+                "dojo/NodeList-traverse",
+                "dijit/form/Select",
+                "dojo/_base/event",
+                "dojox/validate/web",
+                "dojox/validate/check",
+                "dijit/form/NumberTextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/Form",
+                "dojox/form/Manager"
+        ]);
+        montarCadastroPoliticaComercial();
+    </script>
+}
+
+<div style="width: 100%;">
+    <input type="hidden" id="link" value="" />
+    <div class="apresentadorMsg" id="apresentadorMensagem" style="display: none;"></div>
+    <script type="text/javascript">
+        showCarregando();
+    </script>
+    <div class="EspacoCaixa caixaPesquisa">
+        <table class="Table">
+            <tr>
+                <td style="width: 95%;">
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Filtros'" id="panePesqGeral" open="true">
+                        <table class="Table">
+                            <tr>
+                                <td class="Pesquisa tdRight" style="width: 5%">
+                                    <label for="descPoliticaComercial" class="AlinhaDireita">Descrição:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 40%;">
+                                    <input id="descPoliticaComercial" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 100%">
+                                </td>
+                                <td class="tdRight" style="width: 5%">
+                                    <label class="AlinhaDireita;" for="inicioPoliticaComercial">Início:</label>
+                                </td>
+                                <td style="width: 5%" class="dojoTextBoxIECorrect">
+                                    <input type="checkbox" id="inicioPoliticaComercial" name="inicioPoliticaComercial" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                </td>
+                                <td class="tdRight" style="width: 5%">
+                                    <label for="statusPoliticaComercial" class="AlinhaDireita;">Status:</label>
+                                </td>
+                                <td style="width: 10%;" class="dojoTextBoxIECorrect">
+                                    <input id="statusPoliticaComercial" class="margemCampoEsq">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdRight nowrap">
+                                    <label class="AlinhaDireita;" for="ckParcIg">Parcelas Iguais:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input data-dojo-type="dijit/form/CheckBox" id="ckParcIg" />
+                                </td>
+                                <td class="tdRight nowrap">
+                                    <label class="AlinhaDireita;" for="ckVencFixo">Vencimento Fixo:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input data-dojo-type="dijit/form/CheckBox" id="ckVencFixo" />
+                                </td>
+                                <td></td>
+
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+                <td style="width: 5%; text-align: center">
+                    <input id="pesquisarPolCom" title="Pesquisar" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="padding-top: 10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <div>
+            <table style="width: 100%">
+                <tr style="width: 100%">
+                    <td style="text-align: left; width: 25%">
+                        <div class="linkAcoes" id="linkAcoesPolCom"></div>
+                    </td>
+                    <td style="text-align: center; width: 50%;">
+                        <input id="novoPolCom" title="Novo" />
+                        <input id="relatorioPolCom" title="Relatório" />
+                    </td>
+                    <td style="text-align: right; width: 25%">
+                        <span class="linkSelecionados" id="linkSelecionadosPolCom"></span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+    <div data-dojo-type="dijit/layout/ContentPane" id="ContentGridPoliticaComercial" style="padding-left: 0px; padding-right: 0px;">
+        <div class="gridCadBasic">
+            <div id="gridPoliticaComercial"></div>
+        </div>
+    </div>
+</div>
+
+<div id="cad" data-dojo-type="dijit.Dialog" title="Cadastro de Política Comercial" class="Dialogo" style="max-width: 727px; width: 100%;">
+
+    <div class="sessao_form" style="margin-left: -8px;">
+        <span id="counter_form">Sua sess&atilde;o expira em 59 min 59 seg</span>
+    </div>
+
+    <div class="corpo_interno" id="corpoCad">
+        <input id="cd_politica_comercial" disabled="disabled" type="hidden" hidden />
+        <div class="apresentadorMsg" id="apresentadorMensagemPolCom" style="display: none;"></div>
+        <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" class="Formulario" id="formCadPoliticaCom">
+            <div style="height: 100%;" class="scroll">
+                <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Principal'" id="politicaComercial" open="true">
+                    <table class="Table">
+                        <tr>
+                            <td class="tdRight">
+                                <label for="id_politica_ativa" class="AlinhaDireita nowrap">Descrição:</label></td>
+                            <td class="dojoTextBoxIECorrect" style="width: 57%">
+                                <input id="dc_politica_comercial" name="dc_politica_comercial" data-dojo-type="dijit/form/ValidationTextBox" required="true" style="width: 100%;" />
+                            </td>
+                            <td class="tdRight nowrap">
+                                <label for="id_politica_ativa" class="AlinhaDireita nowrap">Ativo:</label></td>
+                            <td class="dojoTextBoxIECorrect">
+                                <input data-dojo-type="dijit/form/CheckBox" checked="checked" id="id_politica_ativa" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdRight nowrap">
+                                <label for="id_parcela_igual" class="AlinhaDireita nowrap">Parcelas Iguais:</label>
+                            </td>
+                            <td class="dojoTextBoxIECorrect">
+                                <input data-dojo-type="dijit/form/CheckBox" id="id_parcela_igual" />
+                            </td>
+                            <td class="tdRight nowrap">
+                                <label for="id_vencimento_fixo" class="AlinhaDireita nowrap">Dia Vencimento Fixo:</label>
+                            </td>
+                            <td class="dojoTextBoxIECorrect">
+                                <input data-dojo-type="dijit/form/CheckBox" id="id_vencimento_fixo" />
+                            </td>
+
+                        </tr>
+                        <tr id="infParcela">
+                            <td class="tdRight nowrap">
+                                <label for="nm_parcelas" class="AlinhaDireita nowrap">Nro. Parcelas:</label></td>
+                            <td>
+                                <table style="width: 100%">
+                                    <tr class="nowrap">
+                                        <td class="dojoTextBoxIECorrect">
+                                            <input id="nm_parcelas" name="nm_parcelas" style="width: 80%;" disabled="true" maxlength="5"
+                                                onkeypress="mascaraInt(document.getElementById('nm_parcelas'));" data-dojo-type="dijit/form/NumberTextBox" />
+                                        </td>
+                                        <td class="tdRight nowrap">
+                                            <label for="nm_parcelas" class="AlinhaDireita nowrap">Intervalo:</label></td>
+                                        <td class="dojoTextBoxIECorrect">
+                                            <input id="nm_intervalo_parcela" name="nm_intervalo_parcela" style="width: 80%;" disabled="true" maxlength="5"
+                                                onkeypress="mascaraInt(document.getElementById('nm_intervalo_parcela'));" data-dojo-type="dijit/form/NumberTextBox" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="tdRight" style="width: 5%">
+                                <label for="nm_periodo_intervalo" class="AlinhaDireita;">Período do Intervalo:</label>
+                            </td>
+                            <td style="width: 10%;" class="dojoTextBoxIECorrect">
+                                <select id="nm_periodo_intervalo" name="nm_periodo_intervalo" data-dojo-type="dijit/form/FilteringSelect" disabled="true" style="width: 100%;" ></select>
+                            </td>
+
+                        </tr>
+                    </table>
+                </div>
+                <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Parcelas Diferentes'" id="parcDiferente" open="true">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <table style="width: 100%" class="Alinhamento">
+                        <tr style="width: 100%">
+                            <td style="text-align: left; width: 25%">
+                                <div class="linkAcoes" id="linkTurma"></div>
+                            </td>
+                            <!--<td class="Alinhamento">-->
+                            <td style="text-align: center; width: 50%">
+                                <div id="btnaddParcCom"></div>
+                            </td>
+                            <td style="text-align: center; width: 25%">
+                                <div id="btnNone"></div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div data-dojo-type="dijit/layout/ContentPane" id="tabContainerGridParcPol" style="width: 100%; height: 180px; padding-left: 0px;">
+                        <div id="gridParcPol"></div>
+                    </div>
+                </div>
+                <div class="CaixaAcao">
+                    <div class="linha_acoes" style="width: 100%"></div>
+                    <div class="Alinhamento">
+                        <span id="divIncluirPolCom">
+                            <input id="incluirPolCom" title="incluir" /></span>
+                        <span id="divAlterarPolCom" style="display: none;">
+                            <input type="button" id="alterarPolCom" title="Alterar" /></span>
+                        <span id="divExcluirPolCom" style="display: none;">
+                            <input type="button" id="deletePolCom" title="Excluir" /></span>
+                        <span id="divLimparPolCom">
+                            <input id="limparPolCom" title="Limpar" /></span>
+                        <span id="divCancelarPolCom" style="display: none;">
+                            <input type="button" id="cancelarPolCom" title="Cancelar" /></span>
+                        <span id="divFecharPolCom">
+                            <input type="button" id="fecharPolCom" title="Fechar" />
+                        </span>
+                    </div>
+                    <div class="linha_acoes" style="width: 100%"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="dialogParc" data-dojo-type="dijit/Dialog" class="Dialogo" title="Parcelas" style="width: 700px;">
+    <input id="cd_parcela" name="cd_parcela" type="hidden" value="0" />
+    <div class="corpo_interno">
+        <input id="cd_parc_politica" disabled="disabled" type="hidden" hidden />
+        <input id="cd_item" disabled="disabled" type="hidden" hidden />
+        <div class="apresentadorMsg" id="apresentadorMensagemParcela" style="display: none; width: 100%;"></div>
+        <form data-dojo-type="dojox/form/Manager" id="formParcela">
+            <table class="Table">
+                <tr>
+                    <td class="CorpoFormAux AlinhaDireita" style="width: 20%">
+                        <label>Nro. Dias:</label></td>
+                    <td class="dojoTextBoxIECorrect" style="width: 30%">
+                        <input name="nroDias" required="true" id="nroDias" maxlength="3" style="width: 60%; margin-top: 3px;"
+                            data-dojo-props="smallDelta:1, constraints:{min:0,max: 10000, places:0,pattern:'00000'}"
+                            onkeypress="mascaraInt(document.getElementById('nroDias'));" data-dojo-type="dijit/form/NumberSpinner" />
+                    <td class="tdRight" style="width: 20%">
+                        <label for="perParc" class="AlinhaDireita nowrap">% Parcela:</label>
+                    </td>
+                    <td style="width: 30%;" class="dojoTextBoxIECorrect">
+                        <input name="perParc" id="perParc" maxlength="5" style="width: 60%; margin-top: 3px;" required="true" data-dojo-type="dijit/form/NumberTextBox"
+                            data-dojo-props="smallDelta:1, constraints:{min:0,max: 100, pattern:'##.00'}"
+                            onkeypress="mascaraFloat(document.getElementById('perParc'));" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div class="containerCrud" style="width: 100%; padding-top: 20px;">
+            <div class="linha_acoes" style="width: 100%"></div>
+            <div style="text-align: center">
+                <span id="divIncluirParcela">
+                    <input type="button" id="incluirParcela" title="incluir" /></span>
+                <span id="divAlterarParcela" style="display: none;">
+                    <input type="button" id="alterarParcela" title="Alterar" /></span>
+                <span id="divExcluirParcela" style="display: none;">
+                    <input type="button" id="deleteParcela" title="Excluir" /></span>
+                <span id="divClearParcela">
+                    <input type="button" id="limparParcela" title="Limpar" /></span>
+                <span id="divCancelarParcela" style="display: none;">
+                    <input type="button" id="cancelarParcela" title="Cancelar" /></span>
+                <span id="divFecharParcela">
+                    <input type="button" id="fecharParcela" title="Fechar" /></span>
+            </div>
+            <div class="linha_acoes" style="width: 100%"></div>
+        </div>
+    </div>
+</div>

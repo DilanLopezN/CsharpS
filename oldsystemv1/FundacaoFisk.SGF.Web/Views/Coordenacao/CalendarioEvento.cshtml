@@ -1,0 +1,251 @@
+﻿@{
+    ViewBag.Title = "Calendário Evento";
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+@section scriptsBody{
+    @Scripts.Render("~/bundles/calendarioEvento")
+    <script src="~/Scripts/jquery.maskedinput-1.3.js"></script>
+
+    <script type="text/javascript">
+        document.getElementById("labelTitulos").innerHTML = "Calendário Evento";
+
+        //**** Requerires para a Tabulação ****\\
+        require([
+            "dojo/_base/event",
+            "dojox/validate/web",
+            "dojox/validate/check",
+            "dijit/form/NumberTextBox",
+            "dijit/form/ValidationTextBox",
+            "dijit/form/Form",
+            "dojox/form/Manager",
+            "dijit/form/TimeTextBox",
+            "dijit/form/DateTextBox"
+        ]);
+        montarMetodosCalendarioEvento();
+
+    </script>
+}
+
+<div class="apresentadorMsg" id="apresentadorMensagem" style="display: none;"></div>
+
+<div>
+    <div class="EspacoCaixa caixaPesquisa">
+        <table class="Table">
+            <tr>
+                <td>
+                    <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Pesquisa'" id="panePesqGeral" open="true">
+                        <table class="Table">
+                            <tr>
+                                <td class="Pesquisa tdRight" style="width: 5%">
+                                    <label for="dc_titulo" class="AlinhaDireita">Titulo:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 50%;">
+                                    <input maxlength="64" id="dc_titulo_evento" maxlength="128" type="text" data-dojo-type="dijit/form/TextBox" class="campoGrande" style="width: 100%">
+                                </td>
+                                <td class="tdRight" style="width: 5%">
+                                    <label class="AlinhaDireita;" for="inicioCalEvento">Início:</label>
+                                </td>
+                                <td style="width: 5%" class="dojoTextBoxIECorrect">
+                                    <input type="checkbox" id="inicio_dc_titulo_evento" data-dojo-type="dijit/form/CheckBox" class="margemCampoEsq" />
+                                </td>
+                                <td class="tdRight">
+                                    <label for="statusCalEvento" class="tdRight;">Status:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect">
+                                    <input id="status_evento" class="margemCampoEsq">
+                                </td>
+                            </tr>
+                        </table>
+                        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Períodos'" id="paneDataInicial" open="true">
+                            <table class="Table">
+                                <tr>
+                                    <td class="tdRight" style="width: 10%;">
+                                        <label for="nome">Data Inicial:</label>
+                                    </td>
+                                    <td style="width: 25%;" class="dojoTextBoxIECorrect">
+                                        <input type="text"
+                                               id="dt_inicial_evento"
+                                               name="dt_inicial_evento"
+                                               class="alignDojoData"
+                                               data-dojo-type="dijit.form.DateTextBox" style="width: 100%;"
+                                               onkeypress="mascaraDataHora(event, this)" maxlength="10" />
+                                    </td>
+                                    <td class="tdRight" style="width: 10%;">
+                                        <label for="nome">Data Final:</label>
+                                    </td>
+                                    <td style="width: 35%;" class="dojoTextBoxIECorrect">
+                                        <input type="text"
+                                               id="dt_final_evento"
+                                               name="dt_final_evento"
+                                               class="alignDojoData"
+                                               data-dojo-type="dijit.form.DateTextBox" style="width: 100%;"
+                                               onkeypress="mascaraDataHora(event, this)" maxlength="10" />
+                                    </td>
+                                    <td class="tdRight" style="width: 10%">
+                                        <label for="timeIni">H.Inicial:</label>
+                                    </td>
+                                    <td style="width: 30%">
+                                        <input type="text" name="hh_inicial_evento" id="hh_inicial_evento"
+                                               data-dojo-type="dijit/form/TimeTextBox" value="T08:00"
+                                               data-dojo-props="constraints: {clickableIncrement: 'T00:05', visibleIncrement: 'T00:30', formatLength:'short',min:'T08:00',max:'T18:00'}" />
+                                        
+                                    </td>
+                                    <td style="width: 30%" class="nowrap">
+                                        <label for="timeFim">H.Final:</label>
+                                        <input type="text" name="hh_final_evento" id="hh_final_evento"
+                                               data-dojo-type="dijit/form/TimeTextBox" value="T18:00"
+                                               data-dojo-props="constraints: {clickableIncrement: 'T00:05', visibleIncrement: 'T00:30', formatLength:'short',min:'T08:00',max:'T18:00'}" />
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </td>
+                <td style="width: 5%; text-align: center">
+                    <input id="pesquisarEvento" title="Pesquisar" />
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="padding-top: 10px">
+        <div class="linha_acoes" style="width: 100%"></div>
+        <div>
+            <table style="width: 100%">
+                <tr style="width: 100%">
+                    <td style="text-align: left; width: 25%">
+                        <div class="linkAcoes" id="linkAcoesCalEvento"></div>
+                    </td>
+                    <td style="text-align: center; width: 50%;">
+                        <input id="novoCalEvento" title="Novo" />
+                        <input id="relatorioCalEvento" title="Relatório" />
+                    </td>
+                    <td style="text-align: right; width: 25%">
+                        <span class="linkSelecionados" id="linkSelecionadosCalEvento"></span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="linha_acoes" style="width: 100%"></div>
+    </div>
+
+    <div data-dojo-type="dijit/layout/ContentPane" id="ContentGridCalEvento" style="padding-left: 0px; padding-right: 0px;">
+        <div class="gridCadBasic">
+            <div id="gridCalEvento"></div>
+        </div>
+    </div>
+
+    <div id="dialogCalendarioEvento" data-dojo-type="dijit.Dialog" title="Cadastro de Calendário Evento" class="Dialogo">
+        <div class="apresentadorMsg" id="apresentadorMensagemCalEvento" style="display: none;"></div>
+        <div class="corpo_interno" style="max-width: 800px;">
+            <input id="cd_calendario_evento" name="cd_calendario_evento" type="hidden" value="0" />
+
+            <div class="scroll">
+                <form data-dojo-type="dojox/form/Manager" enctype="multipart/form-data" class="Formulario" id="formCalendarioEvento">
+
+                    <div style="width: 98%; height: 200px;" class="scroll">
+                        <table class="Table">
+                            <tr>
+                                <td style="padding-left: 8px">Título:</td>
+                                <td class="dojoTextBoxIECorrect" style="width: 60%">
+                                    <input maxlength="64" required="true" id="txt_dc_titulo" data-dojo-type="dijit/form/ValidationTextBox" style="width: 100%;" />
+                                </td>
+                                <td class="tdRight nowrap">Ativo:</td>
+                                <td class="dijitDialogPaneContentArea">
+                                    <input required="true" id="chk_id_ativo" data-dojo-type="dijit/form/CheckBox" checked="checked" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 8px">Descrição</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="dijitDialogPaneContentArea">
+                                    <textarea maxlength="1024" required="true" id="txt_dc_desc_evento" data-dojo-type="dijit/form/SimpleTextarea" rows="4" cols="50" style="width: 100%;" id="textAreaObs"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 20%;">
+                                    <label>Data Inicio:</label>
+                                </td>
+                                <td class="CorpoFormAux " style="width: 35%;">
+                                    <input type="text"
+                                           id="dt_inicio_evento"
+                                           name="dt_inicio_evento"
+                                           class="alignDojoData" data-dojo-type="dijit.form.DateTextBox"
+                                           required="required" style="width: 100%;"
+                                           onkeypress="mascaraDataHora(event, this)" maxlength="10" required="true" />
+                                </td>
+                                <td class="CorpoFormAux AlinhaDireita" style="width: 5%">
+                                    <label for="timeAulaIni">H.Inicial:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 10%">
+                                    <input type="text"
+                                           name="hh_inicio_evento"
+                                           id="hh_inicio_evento"
+                                           data-dojo-type="dijit/form/TimeTextBox"
+                                           data-dojo-props="constraints: {clickableIncrement: 'T00:05', visibleIncrement: 'T00:30', formatLength:'short',min:'T08:00',max:'T18:00'}" required="true" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="CorpoFormAux AlinhaDireita nowrap" style="width: 20%;">
+                                    <label>Data Fim:</label>
+                                </td>
+                                <td class="CorpoFormAux " style="width: 35%;">
+                                    <input type="text"
+                                           id="dt_fim_evento"
+                                           name="dt_fim_evento"
+                                           class="alignDojoData" data-dojo-type="dijit.form.DateTextBox"
+                                           required="required" style="width: 100%;"
+                                           onkeypress="mascaraDataHora(event, this)" maxlength="10" required="true" />
+                                </td>
+                                <td class="CorpoFormAux AlinhaDireita" style="width: 5%">
+                                    <label for="timeAulaFim">H.Final:</label>
+                                </td>
+                                <td class="dojoTextBoxIECorrect" style="width: 30%">
+                                    <input type="text"
+                                           id="hh_fim_evento"
+                                           name="hh_fim_evento"
+                                           data-dojo-type="dijit/form/TimeTextBox"
+                                           data-dojo-props="constraints: {clickableIncrement: 'T00:05', visibleIncrement: 'T00:30', formatLength:'short',min:'T08:00',max:'T18:00'}" required="true" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <br />
+                    <div class="CaixaAcao">
+                        <div class="linha_acoes" style="width: 100%"></div>
+                        <div class="Alinhamento">
+                            <span id="divIncluirCalEvento">
+                                <input id="incluirCalEvento" title="incluir" />
+                            </span>
+
+                            <span id="divAlterarCalEvento">
+                                <input type="button" id="alterarCalEvento" title="alterar" />
+                            </span>
+
+                            <span id="divExcluirCalEvento">
+                                <input type="button" id="deleteCalEvento" title="Excluir" />
+                            </span>
+
+                            <span id="divLimparCalEvento">
+                                <input type="button" id="limparCalEvento" title="Limpar" />
+                            </span>
+
+                            <span id="divCancelarCalEvento">
+                                <input type="button" id="cancelarCalEvento" title="Fechar" />
+                            </span>
+
+                            <span id="divFecharCalEvento">
+                                <input type="button" id="fecharCalEvento" title="Fechar" />
+                            </span>
+
+                        </div>
+                        <div class="linha_acoes" style="width: 100%"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>

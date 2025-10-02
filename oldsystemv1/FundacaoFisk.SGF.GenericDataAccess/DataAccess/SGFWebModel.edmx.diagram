@@ -1,0 +1,3136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="f059e9f27b884087b043a81a29a9cb26" Name="Diagram1" ZoomLevel="59">
+        <EntityTypeShape EntityType="SGFWebModel.Escolaridade" Width="1.5" PointX="25.75" PointY="77" />
+        <EntityTypeShape EntityType="SGFWebModel.Midia" Width="1.5" PointX="7.625" PointY="35" />
+        <EntityTypeShape EntityType="SGFWebModel.MotivoBolsa" Width="1.5" PointX="39.875" PointY="82.625" />
+        <EntityTypeShape EntityType="SGFWebModel.MotivoCancelamentoBolsa" Width="1.5" PointX="31.375" PointY="73.75" />
+        <EntityTypeShape EntityType="SGFWebModel.MotivoMatricula" Width="1.5" PointX="28.375" PointY="91" />
+        <EntityTypeShape EntityType="SGFWebModel.MotivoNaoMatricula" Width="2.625" PointX="10.875" PointY="31.375" />
+        <EntityTypeShape EntityType="SGFWebModel.TipoContato" Width="1.5" PointX="7.375" PointY="0.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="SGFWebModel.Duracao" Width="2" PointX="16.5" PointY="43.5" />
+        <EntityTypeShape EntityType="SGFWebModel.Evento" Width="1.5" PointX="35.25" PointY="62.75" />
+        <EntityTypeShape EntityType="SGFWebModel.Modalidade" Width="1.5" PointX="14.5" PointY="42.75" />
+        <EntityTypeShape EntityType="SGFWebModel.MotivoFalta" Width="1.5" PointX="32.625" PointY="60.5" />
+        <EntityTypeShape EntityType="SGFWebModel.Produto" Width="1.5" PointX="10.875" PointY="47.5" />
+        <EntityTypeShape EntityType="SGFWebModel.Regime" Width="1.5" PointX="22.75" PointY="38" />
+        <EntityTypeShape EntityType="SGFWebModel.Sala" Width="1.5" PointX="22.75" PointY="68.875" />
+        <EntityTypeShape EntityType="SGFWebModel.TipoDesconto" Width="1.5" PointX="25" PointY="71.75" />
+        <EntityTypeShape EntityType="SGFWebModel.TipoFinanceiro" Width="1.5" PointX="19.75" PointY="35.25" />
+        <EntityTypeShape EntityType="SGFWebModel.TipoLiquidacao" Width="1.5" PointX="36.25" PointY="41.625" />
+        <EntityTypeShape EntityType="SGFWebModel.MovimentacaoFinanceira" Width="1.5" PointX="39.125" PointY="37.75" />
+        <EntityTypeShape EntityType="SGFWebModel.MotivoDesistencia" Width="1.5" PointX="30.625" PointY="43" />
+        <EntityTypeShape EntityType="SGFWebModel.GrupoEstoque" Width="2.125" PointX="19.125" PointY="42.25" />
+        <EntityTypeShape EntityType="SGFWebModel.TipoAtividadeExtra" Width="1.5" PointX="30.5" PointY="66.125" />
+        <EntityTypeShape EntityType="SGFWebModel.Escola" Width="2.25" PointX="7.375" PointY="70.25" />
+        <AssociationConnector Association="SGFWebModel.FK_SALA_ESCOLA" />
+        <EntityTypeShape EntityType="SGFWebModel.PessoaSGF" Width="2.75" PointX="1.25" PointY="75.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="SGFWebModel.Conceito" Width="1.5" PointX="12.25" PointY="83.375" />
+        <EntityTypeShape EntityType="SGFWebModel.Feriado" Width="1.5" PointX="23.75" PointY="102" />
+        <AssociationConnector Association="SGFWebModel.PK_FERIADO_ESCOLA" />
+        <EntityTypeShape EntityType="SGFWebModel.Estagio" Width="2.875" PointX="12.25" PointY="67.875" />
+        <AssociationConnector Association="SGFWebModel.FK_CONCEITO_PRODUTO" />
+        <AssociationConnector Association="SGFWebModel.FK_ESTAGIO_PRODUTO" />
+        <EntityTypeShape EntityType="SGFWebModel.PessoaFisicaSGF" Width="2.375" PointX="0.75" PointY="86.875" />
+        <EntityTypeShape EntityType="SGFWebModel.PessoaJuridicaSGF" PointX="4.375" PointY="83.375" Width="1.75" />
+        <InheritanceConnector EntityType="SGFWebModel.PessoaJuridicaSGF" />
+        <InheritanceConnector ManuallyRouted="false" EntityType="SGFWebModel.Escola">
+        </InheritanceConnector>
+        <EntityTypeShape EntityType="SGFWebModel.Atividade" Width="2.25" PointX="4.375" PointY="70.25" />
+        <EntityTypeShape EntityType="SGFWebModel.ClasseTelefoneSGF" Width="2" PointX="4.625" PointY="74.125" />
+        <EntityTypeShape EntityType="SGFWebModel.TelefoneSGF" Width="1.5" PointX="7" PointY="65.625" />
+        <EntityTypeShape EntityType="SGFWebModel.TipoEnderecoSGF" Width="2" PointX="4.375" PointY="58.375" />
+        <EntityTypeShape EntityType="SGFWebModel.TipoLogradouroSGF" Width="1.75" PointX="3.75" PointY="55.75" />
+        <EntityTypeShape EntityType="SGFWebModel.TipoTelefoneSGF" Width="1.75" PointX="4.625" PointY="76.125" />
+        <AssociationConnector Association="SGFWebModel.FK_PESSOA_ATIVIDADE" />
+        <AssociationConnector Association="SGFWebModel.FK1_TELEFONE_CLASSE" />
+        <AssociationConnector Association="SGFWebModel.FK_PESSOA_TELEFONE" />
+        <AssociationConnector Association="SGFWebModel.FK3_TELEFONE_PESSOA" />
+        <AssociationConnector Association="SGFWebModel.FK4_TELEFONE_TIPO" />
+        <EntityTypeShape EntityType="SGFWebModel.UsuarioWebSGF" PointX="4.5" PointY="28.5" Width="2" />
+        <EntityTypeShape EntityType="SGFWebModel.Curso" Width="1.75" PointX="15.875" PointY="65.25" />
+        <EntityTypeShape EntityType="SGFWebModel.Item" Width="1.875" PointX="18.125" PointY="65.125" />
+        <AssociationConnector Association="SGFWebModel.FK_CURSO_CURSO" />
+        <AssociationConnector Association="SGFWebModel.FK_CURSO_ESTAGIO" />
+        <AssociationConnector Association="SGFWebModel.FK_CURSO_MODALIDADE" />
+        <AssociationConnector Association="SGFWebModel.FK_CURSO_PRODUTO" />
+        <AssociationConnector Association="SGFWebModel.FK_ITEM_GRUPO" />
+        <AssociationConnector Association="SGFWebModel.T_ITEM_CURSO" />
+        <EntityTypeShape EntityType="SGFWebModel.Aluno" PointX="21.5" PointY="90.125" Width="1.875" />
+        <EntityTypeShape EntityType="SGFWebModel.PoliticaDesconto" Width="1.375" PointX="29.625" PointY="94" IsExpanded="true" />
+        <EntityTypeShape EntityType="SGFWebModel.Turma" Width="1.875" PointX="20.75" PointY="70" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_ESCOLA" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_ESCOLARIDADE" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_MIDIA" />
+        <AssociationConnector Association="SGFWebModel.FK_POLITICA_ESCOLA" />
+        <AssociationConnector Association="SGFWebModel.FK_TURMA_ESCOLA" />
+        <EntityTypeShape EntityType="SGFWebModel.ItemEscola" Width="1.5" PointX="27.875" PointY="73.875" />
+        <AssociationConnector Association="SGFWebModel.FK_ITEM_ESCOLA__ESCOLA" />
+        <AssociationConnector Association="SGFWebModel.FK_ITEM_ESCOLA__ITEM" />
+        <EntityTypeShape EntityType="SGFWebModel.TipoItem" Width="1.5" PointX="15.875" PointY="62.5" />
+        <AssociationConnector Association="SGFWebModel.FK_ITEM_TIPO" />
+        <EntityTypeShape EntityType="SGFWebModel.Biblioteca" Width="1.5" PointX="20.25" PointY="102.125" />
+        <AssociationConnector Association="SGFWebModel.FK_BIBLIOTECA_ITEM" />
+        <EntityTypeShape EntityType="SGFWebModel.Professor" Width="1.625" PointX="2.75" PointY="101.375" />
+        <EntityTypeShape EntityType="SGFWebModel.FuncionarioSGF" Width="2.125" PointX="2.25" PointY="96.75" />
+        <EntityTypeShape EntityType="SGFWebModel.CriterioAvaliacao" Width="1.5" PointX="19.25" PointY="98" />
+        <EntityTypeShape EntityType="SGFWebModel.Avaliacao" Width="1.5" PointX="21.5" PointY="98.25" />
+        <AssociationConnector Association="SGFWebModel.FK_AVALIACAO_CRITERIO" />
+        <EntityTypeShape EntityType="SGFWebModel.TipoAvaliacao" PointX="18.875" PointY="56.375" Width="1.5" />
+        <AssociationConnector Association="SGFWebModel.FK_AVALIACAO_TIPO" />
+        <EntityTypeShape EntityType="SGFWebModel.HabilitacaoProfessor" Width="1.5" PointX="15.875" PointY="76.75" />
+        <AssociationConnector Association="SGFWebModel.FK_HABILITACAO_ESTAGIO" />
+        <AssociationConnector Association="SGFWebModel.FK_HABILITACAO_PRODUTO" />
+        <AssociationConnector Association="SGFWebModel.FK_HABILITACAO_PROFESSOR" />
+        <EntityTypeShape EntityType="SGFWebModel.ItemProgramacao" Width="1.5" PointX="20.375" PointY="79.5" />
+        <EntityTypeShape EntityType="SGFWebModel.ProgramacaoCurso" Width="1.5" PointX="15" PointY="73.125" />
+        <AssociationConnector Association="SGFWebModel.FK_PROGRAMACAO_CURSO" />
+        <AssociationConnector Association="SGFWebModel.FK_PROGRAMACAO_DURACAO" />
+        <AssociationConnector Association="SGFWebModel.PK_ITEM_PROGRAMACAO__PROGRAMACAO" />
+        <EntityTypeShape EntityType="SGFWebModel.Horario" Width="1.5" PointX="13.625" PointY="76.25" />
+        <AssociationConnector Association="SGFWebModel.FK_HORARIO_ESCOLA" />
+        <EntityTypeShape EntityType="SGFWebModel.PapelSGF" Width="2.125" PointX="6.75" PointY="61" />
+        <AssociationConnector Association="SGFWebModel.FK1_PESSOA_PAPEL" />
+        <AssociationConnector Association="SGFWebModel.FK_FUNCIONARIO_PESSOA" />
+        <AssociationConnector Association="SGFWebModel.FK1_USUARIO_PESSOA" />
+        <AssociationConnector ManuallyRouted="false" Association="SGFWebModel.FK5_PESSOA_FISICA__PESSOA_CPF">
+        </AssociationConnector>
+        <InheritanceConnector EntityType="SGFWebModel.PessoaFisicaSGF" />
+        <EntityTypeShape EntityType="SGFWebModel.RelacionamentoSGF" PointX="16.125" PointY="53.75" Width="2" />
+        <AssociationConnector Association="SGFWebModel.FK_RELACIONAMENTO__PAPEL_PAI" />
+        <AssociationConnector Association="SGFWebModel.FK1_RELACIONAMENTO_FUNCAO" />
+        <AssociationConnector Association="SGFWebModel.FK2_RELACIONAMENTO_PESSOA" />
+        <AssociationConnector Association="SGFWebModel.FK3_RELACIONAMENTO__PESSOA_PAI" />
+        <EntityTypeShape EntityType="SGFWebModel.AtividadeAluno" Width="2" PointX="32.125" PointY="83.375" />
+        <EntityTypeShape EntityType="SGFWebModel.AtividadeExtra" Width="1.5" PointX="24.125" PointY="76.25" />
+        <AssociationConnector Association="SGFWebModel.FK_ATIVIDADE_ALUNO__ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_ATIVIDADE_ALUNO__ATIVIDADE_EXTRA" />        
+        <AssociationConnector Association="SGFWebModel.FK_ATIVIDADE_EXTRA__FUNCIONARIO" />
+        <AssociationConnector Association="SGFWebModel.FK_ATIVIDADE_EXTRA__TIPO_ATIVIDADE" />
+        <AssociationConnector Association="SGFWebModel.FK_ATIVIVIDADE_EXTRA__PRODUTO" ManuallyRouted="false" >
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_ATENDENTE1" />
+        <AssociationConnector Association="SGFWebModel.FK_ATIVIDADE_EXTRA__ATENDENTE" />
+        <AssociationConnector Association="SGFWebModel.FK_ATIVIDADE_EXTRA__SALA" />
+        <EntityTypeShape EntityType="SGFWebModel.TabelaPreco" Width="1.5" PointX="18.125" PointY="76.625" />
+        <AssociationConnector Association="SGFWebModel.FK_TABELA_PRECO__CURSO" />
+        <AssociationConnector Association="SGFWebModel.FK_TABELA_PRECO__DURACAO" />
+        <AssociationConnector Association="SGFWebModel.FK_TABELA_PRECO__ESCOLA" />
+        <AssociationConnector Association="SGFWebModel.FK_TABELA_PRECO__REGIME" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_PESSOA_FISICA" />
+        <EntityTypeShape EntityType="SGFWebModel.AlunoBolsa" Width="1.5" PointX="31.125" PointY="98.25" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_BOLSA__ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_BOLSA__CANCELAMENTO" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_BOLSA__MOTIVO" />
+        <EntityTypeShape EntityType="SGFWebModel.AvaliacaoCurso" Width="1.875" PointX="21.125" PointY="67.5" />
+        <AssociationConnector Association="SGFWebModel.FK_AVALIACAO_CURSO__AVALIACAO" />
+        <AssociationConnector Association="SGFWebModel.FK_AVALIACAO_CURSO__CURSO" />
+        <AssociationConnector Association="SGFWebModel.FK_ATIVIDADE_EXTRA__ESCOLA" />
+        <EntityTypeShape EntityType="SGFWebModel.AlunoMotivoMatricula" Width="1.5" PointX="24.125" PointY="94" />
+        <AssociationConnector Association="SGFWebModel.FK_MOTIVO_MATRICULA__ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_MOTIVO_MATRICULA__MOTIVO" />
+        <EntityTypeShape EntityType="SGFWebModel.Prospect" Width="1.5" PointX="10" PointY="34.125" />
+        <EntityTypeShape EntityType="SGFWebModel.ProspectMotivoNaoMatricula" Width="2.375" PointX="12.25" PointY="36.125" />
+        <EntityTypeShape EntityType="SGFWebModel.ProspectProduto" Width="1.5" PointX="12.25" PointY="64.125" />
+        <AssociationConnector Association="SGFWebModel.FK_PROSPECT_ESCOLA" />
+        <AssociationConnector Association="SGFWebModel.FK_PROSPECT_MIDIA" />
+        <AssociationConnector Association="SGFWebModel.FK_MOTIVO_NAO__MOTIVO_NAO" />
+        <AssociationConnector Association="SGFWebModel.FK_PROSPECT_PESSOA" />
+        <AssociationConnector Association="SGFWebModel.FK_PROSPECT_PRODUTO__PRODUTO" />
+        <AssociationConnector Association="SGFWebModel.FK_MOTIVO_NAO__PROSPECT" />
+        <AssociationConnector Association="SGFWebModel.FK_PROSPECT_PRODUTO__PROSPECT" />
+        <AssociationConnector Association="SGFWebModel.FK_PROSPECT_USUARIO" />
+        <EntityTypeShape EntityType="SGFWebModel.FollowUp" Width="3.125" PointX="27.25" PointY="52" />
+        <AssociationConnector Association="SGFWebModel.FK_FOLLOWUP_ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_FOLLOWUP_PROSPECT" ManuallyRouted="true" >
+          <ConnectorPoint PointX="11.5" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="11.510416849190209" PointY="34.687502500000051" />
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="11.824253496194371" PointY="34.687502500000051" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="12.791666666666666" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="12.958333333333334" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="14.197916666666666" PointY="34.687502500000051" />
+=======
+          <ConnectorPoint PointX="14.364583333333334" PointY="34.687502500000051" />
+||||||| .merge-left.r301
+          <ConnectorPoint PointX="16.291666666666668" PointY="34.687502500000051" />
+=======
+          <ConnectorPoint PointX="16.458333333333332" PointY="34.687502500000051" />
+>>>>>>> .merge-right.r343
+>>>>>>> .merge-right.r301
+          <ConnectorPoint PointX="17.588541666666668" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="17.755208333333332" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="18.666666666666668" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="18.895833333333332" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="19.016749933603197" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="19.183416600269862" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="19.791666666666668" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="19.958333333333332" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="20.957751470275237" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="21.1244181369419" PointY="34.687502500000051" />
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="21.179769113111359" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="21.469238657850912" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="21.479166666666668" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="21.663355500773537" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="22.077944652313114" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="22.244611318979779" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="22.604166666666668" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="22.770833333333332" PointY="34.687502500000051" />
+          
+          
+||||||| .merge-left.r274
+          
+          
+          
+          
+          
+          
+=======
+          
+          
+          
+          
+          
+          
+||||||| .merge-left.r301
+          
+          
+          
+          
+          
+          
+=======
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+<<<<<<< .working
+<<<<<<< .working
+          
+<<<<<<< .working
+          
+          <ConnectorPoint PointX="26.307291666666668" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="26.473958333333332" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="26.916666666666668" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="27.208333333333332" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="27.651039166666667" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="27.817705833333331" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="27.924477916666667" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="28.091144583333332" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="28.28125" PointY="34.687502500000051" />
+          <ConnectorPoint PointX="28.28125" PointY="52" />
+||||||| .merge-left.r274
+          
+          
+          
+          
+          
+          
+=======
+          
+          
+          
+          
+          
+          
+||||||| .merge-left.r301
+          
+          
+          
+          
+          
+          
+=======
+          
+          
+||||||| .merge-left.r389
+          
+=======
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+          
+          
+          
+          
+          
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.FK_FOLLOWUP_USUARIO" />
+        <AssociationConnector Association="SGFWebModel.FK_TURMA_CURSO" />
+        <AssociationConnector Association="SGFWebModel.FK_TURMA_DURACAO" />
+        <AssociationConnector Association="SGFWebModel.FK_TURMA_PRODUTO" />
+        <AssociationConnector Association="SGFWebModel.FK_TURMA_REGIME" />
+        <AssociationConnector Association="SGFWebModel.FK_TURMA_SALA" />
+        <AssociationConnector Association="SGFWebModel.FK_TURMA_TURMA" />
+        <EntityTypeShape EntityType="SGFWebModel.PessoaEscola" Width="1.5" PointX="13.625" PointY="79.875" />
+        <AssociationConnector Association="SGFWebModel.FK_PESSOA_EMPRESA__EMPRESA" />
+        <AssociationConnector Association="SGFWebModel.FK_PESSOA_EMPRESA__PESSOA" />
+        <EntityTypeShape EntityType="SGFWebModel.AvaliacaoTurma" Width="1.5" PointX="23.75" PointY="82.5" />
+        <AssociationConnector Association="SGFWebModel.FK_AVAL_TURMA_AVALIACAO" />
+        <AssociationConnector Association="SGFWebModel.FK_AVAL_TURMA__FUNCIONARIO" />
+        <AssociationConnector Association="SGFWebModel.FK_AVAL_TURMA__TURMA" />
+        <EntityTypeShape EntityType="SGFWebModel.GrupoConta" Width="1.5" PointX="5" PointY="14.375" />
+        <EntityTypeShape EntityType="SGFWebModel.PlanoConta" Width="1.5" PointX="8.5" PointY="16" />
+        <EntityTypeShape EntityType="SGFWebModel.SubgrupoConta" Width="2.625" PointX="4.625" PointY="16.875" />
+        <AssociationConnector Association="SGFWebModel.FK_PLANO_CONTA__EMPRESA" />
+        <AssociationConnector Association="SGFWebModel.FK_SUBGRUPO_CONTA__GRUPO" />
+        <AssociationConnector Association="SGFWebModel.FK_PLANO_CONTA__SUBGRUPO" />
+        <EntityTypeShape EntityType="SGFWebModel.ProfessorTurma" Width="1.875" PointX="29.75" PointY="85.75" />
+        <AssociationConnector Association="SGFWebModel.FK_PROF_TURMA__PROFESSOR" />
+        <AssociationConnector Association="SGFWebModel.FK_PROF_TURMA__TURMA" />
+        <AssociationConnector Association="SGFWebModel.FK_FUNCIONARIO_EMPRESA" />
+        <EntityTypeShape EntityType="SGFWebModel.AlunoTurma" Width="1.5" PointX="35.375" PointY="68.125" />
+        <EntityTypeShape EntityType="SGFWebModel.AvaliacaoAluno" Width="1.5" PointX="14.25" PointY="83.75" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_TURMA__ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_AVAL_ALUNO__ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_TURMA__TURMA" />
+        <AssociationConnector Association="SGFWebModel.FK_AVAL_ALUNO__AVAL_TURMA" />
+        <AssociationConnector Association="SGFWebModel.FK_AVAL_ALUNO__CONCEITO" />
+        <EntityTypeShape EntityType="SGFWebModel.ProgramacaoTurma" Width="2.125" PointX="26" PointY="85.625" />
+        <AssociationConnector Association="SGFWebModel.FK_PROGRAMACAO_TURMA__TURMA" />
+        <InheritanceConnector EntityType="SGFWebModel.Professor" />
+        <EntityTypeShape EntityType="SGFWebModel.DiarioAula" Width="1.875" PointX="34.875" PointY="76.375" />
+        <AssociationConnector Association="SGFWebModel.FK_DIARIO_AULA_PROGRAMACAO_TURMA" />
+        <AssociationConnector Association="SGFWebModel.FK_SUBGRUPO__SUBGRUPO" />
+        <EntityTypeShape EntityType="SGFWebModel.HorarioProfessorTurma" Width="1.5" PointX="15.875" PointY="81.875" />
+        <AssociationConnector Association="SGFWebModel.FK_HORARIO_PROFESSOR_TURMA__HORARIO" />
+        <AssociationConnector Association="SGFWebModel.FK_HORARIO_PROFESSOR_TURMA__PROFESSOR" />
+        <AssociationConnector Association="SGFWebModel.FK_PROGRAMACAO_TURMA__FERIADO" />
+        <EntityTypeShape EntityType="SGFWebModel.FeriadoDesconsiderado" Width="1.5" PointX="23.75" PointY="98.875" />
+        <AssociationConnector Association="SGFWebModel.FK_DESCONSIDERA_FERIADO_TURMA" />
+        <AssociationConnector Association="SGFWebModel.FK_PROGRAMACAO_TURMA__FERIADO_DESCONSIDERADO" />
+        <AssociationConnector Association="SGFWebModel.FK_Empresa_Empresa" />
+        <EntityTypeShape EntityType="SGFWebModel.Contrato" Width="1.5" PointX="24.125" PointY="63.125" />
+        <EntityTypeShape EntityType="SGFWebModel.TaxaMatricula" Width="1.5" PointX="29.375" PointY="60.75" />
+        <AssociationConnector Association="SGFWebModel.FK_CONTRATO_ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_TURMA__CONTRATO" ManuallyRouted="true" >
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="25.625" PointY="79.335592447916653" />
+          <ConnectorPoint PointX="25.75" PointY="881.1897483898357" />
+          <ConnectorPoint PointX="25.75" PointY="63.875" />
+          <ConnectorPoint PointX="25.791666666666668" PointY="63.875" />
+          <ConnectorPoint PointX="25.958333333333332" PointY="63.875" />
+          <ConnectorPoint PointX="25.979166666666668" PointY="63.875" />
+          <ConnectorPoint PointX="26.145833333333332" PointY="63.875" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="26.197916666666668" PointY="63.875" />
+          <ConnectorPoint PointX="26.427083333333332" PointY="63.875" />
+          <ConnectorPoint PointX="26.430411052679954" PointY="63.875" />
+          <ConnectorPoint PointX="26.597077719346618" PointY="63.875" />
+          <ConnectorPoint PointX="26.832907824706528" PointY="63.875" />
+          <ConnectorPoint PointX="26.999574491373192" PointY="63.875" />
+          <ConnectorPoint PointX="27.263296381699881" PointY="63.875" />
+          <ConnectorPoint PointX="27.548013105359907" PointY="63.875" />
+          <ConnectorPoint PointX="27.617446552679954" PointY="63.875" />
+          <ConnectorPoint PointX="27.784113219346619" PointY="63.875" />
+          <ConnectorPoint PointX="27.791041666666668" PointY="63.875" />
+=======
+          <ConnectorPoint PointX="28.020833333333332" PointY="63.875" />
+          <ConnectorPoint PointX="28.072916666666668" PointY="63.875" />
+          <ConnectorPoint PointX="28.427083333333332" PointY="63.875" />
+          <ConnectorPoint PointX="28.447916666666668" PointY="63.875" />
+          <ConnectorPoint PointX="28.87136092743086" PointY="63.875" />
+          <ConnectorPoint PointX="28.875" PointY="63.875" />
+          <ConnectorPoint PointX="28.875" PointY="64.643697916666667" />
+||||||| .merge-left.r301
+          <ConnectorPoint PointX="28.981666666666669" PointY="64.643697916666667" />
+          <ConnectorPoint PointX="30.309064333333325" PointY="64.643697916666667" />
+          <ConnectorPoint PointX="30.359246666666667" PointY="64.643697916666667" />
+          <ConnectorPoint PointX="30.649644333333331" PointY="64.643697916666667" />
+          <ConnectorPoint PointX="30.730439666666665" PointY="64.643697916666667" />
+          <ConnectorPoint PointX="30.89710633333333" PointY="64.643697916666667" />
+          <ConnectorPoint PointX="31.25" PointY="64.643697916666667" />
+=======
+          <ConnectorPoint PointX="31.25" PointY="65.875" />
+          <ConnectorPoint PointX="31.479166666666668" PointY="65.875" />
+          <ConnectorPoint PointX="31.645833333333332" PointY="65.875" />
+          <ConnectorPoint PointX="32.385414666666662" PointY="65.875" />
+          <ConnectorPoint PointX="32.552081333333334" PointY="65.875" />
+          <ConnectorPoint PointX="33.229166666666664" PointY="65.875" />
+          <ConnectorPoint PointX="33.395833333333336" PointY="65.875" />
+||||||| .merge-left.r351
+          <ConnectorPoint PointX="33.666666666666664" PointY="65.875" />
+          <ConnectorPoint PointX="33.833333333333336" PointY="65.875" />
+          <ConnectorPoint PointX="34.291666666666664" PointY="65.875" />
+          <ConnectorPoint PointX="34.583333333333336" PointY="65.875" />
+          <ConnectorPoint PointX="34.666666666666664" PointY="65.875" />
+          <ConnectorPoint PointX="35.158333333333339" PointY="65.875" />
+          <ConnectorPoint PointX="35.276041666666664" PointY="65.875" />
+=======
+          <ConnectorPoint PointX="35.458333333333336" PointY="65.875" />
+          <ConnectorPoint PointX="36.125" PointY="65.875" />
+          <ConnectorPoint PointX="36.125" PointY="68.125" />
+          
+          
+          
+          
+||||||| .merge-left.r389
+          
+          
+          
+          
+          
+          
+          
+=======
+          
+          
+          
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r388
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+          
+          
+          
+          
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+          
+          
+          
+          
+          
+          
+          
+||||||| .merge-left.r274
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+=======
+          
+          
+          
+          
+          
+          
+          
+          
+||||||| .merge-left.r301
+          
+          
+          
+          
+          
+          
+          
+          
+=======
+          
+          
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+          
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+||||||| .merge-left.r389
+          
+          
+          
+          
+          
+          
+          
+          
+=======
+          
+          
+          
+          
+          
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+          
+          
+          
+<<<<<<< .working
+<<<<<<< .working
+          
+          
+||||||| .merge-left.r274
+          
+          
+=======
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+||||||| .merge-left.r389
+=======
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+          
+||||||| .merge-left.r274
+          
+=======
+          
+||||||| .merge-left.r301
+          
+=======
+          
+||||||| .merge-left.r351
+          
+=======
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r388
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.FK_CONTRATO__TIPO_FINAN" />
+        <AssociationConnector Association="SGFWebModel.FK_CONTRATO_CONTA" />
+        <AssociationConnector Association="SGFWebModel.FK_CONTRATO_CURSO" />
+        <AssociationConnector Association="SGFWebModel.FK_CONTRATO_DURACAO" />
+        <AssociationConnector Association="SGFWebModel.FK_CONTRATO_PRODUTO" />
+        <AssociationConnector Association="SGFWebModel.FK_CONTRATO_REGIME" />
+        <AssociationConnector Association="SGFWebModel.FK_CONTRATO_RESPONSAVEL" />
+        <AssociationConnector Association="SGFWebModel.FK_CONTRATO_USUARIO" />
+        <AssociationConnector Association="SGFWebModel.FK_TAXA_MATRICULA__CONTRATO" ManuallyRouted="true" >
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="25.625" PointY="71.232521946915313" />
+          <ConnectorPoint PointX="25.74064728879965" PointY="72.2564373954206" />
+          <ConnectorPoint PointX="25.759352711200354" PointY="72.4220510571475" />
+          <ConnectorPoint PointX="28.05314728879965" PointY="92.730799563741826" />
+          <ConnectorPoint PointX="28.071852711200354" PointY="92.89641322546872" />
+          <ConnectorPoint PointX="28.116272288799649" PointY="93.289694314823024" />
+          <ConnectorPoint PointX="28.134977711200353" PointY="93.455307976549918" />
+          <ConnectorPoint PointX="28.20939728879965" PointY="94.114202412952707" />
+          <ConnectorPoint PointX="28.228102711200354" PointY="94.2798160746796" />
+          <ConnectorPoint PointX="28.24064728879965" PointY="94.3908829827949" />
+          <ConnectorPoint PointX="28.259352711200354" PointY="94.5564966445218" />
+          <ConnectorPoint PointX="28.27189728879965" PointY="94.667563552637077" />
+          <ConnectorPoint PointX="28.290602711200354" PointY="94.833177214363971" />
+          <ConnectorPoint PointX="28.61564728879965" PointY="97.711049820901039" />
+          <ConnectorPoint PointX="28.634352711200354" PointY="97.876663482627933" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="28.641839147448984" PointY="97.9429467289434" />
+          <ConnectorPoint PointX="29.270889231579908" PointY="67.307711584667146" />
+          <ConnectorPoint PointX="29.274310768420094" PointY="67.141080042444713" />
+          <ConnectorPoint PointX="29.342039231579907" PointY="63.842650478242525" />
+          <ConnectorPoint PointX="29.345460768420093" PointY="63.676018936020078" />
+          <ConnectorPoint PointX="29.365285894351832" PointY="62.710519669737138" />
+          <ConnectorPoint PointX="29.360313947544256" PointY="62.721719926541439" />
+          <ConnectorPoint PointX="29.28701318567564" PointY="62.886843848548665" />
+          <ConnectorPoint PointX="29.190061108585088" PointY="63.10524686112079" />
+          <ConnectorPoint PointX="28.622438891414909" PointY="64.383923976176916" />
+          <ConnectorPoint PointX="28.565061108585091" PointY="64.513178356287185" />
+          <ConnectorPoint PointX="28.497438891414909" PointY="64.6655102752102" />
+          <ConnectorPoint PointX="28.377561108585091" PointY="64.9355578048371" />
+          <ConnectorPoint PointX="28.309938891414909" PointY="65.087889723760114" />
+          <ConnectorPoint PointX="27.971311108585091" PointY="65.850713276695259" />
+          <ConnectorPoint PointX="27.840563891414906" PointY="66.14524627663009" />
+          <ConnectorPoint PointX="25.783811108585091" PointY="70.778473509777655" />
+          <ConnectorPoint PointX="25.716188891414909" PointY="70.930805428700666" />
+          <ConnectorPoint PointX="25.625" PointY="71.136225768272425" />
+=======
+          <ConnectorPoint PointX="25.740680465038274" PointY="72.164127421399627" />
+          <ConnectorPoint PointX="25.759319534961726" PointY="72.329748563921243" />
+          <ConnectorPoint PointX="28.053180465038274" PointY="92.7123035725777" />
+          <ConnectorPoint PointX="28.071819534961726" PointY="92.877924715099311" />
+          <ConnectorPoint PointX="28.116305465038273" PointY="93.273213245893629" />
+          <ConnectorPoint PointX="28.134944534961726" PointY="93.438834388415245" />
+          <ConnectorPoint PointX="28.209430465038274" PointY="94.1006938530627" />
+          <ConnectorPoint PointX="28.228069534961726" PointY="94.26631499558431" />
+          <ConnectorPoint PointX="28.240680465038274" PointY="94.378371909159711" />
+          <ConnectorPoint PointX="28.259319534961726" PointY="94.543993051681326" />
+          <ConnectorPoint PointX="28.271930465038274" PointY="94.6560499652567" />
+          <ConnectorPoint PointX="28.290569534961726" PointY="94.821671107778315" />
+          <ConnectorPoint PointX="28.615680465038274" PointY="97.710508582323712" />
+||||||| .merge-left.r301
+          <ConnectorPoint PointX="28.634319534961726" PointY="97.876129724845327" />
+          <ConnectorPoint PointX="28.641839147448984" PointY="97.9429467289434" />
+          <ConnectorPoint PointX="29.270874572255607" PointY="67.5688082070429" />
+          <ConnectorPoint PointX="29.274325427744397" PointY="67.40217726941674" />
+          <ConnectorPoint PointX="29.375" PointY="62.540919408995279" />
+          <ConnectorPoint PointX="29.12707288082478" PointY="63.109203928033075" />
+          <ConnectorPoint PointX="28.622927119175213" PointY="64.264778326820391" />
+          <ConnectorPoint PointX="28.564572880824784" PointY="64.39853461126846" />
+          <ConnectorPoint PointX="28.497927119175216" PointY="64.551296256428245" />
+          <ConnectorPoint PointX="28.377072880824784" PointY="64.828311505680261" />
+          <ConnectorPoint PointX="28.310427119175216" PointY="64.981073150840047" />
+          <ConnectorPoint PointX="27.97082288082478" PointY="65.759494776905811" />
+          <ConnectorPoint PointX="27.841052119175217" PointY="66.056947976517549" />
+=======
+          <ConnectorPoint PointX="25.783322880824784" PointY="70.773558545043414" />
+          <ConnectorPoint PointX="25.716677119175216" PointY="70.9263201902032" />
+          <ConnectorPoint PointX="25.625" PointY="71.136457297231175" />
+          <ConnectorPoint PointX="25.73949337285233" PointY="72.037315154864274" />
+          <ConnectorPoint PointX="25.76050662714767" PointY="72.202651844445569" />
+          <ConnectorPoint PointX="28.115118372852329" PointY="90.729230631927521" />
+||||||| .merge-left.r351
+          <ConnectorPoint PointX="28.13613162714767" PointY="90.894567321508816" />
+          <ConnectorPoint PointX="28.136279036231635" PointY="90.895727167081262" />
+          <ConnectorPoint PointX="28.136279036231635" PointY="91.365856469297213" />
+          <ConnectorPoint PointX="28.160998836134027" PointY="91.43955290841069" />
+          <ConnectorPoint PointX="28.307751163865973" PointY="91.877061465444456" />
+          <ConnectorPoint PointX="28.323154036231635" PointY="91.922981612450144" />
+=======
+          <ConnectorPoint PointX="28.323154036231635" PointY="92.815553145243939" />
+          <ConnectorPoint PointX="28.448154036231635" PointY="93.619950965565039" />
+          <ConnectorPoint PointX="28.448154036231635" PointY="93.78524991845245" />
+          <ConnectorPoint PointX="28.689225873734951" PointY="95.655382581959756" />
+          <ConnectorPoint PointX="29.27086740152378" PointY="67.686034415606272" />
+          <ConnectorPoint PointX="29.274332598476221" PointY="67.519403775603124" />
+          <ConnectorPoint PointX="29.375" PointY="62.678618742724993" />
+          <ConnectorPoint PointX="29.187878494260474" PointY="63.134747665768266" />
+>>>>>>> .merge-right.r388
+          <ConnectorPoint PointX="28.624621505739523" PointY="64.507747538526345" />
+<<<<<<< .working
+>>>>>>> .merge-right.r343
+||||||| .merge-left.r351
+=======
+          <ConnectorPoint PointX="28.562878494260477" PointY="64.6582528116647" />
+          <ConnectorPoint PointX="28.499621505739523" PointY="64.81244856770563" />
+>>>>>>> .merge-right.r388
+          <ConnectorPoint PointX="28.375378494260477" PointY="65.115304355433622" />
+          <ConnectorPoint PointX="28.312121505739523" PointY="65.269500111474557" />
+          <ConnectorPoint PointX="27.969128494260474" PointY="66.1055827002663" />
+          <ConnectorPoint PointX="27.842746505739523" PointY="66.413652476042756" />
+||||||| .merge-left.r389
+          <ConnectorPoint PointX="25.781628494260481" PointY="71.43785071090376" />
+          <ConnectorPoint PointX="25.64536934257135" PointY="71.769997140941953" />
+          <ConnectorPoint PointX="25.625" PointY="71.8196496181035" />
+          <ConnectorPoint PointX="25.625" PointY="71.8839070923168" />
+          <ConnectorPoint PointX="25.737184546114268" PointY="72.604716705924773" />
+          <ConnectorPoint PointX="25.762815453885736" PointY="72.769400749913814" />
+          <ConnectorPoint PointX="25.880402652334993" PointY="73.5249235559973" />
+          <ConnectorPoint PointX="25.906033560106462" PointY="73.689607599986346" />
+          <ConnectorPoint PointX="25.916060169043064" PointY="73.754030698922179" />
+          <ConnectorPoint PointX="25.941691076814532" PointY="73.91871474291122" />
+          <ConnectorPoint PointX="26.0714021059839" PointY="74.7521357447757" />
+          <ConnectorPoint PointX="26.0714021059839" PointY="74.917240302525187" />
+          <ConnectorPoint PointX="26.114580381930107" PointY="75.232942404583824" />
+          <ConnectorPoint PointX="26.137164970848264" PointY="75.398071790585149" />
+          <ConnectorPoint PointX="26.542307095680336" PointY="78.36030725828509" />
+=======
+          <ConnectorPoint PointX="26.564891684598493" PointY="78.525436644286415" />
+          <ConnectorPoint PointX="26.731775806151127" PointY="79.745625890378932" />
+          <ConnectorPoint PointX="26.731775806151127" PointY="79.910730448128419" />
+          <ConnectorPoint PointX="26.810121085742772" PointY="80.4697197599407" />
+          <ConnectorPoint PointX="26.833254189452408" PointY="80.63477319762238" />
+          <ConnectorPoint PointX="28.137007692872523" PointY="89.936983585386486" />
+          <ConnectorPoint PointX="28.137007692872523" PointY="90.102088143135973" />
+          <ConnectorPoint PointX="28.215252081026435" PointY="90.57945102476603" />
+          <ConnectorPoint PointX="28.215289089769716" PointY="90.578560680647087" />
+          <ConnectorPoint PointX="28.222210910230288" PointY="90.412037810808471" />
+          <ConnectorPoint PointX="28.246539089769716" PointY="89.826758504890307" />
+          <ConnectorPoint PointX="28.253460910230288" PointY="89.660235635051691" />
+          <ConnectorPoint PointX="28.277789089769716" PointY="89.074956329133414" />
+          <ConnectorPoint PointX="28.284710910230288" PointY="88.9084334592948" />
+          <ConnectorPoint PointX="29.206964345559477" PointY="66.721165002344577" />
+          <ConnectorPoint PointX="29.21388616602005" PointY="66.554642132505961" />
+          <ConnectorPoint PointX="29.269139089769716" PointY="65.225385547164336" />
+          <ConnectorPoint PointX="29.276060910230289" PointY="65.05886267732572" />
+          <ConnectorPoint PointX="29.310872173103053" PointY="64.221384815930918" />
+          <ConnectorPoint PointX="29.317793993563626" PointY="64.0548619460923" />
+          <ConnectorPoint PointX="29.340289089769716" PointY="63.513682353401208" />
+          <ConnectorPoint PointX="29.347210910230288" PointY="63.347159483562592" />
+          <ConnectorPoint PointX="29.353636174180384" PointY="63.192582606202762" />
+          <ConnectorPoint PointX="29.360557994640956" PointY="63.026059736364147" />
+          <ConnectorPoint PointX="29.365855887212231" PointY="62.898604787179892" />
+          <ConnectorPoint PointX="29.372777707672803" PointY="62.732081917341276" />
+          <ConnectorPoint PointX="29.375" PointY="62.678618742724993" />
+          <ConnectorPoint PointX="29.203264688034491" PointY="63.100960579205392" />
+          <ConnectorPoint PointX="28.624860311965506" PointY="64.523407504193955" />
+          <ConnectorPoint PointX="28.562639688034494" PointY="64.676424215068522" />
+          <ConnectorPoint PointX="28.499860311965506" PointY="64.830815042898962" />
+          <ConnectorPoint PointX="28.375139688034494" PointY="65.137535523126019" />
+          <ConnectorPoint PointX="28.312360311965506" PointY="65.291926350956459" />
+          <ConnectorPoint PointX="27.968889688034494" PointY="66.136610023917271" />
+          <ConnectorPoint PointX="27.906110311965506" PointY="66.291000851747711" />
+          <ConnectorPoint PointX="27.905764688034495" PointY="66.291850830963284" />
+          <ConnectorPoint PointX="27.842985311965506" PointY="66.446241658793724" />
+          <ConnectorPoint PointX="25.781389688034494" PointY="71.516241951254742" />
+          <ConnectorPoint PointX="25.652685772048621" PointY="71.832758383534056" />
+          <ConnectorPoint PointX="25.625" PointY="71.900844903874969" />
+          <ConnectorPoint PointX="25.625" PointY="71.9893328061743" />
+          <ConnectorPoint PointX="25.736608026434787" PointY="72.674801995986385" />
+          <ConnectorPoint PointX="25.763391973565213" PointY="72.839302445693662" />
+          <ConnectorPoint PointX="25.890665719620522" PointY="73.620986652284827" />
+          <ConnectorPoint PointX="25.917449666750947" PointY="73.7854871019921" />
+          <ConnectorPoint PointX="25.922513610210959" PointY="73.816588603664243" />
+          <ConnectorPoint PointX="25.949297557341385" PointY="73.98108905337152" />
+          <ConnectorPoint PointX="25.98353543837176" PointY="74.1913697412438" />
+          <ConnectorPoint PointX="26.010319385502186" PointY="74.35587019095108" />
+          <ConnectorPoint PointX="26.125872676389186" PointY="75.0655702296908" />
+          <ConnectorPoint PointX="26.125872676389186" PointY="75.5666833420212" />
+          <ConnectorPoint PointX="26.567093869539658" PointY="78.562154325489061" />
+          <ConnectorPoint PointX="26.591381163022682" PointY="78.727041878545819" />
+          <ConnectorPoint PointX="26.593204684847311" PointY="78.739421852124153" />
+          <ConnectorPoint PointX="26.593204684847311" PointY="78.904478533661987" />
+          <ConnectorPoint PointX="26.650109256543491" PointY="79.232274354301666" />
+          <ConnectorPoint PointX="26.678615841098129" PointY="79.39648504949173" />
+          <ConnectorPoint PointX="26.712656255787739" PointY="79.592573084872683" />
+          <ConnectorPoint PointX="26.712656255787739" PointY="79.757629766410517" />
+          <ConnectorPoint PointX="26.78824631969762" PointY="80.2975117930807" />
+          <ConnectorPoint PointX="26.811356266852464" PointY="80.462568474618536" />
+          <ConnectorPoint PointX="28.137071030383254" PointY="89.931135324553807" />
+          <ConnectorPoint PointX="28.137071030383254" PointY="90.105236792863067" />
+          <ConnectorPoint PointX="28.199953802718564" PointY="90.376844568039388" />
+          <ConnectorPoint PointX="28.238859545167987" PointY="90.544889038024309" />
+          <ConnectorPoint PointX="28.246555608693551" PointY="90.578130426947936" />
+          <ConnectorPoint PointX="28.246647590301542" PointY="90.575845822832946" />
+          <ConnectorPoint PointX="28.253352409698461" PointY="90.409314074584643" />
+          <ConnectorPoint PointX="28.277897590301542" PointY="89.79967023559044" />
+          <ConnectorPoint PointX="28.284602409698461" PointY="89.633138487342137" />
+          <ConnectorPoint PointX="29.269247590301543" PointY="65.17689684638043" />
+          <ConnectorPoint PointX="29.275952409698462" PointY="65.010365098132127" />
+          <ConnectorPoint PointX="29.31098067363488" PointY="64.140346431542241" />
+          <ConnectorPoint PointX="29.3176854930318" PointY="63.973814683293945" />
+          <ConnectorPoint PointX="29.340397590301542" PointY="63.409700269346722" />
+          <ConnectorPoint PointX="29.347102409698461" PointY="63.243168521098433" />
+          <ConnectorPoint PointX="29.358538529498471" PointY="62.95912253704892" />
+          <ConnectorPoint PointX="29.36524334889539" PointY="62.792590788800631" />
+          <ConnectorPoint PointX="29.375" PointY="62.550258807980136" />
+          
+          
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.FK_TAXA_MATRICULA__PESSOA" ManuallyRouted="false" >
+          <ConnectorPoint PointX="3.875" PointY="78.944216292310159" />
+          <ConnectorPoint PointX="4.0559365726494789" PointY="76.654070119814151" />
+          <ConnectorPoint PointX="4.069063427350522" PointY="76.487921200276787" />
+          <ConnectorPoint PointX="5.5559365726494789" PointY="57.668305061696643" />
+          <ConnectorPoint PointX="5.569063427350522" PointY="57.502156142159279" />
+          <ConnectorPoint PointX="5.9309365726494789" PointY="52.921863797167262" />
+          <ConnectorPoint PointX="5.944063427350522" PointY="52.7557148776299" />
+          <ConnectorPoint PointX="5.94531375" PointY="52.739889322916667" />
+          <ConnectorPoint PointX="6.479166666666667" PointY="52.739889322916667" />
+          <ConnectorPoint PointX="6.833333333333333" PointY="52.739889322916667" />
+          <ConnectorPoint PointX="6.979166666666667" PointY="52.739889322916667" />
+          <ConnectorPoint PointX="7.458333333333333" PointY="52.739889322916667" />
+          <ConnectorPoint PointX="8" PointY="52.739889322916667" />
+          <ConnectorPoint PointX="8" PointY="46.970683593749996" />
+          <ConnectorPoint PointX="10.041666666666666" PointY="46.970683593749996" />
+          <ConnectorPoint PointX="10.208333333333334" PointY="46.970683593749996" />
+          <ConnectorPoint PointX="10.385416666666666" PointY="46.970683593749996" />
+          <ConnectorPoint PointX="10.755210833333335" PointY="46.970683593749996" />
+          <ConnectorPoint PointX="11.033857416666669" PointY="46.970683593749996" />
+          <ConnectorPoint PointX="11.200524083333336" PointY="46.970683593749996" />
+          <ConnectorPoint PointX="11.666666666666666" PointY="46.970683593749996" />
+          <ConnectorPoint PointX="11.833333333333334" PointY="46.970683593749996" />
+          <ConnectorPoint PointX="12.572916666666666" PointY="46.970683593749996" />
+          <ConnectorPoint PointX="12.739583333333334" PointY="46.970683593749996" />
+          <ConnectorPoint PointX="12.875" PointY="46.970683593749996" />
+          <ConnectorPoint PointX="12.875" PointY="45.125" />
+          <ConnectorPoint PointX="15.290162776476036" PointY="45.125" />
+          <ConnectorPoint PointX="15.456829443142704" PointY="45.125" />
+          <ConnectorPoint PointX="16.041666666666668" PointY="45.125" />
+          <ConnectorPoint PointX="16.208333333333332" PointY="45.125" />
+          <ConnectorPoint PointX="16.229166666666668" PointY="45.125" />
+          <ConnectorPoint PointX="16.458333333333332" PointY="45.125" />
+          <ConnectorPoint PointX="16.541666666666668" PointY="45.125" />
+          <ConnectorPoint PointX="16.541666666666668" PointY="46.114889322916667" />
+          <ConnectorPoint PointX="16.604166666666668" PointY="46.114889322916667" />
+          <ConnectorPoint PointX="16.772786458333332" PointY="46.114889322916667" />
+          <ConnectorPoint PointX="16.78494353322251" PointY="46.114889322916667" />
+          <ConnectorPoint PointX="16.951610199889174" PointY="46.114889322916667" />
+          <ConnectorPoint PointX="17.291667166666667" PointY="46.114889322916667" />
+          <ConnectorPoint PointX="17.458333833333331" PointY="46.114889322916667" />
+          <ConnectorPoint PointX="17.916666666666668" PointY="46.114889322916667" />
+          <ConnectorPoint PointX="18.083333333333332" PointY="46.114889322916667" />
+          <ConnectorPoint PointX="18.416666666666668" PointY="46.114889322916667" />
+          <ConnectorPoint PointX="18.708333333333332" PointY="46.114889322916667" />
+          <ConnectorPoint PointX="18.791666666666668" PointY="46.114889322916667" />
+          <ConnectorPoint PointX="19.083333333333332" PointY="46.114889322916667" />
+          <ConnectorPoint PointX="20.041666666666668" PointY="46.114889322916667" />
+          <ConnectorPoint PointX="20.333333333333332" PointY="46.114889322916667" />
+          <ConnectorPoint PointX="21.713541666666668" PointY="46.114889322916667" />
+          <ConnectorPoint PointX="21.713541666666668" PointY="46.8542664196537" />
+          <ConnectorPoint PointX="23.541666666666668" PointY="46.8542664196537" />
+          <ConnectorPoint PointX="23.708333333333332" PointY="46.8542664196537" />
+          <ConnectorPoint PointX="23.791666666666668" PointY="46.8542664196537" />
+          <ConnectorPoint PointX="24.145833333333332" PointY="46.8542664196537" />
+          <ConnectorPoint PointX="25.069303746000653" PointY="46.8542664196537" />
+          <ConnectorPoint PointX="26.336882829039507" PointY="62.184060980306057" />
+          <ConnectorPoint PointX="26.350617170960493" PointY="62.350160786536449" />
+          <ConnectorPoint PointX="26.507903165145386" PointY="64.25233952266862" />
+          <ConnectorPoint PointX="26.785482736422882" PointY="64.005884424527" />
+          <ConnectorPoint PointX="26.849933352377537" PointY="64.005884424527" />
+          <ConnectorPoint PointX="27.052815485936446" PointY="63.888852506696445" />
+          <ConnectorPoint PointX="27.197184514063551" PointY="63.805573688888956" />
+          <ConnectorPoint PointX="27.255941485936447" PointY="63.771679915279741" />
+          <ConnectorPoint PointX="27.400310514063552" PointY="63.688401097472251" />
+          <ConnectorPoint PointX="27.459067485936448" PointY="63.654507323863037" />
+          <ConnectorPoint PointX="27.603436514063553" PointY="63.571228506055547" />
+          <ConnectorPoint PointX="28.302815485936446" PointY="63.167793955497281" />
+          <ConnectorPoint PointX="29.238851180730222" PointY="62.627844721930323" />
+          <ConnectorPoint PointX="29.375" PointY="62.549307705634206" />
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.FK_TAXA_MATRICULA__CONTA" />
+        <AssociationConnector Association="SGFWebModel.FK_TAXA_MATRICULA__TIPO_FINAN" />
+        <EntityTypeShape EntityType="SGFWebModel.vi_contrato" Width="1.5" PointX="7.375" PointY="2.5" />
+        <AssociationConnector Association="SGFWebModel.FK_CONTRATO_ESCOLA" />
+        <EntityTypeShape EntityType="SGFWebModel.Banco" Width="1.5" PointX="5.5" PointY="41.875" />
+        <EntityTypeShape EntityType="SGFWebModel.LocalMovto" Width="2.125" PointX="7.75" PointY="40.875" />
+        <EntityTypeShape EntityType="SGFWebModel.Titulo" Width="1.5" PointX="26.5" PointY="96" />
+        <AssociationConnector Association="SGFWebModel.FK1_LOCAL_MOVTO__BANCO" />
+        <AssociationConnector Association="SGFWebModel.FK_TITULO_EMPRESA" />
+        <AssociationConnector Association="SGFWebModel.FK2_LOCAL_MOVTO__PESSOA" ManuallyRouted="false" >
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.FK_TITULO_PESSOA" ManuallyRouted="false" >
+          <ConnectorPoint PointX="3.875" PointY="78.936799865208627" />
+          <ConnectorPoint PointX="4.4975631217788026" PointY="57.651893450799982" />
+          <ConnectorPoint PointX="4.5024358782211973" PointY="57.48529803062754" />
+          <ConnectorPoint PointX="4.64941084375" PointY="52.460348307291667" />
+          <ConnectorPoint PointX="5.135416666666667" PointY="52.460348307291667" />
+          <ConnectorPoint PointX="5.302083333333333" PointY="52.460348307291667" />
+          <ConnectorPoint PointX="5.479166666666667" PointY="52.460348307291667" />
+          <ConnectorPoint PointX="5.645833333333333" PointY="52.460348307291667" />
+          <ConnectorPoint PointX="5.854166666666667" PointY="52.460348307291667" />
+          <ConnectorPoint PointX="6.020833333333333" PointY="52.460348307291667" />
+          <ConnectorPoint PointX="6.4791624166666679" PointY="52.460348307291667" />
+          <ConnectorPoint PointX="6.8333333333333321" PointY="52.460348307291667" />
+          <ConnectorPoint PointX="6.979166666666667" PointY="52.460348307291667" />
+          <ConnectorPoint PointX="7.458333333333333" PointY="52.460348307291667" />
+          <ConnectorPoint PointX="7.8125" PointY="52.460348307291667" />
+          <ConnectorPoint PointX="7.8125" PointY="40.165273437500005" />
+          <ConnectorPoint PointX="8.4635419166666654" PointY="40.165273437500005" />
+          <ConnectorPoint PointX="8.6302085833333333" PointY="40.165273437500005" />
+          <ConnectorPoint PointX="9.1979171666666648" PointY="40.165273437500005" />
+          <ConnectorPoint PointX="9.3645838333333327" PointY="40.165273437500005" />
+          <ConnectorPoint PointX="11.666666666666666" PointY="40.165273437500005" />
+          <ConnectorPoint PointX="11.833333333333334" PointY="40.165273437500005" />
+          <ConnectorPoint PointX="11.853179158140426" PointY="40.165273437500005" />
+          <ConnectorPoint PointX="12.019845824807094" PointY="40.165273437500005" />
+          <ConnectorPoint PointX="14.166666666666666" PointY="40.165273437500005" />
+          <ConnectorPoint PointX="14.333333333333334" PointY="40.165273437500005" />
+          <ConnectorPoint PointX="15.291666666666666" PointY="40.165273437500005" />
+          <ConnectorPoint PointX="15.291666666666666" PointY="41.256653645833339" />
+          <ConnectorPoint PointX="16.229166666666668" PointY="41.256653645833339" />
+          <ConnectorPoint PointX="16.395833333333332" PointY="41.256653645833339" />
+          <ConnectorPoint PointX="18.416666666666668" PointY="41.256653645833339" />
+          <ConnectorPoint PointX="18.645833333333332" PointY="41.256653645833339" />
+          <ConnectorPoint PointX="18.729166666666668" PointY="41.256653645833339" />
+          <ConnectorPoint PointX="18.895833333333332" PointY="41.256653645833339" />
+          <ConnectorPoint PointX="18.916666666666668" PointY="41.256653645833339" />
+          <ConnectorPoint PointX="19.176936625509885" PointY="41.256653645833339" />
+          <ConnectorPoint PointX="19.322916666666668" PointY="41.256653645833339" />
+          <ConnectorPoint PointX="19.489583333333332" PointY="41.256653645833339" />
+          <ConnectorPoint PointX="20.416666666666668" PointY="41.256653645833339" />
+          <ConnectorPoint PointX="20.583333333333332" PointY="41.256653645833339" />
+          <ConnectorPoint PointX="21.229166666666668" PointY="41.256653645833339" />
+          <ConnectorPoint PointX="21.583333333333332" PointY="41.256653645833339" />
+          <ConnectorPoint PointX="21.979166666666668" PointY="41.256653645833339" />
+          <ConnectorPoint PointX="21.979166666666668" PointY="41.1875" />
+          <ConnectorPoint PointX="22.229166666666668" PointY="41.1875" />
+          <ConnectorPoint PointX="22.395833333333332" PointY="41.1875" />
+          <ConnectorPoint PointX="23.104167166666667" PointY="41.1875" />
+          <ConnectorPoint PointX="23.270833833333331" PointY="41.1875" />
+          <ConnectorPoint PointX="23.885416666666668" PointY="41.1875" />
+          <ConnectorPoint PointX="24.052083333333332" PointY="41.1875" />
+          <ConnectorPoint PointX="25.791666666666668" PointY="41.1875" />
+          <ConnectorPoint PointX="25.958333333333332" PointY="41.1875" />
+          <ConnectorPoint PointX="26.541666666666668" PointY="41.1875" />
+          <ConnectorPoint PointX="26.833333333333332" PointY="41.1875" />
+          <ConnectorPoint PointX="26.916666666666668" PointY="41.1875" />
+          <ConnectorPoint PointX="27.208333333333332" PointY="41.1875" />
+          <ConnectorPoint PointX="27.781250000000004" PointY="41.1875" />
+          <ConnectorPoint PointX="27.947916666666668" PointY="41.1875" />
+          <ConnectorPoint PointX="28.166666666666668" PointY="41.1875" />
+          <ConnectorPoint PointX="28.166666666666668" PointY="39.625" />
+          <ConnectorPoint PointX="28.4453125" PointY="39.625" />
+          <ConnectorPoint PointX="28.611979166666664" PointY="39.625" />
+          <ConnectorPoint PointX="28.666666666666668" PointY="39.625" />
+          <ConnectorPoint PointX="28.833333333333332" PointY="39.625" />
+          <ConnectorPoint PointX="28.916666666666668" PointY="39.625" />
+          <ConnectorPoint PointX="29.395833333333332" PointY="39.625" />
+          <ConnectorPoint PointX="30.041666666666668" PointY="39.625" />
+          <ConnectorPoint PointX="30.208333333333332" PointY="39.625" />
+          <ConnectorPoint PointX="32.625" PointY="39.625" />
+          <ConnectorPoint PointX="29.131277791348356" PointY="85.8699588318297" />
+          <ConnectorPoint PointX="29.118722208651644" PointY="86.036151897632465" />
+          <ConnectorPoint PointX="28.381277791348356" PointY="95.797399267129265" />
+          <ConnectorPoint PointX="28.368722208651644" PointY="95.963592332932024" />
+          <ConnectorPoint PointX="28" PointY="100.8442160176804" />
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.FK_TITULO_RESPONSAVEL" />
+        <AssociationConnector Association="SGFWebModel.FK_TITULO__TIPO_FINAN" />
+        <EntityTypeShape EntityType="SGFWebModel.EnderecoSGF" Width="2.125" PointX="4.125" PointY="61.375" />
+        <AssociationConnector Association="SGFWebModel.FK_PESSOA_ENDERECO" />
+        <AssociationConnector Association="SGFWebModel.FK2_TELEFONE_ENDERECO" />
+        <AssociationConnector Association="SGFWebModel.FK7_ENDERECO_PESSOA" />
+        <AssociationConnector Association="SGFWebModel.FK8_ENDERECO__TIPO_ENDERECO" />
+        <AssociationConnector Association="SGFWebModel.FK9_ENDERECO_TIPO_LOGRADOURO" />
+        <EntityTypeShape EntityType="SGFWebModel.LocalidadeSGF" Width="2.625" PointX="0.625" PointY="67.75" />
+        <AssociationConnector Association="SGFWebModel.FK1_ENDERECO_BAIRRO" />
+        <AssociationConnector Association="SGFWebModel.FK2_ENDERECO_CIDADE" />
+        <AssociationConnector Association="SGFWebModel.FK3_ENDERECO_DISTRITO" />
+        <AssociationConnector Association="SGFWebModel.FK4_ENDERECO_ESTADO" />
+        <AssociationConnector Association="SGFWebModel.FK5_ENDERECO_LOGRADOURO" />
+        <AssociationConnector Association="SGFWebModel.FK6_ENDERECO_PAIS" />
+        <AssociationConnector Association="SGFWebModel.FK1_Localidade_Localidade" />
+        <AssociationConnector Association="SGFWebModel.FK1_PESSOA_FISICA__CIDADE" />
+        <AssociationConnector Association="SGFWebModel.FK3_PESSOA_FISICA__NACIONALIDADE" />
+        <EntityTypeShape EntityType="SGFWebModel.EstadoCivilSGF" Width="1.875" PointX="5" PointY="80.25" />
+        <EntityTypeShape EntityType="SGFWebModel.NomeContrato" Width="1.5" PointX="30.125" PointY="88.875" />
+        <AssociationConnector Association="SGFWebModel.FK_NOME_CONTRATO_ESCOLA" />
+        <AssociationConnector Association="SGFWebModel.FK2_PESSOA_FISICA__ESTADO" />
+        <AssociationConnector Association="SGFWebModel.FK_NOME_CONTRATO__NOME_CONTRATO" />
+        <EntityTypeShape EntityType="SGFWebModel.BaixaTitulo" Width="2.125" PointX="37.75" PointY="60.375" />
+        <AssociationConnector Association="SGFWebModel.FK_BAIXA__TIPO_LIQ" />
+        <AssociationConnector Association="SGFWebModel.FK_BAIXA_LOCAL" />
+        <AssociationConnector Association="SGFWebModel.FK_BAIXA_TITULO" />
+        <AssociationConnector Association="SGFWebModel.FK_LOCAL_EMPRESA" ManuallyRouted="false" >
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.FK_LOCAL__PESSOA_BANCO" />
+        <AssociationConnector Association="SGFWebModel.FK_DIARIO_AVALIACAO" />
+        <AssociationConnector Association="SGFWebModel.FK_DIARIO__PROF_SUBSTITUTO" />
+        <AssociationConnector Association="SGFWebModel.FK_DIARIO__TIPO_AULA" />
+        <AssociationConnector Association="SGFWebModel.FK_DIARIO_ESCOLA" ManuallyRouted="true" >
+          <ConnectorPoint PointX="9.625" PointY="77.216320574567362" />
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="9.625" PointY="77.03508777560063" />
+          <ConnectorPoint PointX="9.6365930472104946" PointY="77.020062889966013" />
+          <ConnectorPoint PointX="10.035906952789503" PointY="76.502541857341939" />
+          <ConnectorPoint PointX="10.060596948955151" PointY="76.470542990954854" />
+          <ConnectorPoint PointX="10.060596948955151" PointY="76.345899259311139" />
+          <ConnectorPoint PointX="10.060491375338188" PointY="76.346064501848971" />
+          <ConnectorPoint PointX="9.64263362466181" PointY="77.000090357540969" />
+          <ConnectorPoint PointX="9.6291274622282064" PointY="77.0212300382779" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="9.6603774622282046" PointY="76.989390659870679" />
+          <ConnectorPoint PointX="10.120872537771794" PointY="76.520210596993962" />
+          <ConnectorPoint PointX="10.16962074726478" PointY="76.470542990954854" />
+          <ConnectorPoint PointX="10.16962074726478" PointY="76.045281308007972" />
+          <ConnectorPoint PointX="10.39287925273522" PointY="76.045281308007972" />
+          <ConnectorPoint PointX="10.16962074726478" PointY="76.470542990954854" />
+=======
+          <ConnectorPoint PointX="10.16962074726478" PointY="76.045281308007972" />
+          <ConnectorPoint PointX="10.39287925273522" PointY="76.045281308007972" />
+          <ConnectorPoint PointX="10.184390793265592" PointY="76.327545914297033" />
+          <ConnectorPoint PointX="9.8104892067344078" PointY="76.833757070451966" />
+          <ConnectorPoint PointX="9.7975073260158965" PointY="76.851332745667875" />
+||||||| .merge-left.r301
+          <ConnectorPoint PointX="9.8281323260158935" PointY="76.824316797813012" />
+          <ConnectorPoint PointX="10.197372673984109" PointY="76.498590169678451" />
+          <ConnectorPoint PointX="10.229166666666666" PointY="76.470542990954854" />
+          <ConnectorPoint PointX="10.229166666666666" PointY="76.040175821412291" />
+          <ConnectorPoint PointX="10.411539994376609" PointY="76.040175821412291" />
+=======
+          <ConnectorPoint PointX="11.713541666666666" PointY="77.00578926211675" />
+<<<<<<< .working
+          <ConnectorPoint PointX="11.979166666666666" PointY="77.00578926211675" />
+          <ConnectorPoint PointX="12.270833333333334" PointY="77.00578926211675" />
+>>>>>>> .merge-right.r343
+          <ConnectorPoint PointX="12.286595169491054" PointY="77.00578926211675" />
+>>>>>>> .merge-right.r301
+          <ConnectorPoint PointX="12.432154830508946" PointY="77.127787933170083" />
+          <ConnectorPoint PointX="12.505345169491054" PointY="77.127787933170083" />
+          <ConnectorPoint PointX="14.245606181140568" PointY="78.099943404812421" />
+||||||| .merge-left.r389
+          <ConnectorPoint PointX="14.366384302246352" PointY="3663.2410524142238" />
+          <ConnectorPoint PointX="14.979981181140566" PointY="3663.6158560922222" />
+          <ConnectorPoint PointX="15.230635661008332" PointY="78.48909499018842" />
+          <ConnectorPoint PointX="15.51166897985032" PointY="78.702957083024756" />
+          <ConnectorPoint PointX="15.809898577714019" PointY="78.768960553800412" />
+          <ConnectorPoint PointX="15.970250917268718" PointY="78.768960553800412" />
+=======
+          <ConnectorPoint PointX="16.966145333333333" PointY="79.051180712758139" />
+          <ConnectorPoint PointX="17.363916516799083" PointY="78.839740936857339" />
+          <ConnectorPoint PointX="17.604833483200917" PointY="78.711678795847348" />
+          <ConnectorPoint PointX="17.801416516799083" PointY="78.607182858741638" />
+          <ConnectorPoint PointX="17.948583483200917" PointY="78.528954591613584" />
+          <ConnectorPoint PointX="18.012661837272081" PointY="78.494893017049918" />
+>>>>>>> .merge-right.r427
+          <ConnectorPoint PointX="18.127963162727912" PointY="78.494893017049918" />
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="18.3132982019385" PointY="78.406153113695041" />
+          <ConnectorPoint PointX="18.463621876482676" PointY="78.2635120161889" />
+||||||| .merge-left.r301
+          <ConnectorPoint PointX="18.607707566627472" PointY="78.2635120161889" />
+          <ConnectorPoint PointX="19.73701238564211" PointY="77.735424687920229" />
+=======
+          <ConnectorPoint PointX="19.95048761435789" PointY="77.635599059546109" />
+          <ConnectorPoint PointX="20.072386666666667" PointY="77.578596429460475" />
+          <ConnectorPoint PointX="20.072916666666668" PointY="77.578596429460475" />
+          <ConnectorPoint PointX="20.395833333333332" PointY="77.578596429460475" />
+>>>>>>> .merge-right.r343
+          <ConnectorPoint PointX="20.403433106202723" PointY="77.578596429460475" />
+||||||| .merge-left.r389
+          <ConnectorPoint PointX="20.403433106202723" PointY="77.507282531034022" />
+          <ConnectorPoint PointX="20.479166666666668" PointY="77.338212786933653" />
+          <ConnectorPoint PointX="20.604166666666668" PointY="76.370867149169669" />
+          <ConnectorPoint PointX="20.604166666666668" PointY="76.011643066406265" />
+          <ConnectorPoint PointX="21.1875" PointY="76.011643066406265" />
+=======
+          <ConnectorPoint PointX="21.1875" PointY="76.9375" />
+          <ConnectorPoint PointX="22.791666666666668" PointY="76.9375" />
+>>>>>>> .merge-right.r427
+          <ConnectorPoint PointX="23.458333333333332" PointY="76.9375" />
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="23.56477349393727" PointY="76.9375" />
+          <ConnectorPoint PointX="23.43977349393727" PointY="77.471997872997576" />
+=======
+          <ConnectorPoint PointX="23.554049597561789" PointY="77.471997872997576" />
+          <ConnectorPoint PointX="23.704011080786188" PointY="77.600146882402782" />
+||||||| .merge-left.r301
+          <ConnectorPoint PointX="23.943287184410703" PointY="77.600146882402782" />
+          <ConnectorPoint PointX="25.629536505901804" PointY="79.34192284808951" />
+=======
+>>>>>>> .merge-right.r343
+>>>>>>> .merge-right.r301
+||||||| .merge-left.r389
+=======
+          <ConnectorPoint PointX="25.745463494098196" PointY="79.461667205724822" />
+>>>>>>> .merge-right.r427
+          <ConnectorPoint PointX="25.78195666666667" PointY="79.499362065008867" />
+          <ConnectorPoint PointX="25.950258431634698" PointY="79.499362065008867" />
+          <ConnectorPoint PointX="26.513636700005922" PointY="79.038107047754949" />
+          <ConnectorPoint PointX="26.446840938455253" PointY="79.038107047754949" />
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="26.548773601780976" PointY="78.944781341242688" />
+          <ConnectorPoint PointX="26.675532072016924" PointY="78.828726061166478" />
+          <ConnectorPoint PointX="27.2510366892963" PointY="78.301815714116785" />
+          <ConnectorPoint PointX="27.373963310703697" PointY="78.189268730473785" />
+||||||| .merge-left.r301
+          <ConnectorPoint PointX="27.8129116892963" PointY="77.787384131190265" />
+          <ConnectorPoint PointX="27.935838310703698" PointY="77.674837147547265" />
+=======
+          <ConnectorPoint PointX="28.741176325569121" PointY="76.9375" />
+          <ConnectorPoint PointX="28.741176325569121" PointY="77.016586961609931" />
+||||||| .merge-left.r351
+          <ConnectorPoint PointX="28.74361363731796" PointY="77.022456085206471" />
+          <ConnectorPoint PointX="28.819982192804698" PointY="77.206353976501674" />
+=======
+>>>>>>> .merge-right.r388
+          <ConnectorPoint PointX="28.963633266427394" PointY="77.552270294456548" />
+          <ConnectorPoint PointX="29.088633266427394" PointY="77.710529535327709" />
+<<<<<<< .working
+>>>>>>> .merge-right.r343
+||||||| .merge-left.r351
+=======
+          <ConnectorPoint PointX="29.20510264147752" PointY="78.063190289225119" />
+          <ConnectorPoint PointX="29.4375" PointY="3661.2355052842609" />
+>>>>>>> .merge-right.r388
+          <ConnectorPoint PointX="31.281250000000004" PointY="3661.2355052842609" />
+          <ConnectorPoint PointX="34.431022244573825" PointY="76.094396274849743" />
+          <ConnectorPoint PointX="34.755516491728677" PointY="76.440655686278973" />
+          <ConnectorPoint PointX="34.869483508271323" PointY="76.562266939533544" />
+          <ConnectorPoint PointX="34.905135551274853" PointY="76.600310311750135" />
+          <ConnectorPoint PointX="34.780135551274853" PointY="76.728314740289321" />
+          <ConnectorPoint PointX="34.885908941131589" PointY="76.881898423057535" />
+          <ConnectorPoint PointX="34.885908941131589" PointY="76.979285595548362" />
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="32.958333333333336" PointY="76.979285595548362" />
+          <ConnectorPoint PointX="32.791666666666664" PointY="76.979285595548362" />
+          <ConnectorPoint PointX="32.114583333333336" PointY="76.979285595548362" />
+          <ConnectorPoint PointX="31.947916666666668" PointY="76.979285595548362" />
+          <ConnectorPoint PointX="31.395833333333332" PointY="76.979285595548362" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="31.229166666666668" PointY="76.979285595548362" />
+          <ConnectorPoint PointX="29.362402325821744" PointY="76.979285595548362" />
+=======
+          <ConnectorPoint PointX="29.4375" PointY="79.211548473283713" />
+          <ConnectorPoint PointX="31.246967818591941" PointY="79.211548473283713" />
+||||||| .merge-left.r301
+          <ConnectorPoint PointX="31.965717818591937" PointY="78.646943969719217" />
+          <ConnectorPoint PointX="32.096782181408066" PointY="78.5439881025849" />
+=======
+          <ConnectorPoint PointX="32.809467818591934" PointY="77.9841473785783" />
+          <ConnectorPoint PointX="32.940532181408066" PointY="77.881191511443987" />
+>>>>>>> .merge-right.r343
+          <ConnectorPoint PointX="34.746967818591934" PointY="76.462170021143592" />
+>>>>>>> .merge-right.r301
+          <ConnectorPoint PointX="34.878032181408066" PointY="76.35921415400928" />
+          <ConnectorPoint PointX="34.9375" PointY="76.3125" />
+          <ConnectorPoint PointX="35.953127" PointY="76.3125" />
+          <ConnectorPoint PointX="35.953127" PointY="76.375" />
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="34.80626687199797" PointY="77.205096060474219" />
+          <ConnectorPoint PointX="32.958333333333336" PointY="77.205096060474219" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="32.791666666666664" PointY="77.205096060474219" />
+          <ConnectorPoint PointX="32.114583333333336" PointY="77.205096060474219" />
+          <ConnectorPoint PointX="31.947916666666668" PointY="77.205096060474219" />
+=======
+          <ConnectorPoint PointX="31.509156842704257" PointY="77.205096060474219" />
+          <ConnectorPoint PointX="31.325270146735456" PointY="3664.3664312750361" />
+          <ConnectorPoint PointX="34.8125" PointY="3661.4536090094111" />
+||||||| .merge-left.r301
+          <ConnectorPoint PointX="34.8125" PointY="76.3125" />
+          <ConnectorPoint PointX="36.078127" PointY="76.3125" />
+          <ConnectorPoint PointX="36.078127" PointY="76.375" />
+=======
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+<<<<<<< .working
+          
+          
+||||||| .merge-left.r301
+          
+=======
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+          
+          
+          
+          
+          
+          
+          
+          
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+          
+          
+||||||| .merge-left.r274
+          
+          
+          
+          
+=======
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+          
+          
+          
+||||||| .merge-left.r301
+          
+          
+=======
+          
+||||||| .merge-left.r351
+          
+=======
+          
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r388
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+          
+          
+          
+          
+          
+          
+          
+          
+          
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+||||||| .merge-left.r274
+          
+          
+=======
+          
+          
+||||||| .merge-left.r301
+          
+          
+=======
+          
+          
+||||||| .merge-left.r351
+          
+          
+=======
+          
+          
+||||||| .merge-left.r389
+          
+          
+=======
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r388
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+        &gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r388
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+        &gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r388
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+        &gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r388
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.FK_DIARIO_SALA" />
+        <AssociationConnector Association="SGFWebModel.FK_DIARIO_TURMA" />
+        <AssociationConnector Association="SGFWebModel.FK_DIARIO_USUARIO" />
+        <EntityTypeShape EntityType="SGFWebModel.vi_diario_aula" Width="2.125" PointX="10.375" PointY="0.875" />
+        <EntityTypeShape EntityType="SGFWebModel.HistoricoAluno" Width="1.875" PointX="39.875" PointY="68.5" />
+        <AssociationConnector Association="SGFWebModel.FK_HISTORICO_ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_HISTORICO_CONTRATO" ManuallyRouted="true" >
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="25.625" PointY="71.2306191080188" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="25.740923328661907" PointY="70.172653766852662" />
+=======
+          <ConnectorPoint PointX="25.759076671338093" PointY="70.006978681437076" />
+||||||| .merge-left.r351
+          <ConnectorPoint PointX="26.053423328661907" PointY="67.320646557167848" />
+=======
+          <ConnectorPoint PointX="26.071576671338093" PointY="67.154971471752262" />
+||||||| .merge-left.r389
+          <ConnectorPoint PointX="26.075823970120268" PointY="67.116208826157234" />
+=======
+          <ConnectorPoint PointX="25.95389474600832" PointY="67.116208826157234" />
+>>>>>>> .merge-right.r427
+>>>>>>> .merge-right.r388
+>>>>>>> .merge-right.r301
+          <ConnectorPoint PointX="25.95389474600832" PointY="67.017380784602778" />
+          <ConnectorPoint PointX="26.041423767695832" PointY="66.837495186679348" />
+          <ConnectorPoint PointX="26.046285048047675" PointY="66.812989175305759" />
+<<<<<<< .working
+          <ConnectorPoint PointX="26.078714951952325" PointY="66.6495080476166" />
+          <ConnectorPoint PointX="26.147000576272646" PointY="66.305276041821429" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="26.147000576272646" PointY="66.0608643332739" />
+          <ConnectorPoint PointX="26.260416666666668" PointY="65.856907876798815" />
+          <ConnectorPoint PointX="26.260416666666668" PointY="63.863567098275048" />
+=======
+          <ConnectorPoint PointX="26.432288666666668" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="26.630776558827179" PointY="65.856907876798815" />
+          <ConnectorPoint PointX="26.838540666666667" PointY="65.856907876798815" />
+>>>>>>> .merge-right.r301
+          <ConnectorPoint PointX="27.054984544053145" PointY="64.1489585513578" />
+          <ConnectorPoint PointX="27.054984544053145" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="27.263296381699881" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="27.548013105359907" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="27.617446552679954" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="27.784113219346619" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="27.791041666666668" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="28.020833333333332" PointY="63.863567098275048" />
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="28.072916666666668" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="28.427083333333332" PointY="63.863567098275048" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="28.447916666666668" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="29.350838228108206" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="29.373699229166672" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="29.373699229166672" PointY="64.784007877627729" />
+          <ConnectorPoint PointX="29.465107588541674" PointY="64.784007877627729" />
+          <ConnectorPoint PointX="29.918752640624998" PointY="64.784007877627729" />
+=======
+          <ConnectorPoint PointX="30.022732926466464" PointY="64.784007877627729" />
+          <ConnectorPoint PointX="30.022108107970649" PointY="64.783693720593632" />
+          <ConnectorPoint PointX="28.45679789202935" PointY="63.996660016932715" />
+          <ConnectorPoint PointX="28.456173073533538" PointY="63.996345859898618" />
+||||||| .merge-left.r351
+          <ConnectorPoint PointX="28.387576926466465" PointY="63.996345859898618" />
+          <ConnectorPoint PointX="28.237423073533535" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="28.260416666666668" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="28.427083333333332" PointY="63.863567098275048" />
+=======
+          <ConnectorPoint PointX="28.447916666666668" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="29.350838228108206" PointY="63.863567098275048" />
+>>>>>>> .merge-right.r388
+>>>>>>> .merge-right.r301
+          <ConnectorPoint PointX="29.373699229166672" PointY="63.863567098275048" />
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="29.373699229166672" PointY="64.784007877627729" />
+<<<<<<< .working
+          <ConnectorPoint PointX="29.465107588541674" PointY="64.784007877627729" />
+          <ConnectorPoint PointX="29.918752640624998" PointY="64.784007877627729" />
+          <ConnectorPoint PointX="30.022732926466464" PointY="64.784007877627729" />
+          <ConnectorPoint PointX="30.022108107970649" PointY="64.783693720593632" />
+          <ConnectorPoint PointX="28.45679789202935" PointY="63.996660016932715" />
+          <ConnectorPoint PointX="28.456173073533531" PointY="63.996345859898618" />
+          <ConnectorPoint PointX="28.387576926466465" PointY="63.996345859898618" />
+          <ConnectorPoint PointX="28.237423073533535" PointY="63.863567098275048" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="28.260416666666668" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="28.427083333333332" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="28.447916666666668" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="29.350838228108206" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="29.356866316678072" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="29.356866316678072" PointY="64.76546438039972" />
+          <ConnectorPoint PointX="29.355757738185098" PointY="64.76458592725433" />
+          <ConnectorPoint PointX="28.46593660991692" PointY="64.059479185679464" />
+          <ConnectorPoint PointX="28.463764972722473" PointY="64.057758349909875" />
+=======
+          <ConnectorPoint PointX="28.379985027277527" PointY="64.057758349909875" />
+          <ConnectorPoint PointX="28.286235027277527" PointY="63.989840742030275" />
+          <ConnectorPoint PointX="28.151264972722473" PointY="63.892061080795521" />
+          <ConnectorPoint PointX="28.111933333333329" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="28.135416666666668" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="28.427083333333332" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="28.447916666666668" PointY="63.863567098275048" />
+||||||| .merge-left.r351
+          <ConnectorPoint PointX="29.350838228108206" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="29.359053591532223" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="29.359053591532223" PointY="64.769306522986255" />
+          <ConnectorPoint PointX="29.358283132167376" PointY="64.768764853415789" />
+          <ConnectorPoint PointX="28.463078419378888" PointY="64.139393371465886" />
+          <ConnectorPoint PointX="28.461262745499756" PointY="64.138116866389765" />
+          <ConnectorPoint PointX="28.382487254500244" PointY="64.138116866389765" />
+=======
+          <ConnectorPoint PointX="28.288737254500248" PointY="64.077522897437532" />
+          <ConnectorPoint PointX="28.086262745499756" PointY="63.9466564002429" />
+          <ConnectorPoint PointX="27.957708333333333" PointY="63.863567098275048" />
+||||||| .merge-left.r389
+          <ConnectorPoint PointX="28.072916666666668" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="28.427083333333332" PointY="63.863567098275048" />
+=======
+>>>>>>> .merge-right.r427
+          <ConnectorPoint PointX="28.447916666666668" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="29.433691530178894" PointY="63.863567098275048" />
+          <ConnectorPoint PointX="29.436204229166673" PointY="63.863567098275048" />
+>>>>>>> .merge-right.r388
+          <ConnectorPoint PointX="29.436204229166673" PointY="64.787985026041667" />
+          <ConnectorPoint PointX="29.465107588541674" PointY="64.787985026041667" />
+          <ConnectorPoint PointX="30.06160233333333" PointY="64.787985026041667" />
+>>>>>>> .merge-right.r301
+          <ConnectorPoint PointX="30.106179333658854" PointY="64.787985026041667" />
+          <ConnectorPoint PointX="30.272846000325519" PointY="63.924814542592429" />
+          <ConnectorPoint PointX="31.104166666666668" PointY="63.924814542592429" />
+          <ConnectorPoint PointX="31.270833333333332" PointY="63.924814542592429" />
+          <ConnectorPoint PointX="31.416666666666668" PointY="63.924814542592429" />
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="31.786458333333332" PointY="63.924814542592429" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="32.577286074682242" PointY="63.924814542592429" />
+          <ConnectorPoint PointX="32.577286074682242" PointY="64.243764987053" />
+          <ConnectorPoint PointX="33.231900712735744" PointY="64.50730158483745" />
+=======
+          <ConnectorPoint PointX="33.580599287264256" PointY="64.50730158483745" />
+||||||| .merge-left.r351
+          <ConnectorPoint PointX="33.231900712735744" PointY="64.572968166937542" />
+=======
+          <ConnectorPoint PointX="33.830599287264256" PointY="64.572968166937542" />
+>>>>>>> .merge-right.r388
+>>>>>>> .merge-right.r301
+          <ConnectorPoint PointX="34.293199923538545" PointY="64.694477777583344" />
+          <ConnectorPoint PointX="34.416666666666664" PointY="64.694477777583344" />
+<<<<<<< .working
+          <ConnectorPoint PointX="34.583333333333336" PointY="64.694477777583344" />
+          <ConnectorPoint PointX="34.666666666666664" PointY="64.694477777583344" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="34.833333333333336" PointY="64.694477777583344" />
+          <ConnectorPoint PointX="34.894300076461455" PointY="64.694477777583344" />
+          <ConnectorPoint PointX="35.375" PointY="64.787985026041667" />
+          <ConnectorPoint PointX="35.375" PointY="68" />
+=======
+          <ConnectorPoint PointX="36.041666666666664" PointY="68" />
+          <ConnectorPoint PointX="36.208333333333336" PointY="68" />
+          <ConnectorPoint PointX="36.464761620526446" PointY="68" />
+          <ConnectorPoint PointX="36.631428287193117" PointY="68" />
+>>>>>>> .merge-right.r301
+          <ConnectorPoint PointX="36.885416666666664" PointY="68" />
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="37.293433333333333" PointY="68" />
+          <ConnectorPoint PointX="37.526041666666664" PointY="68" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="37.692708333333336" PointY="68" />
+          <ConnectorPoint PointX="39.5369254079098" PointY="68" />
+=======
+          <ConnectorPoint PointX="39.718698207490512" PointY="68" />
+          <ConnectorPoint PointX="40.041666666666664" PointY="68" />
+          <ConnectorPoint PointX="40.208333333333336" PointY="68" />
+          <ConnectorPoint PointX="40.312498" PointY="68" />
+||||||| .merge-left.r351
+          <ConnectorPoint PointX="40.312498" PointY="68.500000000021572" />
+          <ConnectorPoint PointX="37.685480355605129" PointY="66.560191161664747" />
+          <ConnectorPoint PointX="37.499702585862018" PointY="66.560191161664747" />
+          <ConnectorPoint PointX="37.365535919195338" PointY="66.440578069636771" />
+=======
+          <ConnectorPoint PointX="37.241130747471317" PointY="66.329667605630462" />
+          <ConnectorPoint PointX="37.226123276017859" PointY="66.3162880523579" />
+||||||| .merge-left.r389
+          <ConnectorPoint PointX="37.208333333333336" PointY="66.3162880523579" />
+          <ConnectorPoint PointX="37.041666666666664" PointY="66.3162880523579" />
+=======
+          <ConnectorPoint PointX="37.034125927520364" PointY="66.3162880523579" />
+          <ConnectorPoint PointX="36.115340144852929" PointY="65.59003627385971" />
+>>>>>>> .merge-right.r427
+>>>>>>> .merge-right.r388
+>>>>>>> .merge-right.r301
+          <ConnectorPoint PointX="35.944333503419877" PointY="65.59003627385971" />
+          <ConnectorPoint PointX="35.524038243170295" PointY="65.305623960078051" />
+          <ConnectorPoint PointX="35.437737649317448" PointY="65.305623960078051" />
+<<<<<<< .working
+          <ConnectorPoint PointX="35.053570774825786" PointY="64.969761273598934" />
+          <ConnectorPoint PointX="34.878147030769" PointY="64.969761273598934" />
+          <ConnectorPoint PointX="34.776666666666664" PointY="64.853269036746809" />
+          <ConnectorPoint PointX="35.96658140608865" PointY="64.853269036746809" />
+||||||| .merge-left.r351
+          <ConnectorPoint PointX="36.133248072755322" PointY="64.853269036746809" />
+          <ConnectorPoint PointX="37.041666666666664" PointY="64.853269036746809" />
+          <ConnectorPoint PointX="37.208333333333336" PointY="64.853269036746809" />
+          <ConnectorPoint PointX="37.219999999999992" PointY="64.853269036746809" />
+=======
+          <ConnectorPoint PointX="37.386666666666663" PointY="64.853269036746809" />
+          <ConnectorPoint PointX="37.544166666666662" PointY="64.853269036746809" />
+          <ConnectorPoint PointX="37.544166666666662" PointY="68" />
+          <ConnectorPoint PointX="39.5369254079098" PointY="68" />
+>>>>>>> .merge-right.r388
+          <ConnectorPoint PointX="39.718698207490512" PointY="68" />
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="40.041666666666664" PointY="68" />
+||||||| .merge-left.r351
+          <ConnectorPoint PointX="40.208333333333336" PointY="68" />
+          <ConnectorPoint PointX="40.312498" PointY="68" />
+          <ConnectorPoint PointX="40.312498" PointY="68.5" />
+=======
+||||||| .merge-left.r389
+=======
+          <ConnectorPoint PointX="39.493304158567206" PointY="67.908301514924247" />
+          <ConnectorPoint PointX="39.430804158567213" PointY="67.908301514924247" />
+>>>>>>> .merge-right.r427
+          <ConnectorPoint PointX="37.676432758557056" PointY="66.613951510273893" />
+<<<<<<< .working
+>>>>>>> .merge-right.r388
+          <ConnectorPoint PointX="37.542317241442944" PointY="66.515003009289813" />
+          <ConnectorPoint PointX="37.484516044587117" PointY="66.472358116983273" />
+||||||| .merge-left.r389
+          <ConnectorPoint PointX="37.484516044587117" PointY="66.472358116983273" />
+          <ConnectorPoint PointX="37.317849377920446" PointY="66.472358116983273" />
+=======
+          <ConnectorPoint PointX="37.239946356750195" PointY="66.472358116983273" />
+          <ConnectorPoint PointX="37.1188195926774" PointY="66.339726825363428" />
+>>>>>>> .merge-right.r427
+          <ConnectorPoint PointX="37.037308916227971" PointY="66.339726825363428" />
+          <ConnectorPoint PointX="36.261430004181094" PointY="65.8036179595213" />
+          <ConnectorPoint PointX="36.124312171725151" PointY="65.708873683702862" />
+          <ConnectorPoint PointX="35.524133321811661" PointY="65.294168247669418" />
+          <ConnectorPoint PointX="35.437588183533016" PointY="65.294168247669418" />
+          <ConnectorPoint PointX="35.055386446811667" PointY="64.958184504590079" />
+          <ConnectorPoint PointX="34.982918858637163" PointY="64.958184504590079" />
+          <ConnectorPoint PointX="34.81961355318834" PointY="64.8886296856942" />
+          <ConnectorPoint PointX="34.81961355318834" PointY="64.8886296856942" />
+          <ConnectorPoint PointX="34.68038644681166" PointY="64.7970131444598" />
+          <ConnectorPoint PointX="34.666666666666664" PointY="64.787985026041667" />
+          <ConnectorPoint PointX="34.666666666666664" PointY="64.787985026041667" />
+          <ConnectorPoint PointX="34.895833333333336" PointY="64.787985026041667" />
+          <ConnectorPoint PointX="35.375" PointY="64.787985026041667" />
+          <ConnectorPoint PointX="35.375" PointY="68" />
+          <ConnectorPoint PointX="36.041666666666664" PointY="68" />
+<<<<<<< .working
+          <ConnectorPoint PointX="36.208333333333336" PointY="68" />
+<<<<<<< .working
+          <ConnectorPoint PointX="36.464761620526446" PointY="68" />
+          <ConnectorPoint PointX="36.631428287193117" PointY="68" />
+          <ConnectorPoint PointX="36.885416666666664" PointY="68" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="37.293433333333333" PointY="68" />
+          <ConnectorPoint PointX="37.526041666666664" PointY="68" />
+          <ConnectorPoint PointX="37.692708333333336" PointY="68" />
+=======
+          <ConnectorPoint PointX="39.5369254079098" PointY="68" />
+          <ConnectorPoint PointX="39.718698207490512" PointY="68" />
+          <ConnectorPoint PointX="40.041666666666664" PointY="68" />
+||||||| .merge-left.r351
+          <ConnectorPoint PointX="40.208333333333336" PointY="68" />
+          <ConnectorPoint PointX="40.312498" PointY="68" />
+          <ConnectorPoint PointX="40.312498" PointY="68.5" />
+          
+=======
+          
+          
+          
+<<<<<<< .working
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r388
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+||||||| .merge-left.r389
+          
+          
+=======
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+<<<<<<< .working
+          
+          
+          
+          
+||||||| .merge-left.r351
+          
+          
+          
+          
+=======
+          
+          
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r388
+          
+<<<<<<< .working
+<<<<<<< .working
+          
+||||||| .merge-left.r351
+          
+          
+          
+=======
+||||||| .merge-left.r389
+=======
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+          
+<<<<<<< .working
+>>>>>>> .merge-right.r388
+          
+          
+          
+          
+||||||| .merge-left.r389
+          
+          
+=======
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+          
+          
+          
+          
+        &gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+          
+          
+          
+          
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.FK_HISTORICO_PRODUTO" />
+        <AssociationConnector Association="SGFWebModel.FK_HISTORICO_TURMA" />
+        <EntityTypeShape EntityType="SGFWebModel.AlunoEvento" Width="1.5" PointX="37.5" PointY="78.75" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_EVENTO__ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_EVENTO__DIARIO" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_EVENTO__EVENTO" />
+        <AssociationConnector Association="SGFWebModel.FK_DIARIO_PROFESSOR" />
+        <AssociationConnector Association="SGFWebModel.FK_TITULO__LOCAL_MOVTO" />
+        <AssociationConnector Association="SGFWebModel.FK_HISTORICO_USUARIO" ManuallyRouted="false" >
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_TURMA__TURMA_ORIGEM" />
+        <EntityTypeShape EntityType="SGFWebModel.TransacaoFinanceira" Width="2" PointX="35" PointY="61.375" />
+        <AssociationConnector Association="SGFWebModel.FK_BAIXA_TRANSACAO" />
+        <AssociationConnector Association="SGFWebModel.FK_TRANSACAO_LOCAL" />
+        <AssociationConnector Association="SGFWebModel.FK_TRANSACAO__TIPO_LIQ" />
+        <AssociationConnector Association="SGFWebModel.FK_TITULO__PLANO_CONTA" />
+        <EntityTypeShape EntityType="SGFWebModel.Desistencia" Width="1.5" PointX="37.625" PointY="69.5" />
+        <AssociationConnector Association="SGFWebModel.FK_DESISTENCIA__ALUNO_TURMA" />
+        <AssociationConnector Association="SGFWebModel.FK_DESISTENCIA_MOTIVO" />
+        <AssociationConnector Association="SGFWebModel.FK_HISTORICO_DESISTENCIA" />
+        <EntityTypeShape EntityType="SGFWebModel.ContaCorrente" Width="1.5" PointX="40.625" PointY="47.25" />
+        <AssociationConnector Association="SGFWebModel.FK_CTA_CORRENTE__BAIXA" />
+        <AssociationConnector Association="SGFWebModel.FK_CTA_CORRENTE__EMPRESA" />
+        <AssociationConnector Association="SGFWebModel.FK_CTA_CORRENTE__LOCAL_DES" />
+        <AssociationConnector Association="SGFWebModel.FK_CTA_CORRENTE__LOCAL_MOVTO_ORI" />
+        <AssociationConnector Association="SGFWebModel.FK_CTA_CORRENTE__PLANO_CONTA" />
+        <AssociationConnector Association="SGFWebModel.FK_CTA_CORRENTE__TIPO_MOVIMENTO" />
+        <EntityTypeShape EntityType="SGFWebModel.Movimento" Width="2.125" PointX="24.125" PointY="46.375" />
+        <EntityTypeShape EntityType="SGFWebModel.PoliticaComercial" Width="1.5" PointX="21.875" PointY="51" />
+        <AssociationConnector Association="SGFWebModel.FK_MOVIMENTO_EMPRESA" />
+        <AssociationConnector Association="SGFWebModel.FK_POLITICA_EMPRESA" />
+        <AssociationConnector Association="SGFWebModel.FK_MOVIMENTO__TIPO_FINANCEIRO" />
+        <AssociationConnector Association="SGFWebModel.FK_MOVIMENTO_PESSOA" ManuallyRouted="false" >
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.FK_MOVIMENTO_POLITICA" />
+        <EntityTypeShape EntityType="SGFWebModel.Emprestimo" Width="1.5" PointX="20.375" PointY="60.125" />
+        <AssociationConnector Association="SGFWebModel.FK_BIBLIOTECA_SEC_ITEM" />
+        <AssociationConnector Association="SGFWebModel.FK_BIBLIOTECA_SEC_PESSOA" />
+        <EntityTypeShape EntityType="SGFWebModel.PlanoTitulo" Width="1.5" PointX="32.75" PointY="59.75" />
+        <AssociationConnector Association="SGFWebModel.FK_PLANO_TITULO__PLANO" />
+        <AssociationConnector Association="SGFWebModel.FK_PLANO_TITULO__TITULO" />
+        <EntityTypeShape EntityType="SGFWebModel.Kardex" Width="1.5" PointX="26.25" PointY="80.375" />
+        <AssociationConnector Association="SGFWebModel.FK_KARDEX_EMPRESA" />
+        <AssociationConnector Association="SGFWebModel.FK_KARDEX_ITEM" />
+        <EntityTypeShape EntityType="SGFWebModel.ItemPolitica" Width="1.5" PointX="24.125" PointY="39.875" />
+        <AssociationConnector Association="SGFWebModel.FK_ITEM_POLITICA__POLITICA" />
+        <EntityTypeShape EntityType="SGFWebModel.UsuarioEmpresaSGF" Width="2.25" PointX="12.875" PointY="53" />
+        <AssociationConnector Association="SGFWebModel.FK_USUARIO_EMPRESA__EMPRESA" />
+        <AssociationConnector Association="SGFWebModel.FK_USUARIO_EMPRESA__USUARIO" />
+        <EntityTypeShape EntityType="SGFWebModel.EstadoSGF" Width="2.125" PointX="7" PointY="84" />
+        <AssociationConnector Association="SGFWebModel.FK1_ESTADO_LOCALIDADE" />
+        <AssociationConnector Association="SGFWebModel.FK6_PESSOA_FISICA__ESTADO_ORGAO" />
+        <EntityTypeShape EntityType="SGFWebModel.Origem" Width="1.5" PointX="24.125" PointY="91.25" />
+        <AssociationConnector Association="SGFWebModel.FK_KARDEX_ORIGEM" />
+        <AssociationConnector Association="SGFWebModel.FK_TITULO_ORIGEM" />
+        <EntityTypeShape EntityType="SGFWebModel.Parametro" Width="1.5" PointX="29.375" PointY="65" />
+        <AssociationConnector Association="SGFWebModel.FK_PARAMETRO_ESCOLA" />
+        <AssociationConnector Association="SGFWebModel.FK_PARAMETRO__LOCAL_MOVTO" />
+        <EntityTypeShape EntityType="SGFWebModel.PoliticaAluno" Width="1.5" PointX="32.75" PointY="92.5" />
+        <AssociationConnector Association="SGFWebModel.FK_POLITICA_ALUNO__ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_POLITICA_ALUNO__POLITICA" />
+        <EntityTypeShape EntityType="SGFWebModel.PoliticaTurma" Width="1.5" PointX="33.125" PointY="79.625" />
+        <AssociationConnector Association="SGFWebModel.FK_POLITICA_TURMA__POLITICA" />
+        <AssociationConnector Association="SGFWebModel.FK_POLITICA_TURMA__TURMA" />
+        <AssociationConnector Association="SGFWebModel.FK_DIARIO__MOTIVO_FALTA" />
+        <AssociationConnector Association="SGFWebModel.FK_CTA_CORRENTE__TIPO_LIQ" />
+        <EntityTypeShape EntityType="SGFWebModel.Fechamento" Width="2" PointX="24.25" PointY="59.75" />
+        <AssociationConnector Association="SGFWebModel.FK_FECHAMENTO_EMPRESA" />
+        <AssociationConnector Association="SGFWebModel.FK_FECHAMENTO_USUARIO" />
+        <AssociationConnector Association="SGFWebModel.FK_BIBLIOTECA_ESCOLA" />
+        <EntityTypeShape EntityType="SGFWebModel.SaldoItem" Width="1.5" PointX="26.375" PointY="59.75" />
+        <AssociationConnector Association="SGFWebModel.FK_SALDO_ITEM__FECHAMENTO" />
+        <AssociationConnector Association="SGFWebModel.FK_SALDO_ITEM__ITEM" />
+        <AssociationConnector Association="SGFWebModel.FK_PARAMETRO__PLANO_CONTA_MAT" />
+        <AssociationConnector Association="SGFWebModel.FK_PARAMETRO__PLANO_CONTA_TAX" />
+        <AssociationConnector Association="SGFWebModel.FK_PARAMETRO__PLANO_CONTA_TRF" />
+        <AssociationConnector Association="SGFWebModel.FK_ITEM__SUBGRUPO" />
+        <AssociationConnector Association="SGFWebModel.FK_ITEM_PLANO_CONTA" />
+        <AssociationConnector ManuallyRouted="true" Association="SGFWebModel.FK_ALUNO_PROSPECT">
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="10.468753374999999" PointY="41.682027994791667" />
+          <ConnectorPoint PointX="10.468753374999999" PointY="67" />
+          <ConnectorPoint PointX="11.354166666666666" PointY="67" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="11.833333333333334" PointY="67" />
+          <ConnectorPoint PointX="12.0625" PointY="67" />
+          <ConnectorPoint PointX="12.0625" PointY="93.5625" />
+=======
+          <ConnectorPoint PointX="14.229166666666666" PointY="93.5625" />
+          <ConnectorPoint PointX="14.395833333333334" PointY="93.5625" />
+          <ConnectorPoint PointX="15.729166666666666" PointY="93.5625" />
+>>>>>>> .merge-right.r301
+          <ConnectorPoint PointX="15.895833333333334" PointY="93.5625" />
+||||||| .merge-left.r301
+          <ConnectorPoint PointX="16.041666666666668" PointY="93.5625" />
+          <ConnectorPoint PointX="16.208333333333332" PointY="93.5625" />
+          <ConnectorPoint PointX="16.291666666666668" PointY="93.5625" />
+          <ConnectorPoint PointX="16.458333333333332" PointY="93.5625" />
+=======
+          <ConnectorPoint PointX="17.354166666666668" PointY="93.5625" />
+          <ConnectorPoint PointX="17.520833333333332" PointY="93.5625" />
+          <ConnectorPoint PointX="18.635416666666668" PointY="93.5625" />
+          <ConnectorPoint PointX="18.802083333333332" PointY="93.5625" />
+>>>>>>> .merge-right.r343
+          <ConnectorPoint PointX="18.916666666666668" PointY="93.5625" />
+          <ConnectorPoint PointX="19.083333333333332" PointY="93.5625" />
+          <ConnectorPoint PointX="19.104166666666668" PointY="93.5625" />
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="19.270833333333332" PointY="93.5625" />
+          <ConnectorPoint PointX="20.791666666666668" PointY="93.5625" />
+          <ConnectorPoint PointX="20.958333333333332" PointY="93.5625" />
+          <ConnectorPoint PointX="20.979166666666668" PointY="93.5625" />
+          <ConnectorPoint PointX="21.286458333333332" PointY="93.5625" />
+          <ConnectorPoint PointX="21.40625" PointY="93.5625" />
+          <ConnectorPoint PointX="21.40625" PointY="93.949479242296434" />
+          <ConnectorPoint PointX="21.5" PointY="93.949479242296434" />
+          
+||||||| .merge-left.r274
+          
+          
+          
+          
+          
+          
+||||||| .merge-left.r301
+          
+          
+          
+          
+=======
+          
+||||||| .merge-left.r351
+          
+          
+          
+          
+          
+          
+          
+          
+=======
+          
+          
+||||||| .merge-left.r389
+          
+          
+=======
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+          
+          
+          
+          
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r388
+          
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+          
+          
+          
+          
+          
+          
+          
+=======
+          
+          
+          
+          
+          
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+          
+          
+          
+          
+          
+<<<<<<< .working
+<<<<<<< .working
+          
+          
+          
+          
+          
+          
+||||||| .merge-left.r274
+          
+          
+          
+          
+=======
+          
+          
+          
+          
+||||||| .merge-left.r301
+          
+          
+          
+          
+=======
+          
+          
+          
+          
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+          
+          
+          
+<<<<<<< .working
+          
+<<<<<<< .working
+          
+||||||| .merge-left.r301
+          
+=======
+          
+          
+          
+          
+||||||| .merge-left.r389
+          
+          
+=======
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+          
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+||||||| .merge-left.r389
+=======
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+          
+          
+||||||| .merge-left.r274
+          
+          
+          
+          
+=======
+          
+          
+||||||| .merge-left.r301
+          
+          
+=======
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+||||||| .merge-left.r274
+          
+          
+=======
+          
+          
+||||||| .merge-left.r301
+          
+          
+=======
+          
+          
+||||||| .merge-left.r351
+          
+          
+=======
+          
+          
+||||||| .merge-left.r389
+          
+          
+=======
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r388
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+        &gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r388
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+        &gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r388
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+        &gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r388
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.FK_ITEM__SUBGRUPO_2" />
+        <AssociationConnector Association="SGFWebModel.FK_PROSPECT__LOCAL_MOVTO" ManuallyRouted="false" >
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.FK_PROSPECT__PLANO_CONTA" />
+        <AssociationConnector Association="SGFWebModel.FK_PROSPECT_TIPO_LIQUIDACAO" ManuallyRouted="true" >
+          <ConnectorPoint PointX="36.25" PointY="41.625" />
+          <ConnectorPoint PointX="35.640553300301036" PointY="39.35650245264096" />
+          <ConnectorPoint PointX="35.422854992608727" PointY="39.35650245264096" />
+          <ConnectorPoint PointX="35.610354992608727" PointY="38.306190801825743" />
+          <ConnectorPoint PointX="35.420210175941158" PointY="37.854055607257628" />
+          <ConnectorPoint PointX="35.355599792245037" PointY="37.700422029884656" />
+          <ConnectorPoint PointX="35.150810968186185" PointY="37.2134656329974" />
+          <ConnectorPoint PointX="35.150810968186185" PointY="36.982032436240893" />
+          <ConnectorPoint PointX="34.5559306808603" PointY="36.982032436240893" />
+          <ConnectorPoint PointX="33.927083333333336" PointY="36.841429209603106" />
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="33.895833333333336" PointY="36.841429209603106" />
+          <ConnectorPoint PointX="33.729166666666664" PointY="36.841429209603106" />
+||||||| .merge-left.r274
+=======
+          <ConnectorPoint PointX="33.6369935443036" PointY="36.841429209603106" />
+          <ConnectorPoint PointX="32.456660525787072" PointY="36.60849053296085" />
+||||||| .merge-left.r301
+          <ConnectorPoint PointX="32.105317892951561" PointY="36.60849053296085" />
+          <ConnectorPoint PointX="30.167658377151767" PointY="36.221688161261149" />
+=======
+          <ConnectorPoint PointX="29.755863134506242" PointY="36.221688161261149" />
+          <ConnectorPoint PointX="29.393584885216409" PointY="36.135783098670629" />
+>>>>>>> .merge-right.r343
+>>>>>>> .merge-right.r301
+          <ConnectorPoint PointX="28.918915114783591" PointY="36.023227248522879" />
+          <ConnectorPoint PointX="28.91858802283279" PointY="36.023149686995076" />
+          <ConnectorPoint PointX="28.822972978760177" PointY="36.023149686995076" />
+          <ConnectorPoint PointX="28.630210833333333" PointY="35.9375" />
+          <ConnectorPoint PointX="28.364583333333332" PointY="35.9375" />
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="28.197916666666668" PointY="35.9375" />
+          <ConnectorPoint PointX="28.091144583333332" PointY="35.9375" />
+||||||| .merge-left.r301
+          <ConnectorPoint PointX="27.924477916666667" PointY="35.9375" />
+          <ConnectorPoint PointX="27.817705833333331" PointY="35.9375" />
+||||||| .merge-left.r389
+          <ConnectorPoint PointX="27.651039166666667" PointY="35.9375" />
+          <ConnectorPoint PointX="27.5625" PointY="35.9375" />
+=======
+          <ConnectorPoint PointX="27.315223245101777" PointY="36.129292049694975" />
+          <ConnectorPoint PointX="26.934151754898224" PointY="36.424857567838963" />
+>>>>>>> .merge-right.r427
+=======
+          <ConnectorPoint PointX="26.456473245101776" PointY="36.795353130702566" />
+||||||| .merge-left.r351
+          <ConnectorPoint PointX="26.324776754898224" PointY="36.897499164623824" />
+=======
+          <ConnectorPoint PointX="22.753348245101776" PointY="39.667559757318244" />
+>>>>>>> .merge-right.r388
+          <ConnectorPoint PointX="22.621651754898224" PointY="39.7697057912395" />
+>>>>>>> .merge-right.r343
+          <ConnectorPoint PointX="22.621328666926374" PointY="39.769956383756288" />
+          <ConnectorPoint PointX="22.555982037744602" PointY="39.769956383756288" />
+          <ConnectorPoint PointX="21.708333333333332" PointY="40.418825860085946" />
+          <ConnectorPoint PointX="21.645833333333332" PointY="40.418825860085946" />
+          <ConnectorPoint PointX="21.246650566017973" PointY="40.418825860085946" />
+          <ConnectorPoint PointX="20.698996961817127" PointY="40.418825860085946" />
+          <ConnectorPoint PointX="20.532330295150462" PointY="40.418825860085946" />
+          <ConnectorPoint PointX="20.336378348722057" PointY="40.418825860085946" />
+          <ConnectorPoint PointX="19.919080639186959" PointY="40.807852808365531" />
+          <ConnectorPoint PointX="19.794080639186959" PointY="40.807852808365531" />
+          <ConnectorPoint PointX="19.272708456782269" PointY="41.130828086088961" />
+          <ConnectorPoint PointX="19.020833333333332" PointY="41.130828086088961" />
+          <ConnectorPoint PointX="18.666666666666668" PointY="41.130828086088961" />
+          <ConnectorPoint PointX="18.458333333333332" PointY="41.130828086088961" />
+          <ConnectorPoint PointX="18.291666666666668" PointY="41.130828086088961" />
+          <ConnectorPoint PointX="18.205919360813041" PointY="41.130828086088961" />
+          <ConnectorPoint PointX="17.802083333333332" PointY="41.38906502019492" />
+          <ConnectorPoint PointX="17.755208333333332" PointY="41.38906502019492" />
+          <ConnectorPoint PointX="17.588541666666668" PointY="41.38906502019492" />
+          <ConnectorPoint PointX="16.5454154707091" PointY="41.38906502019492" />
+          <ConnectorPoint PointX="16.763126938575159" PointY="41.71951721125258" />
+          <ConnectorPoint PointX="16.169376938575159" PointY="41.71951721125258" />
+          <ConnectorPoint PointX="14.833333333333334" PointY="42.092964163578095" />
+          <ConnectorPoint PointX="14.677083333333334" PointY="42.092964163578095" />
+          <ConnectorPoint PointX="14.416666666666666" PointY="42.092964163578095" />
+<<<<<<< .working
+          <ConnectorPoint PointX="14.354717327026579" PointY="42.092964163578095" />
+          <ConnectorPoint PointX="14.351847885680652" PointY="42.094763764135415" />
+||||||| .merge-left.r301
+          <ConnectorPoint PointX="14.210652114319348" PointY="42.183316188876155" />
+          <ConnectorPoint PointX="14.203981078031063" PointY="42.1875" />
+=======
+>>>>>>> .merge-right.r343
+          <ConnectorPoint PointX="14.030198307692309" PointY="42.1875" />
+<<<<<<< .working
+          <ConnectorPoint PointX="12.577035618927042" PointY="40.8125" />
+          <ConnectorPoint PointX="12.969029409706085" PointY="38.018819096052873" />
+||||||| .merge-left.r301
+          <ConnectorPoint PointX="12.969029409706085" PointY="37.8619873293139" />
+          <ConnectorPoint PointX="11.872498611765572" PointY="35.373110710603768" />
+=======
+          <ConnectorPoint PointX="11.805302351591283" PointY="35.220590415572687" />
+          <ConnectorPoint PointX="11.740920162861036" PointY="35.074457425516187" />
+>>>>>>> .merge-right.r343
+          <ConnectorPoint PointX="11.740920162861036" PointY="34.951536045456557" />
+          <ConnectorPoint PointX="11.933512656417976" PointY="35.630294645293766" />
+          <ConnectorPoint PointX="11.740920162861036" PointY="35.215229164698272" />
+<<<<<<< .working
+<<<<<<< .working
+          
+          <ConnectorPoint PointX="11.740920162861036" PointY="34.51598044355989" />
+          <ConnectorPoint PointX="11.625000365047086" PointY="34.3771921457456" />
+          <ConnectorPoint PointX="11.625000365047086" PointY="34.125" />
+          <ConnectorPoint PointX="11.5" PointY="34.125" />
+          
+          
+          
+          
+||||||| .merge-left.r274
+          
+          
+          
+          
+          
+=======
+||||||| .merge-left.r301
+=======
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+          
+          
+          
+        &gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+          
+          
+          
+        </AssociationConnector>
+        <EntityTypeShape EntityType="SGFWebModel.Cnab" Width="1.5" PointX="26.5" PointY="91.125" />
+        <AssociationConnector Association="SGFWebModel.FK_CNAB__LOCAL_MOVTO" />
+        <AssociationConnector Association="SGFWebModel.FK_CNAB_USUARIO" />
+        <EntityTypeShape EntityType="SGFWebModel.CarteiraCnab" Width="1.5" PointX="5.5" PointY="44.75" />
+        <AssociationConnector Association="SGFWebModel.FK_CARTEIRA_BANCO" />
+        <AssociationConnector Association="SGFWebModel.FK_LOCAL_MOVTO__CARTEIRA" />
+        <EntityTypeShape EntityType="SGFWebModel.TituloCnab" Width="1.5" PointX="28.125" PointY="82" />
+        <AssociationConnector Association="SGFWebModel.FK_TITULO_CNAB__CNAB" />
+        <AssociationConnector Association="SGFWebModel.FK_TITULO_CNAB__LOCAL_MOVTO" />
+        <AssociationConnector Association="SGFWebModel.FK_TITULO_CNAB__TITULO" ManuallyRouted="false" >
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.FK_TITULO_CNAB__TURMA" />
+        <EntityTypeShape EntityType="SGFWebModel.TipoDescontoEscola" Width="1.5" PointX="39.75" PointY="74.375" />
+        <AssociationConnector Association="SGFWebModel.FK_TIPO_DESC_ESCOLA" />
+        <AssociationConnector Association="SGFWebModel.FK_TIPO_DESC_ESCOLA__TIPO_DESC" />
+        <AssociationConnector Association="SGFWebModel.FK_PARAMETRO__PLANO_CONTA_DESC" />
+        <AssociationConnector Association="SGFWebModel.FK_PARAMETRO__PLANO_CONTA_JUR" />
+        <AssociationConnector Association="SGFWebModel.FK_PARAMETRO__PLANO_CONTA_MUL" />
+        <AssociationConnector Association="SGFWebModel.FK_FUNCIONARIO_CARGO" />
+        <AssociationConnector Association="SGFWebModel.FK_BAIXA__POLITICA_DESCONTO" />
+        <EntityTypeShape EntityType="SGFWebModel.RetornoCNAB" Width="1.5" PointX="18.25" PointY="82.25" />
+        <AssociationConnector Association="SGFWebModel.FK_RETORNO_CNAB__LOCAL" ManuallyRouted="false" >
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.FK_RETORNO_CNAB__USUARIO" />
+        <EntityTypeShape EntityType="SGFWebModel.TituloRetornoCNAB" Width="1.5" PointX="28.75" PointY="98.75" />
+        <AssociationConnector Association="SGFWebModel.FK_TITULO_RETORNO__RETORNO_CNAB" />
+        <AssociationConnector Association="SGFWebModel.FK_TITULO_RETORNO__TITULO" />
+        <AssociationConnector Association="SGFWebModel.FK_TITULO_RETORNO__TRANFINAN" />
+        <EntityTypeShape EntityType="SGFWebModel.ItemSubgrupo" Width="1.5" PointX="20.375" PointY="64.375" />
+        <AssociationConnector Association="SGFWebModel.FK_ITEM_SUBGRUPO__ITEM" />
+        <AssociationConnector Association="SGFWebModel.FK_ITEM_SUBGRUPO__SUBGRUPO" />
+        <EntityTypeShape EntityType="SGFWebModel.SituacaoTributaria" Width="2.875" PointX="11.625" PointY="57.25" />
+        <EntityTypeShape EntityType="SGFWebModel.TipoNotaFiscal" Width="2.875" PointX="20.5" PointY="45.25" />
+        <AssociationConnector Association="SGFWebModel.Situacao__Tipo_nota" />
+        <EntityTypeShape EntityType="SGFWebModel.ItemMovimento" Width="1.5" PointX="26.375" PointY="64.125" />
+        <AssociationConnector Association="SGFWebModel.FK_ITEM_MOVIMENTO__ITEM" />
+        <AssociationConnector Association="SGFWebModel.FK_ITEM_MOVIMENTO_MOVIMENTO" />
+        <AssociationConnector Association="SGFWebModel.FK_ITEM_MOVIMENTO_PLANO" />
+        <EntityTypeShape EntityType="SGFWebModel.DadosNF" Width="1.5" PointX="7.125" PointY="57.125" />
+        <AssociationConnector Association="SGFWebModel.FK_DADOS_NF__CIDADE" />
+        <AssociationConnector Association="SGFWebModel.PK_PARAMETRO__ITEM_BIBLIOTECA" ManuallyRouted="false" >
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.PK_PARAMETRO__ITEM_MENSALIDADE" ManuallyRouted="false" >
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.PK_PARAMETRO__ITEM_TAXA" ManuallyRouted="false" >
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.PK_PARAMETRO__POLITICA" ManuallyRouted="true" >
+          <ConnectorPoint PointX="22.625" PointY="51" />
+          <ConnectorPoint PointX="22.625" PointY="50.76" />
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="23.307291666666668" PointY="50.76" />
+          <ConnectorPoint PointX="23.802083333333332" PointY="50.76" />
+          <ConnectorPoint PointX="23.822916666666668" PointY="50.76" />
+          <ConnectorPoint PointX="23.822916666666668" PointY="63.375000000000007" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="23.854166666666668" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="24.192708333333332" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="26.197916666666668" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="26.427083333333332" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="26.430411052679954" PointY="63.375000000000007" />
+=======
+          <ConnectorPoint PointX="26.597077719346618" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="26.832907824706528" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="26.999574491373192" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="27.263296381699881" PointY="63.375000000000007" />
+||||||| .merge-left.r351
+          <ConnectorPoint PointX="27.548013105359907" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="27.617446552679954" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="27.784113219346619" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="27.791041666666668" PointY="63.375000000000007" />
+=======
+          <ConnectorPoint PointX="28.020833333333332" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="28.072916666666668" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="28.427083333333332" PointY="63.375000000000007" />
+>>>>>>> .merge-right.r388
+          <ConnectorPoint PointX="28.447916666666668" PointY="63.375000000000007" />
+<<<<<<< .working
+<<<<<<< .working
+>>>>>>> .merge-right.r301
+<<<<<<< .working
+          <ConnectorPoint PointX="29.255208333333332" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="29.267504894774873" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="29.267504894774873" PointY="64.510942449354133" />
+          <ConnectorPoint PointX="29.27353298334474" PointY="64.510942449354133" />
+          <ConnectorPoint PointX="29.442386924865556" PointY="64.510942449354133" />
+          <ConnectorPoint PointX="29.4515107435733" PointY="64.510942449354133" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="29.437257306073302" PointY="64.498855738588716" />
+          <ConnectorPoint PointX="28.467691923093376" PointY="63.676678186524825" />
+          <ConnectorPoint PointX="28.407308076906631" PointY="63.625473550186179" />
+          <ConnectorPoint PointX="28.155191923093369" PointY="63.41168266427308" />
+          <ConnectorPoint PointX="28.111933333333329" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="28.135416666666668" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="28.427083333333332" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="28.447916666666668" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="29.239583333333332" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="29.2534529638729" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="29.2534529638729" PointY="64.51619791666667" />
+          <ConnectorPoint PointX="29.27353298334474" PointY="64.51619791666667" />
+          <ConnectorPoint PointX="29.744010947916667" PointY="64.51619791666667" />
+          <ConnectorPoint PointX="29.872199333333338" PointY="64.51619791666667" />
+          <ConnectorPoint PointX="29.504968443154798" PointY="64.264804165621783" />
+=======
+          <ConnectorPoint PointX="28.462485786011879" PointY="63.551156069594334" />
+          <ConnectorPoint PointX="28.461325747859217" PointY="63.550361947012739" />
+          <ConnectorPoint PointX="28.382424252140783" PointY="63.550361947012739" />
+          <ConnectorPoint PointX="28.288674252140783" PointY="63.489582891638442" />
+          <ConnectorPoint PointX="28.148825747859217" PointY="63.398917718457191" />
+          <ConnectorPoint PointX="28.111933333333329" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="28.135416666666668" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="28.427083333333332" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="28.447916666666668" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="29.302083333333332" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="29.314333083333338" PointY="63.375000000000007" />
+||||||| .merge-left.r351
+          <ConnectorPoint PointX="29.314333083333338" PointY="64.508732397779056" />
+          <ConnectorPoint PointX="29.352870895833341" PointY="64.508732397779056" />
+          <ConnectorPoint PointX="29.631774255208335" PointY="64.508732397779056" />
+          <ConnectorPoint PointX="29.709366224591154" PointY="64.508732397779056" />
+          <ConnectorPoint PointX="29.502650134674578" PointY="64.352268689186189" />
+          <ConnectorPoint PointX="28.464804094492102" PointY="63.566721514503755" />
+          <ConnectorPoint PointX="28.463292483742183" PointY="63.5655773741324" />
+          <ConnectorPoint PointX="28.380457516257817" PointY="63.5655773741324" />
+          <ConnectorPoint PointX="28.286707516257817" PointY="63.499040987612844" />
+          <ConnectorPoint PointX="28.150792483742187" PointY="63.402579172815209" />
+          <ConnectorPoint PointX="28.111933333333329" PointY="63.375000000000007" />
+=======
+          <ConnectorPoint PointX="28.135416666666668" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="28.427083333333332" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="28.447916666666668" PointY="63.375000000000007" />
+||||||| .merge-left.r389
+          <ConnectorPoint PointX="29.302083333333332" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="29.314333083333338" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="29.314333083333338" PointY="64.510673978863039" />
+=======
+          <ConnectorPoint PointX="29.352870895833341" PointY="64.510673978863039" />
+          <ConnectorPoint PointX="29.631774255208335" PointY="64.510673978863039" />
+          <ConnectorPoint PointX="29.711355397128763" PointY="64.510673978863039" />
+>>>>>>> .merge-right.r427
+          <ConnectorPoint PointX="29.504843622579216" PointY="64.368498945273657" />
+>>>>>>> .merge-right.r388
+>>>>>>> .merge-right.r301
+          <ConnectorPoint PointX="28.462610606587461" PointY="63.650963519606968" />
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="28.461303311204574" PointY="63.650063499424682" />
+<<<<<<< .working
+          <ConnectorPoint PointX="28.382446688795426" PointY="63.650063499424682" />
+          <ConnectorPoint PointX="28.288696688795426" PointY="63.589350350401425" />
+          <ConnectorPoint PointX="28.086303311204574" PointY="63.458278997921489" />
+          <ConnectorPoint PointX="27.957708333333333" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="28.072916666666668" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="28.427083333333332" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="28.447916666666668" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="29.317708333333332" PointY="63.375000000000007" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="29.373699229166672" PointY="63.375000000000007" />
+          <ConnectorPoint PointX="29.373699229166672" PointY="64.51619791666667" />
+          <ConnectorPoint PointX="29.406759547512166" PointY="64.51619791666667" />
+          <ConnectorPoint PointX="29.744010947916664" PointY="64.51619791666667" />
+          <ConnectorPoint PointX="29.752085973958334" PointY="64.51619791666667" />
+          <ConnectorPoint PointX="29.918752640624998" PointY="64.51619791666667" />
+          <ConnectorPoint PointX="29.947656" PointY="64.51619791666667" />
+          <ConnectorPoint PointX="29.947656" PointY="65" />
+          
+=======
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+||||||| .merge-left.r351
+          
+          
+          
+          
+          
+          
+          
+          
+          
+=======
+          
+          
+          
+||||||| .merge-left.r389
+          
+          
+=======
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+          
+          
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r388
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+          
+        &gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+          
+          
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r388
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+          
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.PK_PARAMETRO__TIPO_NF_BIBLIOTECA" />
+        <AssociationConnector Association="SGFWebModel.PK_PARAMETRO__TIPO_NF_MATERIAL" />
+        <AssociationConnector Association="SGFWebModel.PK_PARAMETRO__TIPO_NF_MATRICULA" />
+        <EntityTypeShape EntityType="SGFWebModel.AliquotaUF" PointX="10.125" PointY="84" Width="1.5" />
+        <AssociationConnector Association="SGFWebModel.PK_ALIQUOTA_UF__ESTADO_DESTINO" />
+        <AssociationConnector Association="SGFWebModel.PK_ALIQUOTA_UF__ESTADO_ORIGEM" />
+        <AssociationConnector Association="SGFWebModel.PK_ITEM_MOVIMENTO__SITUACAO_COFINS" />
+        <AssociationConnector Association="SGFWebModel.PK_ITEM_MOVIMENTO__SITUACAO_ICMS" />
+        <AssociationConnector Association="SGFWebModel.PK_ITEM_MOVIMENTO__SITUACAO_PIS" />
+        <AssociationConnector Association="SGFWebModel.PK_MOVIMENTO__TIPO_NOTA" />
+        <AssociationConnector Association="SGFWebModel.FK_TURMA__TURMA_ENCERRADA" />
+        <AssociationConnector Association="SGFWebModel.PK_GRUPO_ESTOQUE__SITUACAO_ICMS" ManuallyRouted="true" >
+          <ConnectorPoint PointX="14.5" PointY="57.25" />
+          <ConnectorPoint PointX="14.530846675505325" PointY="57.223196150565258" />
+          <ConnectorPoint PointX="14.656653324494675" PointY="57.113877968875983" />
+          <ConnectorPoint PointX="14.73686329814007" PointY="57.044180472418525" />
+          <ConnectorPoint PointX="14.73686329814007" PointY="56.903761401062788" />
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="14.837403617908691" PointY="56.756795029629416" />
+          <ConnectorPoint PointX="14.837403617908691" PointY="56.582572953546681" />
+          <ConnectorPoint PointX="15.330352818225167" PointY="55.828768409437551" />
+          <ConnectorPoint PointX="15.427253595786707" PointY="55.680590369171533" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="15.454390895961394" PointY="55.639092745940978" />
+          <ConnectorPoint PointX="15.545609104038604" PointY="55.499604336770325" />
+          <ConnectorPoint PointX="15.575788983496203" PointY="55.453454083841223" />
+          <ConnectorPoint PointX="15.575788983496203" PointY="54.815416821864318" />
+          <ConnectorPoint PointX="15.518097675512452" PointY="55.074724564118419" />
+          <ConnectorPoint PointX="15.481902324487548" PointY="55.237413452312914" />
+=======
+          <ConnectorPoint PointX="15.399742167260554" PointY="55.606702442601964" />
+          <ConnectorPoint PointX="15.363546816235649" PointY="55.769391330796459" />
+||||||| .merge-left.r301
+          <ConnectorPoint PointX="15.360640895961394" PointY="55.782452702636036" />
+          <ConnectorPoint PointX="15.454390895961394" PointY="55.639092745940978" />
+=======
+>>>>>>> .merge-right.r343
+||||||| .merge-left.r389
+=======
+          <ConnectorPoint PointX="15.545609104038604" PointY="55.499604336770325" />
+          <ConnectorPoint PointX="15.575788983496203" PointY="55.453454083841223" />
+>>>>>>> .merge-right.r427
+          <ConnectorPoint PointX="15.575788983496203" PointY="54.815416821864318" />
+          <ConnectorPoint PointX="15.517264560817898" PointY="55.09177617471552" />
+>>>>>>> .merge-right.r301
+          <ConnectorPoint PointX="15.4827354391821" PointY="55.254826834134107" />
+          <ConnectorPoint PointX="15.398909052566" PointY="55.650665099543758" />
+          <ConnectorPoint PointX="15.364379930930202" PointY="55.813715758962346" />
+          <ConnectorPoint PointX="15.347726778002867" PointY="55.892353947180425" />
+          <ConnectorPoint PointX="15.450457286254766" PointY="55.753409539256552" />
+          <ConnectorPoint PointX="15.549542713745234" PointY="55.619395152578079" />
+          <ConnectorPoint PointX="15.607038983496203" PointY="55.541630666698275" />
+<<<<<<< .working
+          <ConnectorPoint PointX="15.607038983496203" PointY="54.772710954106444" />
+<<<<<<< .working
+          <ConnectorPoint PointX="15.73960241364991" PointY="54.591551391940868" />
+||||||| .merge-left.r301
+=======
+          <ConnectorPoint PointX="15.73960241364991" PointY="48.860346006277993" />
+          <ConnectorPoint PointX="15.61460241364991" PointY="48.860346006277993" />
+||||||| .merge-left.r351
+          <ConnectorPoint PointX="15.875607461336768" PointY="48.776138821289962" />
+=======
+          <ConnectorPoint PointX="15.875607461336768" PointY="48.583672310038487" />
+>>>>>>> .merge-right.r388
+>>>>>>> .merge-right.r343
+          <ConnectorPoint PointX="16.015480274970852" PointY="47.840109499228163" />
+          <ConnectorPoint PointX="16.015480274970852" PointY="47.523066344423711" />
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="16.462511255526941" PointY="47.523066344423711" />
+          <ConnectorPoint PointX="16.711363409373096" PointY="42.327620056270788" />
+          <ConnectorPoint PointX="17.588541666666668" PointY="42.327620056270788" />
+          <ConnectorPoint PointX="17.755208333333332" PointY="42.327620056270788" />
+          <ConnectorPoint PointX="18.666666666666668" PointY="42.327620056270788" />
+          <ConnectorPoint PointX="18.895833333333332" PointY="42.327620056270788" />
+          <ConnectorPoint PointX="19.021182516944325" PointY="42.327620056270788" />
+          <ConnectorPoint PointX="19.021182516944325" PointY="42.132097075658457" />
+          <ConnectorPoint PointX="19.111231887729431" PointY="41.970904700896519" />
+          <ConnectorPoint PointX="19.111231887729431" PointY="41.252555994669052" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="19.791003952271719" PointY="40.193638598095916" />
+          <ConnectorPoint PointX="19.920018112270572" PointY="39.992666322897989" />
+          <ConnectorPoint PointX="19.92373238772943" PointY="39.986880396843944" />
+          <ConnectorPoint PointX="20.013768612270567" PointY="39.846626141834847" />
+=======
+          <ConnectorPoint PointX="20.996066691338005" PointY="38.31644774998631" />
+          <ConnectorPoint PointX="21.100957472880946" PointY="38.153053754984825" />
+          <ConnectorPoint PointX="21.307497921540936" PointY="37.831314622722381" />
+          <ConnectorPoint PointX="21.307497921540936" PointY="37.743611876538026" />
+||||||| .merge-left.r301
+          <ConnectorPoint PointX="21.170802859696128" PointY="37.743611876538026" />
+          <ConnectorPoint PointX="20.957751470275237" PointY="37.743611876538026" />
+          <ConnectorPoint PointX="20.88150158442658" PointY="37.743611876538026" />
+          <ConnectorPoint PointX="20.714834917759916" PointY="37.743611876538026" />
+=======
+          <ConnectorPoint PointX="20.57608516313292" PointY="37.743611876538026" />
+          <ConnectorPoint PointX="20.668362981590615" PointY="38.913428673150165" />
+          <ConnectorPoint PointX="21.04743667448999" PointY="38.352505439888979" />
+          <ConnectorPoint PointX="21.125510557548292" PointY="37.165013601659147" />
+          <ConnectorPoint PointX="21.278398524959169" PointY="37.165013601659147" />
+          <ConnectorPoint PointX="21.574613828923869" PointY="37.165013601659147" />
+          <ConnectorPoint PointX="21.642975197435128" PointY="37.165013601659147" />
+          <ConnectorPoint PointX="21.642975197435128" PointY="36.749357930396272" />
+          <ConnectorPoint PointX="21.794473442258912" PointY="36.608475193327408" />
+          <ConnectorPoint PointX="21.794473442258912" PointY="35.445080642989247" />
+>>>>>>> .merge-right.r343
+>>>>>>> .merge-right.r301
+          <ConnectorPoint PointX="22.020833333333332" PointY="35.445080642989247" />
+          <ConnectorPoint PointX="22.020833333333332" PointY="35.376047354600722" />
+          <ConnectorPoint PointX="21.8397400001615" PointY="35.376047354600722" />
+          <ConnectorPoint PointX="23.5625" PointY="31.686910807291667" />
+          <ConnectorPoint PointX="21.415182570496572" PointY="31.686910807291667" />
+          <ConnectorPoint PointX="21.3125" PointY="42.2107308496237" />
+          <ConnectorPoint PointX="20.20641698865807" PointY="42.2107308496237" />
+          <ConnectorPoint PointX="20.840336071384339" PointY="40.894799216109284" />
+          <ConnectorPoint PointX="20.840336071384339" PointY="40.832352427338918" />
+          <ConnectorPoint PointX="20.518973187279883" PointY="40.832352427338918" />
+          <ConnectorPoint PointX="20.759769129664189" PointY="39.802514128715053" />
+          <ConnectorPoint PointX="20.510916975818034" PointY="39.802514128715053" />
+          <ConnectorPoint PointX="20.60107119466387" PointY="39.399158486634128" />
+          <ConnectorPoint PointX="20.60107119466387" PointY="39.234552637070287" />
+          <ConnectorPoint PointX="20.66608480360857" PointY="38.824974174895559" />
+          <ConnectorPoint PointX="20.66608480360857" PointY="38.659823192129906" />
+          <ConnectorPoint PointX="21.052297861502336" PointY="35.980813970231267" />
+          <ConnectorPoint PointX="21.052297861502336" PointY="35.815662987465615" />
+          <ConnectorPoint PointX="21.1846063542393" PointY="35.006464340952036" />
+          <ConnectorPoint PointX="21.1846063542393" PointY="34.841313358186383" />
+          <ConnectorPoint PointX="21.338986780612263" PointY="34.538809307341829" />
+          <ConnectorPoint PointX="21.338986780612263" PointY="34.380785323121181" />
+          <ConnectorPoint PointX="21.414187672530041" PointY="34.1564555955534" />
+          <ConnectorPoint PointX="21.414187672530041" PointY="33.462505366121015" />
+          <ConnectorPoint PointX="21.414187672530041" PointY="33.462505366121015" />
+          <ConnectorPoint PointX="21.485621280090619" PointY="33.31192310458713" />
+          <ConnectorPoint PointX="21.605311269413875" PointY="33.059616243842655" />
+          <ConnectorPoint PointX="21.676744876974453" PointY="32.90903398230877" />
+          <ConnectorPoint PointX="21.682002613800641" PointY="32.897950657122287" />
+          <ConnectorPoint PointX="21.682002613800641" PointY="32.399954728572816" />
+          <ConnectorPoint PointX="21.885916975818034" PointY="31.686910807291667" />
+          <ConnectorPoint PointX="21.6875" PointY="31.686910807291667" />
+          <ConnectorPoint PointX="21.565482993667729" PointY="35.093410611482007" />
+          <ConnectorPoint PointX="21.559517006332271" PointY="35.259970464906807" />
+          <ConnectorPoint PointX="21.3125" PointY="42.15625" />
+          <ConnectorPoint PointX="20.602851249157887" PointY="40.426112344775767" />
+          <ConnectorPoint PointX="20.885916975818034" PointY="39.967744441714039" />
+          <ConnectorPoint PointX="20.885916975818034" PointY="38.824974174895559" />
+          <ConnectorPoint PointX="21.04108480360857" PointY="38.659823192129906" />
+          <ConnectorPoint PointX="21.04108480360857" PointY="33.819080583271862" />
+          <ConnectorPoint PointX="21.349420806499804" PointY="33.819080583271862" />
+          <ConnectorPoint PointX="21.349420806499804" PointY="33.616485239545192" />
+          <ConnectorPoint PointX="21.44990447631033" PointY="33.472099765879832" />
+          <ConnectorPoint PointX="21.44990447631033" PointY="32.813573416012737" />
+          <ConnectorPoint PointX="21.583333333333332" PointY="31.927184011443519" />
+          <ConnectorPoint PointX="21.583333333333332" PointY="31.686910807291667" />
+          <ConnectorPoint PointX="21.6875" PointY="31.686910807291667" />
+          <ConnectorPoint PointX="21.565482993667729" PointY="35.093410611482007" />
+          <ConnectorPoint PointX="21.559517006332271" PointY="35.259970464906807" />
+          <ConnectorPoint PointX="21.3125" PointY="42.15625" />
+          <ConnectorPoint PointX="20.1875" PointY="42.15625" />
+          <ConnectorPoint PointX="20.1875" PointY="42.25" />
+        </AssociationConnector>
+        <EntityTypeShape EntityType="SGFWebModel.PaisSGF" Width="2.125" PointX="7.125" PointY="87.25" />
+        <AssociationConnector Association="SGFWebModel.FK1_PAIS_LOCALIDADE" />
+        <EntityTypeShape EntityType="SGFWebModel.CFOP" Width="1.5" PointX="18.25" PointY="46.5" />
+        <AssociationConnector Association="SGFWebModel.PK_ITEM_MOVIMENTO__CFOP" />
+        <AssociationConnector Association="SGFWebModel.PK_MOVIMENTO__CFOP" />
+        <AssociationConnector Association="SGFWebModel.PK_TIPO_NOTA__CFOP" />
+        <AssociationConnector Association="SGFWebModel.FK_PROGRAMACAO_CURSO__EMPRESA" />
+        <EntityTypeShape EntityType="SGFWebModel.AcaoFollowUp" PointX="24.875" PointY="43.375" Width="1.5" />
+        <EntityTypeShape EntityType="SGFWebModel.FollowUpUsuario" Width="1.5" PointX="29.375" PointY="42.5" />
+        <AssociationConnector Association="SGFWebModel.FK_FOLLOW__ACAO" />
+        <AssociationConnector Association="SGFWebModel.FK_FOLLOW_UP__EMPRESA" />
+        <AssociationConnector Association="SGFWebModel.FK_FOLLOW_USUARIO__FOLLOW" />
+        <AssociationConnector Association="SGFWebModel.FK_FOLLOW_USUARIO__USUARIO" />
+        <AssociationConnector Association="SGFWebModel.FK_MOVIMENTO__NOTA_FISCAL" />
+        <AssociationConnector Association="SGFWebModel.FK_FOLLOW_UP__DESTINO" />
+        <EntityTypeShape EntityType="SGFWebModel.FollowUpEscola" Width="1.5" PointX="31.625" PointY="53.5" />
+        <AssociationConnector Association="SGFWebModel.FK_FOLLOW_ESCOLA__ESCOLA" />
+        <AssociationConnector Association="SGFWebModel.FK_FOLLOW_ESCOLA__FOLLOW" />
+        <AssociationConnector Association="SGFWebModel.FK_FOLLOW_UP_FOLLOW_UP" />
+        <AssociationConnector Association="SGFWebModel.FK_FOLLOW_UP_FOLLOW_UP_ORIGEM" />
+        <EntityTypeShape EntityType="SGFWebModel.Cheque" Width="1.5" PointX="32.125" PointY="67.875" />
+        <AssociationConnector Association="SGFWebModel.FK_CHEQUE_BANCO" />
+        <AssociationConnector Association="SGFWebModel.FK_CHEQUE_CONTRATO" />
+        <AssociationConnector Association="SGFWebModel.FK_CHEQUE_MOVIMENTO" />
+        <EntityTypeShape EntityType="SGFWebModel.GrupoSituacao" Width="1.5" PointX="16.625" PointY="35.625" />
+        <AssociationConnector Association="SGFWebModel.FK_Grupo_Situacao__Grupo_Estoque" />
+        <AssociationConnector Association="SGFWebModel.FK_Grupo_Situacao__Situacao_Tributaria" />
+        <EntityTypeShape EntityType="SGFWebModel.DescontoContrato" Width="1.875" PointX="37.375" PointY="73.125" />
+        <AssociationConnector Association="SGFWebModel.FK_DESCONTO_CONTRATO" />
+        <AssociationConnector Association="SGFWebModel.FK_DESCONTO__TIPO_DESCONTO" />
+        <EntityTypeShape EntityType="SGFWebModel.ListaEnderecoMala" Width="1.75" PointX="5.75" PointY="9.25" />
+        <EntityTypeShape EntityType="SGFWebModel.ListaNaoInscrito" Width="1.5" PointX="3.25" PointY="9.125" />
+        <EntityTypeShape EntityType="SGFWebModel.MalaDireta" Width="1.875" PointX="10.25" PointY="10.625" />
+        <EntityTypeShape EntityType="SGFWebModel.MalaDiretaCadastro" Width="1.875" PointX="7" PointY="12.625" />
+        <EntityTypeShape EntityType="SGFWebModel.MalaDiretaProduto" Width="1.875" PointX="3.5" PointY="11.375" />
+        <AssociationConnector Association="SGFWebModel.FK_CONTRATO__MALA_DIRETA" />
+        <AssociationConnector Association="SGFWebModel.FK_LISTA_NAO_INSCRITO__ESCOLA" />
+        <AssociationConnector Association="SGFWebModel.FK_MALA_DIRETA__ESCOLA" />
+        <AssociationConnector Association="SGFWebModel.FK_LISTA_ENDERECO__MALA_DIRETA" />
+        <AssociationConnector Association="SGFWebModel.FK_MALA_DIRETA_CADASTRO__MALA_DIRETA" />
+        <AssociationConnector Association="SGFWebModel.FK_MALA_DIRETA_PRODUTO__MALA_DIRETA" />
+        <EntityTypeShape EntityType="SGFWebModel.SysApp" Width="1.5" PointX="8.875" PointY="7.25" />
+        <AssociationConnector Association="SGFWebModel.FK_MALA_DIRETA_PRODUTO__PRODUTO" />
+        <EntityTypeShape EntityType="SGFWebModel.MalaDiretaCurso" Width="2.5" PointX="13.375" PointY="27.375" />
+        <AssociationConnector Association="SGFWebModel.FK_MALA_DIRETA_CURSO__CURSO" />
+        <AssociationConnector Association="SGFWebModel.FK_MALA_DIRETA_CURSO__MALA_DIRETA" />
+        <EntityTypeShape EntityType="SGFWebModel.MalaDiretaPeriodo" Width="2" PointX="13" PointY="11.625" />
+        <AssociationConnector Association="SGFWebModel.FK_MALA_DIRETA_PERIODO__MALA_DIRETA" />
+        <EntityTypeShape EntityType="SGFWebModel.AulaPersonalizada" Width="1.5" PointX="35.25" PointY="86.125" />
+        <EntityTypeShape EntityType="SGFWebModel.AulaPersonalizadaAluno" Width="1.5" PointX="37.875" PointY="86.625" />
+        <AssociationConnector Association="SGFWebModel.FK_AULA_PER_ALUNO__ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_AULA_PER__ESCOLA" />
+        <AssociationConnector Association="SGFWebModel.FK_AULA_PER__PRODUTO" />
+        <AssociationConnector Association="SGFWebModel.FK_AULA_PER__TURMA" />
+        <AssociationConnector Association="SGFWebModel.FK_AULA_PER_ALUNO__AULA_PER" />
+        <AssociationConnector Association="SGFWebModel.FK_AULA_PER_ALUNO__DIARIO" />
+        <EntityTypeShape EntityType="SGFWebModel.Atributos" Width="1.5" PointX="22.125" PointY="87" />
+        <AssociationConnector Association="SGFWebModel.FK_ATRIBUTO_ORIGEM" />
+        <EntityTypeShape EntityType="SGFWebModel.LogGeral" Width="1.5" PointX="19.25" PointY="93.625" />
+        <AssociationConnector Association="SGFWebModel.FK_LOG_GERAL_EMPRESA" />
+        <AssociationConnector Association="SGFWebModel.FK_LOG_GERAL_ORIGEM" ManuallyRouted="true" >
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+<<<<<<< .working
+          <ConnectorPoint PointX="24.125" PointY="93.422587890625" />
+          <ConnectorPoint PointX="24.064501165748297" PointY="95.941177692836888" />
+          <ConnectorPoint PointX="24.060498834251703" PointY="96.1077962966012" />
+          <ConnectorPoint PointX="23.625" PointY="114.23778072337598" />
+||||||| .merge-left.r274
+          <ConnectorPoint PointX="23.625" PointY="89.875" />
+          <ConnectorPoint PointX="23.270836333333332" PointY="89.875" />
+          <ConnectorPoint PointX="23.104169666666667" PointY="89.875" />
+          <ConnectorPoint PointX="23.020835333333334" PointY="89.875" />
+          <ConnectorPoint PointX="22.85416866666667" PointY="89.875" />
+          <ConnectorPoint PointX="22.770834333333333" PointY="89.875" />
+          <ConnectorPoint PointX="22.604167666666669" PointY="89.875" />
+          <ConnectorPoint PointX="22.520833333333332" PointY="89.875" />
+          <ConnectorPoint PointX="22.354166666666668" PointY="89.875" />
+          <ConnectorPoint PointX="21.770830333333333" PointY="89.875" />
+          <ConnectorPoint PointX="21.604163666666668" PointY="89.875" />
+          <ConnectorPoint PointX="21.333333333333332" PointY="89.875" />
+          <ConnectorPoint PointX="21.166666666666668" PointY="89.875" />
+=======
+          <ConnectorPoint PointX="21.083333333333332" PointY="89.875" />
+          <ConnectorPoint PointX="20.916666666666668" PointY="89.875" />
+          
+          
+          
+||||||| .merge-left.r301
+          
+          
+          
+          
+          
+=======
+          
+          
+          
+          
+          
+||||||| .merge-left.r351
+          
+          
+          
+          
+          
+=======
+          
+          
+          
+          
+          
+||||||| .merge-left.r389
+          
+          
+          
+          
+          
+=======
+          
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r388
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r388
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+<<<<<<< .working
+<<<<<<< .working
+          
+          <ConnectorPoint PointX="20.645833333333332" PointY="89.875" />
+          <ConnectorPoint PointX="20.479166666666668" PointY="89.875" />
+          <ConnectorPoint PointX="20.270833333333332" PointY="89.875" />
+          <ConnectorPoint PointX="19.854166666666668" PointY="89.875" />
+          <ConnectorPoint PointX="19.6250005" PointY="89.875" />
+          <ConnectorPoint PointX="19.6250005" PointY="93.625" />
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+||||||| .merge-left.r274
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+=======
+||||||| .merge-left.r301
+=======
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+          
+          
+          
+          
+          
+          
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+          
+        &gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r343
+          
+          
+          
+          
+          
+          
+          
+          
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r301
+          
+          
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.FK2_LOG_GERAL__USUARIO" />
+        <EntityTypeShape EntityType="SGFWebModel.TipoLog" Width="1.5" PointX="16.625" PointY="94.375" />
+        <AssociationConnector Association="SGFWebModel.FK1_LOG_GERAL__TIPO" ManuallyRouted="false" >
+        </AssociationConnector>
+        <EntityTypeShape EntityType="SGFWebModel.LogGeralDetalhe" Width="1.75" PointX="16.625" PointY="96.5" />
+        <AssociationConnector Association="SGFWebModel.FK_LOG_GERAL_DET__LOG_GERAL" />
+        <EntityTypeShape EntityType="SGFWebModel.QualifRelacionamento" Width="2.125" PointX="16.25" PointY="57.75" />
+        <AssociationConnector Association="SGFWebModel.FK1_QUALIF_RELACIONAMENTO__PAPEL" ManuallyRouted="false" >
+        </AssociationConnector>
+        <AssociationConnector Association="SGFWebModel.FK4_RELACIONAMENTO_SUBFUNCAO" />
+        <AssociationConnector Association="SGFWebModel.T_RELACIONAMENTO_PAPEL" />
+        <EntityTypeShape EntityType="SGFWebModel.TratamentoPessoa" Width="1.75" PointX="4.25" PointY="92.875" />
+        <AssociationConnector Association="SGFWebModel.FK8_PESSOA_FISICA__TRATAMENTO" />
+        <EntityTypeShape EntityType="SGFWebModel.TipoSociedade" Width="1.75" PointX="4.375" PointY="87.25" />
+        <AssociationConnector Association="SGFWebModel.FK2_PESSOA_JURIDICA__TIPO_SOCIEDADE" />
+        <EntityTypeShape EntityType="SGFWebModel.OrgaoExpedidor" Width="2.125" PointX="7.625" PointY="91.625" />
+        <AssociationConnector Association="SGFWebModel.FK7_PESSOA_FISICA__ORGAO_EXPEDIDOR" />
+        <EntityTypeShape EntityType="SGFWebModel.Operadora" Width="1.75" PointX="9.625" PointY="67.125" />
+        <AssociationConnector Association="SGFWebModel.FK_TELEFONE_OPERADORA" />
+        <EntityTypeShape EntityType="SGFWebModel.SysDireitoGrupo" Width="2.25" PointX="7.75" PointY="22" />
+        <EntityTypeShape EntityType="SGFWebModel.SysDireitoUsuario" Width="2.25" PointX="4.5" PointY="25.25" />
+        <EntityTypeShape EntityType="SGFWebModel.SysGrupo" Width="2.25" PointX="7.5" PointY="25.125" />
+        <EntityTypeShape EntityType="SGFWebModel.SysGrupoUsuario" Width="2.375" PointX="7.5" PointY="28.875" />
+        <EntityTypeShape EntityType="SGFWebModel.SysMenu" Width="2.125" PointX="4.5" PointY="21.125" />
+        <AssociationConnector Association="SGFWebModel.FK_SYSGRUPO_EMPRESA" />
+        <AssociationConnector Association="SGFWebModel.FK1_SYS_DIREITO_GRUPO__GRUPO" />
+        <AssociationConnector Association="SGFWebModel.FK2_SYS_DIREITO_GRUPO__MENU" />
+        <AssociationConnector Association="SGFWebModel.FK1_SYS_DIREITO_USUARIO_USUARIO" />
+        <AssociationConnector Association="SGFWebModel.FK2_SYS_DIREITO_USUARIO_MENU" />
+        <AssociationConnector Association="SGFWebModel.FK_GRUPO__GRUPO_MASTER" />
+        <AssociationConnector Association="SGFWebModel.FK1_SYS_GRUPO_USUARIO_GRUPO" />
+        <AssociationConnector Association="SGFWebModel.FK2_SYS_GRUPO_USUARIO_USUARIO" />
+        <AssociationConnector Association="SGFWebModel.FK1_MENU_MENU" />
+        <EntityTypeShape EntityType="SGFWebModel.AvaliacaoParticipacao" Width="1.5" PointX="11.375" PointY="96.75" />
+        <AssociationConnector Association="SGFWebModel.FK_MOVIMENTO_ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_AVALIACAO_PART__CRITERIO" />
+        <AssociationConnector Association="SGFWebModel.FK_AVALIACAO_PART__PRODUTO" />
+        <EntityTypeShape EntityType="SGFWebModel.AvaliacaoParticipacaoVinc" Width="1.5" PointX="10.375" PointY="102.25" />
+        <AssociationConnector Association="SGFWebModel.FK_AVALIACAO_PART_VINC__AVAL_PART" />
+        <AssociationConnector Association="SGFWebModel.FK_AVALIACAO_PART_VINC__ESCOLA" />
+        <EntityTypeShape EntityType="SGFWebModel.Participacao" Width="1.5" PointX="14" PointY="102.375" />
+        <AssociationConnector Association="SGFWebModel.FK_AVALIACAO_PART_VINC__PARTICIPACAO" />
+        <EntityTypeShape EntityType="SGFWebModel.AvaliacaoAlunoParticipacao" Width="1.5" PointX="13.125" PointY="88" />
+        <AssociationConnector Association="SGFWebModel.FK_AVALIACAO_ALUNO_PART__AVALIACAO_ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_AVALIACAO_ALUNO_PART__CONCEITO" />
+        <AssociationConnector Association="SGFWebModel.FK_AVALIACAO_ALUNO_PART__PARTICIPACAO" />
+        <EntityTypeShape EntityType="SGFWebModel.CargaProfessor" Width="2.125" PointX="11.75" PointY="44" />
+        <EntityTypeShape EntityType="SGFWebModel.DiasPolitica" Width="1.5" PointX="33" PointY="95.625" />
+        <AssociationConnector Association="SGFWebModel.FK_DIAS_POLITICA" />
+        <EntityTypeShape EntityType="SGFWebModel.ReajusteAluno" Width="1.5" PointX="38.875" PointY="98.875" />
+        <EntityTypeShape EntityType="SGFWebModel.ReajusteAnual" Width="1.5" PointX="31.125" PointY="103.5" />
+        <EntityTypeShape EntityType="SGFWebModel.ReajusteCurso" Width="1.5" PointX="34.375" PointY="100.125" />
+        <EntityTypeShape EntityType="SGFWebModel.ReajusteTitulo" Width="1.5" PointX="37.375" PointY="101.625" />
+        <EntityTypeShape EntityType="SGFWebModel.ReajusteTurma" Width="1.5" PointX="40.375" PointY="103.125" />
+        <AssociationConnector Association="SGFWebModel.FK_REAJUSTE_ALUNO__ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_REAJUSTE_TITULO__ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_REAJUSTE_CURSO__CURSO" />
+        <AssociationConnector Association="SGFWebModel.FK_REAJUSTE_TITULO__CURSO" />
+        <AssociationConnector Association="SGFWebModel.FK_REAJUSTE_ALUNO__REAJUSTE_ANUAL" />
+        <AssociationConnector Association="SGFWebModel.FK_REAJUSTE_ANUAL__USUARIO" />
+        <AssociationConnector Association="SGFWebModel.FK_REAJUSTE_CURSO__REAJUSTE_ANUAL" />
+        <AssociationConnector Association="SGFWebModel.FK_REAJUSTE_TITULO__REAJUSTE_ANUAL" />
+        <AssociationConnector Association="SGFWebModel.FK_REAJUSTE_TURMA__REAJUSTE_ANUAL" />
+        <AssociationConnector Association="SGFWebModel.FK_REAJUSTE_TITULO__TITULO" />
+        <AssociationConnector Association="SGFWebModel.FK_REAJUSTE_TITULO__TURMA" />
+        <AssociationConnector Association="SGFWebModel.FK_REAJUSTE_TURMA__TURMA" />
+        <AssociationConnector Association="SGFWebModel.FK_REAJUSTE_ANUAL__ESCOLA" />
+        <AssociationConnector Association="SGFWebModel.FK_MALA_DIRETA_USUARIO" />
+        <AssociationConnector Association="SGFWebModel.FK_RAJUSTE_LAYOUT" />
+        <EntityTypeShape EntityType="SGFWebModel.ObsSaldoCaixa" Width="1.5" PointX="14.75" PointY="39.375" />
+        <EntityTypeShape EntityType="SGFWebModel.ProspectPeriodo" Width="1.5" PointX="12.25" PointY="38.625" />
+        <AssociationConnector Association="SGFWebModel.FK_BAIXA_USUARIO" />
+        <EntityTypeShape EntityType="SGFWebModel.AnoEscolar" Width="1.5" PointX="20.375" PointY="108.75" />
+        <AssociationConnector Association="SGFWebModel.FK_ANO_ESCOLAR__ESCOLARIDADE" />
+        <AssociationConnector Association="SGFWebModel.FK_CONTRATO__ANO_ESCOLAR" />
+        <EntityTypeShape EntityType="SGFWebModel.AditamentoBolsa" PointX="40.75" PointY="87.125" Width="2.125" />
+        <AssociationConnector Association="SGFWebModel.FK_ADITAMENTO_BOLSA__MOTIVO" />
+        <EntityTypeShape EntityType="SGFWebModel.DescontoTituloCNAB" Width="1.5" PointX="30.875" PointY="109.375" />
+        <AssociationConnector Association="SGFWebModel.FK_DESCONTO_TITULO_CNAB_TITULO__CNAB" />
+        <EntityTypeShape EntityType="SGFWebModel.AtividadeCurso" Width="1.5" PointX="5.6672504943177335" PointY="10.503278334859422" />
+        <EntityTypeShape EntityType="SGFWebModel.Nivel" Width="1.5" PointX="8.708793146865812" PointY="11.386676957545186" />
+        <AssociationConnector Association="SGFWebModel.FK_ATIVIDADE_CURSO__ATIVIDADE" />
+        <AssociationConnector Association="SGFWebModel.FK_ATIVIDADE_CURSO__CURSO" />
+        <AssociationConnector Association="SGFWebModel.FK_CURSO__NIVEL" />
+        <AssociationConnector Association="SGFWebModel.FK_ATIVIDADE_CURSO__ESCOLA" />
+        <EntityTypeShape EntityType="SGFWebModel.CalendarioAcademico" Width="1.5" PointX="4.6526403374283758" PointY="6.1147437124116086" />
+        <EntityTypeShape EntityType="SGFWebModel.CalendarioEvento" Width="2.125" PointX="1.125" PointY="25.25" />
+        <AssociationConnector Association="SGFWebModel.FK_CAL_ACADEMICO__ESCOLA" />
+        <AssociationConnector Association="SGFWebModel.FK_CAL_EVENTO__ESCOLA" />
+        <EntityTypeShape EntityType="SGFWebModel.ProspectDia" Width="1.5" PointX="5.2901885794895644" PointY="15.994151793417592" />
+        <AssociationConnector Association="SGFWebModel.FK_PROSPECT_DIA__PROSPECT" />
+        <EntityTypeShape EntityType="SGFWebModel.JsonTeste" Width="1.5" PointX="2.5790017929761682" PointY="30.6259215914765" />
+		<EntityTypeShape EntityType="SGFWebModel.Circular" Width="1.5" PointX="8.2595703491287171" PointY="4.5176769665059062" />
+        <EntityTypeShape EntityType="SGFWebModel.Video" Width="1.5" PointX="4.306090360649903" PointY="20.828965435190575" />
+        <EntityTypeShape EntityType="SGFWebModel.ProspectSite" Width="1.5" PointX="0.75" PointY="0.75" />
+        <AssociationConnector Association="SGFWebModel.t_item_kit" />
+        <EntityTypeShape EntityType="SGFWebModel.ItemKit" Width="1.5" PointX="20.75" PointY="83.125" />
+        <AssociationConnector Association="SGFWebModel.FK_ITEM_KIT__ITEM" />
+        <AssociationConnector Association="SGFWebModel.FK_ITEM_KIT__KIT" />
+        <EntityTypeShape EntityType="SGFWebModel.ItemMovimentoKit" Width="1.5" PointX="32" PointY="56.5" />
+        <AssociationConnector Association="SGFWebModel.FK_ITEM_MOVIMENTO_KIT__KIT" />
+        <AssociationConnector Association="SGFWebModel.FK_ITEM_MOVIMENTO_KIT__MOVIMENTO" />
+        <EntityTypeShape EntityType="SGFWebModel.ControleFaltas" Width="1.5" PointX="8.125" PointY="10" />
+        <EntityTypeShape EntityType="SGFWebModel.ControleFaltasAluno" Width="1.5" PointX="9.165766930750463" PointY="4.3431655486780993" />
+        <AssociationConnector Association="SGFWebModel.FK_CONROLE_FALTAS_ALUNO__ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_CONROLE_FALTAS__TURMA" />
+        <AssociationConnector Association="SGFWebModel.FK_CONROLE_FALTAS__USUARIO" />
+        <AssociationConnector Association="SGFWebModel.FK_CONROLE_FALTAS_ALUNO__FALTAS" />
+        <EntityTypeShape EntityType="SGFWebModel.DespesaTituloCnab" Width="1.5" PointX="0.53317714693638363" PointY="16.71958150748144" />
+        <AssociationConnector Association="SGFWebModel.FK_DESPESA_TIT_CNAB__TIT_RETORNO_CNAB" />
+        <AssociationConnector Association="SGFWebModel.FK_LOCAL_MOVTO__LOCAL_BANCO" />
+        <EntityTypeShape EntityType="SGFWebModel.TaxaBancaria" Width="1.5" PointX="8.25624931056809" PointY="11.618156930253914" />
+        <AssociationConnector Association="SGFWebModel.FK_TAXA_BANCARIA__LOCAL_BANCO" />
+        <AssociationConnector Association="SGFWebModel.FK_PARAMETRO__PLANO_CONTA_TAXBCO" />
+        <EntityTypeShape EntityType="SGFWebModel.ProdutoFuncionario" Width="1.5" PointX="10.05293647481731" PointY="29.775071947730645" />
+        <AssociationConnector Association="SGFWebModel.FK_PRODUTO_FUNCIONARIO__FUNCIONARIO" />
+        <AssociationConnector Association="SGFWebModel.FK_PRODUTO_FUNCIONARIO__PRODUTO" />
+        <EntityTypeShape EntityType="SGFWebModel.Aditamento" Width="1.5" PointX="1.75" PointY="6.5" />
+        <AssociationConnector Association="SGFWebModel.FK_ADITAMENTO_BOLSA__ADITAMENTO" />
+        <AssociationConnector Association="SGFWebModel.FK_ADITAMENTO_CONTRATO" />
+        <AssociationConnector Association="SGFWebModel.FK_ADITAMENTO_LAYOUT" />
+        <AssociationConnector Association="SGFWebModel.FK_ADITAMENTO_RAJUSTE" />
+        <AssociationConnector Association="SGFWebModel.FK_ADITAMENTO_USUARIO" />
+        <AssociationConnector Association="SGFWebModel.FK_DESCONTO_ADITAMENTO" />
+        <EntityTypeShape EntityType="SGFWebModel.TituloAditamento" Width="1.5" PointX="8.6901423617685882" PointY="13.225261292059562" />
+        <AssociationConnector Association="SGFWebModel.FK_TITULO_ADITAMENTO__ADITAMENTO" />
+        <AssociationConnector Association="SGFWebModel.FK_TITULO_ADITAMENTO__TITULO" />
+        <EntityTypeShape EntityType="SGFWebModel.ItemMovItemKit" Width="1.5" PointX="7.6072099542278853" PointY="21.796505312340571" />
+        <AssociationConnector Association="SGFWebModel.FK_IMOV_IKIT__IMOV" />
+        <AssociationConnector Association="SGFWebModel.FK_IMOV_IKIT__KIT" />
+        <EntityTypeShape EntityType="SGFWebModel.ImportacaoXML" Width="1.5" PointX="8.6921312141661211" PointY="14.29283123383896" />
+ 		<EntityTypeShape EntityType="SGFWebModel.BaixaAutomatica" Width="1.5" PointX="1.4887655961740602" PointY="13.429920769031122" />
+        <EntityTypeShape EntityType="SGFWebModel.TitulosBaixaAutomatica" Width="1.5" PointX="3.2485557120519486" PointY="16.191978924065818" />
+        <AssociationConnector Association="SGFWebModel.FK_BAIXA_AUTOMATICA__ESCOLA" />
+        <AssociationConnector Association="SGFWebModel.FK_BAIXA_AUTOMATICA__LOCAL_CARTAO" />
+        <AssociationConnector Association="SGFWebModel.FK_BAIXA_AUTOMATICA__LOCAL_MOVTO" />
+        <AssociationConnector Association="SGFWebModel.FK_BAIXA_AUTOMATICA__USUARIO" />
+        <AssociationConnector Association="SGFWebModel.FK_TIT_BAIXA_AUT__BAIXA_AUT" />
+        <EntityTypeShape EntityType="SGFWebModel.SmSComporMensagemPadrao" Width="1.5" PointX="3.625" PointY="1.625" />
+        <EntityTypeShape EntityType="SGFWebModel.SmsParametrosEscola" Width="1.5" PointX="10.5" PointY="26.625" />
+        <AssociationConnector Association="SGFWebModel.FK_ADITAMENTO__TIPO_FINAN" />
+        <AssociationConnector Association="SGFWebModel.PARAMETRIZA_SMS__ESCOLA" />
+        <AssociationConnector Association="SGFWebModel.SMS_PADRAO__ESCOLA" />
+        <EntityTypeShape EntityType="SGFWebModel.AlunoAulaReposicao" Width="1.5" PointX="11.518530674054535" PointY="27.654999403122346" />
+        <EntityTypeShape EntityType="SGFWebModel.AulaReposicao" Width="1.5" PointX="2.7089630564250813" PointY="31.901441857172848" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_AULA_REPOSICAO__ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_AULA_REPOSICAO__REPOSICAO" />
+        <AssociationConnector Association="SGFWebModel.FK_AULA_REPOSICAO__ATENDENTE" />
+        <AssociationConnector Association="SGFWebModel.FK_AULA_REPOSICAO__EMPRESA" />
+        <AssociationConnector Association="SGFWebModel.FK_AULA_REPOSICAO__PROFESSOR" />
+        <AssociationConnector Association="SGFWebModel.FK_AULA_REPOSICAO__SALA" />
+        <AssociationConnector Association="SGFWebModel.FK_AULA_REPOSICAO__TURMA" />
+        <EntityTypeShape EntityType="SGFWebModel.CursoContrato" Width="1.5" PointX="3" PointY="579" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_TURMA__CURSO_CONTRATO" />
+        <AssociationConnector Association="SGFWebModel.FK_CURSO_CONTRATO__CONTRATO" />
+        <AssociationConnector Association="SGFWebModel.FK_CURSO_CONTRATO__CURSO" />
+        <AssociationConnector Association="SGFWebModel.FK_CURSO_CONTRATO__DURACAO" />
+        <AssociationConnector Association="SGFWebModel.FK_CURSO_CONTRATO__RESPONSAVEL" />
+        <AssociationConnector Association="SGFWebModel.FK_CURSO_CONTRATO__TIPO_FINANCEIRO" />
+        <EntityTypeShape EntityType="SGFWebModel.Faq" Width="1.5" PointX="3.8684219885004785" PointY="21.956660623641991" />
+        <EntityTypeShape EntityType="SGFWebModel.LivroCyber" Width="1.5" PointX="11.375" PointY="5.75" />
+        <EntityTypeShape EntityType="SGFWebModel.AlunoRestricao" Width="1.5" PointX="34.125" PointY="52.375" />
+        <EntityTypeShape EntityType="SGFWebModel.OrgaoFinanceiro" Width="1.5" PointX="11.375" PointY="5.75" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_RESTRICAO__ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_RESTRICAO__USUARIO" />
+        <AssociationConnector Association="SGFWebModel.FK_ALUNO_RESTRICAO__ORGAO" />
+        <EntityTypeShape EntityType="SGFWebModel.vi_curso_ordem" Width="1.5" PointX="13.375" PointY="0.75" />
+        <AssociationConnector Association="SGFWebModel.FK_PARAMETRO__PLANO_CONTA_MATERIAL" />
+        <AssociationConnector Association="SGFWebModel.FK_AULA_REPOSICAO__TURMA_D" />
+        <EntityTypeShape EntityType="SGFWebModel.MensagemAvaliacao" Width="1.5" PointX="21.375" PointY="56.75" />
+        <AssociationConnector Association="SGFWebModel.FK_MENSAGEM_AVALIACAO__CURSO" />
+        <AssociationConnector Association="SGFWebModel.FK_MENSAGEM_AVALIACAO__PRODUTO" />
+        <EntityTypeShape EntityType="SGFWebModel.MensagemAvaliacaoAluno" Width="1.5" PointX="35.125" PointY="90.625" />
+        <AssociationConnector Association="SGFWebModel.FK_MENSAGEM_AVALIACAO_ALUNO__ALUNO" />
+        <AssociationConnector Association="SGFWebModel.FK_MENSAGEM_AVALIACAO_ALUNO__MENSAGEM" />
+        <AssociationConnector Association="SGFWebModel.FK_MENSAGEM_AVALIACAO_ALUNO__AVALIACAO" />
+        <EntityTypeShape EntityType="SGFWebModel.PessoaCarta" Width="1.5" PointX="4.75" PointY="89.75" />
+        <AssociationConnector Association="SGFWebModel.PESSOA_CARTA__PESSOA" />
+        <EntityTypeShape EntityType="SGFWebModel.PessoaRaf" Width="1.5" PointX="5.25" PointY="51.125" />
+        <AssociationConnector Association="SGFWebModel.PESSOA_RAF__PESSOA" />
+        <AssociationConnector Association="SGFWebModel.FK_PARAMETRO__TIPO_NF_MAT_SAIDA" />
+        <EntityTypeShape EntityType="SGFWebModel.MotivoTransferenciaAluno" Width="1.5" PointX="13.375" PointY="3.75" />
+        <EntityTypeShape EntityType="SGFWebModel.TransferenciaAluno" Width="1.5" PointX="38.125" PointY="91.5" />
+        <AssociationConnector Association="SGFWebModel.TRANSFERENCIA__ALUNO_DEST" />
+        <AssociationConnector Association="SGFWebModel.TRANSFERENCIA__ALUNO_ORI" />
+        <AssociationConnector Association="SGFWebModel.TRANSFERENCIA__ESCOLA_DEST" />
+        <AssociationConnector Association="SGFWebModel.TRANSFERENCIA__ESCOLA_ORI" />
+        <EntityTypeShape EntityType="SGFWebModel.ItemCurso" Width="1.5" PointX="31.75" PointY="63.125" />
+        <AssociationConnector Association="SGFWebModel.FK_ITEM_CURSO__CURSO" />
+        <AssociationConnector Association="SGFWebModel.FK_ITEM_CURSO__ITEM" />
+        <AssociationConnector Association="SGFWebModel.TRANSFERENCIA__MOTIVO" />
+        <EntityTypeShape EntityType="SGFWebModel.vi_aluno_sem_aula" Width="1.5" PointX="13.375" PointY="6.75" />
+        <EntityTypeShape EntityType="SGFWebModel.vi_carga_horaria" Width="1.5" PointX="13.375" PointY="14.75" />
+        <EntityTypeShape EntityType="SGFWebModel.vi_raf_com_diario" Width="1.5" PointX="15.375" PointY="0.75" />
+        <EntityTypeShape EntityType="SGFWebModel.vi_raf_sem_diario" Width="1.5" PointX="15.375" PointY="4.75" />
+<<<<<<< .working
+        <EntityTypeShape EntityType="SGFWebModel.FichaSaude" Width="1.5" PointX="24.125" PointY="106.75" />
+        <AssociationConnector Association="SGFWebModel.FICHA_SAUDE__ALUNO" />
+        <AssociationConnector Association="SGFWebModel.PK_PARAMETRO__ITEM_SERVICO" />
+        <AssociationConnector Association="SGFWebModel.PK_PARAMETRO__PLANOCONTA_SERVICO" />
+        <AssociationConnector Association="SGFWebModel.PK_PARAMETRO__POLITICA_SERVICO" />
+        <AssociationConnector Association="SGFWebModel.PK_PARAMETRO__TIPONF_SERVICO" />
+||||||| .merge-left.r274
+=======
+        <EntityTypeShape EntityType="SGFWebModel.vi_livro_devolvido" Width="1.5" PointX="15.375" PointY="14.75" />
+        <EntityTypeShape EntityType="SGFWebModel.vi_desistencia_carga" Width="1.5" PointX="16.375" PointY="9.75" />
+        <EntityTypeShape EntityType="SGFWebModel.vi_carga_aluno" Width="1.5" PointX="17.375" PointY="0.75" />
+<<<<<<< .working
+>>>>>>> .merge-right.r301
+||||||| .merge-left.r301
+=======
+        <EntityTypeShape EntityType="SGFWebModel.PessoaPromocao" Width="1.5" PointX="17.375" PointY="3.75" />
+<<<<<<< .working
+>>>>>>> .merge-right.r343
+||||||| .merge-left.r351
+=======
+        <EntityTypeShape EntityType="SGFWebModel.EmpresaValorServico" Width="1.5" PointX="10.5" PointY="76.625" />
+        <AssociationConnector Association="SGFWebModel.PK_EMPRESA_VALOR__EMPRESA" />
+        <<<<<<< .working
+>>>>>>> .merge-right.r388
+||||||| .merge-left.r389
+=======
+        <EntityTypeShape EntityType="SGFWebModel.PerdaMaterial" Width="1.5" PointX="35" PointY="57.375" />
+        <AssociationConnector Association="SGFWebModel.PERDA_MATERIAL__CONTRATO" />
+        <AssociationConnector Association="SGFWebModel.PERDA_MATERIAL__MOVIMENTO" />
+        <EntityTypeShape EntityType="SGFWebModel.vi_qt_programacao_curso" Width="1.5" PointX="4.2812909466593014" PointY="26.287224483810004" />
+        <AssociationConnector Association="SGFWebModel.FK_PESSOA_FISICA__CURSO" />
+        <AssociationConnector Association="SGFWebModel.FK9_PESSOA_FISICA__ESCOLARIDADE" />
+        <AssociationConnector Association="SGFWebModel.FK_PESSOA_FISICA__PRODUTO" />
+        <EntityTypeShape EntityType="SGFWebModel.T_DESCONTO" Width="1.5" PointX="1.6379244186160733" PointY="3.5239304171520893" />
+        <AssociationConnector Association="SGFWebModel.FK_CONTRATO__NOME_CONTRATO" />
+        <AssociationConnector Association="SGFWebModel.FK_DESCONTO_ESCOLA" />
+        <AssociationConnector Association="SGFWebModel.FK_PARAMETRO__LOCAL_CARTAO" />
+        
+        
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .merge-right.r427
+        </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
