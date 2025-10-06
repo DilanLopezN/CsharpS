@@ -332,7 +332,7 @@ namespace Simjob.Framework.Services.Api.Controllers
         /// <returns>Return success</returns>
         /// <response code="200">Return success</response>
         [HttpGet()]
-        public IActionResult GetAll(int? page, int? limit)
+        public IActionResult GetAll(int? page, int? limit,bool accessPermission = true)
         {
             var acesstoken = Request.Headers[HeaderNames.Authorization];
             var userId = _userService.ClaimUserId(acesstoken);
@@ -342,7 +342,12 @@ namespace Simjob.Framework.Services.Api.Controllers
  
             var permissions = _permissionService.GetPermissionById(userId);
             var modulesPermissionUser = _modulePermissionRepository.GetListByField("userId", userId);
-            var modulesPermissionGroup = _modulePermissionRepository.GetListByField("groupId", user.GroupId);
+            List<ModulePermission> modulesPermissionGroup = new List<ModulePermission>();
+            if (user.GroupId != null)
+            {
+                modulesPermissionGroup = _modulePermissionRepository.GetListByField("groupId", user.GroupId);
+            }
+            
             var group = _groupService.GetGroupById(user.GroupId);
             var modulesPermission = modulesPermissionUser?.Where(x => x.Read == true).ToList();
 
@@ -355,7 +360,6 @@ namespace Simjob.Framework.Services.Api.Controllers
             if (limit == null) limit = 10;
             var filterIds = Builders<Module>.Filter.In(u => u.Id, moduleIdsToFilter);
             var filterIsDeleted = Builders<Module>.Filter.Eq(u => u.IsDeleted, false);
-
             var listBusca = _collection.Find(filterIsDeleted & filterIds).ToList();
             //permissionAction
             var actionPermissionList = new List<string>();

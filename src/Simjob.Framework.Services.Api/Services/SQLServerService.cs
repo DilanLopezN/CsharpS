@@ -591,10 +591,21 @@ namespace Simjob.Framework.Services.Api.Services
                     // Cross‑product: para cada campo e cada valor
                     foreach (var f in fields)
                     {
-                        foreach (var v in vals)
+                        // Se o campo começa com dt_, tratar o valor completo como um range de data
+                        if (f.StartsWith("dt_", StringComparison.OrdinalIgnoreCase))
                         {
-                            string cond = GenerateSearchCondition(f, v, mode);
+                            // Para campos de data, usar o valor original completo (pode conter vírgula para range)
+                            var originalValue = valueGroups[i].Count > 0 ? string.Join(",", valueGroups[i]) : "";
+                            string cond = GenerateSearchCondition(f, originalValue, mode);
                             innerConds.Add(cond);
+                        }
+                        else
+                        {
+                            foreach (var v in vals)
+                            {
+                                string cond = GenerateSearchCondition(f, v, mode);
+                                innerConds.Add(cond);
+                            }
                         }
                     }
 
@@ -752,10 +763,21 @@ namespace Simjob.Framework.Services.Api.Services
                     // Cross‑product: para cada campo e cada valor
                     foreach (var f in fields)
                     {
-                        foreach (var v in vals)
+                        // Se o campo começa com dt_, tratar o valor completo como um range de data
+                        if (f.StartsWith("dt_", StringComparison.OrdinalIgnoreCase))
                         {
-                            string cond = GenerateSearchCondition(f, v, mode);
+                            // Para campos de data, usar o valor original completo (pode conter vírgula para range)
+                            var originalValue = valueGroups[i].Count > 0 ? string.Join(",", valueGroups[i]) : "";
+                            string cond = GenerateSearchCondition(f, originalValue, mode);
                             innerConds.Add(cond);
+                        }
+                        else
+                        {
+                            foreach (var v in vals)
+                            {
+                                string cond = GenerateSearchCondition(f, v, mode);
+                                innerConds.Add(cond);
+                            }
                         }
                     }
 
@@ -864,10 +886,21 @@ namespace Simjob.Framework.Services.Api.Services
                     // Cross‑product: para cada campo e cada valor
                     foreach (var f in fields)
                     {
-                        foreach (var v in vals)
+                        // Se o campo começa com dt_, tratar o valor completo como um range de data
+                        if (f.StartsWith("dt_", StringComparison.OrdinalIgnoreCase))
                         {
-                            string cond = GenerateSearchCondition(f, v, mode);
+                            // Para campos de data, usar o valor original completo (pode conter vírgula para range)
+                            var originalValue = valueGroups[i].Count > 0 ? string.Join(",", valueGroups[i]) : "";
+                            string cond = GenerateSearchCondition(f, originalValue, mode);
                             innerConds.Add(cond);
+                        }
+                        else
+                        {
+                            foreach (var v in vals)
+                            {
+                                string cond = GenerateSearchCondition(f, v, mode);
+                                innerConds.Add(cond);
+                            }
                         }
                     }
 
@@ -980,10 +1013,21 @@ namespace Simjob.Framework.Services.Api.Services
                     // Cross‑product: para cada campo e cada valor
                     foreach (var f in fields)
                     {
-                        foreach (var v in vals)
+                        // Se o campo começa com dt_, tratar o valor completo como um range de data
+                        if (f.StartsWith("dt_", StringComparison.OrdinalIgnoreCase))
                         {
-                            string cond = GenerateSearchCondition(f, v, mode);
+                            // Para campos de data, usar o valor original completo (pode conter vírgula para range)
+                            var originalValue = valueGroups[i].Count > 0 ? string.Join(",", valueGroups[i]) : "";
+                            string cond = GenerateSearchCondition(f, originalValue, mode);
                             innerConds.Add(cond);
+                        }
+                        else
+                        {
+                            foreach (var v in vals)
+                            {
+                                string cond = GenerateSearchCondition(f, v, mode);
+                                innerConds.Add(cond);
+                            }
                         }
                     }
 
@@ -1114,10 +1158,21 @@ namespace Simjob.Framework.Services.Api.Services
                     // Cross‑product: para cada campo e cada valor
                     foreach (var f in fields)
                     {
-                        foreach (var v in vals)
+                        // Se o campo começa com dt_, tratar o valor completo como um range de data
+                        if (f.StartsWith("dt_", StringComparison.OrdinalIgnoreCase))
                         {
-                            string cond = GenerateSearchCondition(f, v, mode);
+                            // Para campos de data, usar o valor original completo (pode conter vírgula para range)
+                            var originalValue = valueGroups[i].Count > 0 ? string.Join(",", valueGroups[i]) : "";
+                            string cond = GenerateSearchCondition(f, originalValue, mode);
                             innerConds.Add(cond);
+                        }
+                        else
+                        {
+                            foreach (var v in vals)
+                            {
+                                string cond = GenerateSearchCondition(f, v, mode);
+                                innerConds.Add(cond);
+                            }
                         }
                     }
 

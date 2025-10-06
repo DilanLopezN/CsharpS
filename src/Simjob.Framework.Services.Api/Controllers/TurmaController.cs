@@ -1106,7 +1106,6 @@ namespace Simjob.Framework.Services.Api.Controllers
       });
     }
 
-
     /// <summary>
     /// Busca programação da matriz (fundação) - T_PROGRAMACAO_CURSO
     /// Regra 3.2 - Primeira prioridade para geração automática
@@ -1116,10 +1115,8 @@ namespace Simjob.Framework.Services.Api.Controllers
     [Route("programacao-matriz")]
     public async Task<IActionResult> GetProgramacaoMatriz(
         int cd_curso,
-        int cd_produto,
-        int cd_regime,
         int cd_duracao,
-        int cd_duracao_aula)
+        int? cd_escola = null)
     {
       var schemaName = "T_Turma";
       if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
@@ -1131,50 +1128,8 @@ namespace Simjob.Framework.Services.Api.Controllers
       {
         var result = await ProgramacaoService.BuscarProgramacaoMatriz(
             cd_curso,
-            cd_produto,
-            cd_regime,
             cd_duracao,
-            cd_duracao_aula,
-            source
-        );
-
-        if (!result.success)
-          return NotFound(new { error = result.error });
-
-        return ResponseDefault(result.data);
-      }
-
-      return BadRequest(new { error = "Fonte de dados não configurada ou inativa." });
-    }
-
-    /// <summary>
-    /// Busca modelo de programação do franqueado - T_MODELO_PROGRAMACAO
-    /// Regra 3.2 - Segunda prioridade para geração automática
-    /// </summary>
-    [Authorize]
-    [HttpGet]
-    [Route("modelo-programacao")]
-    public async Task<IActionResult> GetModeloProgramacao(
-        int cd_curso,
-        int cd_produto,
-        int cd_regime,
-        int cd_duracao,
-        int cd_duracao_aula)
-    {
-      var schemaName = "T_Turma";
-      if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
-      var schema = _schemaRepository.GetSchemaByField("name", schemaName);
-      var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
-      var source = _sourceRepository.GetByField("description", schemaModel.Source);
-
-      if (source != null && source.Active != null && source.Active == true)
-      {
-        var result = await ProgramacaoService.BuscarModeloProgramacao(
-            cd_curso,
-            cd_produto,
-            cd_regime,
-            cd_duracao,
-            cd_duracao_aula,
+            cd_escola,
             source
         );
 
@@ -1194,7 +1149,7 @@ namespace Simjob.Framework.Services.Api.Controllers
     [Authorize]
     [HttpGet]
     [Route("feriados")]
-    public async Task<IActionResult> GetFeriados(int nm_ano)
+    public async Task<IActionResult> GetFeriados(int ano, int? cd_escola = null)
     {
       var schemaName = "T_Turma";
       if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
@@ -1204,7 +1159,7 @@ namespace Simjob.Framework.Services.Api.Controllers
 
       if (source != null && source.Active != null && source.Active == true)
       {
-        var result = await ProgramacaoService.BuscarFeriados(nm_ano, source);
+        var result = await ProgramacaoService.BuscarFeriados(ano, cd_escola, source);
 
         if (!result.success)
           return NotFound(new { error = result.error });
@@ -1214,8 +1169,6 @@ namespace Simjob.Framework.Services.Api.Controllers
 
       return BadRequest(new { error = "Fonte de dados não configurada ou inativa." });
     }
-
-
     private async Task<List<object>> VerificarDisponibilidadeProfessor(
     object cd_pessoa,
     DateTime data,
@@ -1626,6 +1579,431 @@ Source source)
     }
 
 
+    /// <summary>
+    /// Gera programação automática para turma
+    /// Implementa regra 3.2 (prioridade: Matriz → Franqueado → Manual)
+    /// </summary>
+    [Authorize]
+    [HttpPost()]
+    [Route("gerar-programacao")]
+    public async Task<IActionResult> GerarProgramacao([FromBody] GerarProgramacaoRequest request)
+    {
+      var schemaName = "T_Turma";
+      if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
+      var schema = _schemaRepository.GetSchemaByField("name", schemaName);
+      var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
+      var source = _sourceRepository.GetByField("description", schemaModel.Source);
+
+      if (source != null && source.Active != null && source.Active == true)
+      {
+        var dt_inicio = DateTime.Parse(request.dt_inicio);
+
+        var resultado = await ProgramacaoTurmaService.GerarProgramacaoTurma(
+            request.cd_curso,
+            request.cd_produto,
+            request.cd_regime,
+            request.cd_duracao,
+            request.cd_duracao_aula,
+            request.cd_escola,
+            dt_inicio,
+            request.horarios,
+            request.carga_horaria_total_curso,
+            source
+        );
+
+        if (!resultado.success)
+          return BadRequest(new { error = resultado.error });
+
+        // Validar carga horária mínima
+        var validaCarga = ProgramacaoTurmaService.ValidarCargaHorariaMinima(
+            resultado.programacoes,
+            request.carga_horaria_total_curso,
+            request.cd_duracao_aula
+        );
+
+        if (!validaCarga)
+          return BadRequest(new { error = "Programação gerada não atinge a carga horária mínima do curso" });
+
+        return ResponseDefault(new
+        {
+          programacoes = resultado.programacoes,
+          total_aulas = resultado.programacoes.Count,
+          carga_horaria_total = resultado.programacoes.Count * request.cd_duracao_aula
+        });
+      }
+
+      return BadRequest(new { error = "Fonte de dados não configurada ou inativa." });
+    }
+
+
+    /// <summary>
+    /// Lista todas programações de uma turma com informações adicionais
+    /// </summary>
+    [Authorize]
+    [HttpGet()]
+    [Route("programacoes/{cd_turma}")]
+    public async Task<IActionResult> ListarProgramacoes(int cd_turma)
+    {
+      var schemaName = "T_Turma";
+      if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
+      var schema = _schemaRepository.GetSchemaByField("name", schemaName);
+      var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
+      var source = _sourceRepository.GetByField("description", schemaModel.Source);
+
+      if (source != null && source.Active != null && source.Active == true)
+      {
+        // Buscar todas programações da turma
+        var programacoesGet = await SQLServerService.GetList(
+            "T_PROGRAMACAO_TURMA",
+            1,
+            10000,
+            "nm_programacao_aux",
+            false,
+            null,
+            "[cd_turma]",
+            $"[{cd_turma}]",
+            source,
+            SearchModeEnum.Equals,
+            null,
+            null);
+
+        if (!programacoesGet.success || programacoesGet.data == null)
+          return NotFound(new { error = "Programações não encontradas" });
+
+        // Enriquecer dados com informações visuais
+        var programacoesEnriquecidas = new List<Dictionary<string, object>>();
+
+        foreach (var prog in programacoesGet.data)
+        {
+          var progEnriquecida = new Dictionary<string, object>(prog);
+
+          bool id_aula_dada = (bool)prog["id_aula_dada"];
+          bool id_prog_cancelada = prog.ContainsKey("id_prog_cancelada") && (bool)prog["id_prog_cancelada"];
+          bool id_reprogramada = (bool)prog["id_reprogramada"];
+          bool id_provisoria = prog.ContainsKey("id_provisoria") && (bool)prog["id_provisoria"];
+          bool is_feriado = prog.ContainsKey("cd_feriado") && prog["cd_feriado"] != null;
+
+          // Definir status visual
+          string status_visual = "aberto";
+          if (id_prog_cancelada) status_visual = "cancelado";
+          else if (id_aula_dada) status_visual = "lancado";
+          else if (is_feriado) status_visual = "feriado";
+          else if (id_reprogramada) status_visual = "reprogramado";
+          else if (id_provisoria) status_visual = "provisorio";
+
+          progEnriquecida["status_visual"] = status_visual;
+          progEnriquecida["is_feriado"] = is_feriado;
+          progEnriquecida["pode_editar"] = !id_aula_dada && !id_prog_cancelada && !id_reprogramada;
+          progEnriquecida["pode_reprogramar"] = !id_aula_dada && !id_prog_cancelada && !id_reprogramada;
+          progEnriquecida["pode_excluir"] = !id_aula_dada && !id_prog_cancelada && !id_provisoria;
+
+          programacoesEnriquecidas.Add(progEnriquecida);
+        }
+
+        // Marcar feriados
+        var comFeriados = await ProgramacaoTurmaService.MarcarFeriadosNaProgramacao(
+            programacoesEnriquecidas,
+            (int)(await SQLServerService.GetFirstByFields(source, "T_TURMA",
+                new List<(string campo, object valor)> { ("cd_turma", cd_turma) }))["cd_pessoa_escola"],
+            source
+        );
+
+        return ResponseDefault(comFeriados);
+      }
+
+      return BadRequest(new { error = "Fonte de dados não configurada ou inativa." });
+    }
+
+
+    /// <summary>
+    /// Reprograma uma aula (com ou sem reordenação)
+    /// Implementa regra 3.4
+    /// </summary>
+    [Authorize]
+    [HttpPost()]
+    [Route("reprogramar-aula")]
+    public async Task<IActionResult> ReprogramarAula([FromBody] ReprogramacaoAulaModel request)
+    {
+      var schemaName = "T_Turma";
+      if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
+      var schema = _schemaRepository.GetSchemaByField("name", schemaName);
+      var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
+      var source = _sourceRepository.GetByField("description", schemaModel.Source);
+
+      if (source != null && source.Active != null && source.Active == true)
+      {
+        // Buscar programação original
+        var progOriginalGet = await SQLServerService.GetFirstByFields(
+            source,
+            "T_PROGRAMACAO_TURMA",
+            new List<(string campo, object valor)> { ("cd_programacao_turma", request.cd_programacao_turma) });
+
+        if (progOriginalGet == null)
+          return NotFound(new { error = "Programação não encontrada" });
+
+        var data_original = DateTime.Parse(progOriginalGet["dta_programacao_turma"].ToString());
+        var nova_data = DateTime.Parse(request.nova_data);
+
+        // Validar reprogramação
+        var validacao = await ReprogramacaoAulaService.ValidarReprogramacao(
+            request.cd_programacao_turma,
+            data_original,
+            nova_data,
+            request.cd_turma,
+            source
+        );
+
+        if (!validacao.valido)
+          return BadRequest(new { error = validacao.erro });
+
+        // Buscar turma para validar disponibilidade
+        var turmaGet = await SQLServerService.GetFirstByFields(
+            source,
+            "T_TURMA",
+            new List<(string campo, object valor)> { ("cd_turma", request.cd_turma) });
+
+        if (turmaGet == null)
+          return NotFound(new { error = "Turma não encontrada" });
+
+        int cd_sala = turmaGet.ContainsKey("cd_sala") && turmaGet["cd_sala"] != null ? (int)turmaGet["cd_sala"] : 0;
+
+        // Buscar professor da turma
+        var profTurmaGet = await SQLServerService.GetFirstByFields(
+            source,
+            "T_TURMA_PROFESSOR",
+            new List<(string campo, object valor)> { ("cd_turma", request.cd_turma) });
+
+        int? cd_professor = profTurmaGet != null ? (int?)profTurmaGet["cd_professor"] : null;
+
+        // Validar disponibilidade
+        var disponibilidade = await ReprogramacaoAulaService.ValidarDisponibilidade(
+            nova_data,
+            request.novo_hr_inicial,
+            request.novo_hr_final,
+            cd_sala,
+            cd_professor,
+            request.cd_turma,
+            source
+        );
+
+        if (!disponibilidade.sala_disponivel || !disponibilidade.professor_disponivel)
+          return BadRequest(new { error = disponibilidade.mensagem_erro });
+
+        // Buscar próxima programação disponível para decidir tipo de reprogramação
+        var proximaProgGet = await SQLServerService.GetList(
+            "T_PROGRAMACAO_TURMA",
+            1,
+            1,
+            "dta_programacao_turma",
+            false,
+            null,
+            "[cd_turma],[id_aula_dada],[dta_programacao_turma]",
+            $"[{request.cd_turma}],[0],[{data_original:yyyy-MM-dd}]",
+            source,
+            SearchModeEnum.GreaterThan,
+            null,
+            null);
+
+        bool tem_proxima_aula = proximaProgGet.success && proximaProgGet.data != null && proximaProgGet.data.Any();
+        bool move_para_proxima = false;
+
+        if (tem_proxima_aula)
+        {
+          var proxima_data = DateTime.Parse(proximaProgGet.data.First()["dta_programacao_turma"].ToString());
+          // Se a nova data é igual ou posterior à próxima aula, precisa reordenar
+          move_para_proxima = nova_data >= proxima_data;
+        }
+
+        // Obter cd_usuario do token/contexto (implementar conforme sua autenticação)
+        int cd_usuario = 1; // TODO: Obter do token JWT
+
+        // Executar reprogramação
+        (bool success, string error) resultado;
+
+        if (move_para_proxima)
+        {
+          resultado = await ReprogramacaoAulaService.ReprogramarComReordenacao(
+              request.cd_programacao_turma,
+              nova_data,
+              request.novo_hr_inicial,
+              request.novo_hr_final,
+              request.cd_turma,
+              cd_usuario,
+              source
+          );
+        }
+        else
+        {
+          resultado = await ReprogramacaoAulaService.ReprogramarSemReordenacao(
+              request.cd_programacao_turma,
+              nova_data,
+              request.novo_hr_inicial,
+              request.novo_hr_final,
+              request.cd_turma,
+              cd_usuario,
+              source
+          );
+        }
+
+        if (!resultado.success)
+          return BadRequest(new { error = resultado.error });
+
+        return ResponseDefault(new
+        {
+          message = "Aula reprogramada com sucesso",
+          tipo_reprogramacao = move_para_proxima ? "com_reordenacao" : "sem_reordenacao"
+        });
+      }
+
+      return BadRequest(new { error = "Fonte de dados não configurada ou inativa." });
+    }
+
+
+    /// <summary>
+    /// Inclui programação manual
+    /// Implementa regra 3.6
+    /// </summary>
+    [Authorize]
+    [HttpPost()]
+    [Route("incluir-programacao-manual")]
+    public async Task<IActionResult> IncluirProgramacaoManual([FromBody] InclusaoManualProgramacaoModel request)
+    {
+      var schemaName = "T_Turma";
+      if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
+      var schema = _schemaRepository.GetSchemaByField("name", schemaName);
+      var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
+      var source = _sourceRepository.GetByField("description", schemaModel.Source);
+
+      if (source != null && source.Active != null && source.Active == true)
+      {
+        // Buscar todas programações da turma
+        var todasProgsGet = await SQLServerService.GetList(
+            "T_PROGRAMACAO_TURMA",
+            1,
+            10000,
+            "nm_programacao_aux",
+            false,
+            null,
+            "[cd_turma]",
+            $"[{request.cd_turma}]",
+            source,
+            SearchModeEnum.Equals,
+            null,
+            null);
+
+        if (!todasProgsGet.success || todasProgsGet.data == null)
+          return BadRequest(new { error = "Erro ao buscar programações" });
+
+        // Validar que não há diários lançados após o auxiliar informado
+        var progsPosteriores = todasProgsGet.data
+            .Where(p => (int)p["nm_programacao_aux"] >= request.nm_programacao_aux)
+            .ToList();
+
+        if (progsPosteriores.Any(p => (bool)p["id_aula_dada"]))
+        {
+          return BadRequest(new { error = "Não é possível incluir programação manual entre programações com diário lançado" });
+        }
+
+        // Buscar programação anterior para definir data e horário
+        var progAnteriorGet = await SQLServerService.GetList(
+            "T_PROGRAMACAO_TURMA",
+            1,
+            1,
+            "nm_programacao_aux",
+            true,
+            null,
+            "[cd_turma],[nm_programacao_aux]",
+            $"[{request.cd_turma}],[{request.nm_programacao_aux}]",
+            source,
+            SearchModeEnum.LessThan,
+            null,
+            null);
+
+        DateTime data_programacao;
+        string hr_inicial, hr_final;
+
+        if (progAnteriorGet.success && progAnteriorGet.data != null && progAnteriorGet.data.Any())
+        {
+          var progAnterior = progAnteriorGet.data.First();
+          data_programacao = DateTime.Parse(progAnterior["dta_programacao_turma"].ToString()).AddDays(1);
+          hr_inicial = progAnterior["hr_inicial_programacao"].ToString();
+          hr_final = progAnterior["hr_final_programacao"].ToString();
+        }
+        else
+        {
+          // Buscar turma para pegar horários
+          var turmaGet = await SQLServerService.GetFirstByFields(
+              source,
+              "T_TURMA",
+              new List<(string campo, object valor)> { ("cd_turma", request.cd_turma) });
+
+          if (turmaGet == null)
+            return NotFound(new { error = "Turma não encontrada" });
+
+          data_programacao = DateTime.Parse(turmaGet["dt_inicio_aula"].ToString());
+
+          var horarioGet = await SQLServerService.GetFirstByFields(
+              source,
+              "T_HORARIO",
+              new List<(string campo, object valor)> { ("cd_turma", request.cd_turma) });
+
+          if (horarioGet == null)
+            return BadRequest(new { error = "Horários da turma não encontrados" });
+
+          hr_inicial = horarioGet["hr_inicial"].ToString();
+          hr_final = horarioGet["hr_final"].ToString();
+        }
+
+        // Reordenar programações posteriores (incrementar auxiliar)
+        foreach (var prog in progsPosteriores)
+        {
+          int cd_prog = (int)prog["cd_programacao_turma"];
+          int nm_aux_atual = (int)prog["nm_programacao_aux"];
+
+          var updateAux = new Dictionary<string, object>
+          {
+            ["nm_programacao_aux"] = nm_aux_atual + 1
+          };
+
+          await SQLServerService.Update(
+              "T_PROGRAMACAO_TURMA",
+              updateAux,
+              source,
+              "cd_programacao_turma",
+              cd_prog);
+        }
+
+        // Inserir nova programação manual
+        var novaProg = new Dictionary<string, object>
+        {
+          ["cd_turma"] = request.cd_turma,
+          ["nm_aula_programacao_turma"] = 0, // Aulas manuais não incrementam numeração
+          ["dta_programacao_turma"] = data_programacao.ToString("yyyy-MM-dd"),
+          ["dc_programacao_turma"] = request.dc_programacao_turma,
+          ["hr_inicial_programacao"] = hr_inicial,
+          ["hr_final_programacao"] = hr_final,
+          ["nm_programacao_aux"] = request.nm_programacao_aux,
+          ["id_aula_dada"] = false,
+          ["id_programacao_manual"] = true,
+          ["id_reprogramada"] = false,
+          ["id_provisoria"] = false,
+          ["id_mostrar_calendario"] = true,
+          ["dta_cadastro_programacao"] = DateTime.Now.ToString("yyyy-MM-dd"),
+          ["nm_programacao_real"] = 0,
+          ["id_prog_cancelada"] = false,
+          ["id_modificada"] = false
+        };
+
+        var insertResult = await SQLServerService.Insert("T_PROGRAMACAO_TURMA", novaProg, source);
+
+        if (!insertResult.success)
+          return BadRequest(new { error = insertResult.error });
+
+        return ResponseDefault(new { message = "Programação manual incluída com sucesso" });
+      }
+
+      return BadRequest(new { error = "Fonte de dados não configurada ou inativa." });
+    }
 
   }
 }

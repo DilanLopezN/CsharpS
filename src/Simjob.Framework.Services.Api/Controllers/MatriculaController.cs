@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
+using MongoDB.Driver.Builders;
 using MongoDB.Driver.Core.Configuration;
 using Newtonsoft.Json;
 using Simjob.Framework.Application.Controllers;
@@ -40,17 +41,19 @@ namespace Simjob.Framework.Services.Api.Controllers
         private readonly IRepository<SourceContext, Source> _sourceRepository;
         private readonly IRepository<MongoDbContext, Schema> _schemaRepository;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly SimulacaoBaixaService _simulacaoBaixaService;
 
         public MatriculaController(IMediatorHandler bus, INotificationHandler<DomainNotification> notifications, IRepository<SourceContext, Source> sourceRepository, IRepository<MongoDbContext, Schema> schemaRepository, IWebHostEnvironment webHostEnvironment) : base(bus, notifications)
         {
             _sourceRepository = sourceRepository;
             _schemaRepository = schemaRepository;
             _webHostEnvironment = webHostEnvironment;
+            _simulacaoBaixaService = new SimulacaoBaixaService();
         }
 
         [Authorize]
         [HttpGet()]
-        public async Task<IActionResult> GetAll(string value, SearchModeEnum mode, int? page, int? limit, string sortField, bool sortDesc = false, string ids = "", string searchFields = null, string? cd_empresa = null, bool aditamento = false, DateTime? dataInicio = null, DateTime? dataMatriculaInicio = null, DateTime? dataMatriculaFim = null)
+        public async Task<IActionResult> GetAll(string value, SearchModeEnum mode, int? page, int? limit, string sortField, bool sortDesc = false, string ids = "", string searchFields = null, string? cd_empresa = null, DateTime? dataInicio = null, DateTime? dataMatriculaInicio = null, DateTime? dataMatriculaFim = null)
         {
             if (cd_empresa == null) return BadRequest("campo cd_empresa não informado");
             var schemaName = "T_Pessoa";
@@ -60,19 +63,6 @@ namespace Simjob.Framework.Services.Api.Controllers
             var source = _sourceRepository.GetByField("description", schemaModel.Source);
             if (source != null && source.Active != null && source.Active == true)
             {
-                int op_aditamento = aditamento ? 1 : 0;
-                if (string.IsNullOrEmpty(searchFields))
-                {
-                    searchFields = "[possui_aditamento]";
-                    value = $"[{op_aditamento}]";
-                }
-                else
-                {
-                    searchFields = $"{searchFields},[possui_aditamento]";
-                    value = $"{value},[{op_aditamento}]";
-                }
-
-                //var matriculaResult = await SQLServerService.GetListFiltroData("vi_contrato", page, limit, sortField, sortDesc, ids, searchFields, value, source, mode, "cd_pessoa_escola", cd_empresa);
                 var matriculaResult = await SQLServerService.GetListFiltroData("vi_contrato", page, limit, sortField, sortDesc, ids, "cd_contrato", searchFields, value, source, mode, "cd_pessoa_escola", cd_empresa, "dt_inicial_contrato", "dt_inicial_contrato", dataInicio, dataInicio, "dt_matricula_contrato", dataMatriculaInicio, dataMatriculaFim);
                 if (matriculaResult.success)
                 {
@@ -298,6 +288,9 @@ namespace Simjob.Framework.Services.Api.Controllers
                 var cd_cursos = string.Join(",", cursoContrato.Select(x => x["cd_curso"]));
                 //v_movimento_aluno_curso
                 var item_movimento = await SQLServerService.GetList("v_movimento_aluno_curso", null, "[cd_aluno],[cd_curso]", $"[{cd_aluno}],[{cd_cursos}]", source, SearchModeEnum.Equals);
+
+                var titulos = new List<Dictionary<string, object>>();
+
                 //adicionar e compor outros objetos
                 var contrato = new Dictionary<string, object>
                 {
@@ -471,7 +464,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                 var filtroParametro = new List<(string campo, object valor)> { new("cd_pessoa_escola", model.cd_pessoa_escola) };
                 var parametroExists = await SQLServerService.GetFirstByFields(source, "T_PARAMETRO", filtroParametro);
                 if (parametroExists == null) return NotFound("parametros não encontratos para esta escola");
-                var nm_nf_material = parametroExists["nm_nf_material"] != null ? int.Parse(parametroExists["nm_nf_material"].ToString()) : 0;
+                var nm_nf_mercantil = parametroExists["nm_nf_mercantil"] != null ? int.Parse(parametroExists["nm_nf_material"].ToString()) : 0;
                 var id_nro_contrato_automatico = (bool)parametroExists["id_nro_contrato_automatico"];
                 var id_tipo_numero_contrato = parametroExists["id_tipo_numero_contrato"]?.ToString() ?? "0";
 
@@ -597,6 +590,21 @@ namespace Simjob.Framework.Services.Api.Controllers
                 var matricula = matriculaCadastradaGet.data.First();
                 var cd_contrato = matricula["cd_contrato"];
                 var cd_escola = model.cd_pessoa_escola;
+
+                var dict_aditamento = new Dictionary<string, object>
+                {
+                    ["cd_contrato"] = cd_contrato,
+                    ["id_tipo_data_inicio"] = 0,
+                    ["vl_aula_hora"] = 0,
+                    ["nm_titulos_aditamento"] = 0,
+                    ["cd_usuario"] = model.cd_usuario,
+                    ["vl_aditivo"] = 0,
+                    ["vl_parcela_titulo_aditamento"] = 0,
+                    ["id_ajuste_manual"] = 0,
+                    ["dt_aditamento"] = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")
+                };
+                var result_aditamento = await SQLServerService.Insert("T_ADITAMENTO", dict_aditamento, source);
+                if (!result_aditamento.success) return BadRequest(result_aditamento.error);
 
                 var cursosContrato = new List<int>();
                 if (!model.CursoContrato.IsNullOrEmpty())
@@ -969,7 +977,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                                     estoque_ok = false;
                                     continue;
                                 }
-                                nm_nf_material++;
+                                nm_nf_mercantil++;
                             }
                         }
 
@@ -984,13 +992,14 @@ namespace Simjob.Framework.Services.Api.Controllers
                             //movimento
                             var movimento_dict = new Dictionary<string, object>
                                 {
-                                    { "cd_curso",venda.cd_curso },
-                                    { "cd_aluno",model.cd_aluno },
+                                    {"cd_origem_movimento",cd_contrato },
                                     { "cd_pessoa_empresa", cd_escola},
                                     { "cd_pessoa", cd_pessoa_aluno},
-                                    { "cd_politica_comercial", 2},
+                                    { "cd_politica_comercial", parametroExists["cd_politica_comercial_nf"]},
                                     { "cd_tipo_financeiro",  3 },
-                                    { "id_tipo_movimento", 1 },
+                                    { "id_tipo_movimento", 2 },
+                                    { "nm_movimento",nm_nf_mercantil},
+                                    { "dc_serie_movimento","M" },
                                     { "dt_emissao_movimento", DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
                                     { "dt_vcto_movimento", DateTime.Now.Date.AddDays(60).ToString("yyyy-MM-ddTHH:mm:ss") },
                                     { "dt_mov_movimento", DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
@@ -1017,7 +1026,10 @@ namespace Simjob.Framework.Services.Api.Controllers
                                     { "id_material_didatico", 1 },
                                     { "id_venda_futura", venda.venda?0:1 },
                                     { "id_origem_movimento", 22 },
-                                    { "nm_nfe",venda.venda?nm_nf_material:null }
+                                    { "nm_nfe",venda.venda?nm_nf_mercantil:null },
+                                    { "cd_curso",venda.cd_curso },
+                                    { "cd_aluno",model.cd_aluno },
+                                    { "tx_obs_fiscal","ICMS IMUNE NAS OPERAÇÕES COM LIVROS, APOSTILAS  E TESTES CONF.ART.150 VI, d DA CONSTITUIÇÃO FEDERAL"}
                                 };
                             var t_movimento_Result = await SQLServerService.Insert("T_MOVIMENTO", movimento_dict, source);
                             if (!t_movimento_Result.success) return BadRequest(t_movimento_Result.error);
@@ -1035,7 +1047,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                             var movimento_update_dict = new Dictionary<string, object>
                             {
                                 { "id_venda_futura", venda.venda?0:1 },
-                                { "nm_nfe",venda.venda?nm_nf_material:null }
+                                { "nm_nfe",venda.venda?nm_nf_mercantil:null }
 
                             };
                             var t_movimento_Result = await SQLServerService.Update("T_MOVIMENTO", movimento_update_dict, source, "cd_movimento", cd_movimento);
@@ -1048,6 +1060,8 @@ namespace Simjob.Framework.Services.Api.Controllers
                         {
                             var item_movimento_dict = new Dictionary<string, object>
                                 {
+
+                                    {"cd_plano_conta",cd_plano_conta_mat },
                                     { "cd_movimento", cd_movimento },
                                     { "cd_item",venda.cd_item },
                                     { "qt_item_movimento", 1 },
@@ -1102,7 +1116,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                                 //atualiza nm_nf_material
                                 var parametroUpdate = new Dictionary<string, object>
                                 {
-                                    { "nm_nf_material", nm_nf_material }
+                                    { "nm_nf_material", nm_nf_mercantil }
                                 };
                                 var parametroResult = await SQLServerService.Update("T_PARAMETRO", parametroUpdate, source, "cd_pessoa_escola", model.cd_pessoa_escola);
                                 if (!parametroResult.success) return BadRequest(parametroResult.error);
@@ -1501,7 +1515,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                 var parametroExists = await SQLServerService.GetFirstByFields(source, "T_PARAMETRO", filtroParametro);
                 if (parametroExists == null) return NotFound("parametros não encontratos para esta escola");
                 var id_nro_contrato_automatico = parametroExists["id_nro_contrato_automatico"]?.ToString() ?? "0";
-                var nm_nf_material = parametroExists["nm_nf_material"] != null ? int.Parse(parametroExists["nm_nf_material"].ToString()) : 0;
+                var nm_nf_mercantil = parametroExists["nm_nf_mercantil"] != null ? int.Parse(parametroExists["nm_nf_mercantil"].ToString()) : 0;
                 var atualizarTurma = false;
                 var atualizarPlanoConta = false;
                 var atualizarComplemento = false;
@@ -1635,6 +1649,27 @@ namespace Simjob.Framework.Services.Api.Controllers
 
                 var matriculaResult = await SQLServerService.Update("T_CONTRATO", matricula_dict, source, "cd_contrato", model.cd_contrato);
                 if (!matriculaResult.success) return BadRequest(matriculaResult.error);
+
+                //aditamento cd_nome_contrato
+                if (matricula_dict.ContainsKey("cd_nome_contrato"))
+                {
+                    var dict_aditamento = new Dictionary<string, object>
+                    {
+                        ["cd_contrato"] = model.cd_contrato,
+                        ["id_tipo_data_inicio"] = 0,
+                        ["vl_aula_hora"] = 0,
+                        ["nm_titulos_aditamento"] = 0,
+                        ["cd_usuario"] = model.cd_usuario,
+                        ["vl_aditivo"] = 0,
+                        ["vl_parcela_titulo_aditamento"] = 0,
+                        ["id_ajuste_manual"] = 0,
+                        ["dt_aditamento"] = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"),
+                        ["cd_nome_contrato"] = model.cd_nome_contrato
+                    };
+                    var result_aditamento = await SQLServerService.Insert("T_ADITAMENTO", dict_aditamento, source);
+                    if (!result_aditamento.success) return BadRequest(result_aditamento.error);
+
+                }
 
                 //cadastra ou atualiza taxa da matricula
                 if (model.Taxa != null && model.Taxa.vl_matricula_taxa != null && model.Taxa.vl_matricula_taxa > 0 && atualizarPlanoConta)
@@ -1795,9 +1830,9 @@ namespace Simjob.Framework.Services.Api.Controllers
                 if (model.id_tipo_contrato != 2)
                 {
                     //T_titulo_Material
+                    await SQLServerService.DeleteByTwoFields("T_TITULO", "cd_origem_titulo", model.cd_contrato.ToString(), "dc_tipo_titulo", "MT", source);
                     if (!model.TitulosMaterial.IsNullOrEmpty() && atualizarPlanoConta)
                     {
-                        await SQLServerService.DeleteByTwoFields("T_TITULO", "cd_origem_titulo", model.cd_contrato.ToString(), "dc_tipo_titulo", model.TitulosMaterial.First().dc_tipo_titulo, source);
                         foreach (var titulo in model.TitulosMaterial)
                         {
                             var dictTitulo = new Dictionary<string, object>
@@ -2010,7 +2045,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                                     continue;
                                 }
                             }
-                            nm_nf_material++;
+                            nm_nf_mercantil++;
                         }
 
                         var movimento_existente = await SQLServerService.GetFirstByFields(source, "T_MOVIMENTO", new List<(string campo, object valor)> { new("cd_curso", venda.cd_curso), new("cd_aluno", model.cd_aluno) });
@@ -2021,13 +2056,14 @@ namespace Simjob.Framework.Services.Api.Controllers
                             //movimento
                             var movimento_dict = new Dictionary<string, object>
                                 {
-                                    { "cd_curso",venda.cd_curso },
-                                    { "cd_aluno",model.cd_aluno },
+                                    {"cd_origem_movimento",model.cd_contrato },
                                     { "cd_pessoa_empresa", cd_escola},
                                     { "cd_pessoa", cd_pessoa_aluno},
-                                    { "cd_politica_comercial", 2},
+                                    { "cd_politica_comercial", parametroExists["cd_politica_comercial_nf"]},
                                     { "cd_tipo_financeiro",  3 },
-                                    { "id_tipo_movimento", 1 },
+                                    { "id_tipo_movimento", 2 },
+                                    { "nm_movimento",nm_nf_mercantil},
+                                    { "dc_serie_movimento","M" },
                                     { "dt_emissao_movimento", DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
                                     { "dt_vcto_movimento", DateTime.Now.Date.AddDays(60).ToString("yyyy-MM-ddTHH:mm:ss") },
                                     { "dt_mov_movimento", DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
@@ -2054,7 +2090,10 @@ namespace Simjob.Framework.Services.Api.Controllers
                                     { "id_material_didatico", 1 },
                                     { "id_venda_futura", venda.venda?0:1 },
                                     { "id_origem_movimento", 22 },
-                                    { "nm_nfe",venda.venda?nm_nf_material:null }
+                                    { "nm_nfe",venda.venda?nm_nf_mercantil:null },
+                                    { "cd_curso",venda.cd_curso },
+                                    { "cd_aluno",model.cd_aluno },
+                                    { "tx_obs_fiscal","ICMS IMUNE NAS OPERAÇÕES COM LIVROS, APOSTILAS  E TESTES CONF.ART.150 VI, d DA CONSTITUIÇÃO FEDERAL"}
                                 };
                             var t_movimento_Result = await SQLServerService.Insert("T_MOVIMENTO", movimento_dict, source);
                             if (!t_movimento_Result.success) return BadRequest(t_movimento_Result.error);
@@ -2072,7 +2111,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                             var movimento_update_dict = new Dictionary<string, object>
                             {
                                 { "id_venda_futura", venda.venda?0:1 },
-                                { "nm_nfe",venda.venda?nm_nf_material:null }
+                                { "nm_nfe",venda.venda?nm_nf_mercantil:null }
 
                             };
                             var t_movimento_Result = await SQLServerService.Update("T_MOVIMENTO", movimento_update_dict, source, "cd_movimento", cd_movimento);
@@ -2085,6 +2124,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                         {
                             var item_movimento_dict = new Dictionary<string, object>
                                 {
+                                    {"cd_plano_conta",cd_plano_conta_mat },
                                     { "cd_movimento", cd_movimento },
                                     { "cd_item",venda.cd_item },
                                     { "qt_item_movimento", 1 },
@@ -2138,7 +2178,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                                 //atualiza nm_nf_material
                                 var parametroUpdate = new Dictionary<string, object>
                                 {
-                                    { "nm_nf_material", nm_nf_material }
+                                    { "nm_nf_material", nm_nf_mercantil }
                                 };
                                 var parametroResult = await SQLServerService.Update("T_PARAMETRO", parametroUpdate, source, "cd_pessoa_escola", model.cd_pessoa_escola);
                                 if (!parametroResult.success) return BadRequest(parametroResult.error);
@@ -2162,7 +2202,8 @@ namespace Simjob.Framework.Services.Api.Controllers
                 {
                     var cursoContratoAtualizar = new Dictionary<string, object>
                     {
-                        ["vl_material_contrato"] = model.vl_material_contrato
+                        ["vl_material_contrato"] = model.vl_material_contrato,
+                        ["id_opcao_venda"] = model.id_opcao_venda
                     };
 
                     var curso_contrato_update = await SQLServerService.Update("T_CURSO_CONTRATO", cursoContratoAtualizar, source, "cd_curso_contrato", cursoContratoId);
@@ -2459,190 +2500,406 @@ namespace Simjob.Framework.Services.Api.Controllers
             });
         }
 
+        [Authorize]
+        [HttpPut]
+        [Route("titulos")]
+        public async Task<IActionResult> AtualizaTitulos([FromBody] MatriculaTitulosModel model)
+        {
+            var schemaName = "T_Pessoa";
+            if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
+            var schema = _schemaRepository.GetSchemaByField("name", schemaName);
+            var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
+            var source = _sourceRepository.GetByField("description", schemaModel.Source);
+            if (source != null && source.Active != null && source.Active == true)
+            {
+                if (model == null || model.cd_contrato == 0) return BadRequest("dados invalidos");
+
+                var filtrosContrato = new List<(string campo, object valor)> { new("cd_contrato", model.cd_contrato) };
+                var matriculaExists = await SQLServerService.GetFirstByFields(source, "T_CONTRATO", filtrosContrato);
+                if(matriculaExists == null) return NotFound("matricula não encontrata");
+                var titulosComBaixa = await SQLServerService.GetFirstByFields(source, "T_TITULO", new List<(string campo, object valor)> { ("cd_origem_titulo", model.cd_contrato), ("id_status_titulo", 2) });
+                if(titulosComBaixa != null) return BadRequest("Existem titulos com baixa, não é possivel atualizar os titulos");
+                var nm_matricula = matriculaExists["nm_matricula_contrato"];
+                var cd_escola = matriculaExists["cd_pessoa_escola"];
+
+                var filtroParametro = new List<(string campo, object valor)> { new("cd_pessoa_escola", cd_escola) };
+                var parametroExists = await SQLServerService.GetFirstByFields(source, "T_PARAMETRO", filtroParametro);
+                if (parametroExists == null) return NotFound("parametros não encontratos para esta escola");
+
+                var cd_plano_conta_mat = parametroExists["cd_plano_conta_mat"] != null ? parametroExists["cd_plano_conta_mat"].ToString() : "0";
+                var cd_plano_conta_mtr = parametroExists["cd_plano_conta_material"] != null ? parametroExists["cd_plano_conta_material"].ToString() : "0";
+
+                var responsavel = matriculaExists["cd_pessoa_responsavel"];
+                if (responsavel == null)
+                {
+                    responsavel = matriculaExists["cd_aluno"];
+                }
+                var dict_contrato = new Dictionary<string, object>();
+                if(model.Desconto != null && model.Desconto.Value)
+                {
+                    dict_contrato.Add("pc_desconto_contrato", "0");
+                    dict_contrato.Add("vl_desconto_contrato", "0");
+
+                    //remover vinculos de desconto
+                    await SQLServerService.Delete("T_DESCONTO_CONTRATO", "cd_contrato", model.cd_contrato.ToString(), source);
+                }
+
+                if(model.Bolsa != null && model.Bolsa.Value)
+                {
+                    //remover vinculos de bolsa
+                    dict_contrato.Add("pc_desconto_bolsa", "0");
+                }
+                if (dict_contrato.Any())
+                {
+                    await SQLServerService.Update("T_CONTRATO", dict_contrato, source, "cd_contrato", model.cd_contrato);
+                }
+                if (!model.TitulosMensalidade.IsNullOrEmpty())
+                {                 
+                    await SQLServerService.DeleteByTwoFields("T_TITULO", "cd_origem_titulo", model.cd_contrato.ToString(), "dc_tipo_titulo", model.TitulosMensalidade.First().dc_tipo_titulo, source);
+                    foreach (var titulo in model.TitulosMensalidade)
+                    {
+                        var dictTitulo = new Dictionary<string, object>
+                        {
+                            ["cd_pessoa_empresa"] = cd_escola,
+                            ["cd_pessoa_titulo"] = titulo.cd_pessoa_titulo,
+                            ["cd_pessoa_responsavel"] = titulo.cd_pessoa_responsavel != 0 ? titulo.cd_pessoa_responsavel : responsavel,
+                            ["cd_local_movto"] = parametroExists["cd_local_movto"],
+                            ["dt_emissao_titulo"] = titulo.dt_emissao_titulo.ToString("yyyy-MM-ddTHH:mm:ss"),
+                            ["cd_origem_titulo"] = model.cd_contrato,
+                            ["dt_vcto_titulo"] = titulo.dt_vcto_titulo.ToString("yyyy-MM-ddTHH:mm:ss"),
+                            ["dh_cadastro_titulo"] = DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss"),
+                            ["vl_titulo"] = titulo.vl_titulo,
+                            ["vl_saldo_titulo"] = titulo.vl_saldo_titulo,
+                            ["dc_tipo_titulo"] = titulo.dc_tipo_titulo,
+                            ["dc_num_documento_titulo"] = titulo.dc_num_documento_titulo,
+                            ["nm_titulo"] = matriculaExists["nm_contrato"],
+                            ["nm_parcela_titulo"] = titulo.nm_parcela_titulo,
+                            ["cd_tipo_financeiro"] = titulo.cd_tipo_financeiro,
+                            ["id_status_titulo"] = 1,
+                            ["id_status_cnab"] = titulo.id_status_cnab,
+                            ["id_origem_titulo"] = 22,
+                            ["id_natureza_titulo"] = 1,
+                            ["vl_material_titulo"] = titulo.vl_material_titulo,
+                            ["pc_taxa_cartao"] = titulo.pc_taxa_cartao,
+                            ["nm_dias_cartao"] = titulo.nm_dias_cartao,
+                            ["id_cnab_contrato"] = titulo.id_cnab_contrato,
+                            ["vl_taxa_cartao"] = titulo.vl_taxa_cartao,
+                            ["cd_aluno"] = titulo.cd_aluno,
+                            ["pc_responsavel"] = titulo.pc_responsavel == null || titulo.pc_responsavel == 0 ? 100 : titulo.pc_responsavel,
+                            ["vl_mensalidade"] = titulo.vl_mensalidade,
+                            ["pc_bolsa"] = titulo.pc_bolsa,
+                            ["vl_bolsa"] = titulo.vl_bolsa,
+                            ["pc_desconto_mensalidade"] = titulo.pc_desconto_mensalidade,
+                            ["vl_desconto_mensalidade"] = titulo.vl_desconto_mensalidade,
+                            ["pc_bolsa_material"] = titulo.pc_bolsa_material,
+                            ["vl_bolsa_material"] = titulo.vl_bolsa_material,
+                            ["pc_desconto_material"] = titulo.pc_desconto_material,
+                            ["vl_desconto_material"] = titulo.vl_desconto_material,
+                            ["pc_desconto_total"] = titulo.pc_desconto_total,
+                            ["vl_desconto_total"] = titulo.vl_desconto_total,
+                            ["opcao_venda"] = titulo.opcao_venda,
+                            ["cd_curso"] = titulo.cd_curso
+                        };
+                        var t_titulo_Result = await SQLServerService.Insert("T_TITULO", dictTitulo, source);
+                        if (!t_titulo_Result.success) return BadRequest(t_titulo_Result.error);
+
+                        var t_tituloGet = await SQLServerService.GetList("T_TITULO", 1, 1, "cd_titulo", true, null, null, "", source, SearchModeEnum.Equals, null, null);
+                        var titulo_inserido = t_tituloGet.data.First();
+
+                        var id_origem_titulo = titulo_inserido["id_origem_titulo"]?.ToString() ?? "0";
+
+                        if (id_origem_titulo == "22" && titulo.dc_tipo_titulo == "ME")
+                        {
+                            //T_plano_titulo
+                            var dict_plano = new Dictionary<string, object>
+                            {
+                                ["cd_titulo"] = titulo_inserido["cd_titulo"],
+                                ["cd_plano_conta"] = cd_plano_conta_mat,
+                                ["vl_plano_titulo"] = titulo.opcao_venda != null && titulo.opcao_venda == "1" ? titulo.vl_mensalidade : 0
+                            };
+                            var t_plano_titulo_Result = await SQLServerService.Insert("T_PLANO_TITULO", dict_plano, source);
+                            if (!t_plano_titulo_Result.success) return BadRequest(t_plano_titulo_Result.error);
+                        }
+
+                        if (id_origem_titulo == "22" && titulo.dc_tipo_titulo == "ME" && titulo.vl_material_titulo > 0)
+                        {
+                            //T_plano_titulo
+                            var dict_plano = new Dictionary<string, object>
+                            {
+                                ["cd_titulo"] = titulo_inserido["cd_titulo"],
+                                ["cd_plano_conta"] = cd_plano_conta_mtr,
+                                ["vl_plano_titulo"] = titulo.vl_material_titulo
+                            };
+                            var t_plano_titulo_Result = await SQLServerService.Insert("T_PLANO_TITULO", dict_plano, source);
+                            if (!t_plano_titulo_Result.success) return BadRequest(t_plano_titulo_Result.error);
+                        }
+                    }
+                }
+
+                if (!model.TitulosMaterial.IsNullOrEmpty())
+                {
+                    await SQLServerService.DeleteByTwoFields("T_TITULO", "cd_origem_titulo", model.cd_contrato.ToString(), "dc_tipo_titulo", model.TitulosMaterial.First().dc_tipo_titulo, source);
+                    foreach (var titulo in model.TitulosMaterial)
+                    {
+                        var dictTitulo = new Dictionary<string, object>
+                        {
+                            ["cd_pessoa_empresa"] = cd_escola,
+                            ["cd_pessoa_titulo"] = titulo.cd_pessoa_titulo,
+                            ["cd_pessoa_responsavel"] = titulo.cd_pessoa_responsavel != 0 ? titulo.cd_pessoa_responsavel : responsavel,
+
+                            ["cd_local_movto"] = parametroExists["cd_local_movto"],
+                            ["dt_emissao_titulo"] = titulo.dt_emissao_titulo.ToString("yyyy-MM-ddTHH:mm:ss"),
+
+                            ["cd_origem_titulo"] = model.cd_contrato,
+                            ["dt_vcto_titulo"] = titulo.dt_vcto_titulo.ToString("yyyy-MM-ddTHH:mm:ss"),
+                            ["dh_cadastro_titulo"] = DateTime.Now.Date,
+                            ["vl_titulo"] = titulo.vl_titulo,
+                            ["vl_saldo_titulo"] = titulo.vl_saldo_titulo,
+                            ["dc_tipo_titulo"] = titulo.dc_tipo_titulo,
+                            ["dc_num_documento_titulo"] = titulo.dc_num_documento_titulo,
+                            ["nm_titulo"] = matriculaExists["nm_contrato"],
+                            ["nm_parcela_titulo"] = titulo.nm_parcela_titulo,
+                            ["cd_tipo_financeiro"] = titulo.cd_tipo_financeiro,
+                            ["id_status_titulo"] = 1,
+                            ["id_status_cnab"] = titulo.id_status_cnab,
+                            ["id_origem_titulo"] = 22,
+                            ["id_natureza_titulo"] = 1,
+                            ["vl_material_titulo"] = titulo.vl_material_titulo,
+                            ["pc_taxa_cartao"] = titulo.pc_taxa_cartao,
+                            ["nm_dias_cartao"] = titulo.nm_dias_cartao,
+                            ["id_cnab_contrato"] = titulo.id_cnab_contrato,
+                            ["vl_taxa_cartao"] = titulo.vl_taxa_cartao,
+                            ["cd_aluno"] = titulo.cd_aluno,
+                            ["pc_responsavel"] = titulo.pc_responsavel == null || titulo.pc_responsavel == 0 ? 100 : titulo.pc_responsavel,
+                            ["vl_mensalidade"] = titulo.vl_mensalidade,
+                            ["pc_bolsa"] = titulo.pc_bolsa,
+                            ["vl_bolsa"] = titulo.vl_bolsa,
+                            ["pc_desconto_mensalidade"] = titulo.pc_desconto_mensalidade,
+                            ["vl_desconto_mensalidade"] = titulo.vl_desconto_mensalidade,
+                            ["pc_bolsa_material"] = titulo.pc_bolsa_material,
+                            ["vl_bolsa_material"] = titulo.vl_bolsa_material,
+                            ["pc_desconto_material"] = titulo.pc_desconto_material,
+                            ["vl_desconto_material"] = titulo.vl_desconto_material,
+                            ["pc_desconto_total"] = titulo.pc_desconto_total,
+                            ["vl_desconto_total"] = titulo.vl_desconto_total,
+                            ["opcao_venda"] = titulo.opcao_venda,
+                            ["cd_curso"] = titulo.cd_curso
+                        };
+                        var t_titulo_Result = await SQLServerService.Insert("T_TITULO", dictTitulo, source);
+                        if (!t_titulo_Result.success) return BadRequest(t_titulo_Result.error);
+                        var titulo_inseridoGet = await SQLServerService.GetList("T_TITULO", 1, 1, "cd_titulo", true, null, null, "", source, SearchModeEnum.Equals, null, null);
+                        var titulo_inserido = titulo_inseridoGet.data.First();
+
+                        var id_origem_titulo = titulo_inserido["id_origem_titulo"]?.ToString() ?? "0";
+
+                        if (id_origem_titulo == "22" && titulo.dc_tipo_titulo == "MT")
+                        {
+                            //T_plano_titulo
+                            var dict_plano = new Dictionary<string, object>
+                            {
+                                ["cd_titulo"] = titulo_inserido["cd_titulo"],
+                                ["cd_plano_conta"] = cd_plano_conta_mtr,
+                                ["vl_plano_titulo"] = titulo.vl_titulo
+                            };
+                            var t_plano_titulo_Result = await SQLServerService.Insert("T_PLANO_TITULO", dict_plano, source);
+                            if (!t_plano_titulo_Result.success) return BadRequest(t_plano_titulo_Result.error);
+                        }
+                    }
+                }
+
+                return ResponseDefault();
+            }
+            return BadRequest(new
+            {
+                error = "Fonte de dados não configurada ou inativa."
+            });
+        }
+
+
         //[Authorize]
-        //[HttpPost]
-        //[Route("venda_material")]
-        //public async Task<IActionResult> VendaMaterial(VendaMaterial vendaMaterial, int cd_contrato)
-        //{
-        //    var schemaName = "T_Pessoa";
-        //    if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
-        //    var schema = _schemaRepository.GetSchemaByField("name", schemaName);
-        //    var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
-        //    var source = _sourceRepository.GetByField("description", schemaModel.Source);
-        //    if (source != null && source.Active != null && source.Active == true)
-        //    {
-        //        //buscar Contrato
-        //        var filtrosContrato = new List<(string campo, object valor)> { new("cd_contrato", cd_contrato) };
-        //        var contrato = await SQLServerService.GetFirstByFields(source, "T_CONTRATO", filtrosContrato);
-        //        if (contrato == null) return NotFound("contrato");
+                //[HttpPost]
+                //[Route("venda_material")]
+                //public async Task<IActionResult> VendaMaterial(VendaMaterial vendaMaterial, int cd_contrato)
+                //{
+                //    var schemaName = "T_Pessoa";
+                //    if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
+                //    var schema = _schemaRepository.GetSchemaByField("name", schemaName);
+                //    var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
+                //    var source = _sourceRepository.GetByField("description", schemaModel.Source);
+                //    if (source != null && source.Active != null && source.Active == true)
+                //    {
+                //        //buscar Contrato
+                //        var filtrosContrato = new List<(string campo, object valor)> { new("cd_contrato", cd_contrato) };
+                //        var contrato = await SQLServerService.GetFirstByFields(source, "T_CONTRATO", filtrosContrato);
+                //        if (contrato == null) return NotFound("contrato");
 
-        //        var cd_regime_atual = contrato["cd_regime_atual"]?.ToString() ?? "0";
-        //        //cd_pessoa_escola
-        //        var cd_pessoa_escola = contrato["cd_pessoa_escola"]?.ToString() ?? "0";
+                //        var cd_regime_atual = contrato["cd_regime_atual"]?.ToString() ?? "0";
+                //        //cd_pessoa_escola
+                //        var cd_pessoa_escola = contrato["cd_pessoa_escola"]?.ToString() ?? "0";
 
-        //        var cd_aluno = contrato["cd_aluno"];
-        //        var aluno = await SQLServerService.GetFirstByFields(source, "T_ALUNO", new List<(string campo, object valor)> { new("cd_aluno", cd_aluno) });
+                //        var cd_aluno = contrato["cd_aluno"];
+                //        var aluno = await SQLServerService.GetFirstByFields(source, "T_ALUNO", new List<(string campo, object valor)> { new("cd_aluno", cd_aluno) });
 
-        //        if (aluno == null) return BadRequest("aluno não encontrado");
-        //        var cd_pessoa_aluno = aluno["cd_pessoa_aluno"];
+                //        if (aluno == null) return BadRequest("aluno não encontrado");
+                //        var cd_pessoa_aluno = aluno["cd_pessoa_aluno"];
 
-        //        List<int> itens_movimento = new List<int>();
-        //        if (vendaMaterial != null)
-        //        {
-        //            //validar venda material
-        //            var resultado = await ValidaVendaMaterial(vendaMaterial, source, int.Parse(cd_pessoa_escola), int.Parse(cd_regime_atual ?? "0"));
-        //            if (!resultado.valido) return BadRequest(resultado.msg);
-        //            itens_movimento = resultado.cd_itens;
-        //        }
-        //        if (!itens_movimento.Any()) return BadRequest("nenhum item valido encontrato");
+                //        List<int> itens_movimento = new List<int>();
+                //        if (vendaMaterial != null)
+                //        {
+                //            //validar venda material
+                //            var resultado = await ValidaVendaMaterial(vendaMaterial, source, int.Parse(cd_pessoa_escola), int.Parse(cd_regime_atual ?? "0"));
+                //            if (!resultado.valido) return BadRequest(resultado.msg);
+                //            itens_movimento = resultado.cd_itens;
+                //        }
+                //        if (!itens_movimento.Any()) return BadRequest("nenhum item valido encontrato");
 
-        //        //buscar todos os titulos do contrato
-        //        var titulos_result = await SQLServerService.GetList("T_TITULO", null, "[cd_origem_titulo]", $"[{cd_contrato}]", source, SearchModeEnum.Equals);
+                //        //buscar todos os titulos do contrato
+                //        var titulos_result = await SQLServerService.GetList("T_TITULO", null, "[cd_origem_titulo]", $"[{cd_contrato}]", source, SearchModeEnum.Equals);
 
-        //        if (!titulos_result.success) return BadRequest(titulos_result.error);
-        //        var titulos = titulos_result.data;
-        //        //
-        //        foreach (var cd_item in itens_movimento)
-        //        {
-        //            //filtrar os titulos por cd_item para pegar infos de movimento
-        //            var titulo_material = titulos.FirstOrDefault(x => x["cd_origem_titulo"]?.ToString() == cd_item.ToString());
+                //        if (!titulos_result.success) return BadRequest(titulos_result.error);
+                //        var titulos = titulos_result.data;
+                //        //
+                //        foreach (var cd_item in itens_movimento)
+                //        {
+                //            //filtrar os titulos por cd_item para pegar infos de movimento
+                //            var titulo_material = titulos.FirstOrDefault(x => x["cd_origem_titulo"]?.ToString() == cd_item.ToString());
 
-        //            //movimento
-        //            var movimento_dict = new Dictionary<string, object>
-        //                        {
-        //                            //{ "cd_curso",cd_curso },
-        //                            { "cd_aluno",cd_aluno },
-        //                            { "cd_pessoa_empresa", cd_pessoa_escola},
-        //                            { "cd_pessoa", cd_pessoa_aluno},
-        //                            { "cd_politica_comercial", 2},
-        //                            { "cd_tipo_financeiro", titulo_material != null?titulo_material["cd_tipo_financeiro"] : 3 },
-        //                            { "id_tipo_movimento", 1 },
-        //                            { "dt_emissao_movimento", titulo_material != null?titulo_material["dt_emissao_titulo"]: DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
-        //                            { "dt_vcto_movimento", titulo_material != null?titulo_material["dt_vcto_titulo"]: DateTime.Now.Date.AddDays(60).ToString("yyyy-MM-ddTHH:mm:ss") },
-        //                            { "dt_mov_movimento", DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
-        //                            { "pc_acrescimo", titulo_material != null?titulo_material["pc_taxa_cartao"] : 0 },
-        //                            { "vl_acrescimo", titulo_material != null?titulo_material["vl_taxa_cartao"] : 0 },
-        //                            { "pc_desconto", titulo_material != null?titulo_material["pc_desconto_total"] : 0 },
-        //                            { "vl_desconto", titulo_material != null?titulo_material["vl_desconto_total"] : 0 },
-        //                            { "id_nf", 0},
-        //                            { "id_nf_escola", 0},
-        //                            { "vl_base_calculo_ICMS_nf", 0 },
-        //                            { "vl_base_calculo_PIS_nf", 0 },
-        //                            { "vl_base_calculo_COFINS_nf", 0},
-        //                            { "vl_base_calculo_IPI_nf", 0},
-        //                            { "vl_base_calculo_ISS_nf", 0},
-        //                            { "vl_ICMS_nf", 0 },
-        //                            { "vl_PIS_nf", 0 },
-        //                            { "vl_COFINS_nf", 0},
-        //                            { "vl_IPI_nf", 0 },
-        //                            { "vl_ISS_nf", 0 },
-        //                            { "pc_aliquota_aproximada", 0 },
-        //                            { "vl_aproximado", titulo_material != null?titulo_material["vl_titulo"] : 0 },
-        //                            { "id_exportado", 0 },
-        //                            { "id_importacao_xml", 0 },
-        //                            { "id_material_didatico", 1 },
-        //                            { "id_venda_futura", 0 }
-        //                        };
-        //            var t_movimento_Result = await SQLServerService.Insert("T_MOVIMENTO", movimento_dict, source);
-        //            if (!t_movimento_Result.success) return BadRequest(t_movimento_Result.error);
-        //            var movimento_inseridoGet = await SQLServerService.GetList("T_MOVIMENTO", 1, 1, "cd_movimento", true, null, null, "", source, SearchModeEnum.Equals, null, null);
-        //            var movimento_inserido = movimento_inseridoGet.data.First();
-        //            var cd_movimento = movimento_inserido["cd_movimento"];
-        //            //movimento item
+                //            //movimento
+                //            var movimento_dict = new Dictionary<string, object>
+                //                        {
+                //                            //{ "cd_curso",cd_curso },
+                //                            { "cd_aluno",cd_aluno },
+                //                            { "cd_pessoa_empresa", cd_pessoa_escola},
+                //                            { "cd_pessoa", cd_pessoa_aluno},
+                //                            { "cd_politica_comercial", 2},
+                //                            { "cd_tipo_financeiro", titulo_material != null?titulo_material["cd_tipo_financeiro"] : 3 },
+                //                            { "id_tipo_movimento", 1 },
+                //                            { "dt_emissao_movimento", titulo_material != null?titulo_material["dt_emissao_titulo"]: DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
+                //                            { "dt_vcto_movimento", titulo_material != null?titulo_material["dt_vcto_titulo"]: DateTime.Now.Date.AddDays(60).ToString("yyyy-MM-ddTHH:mm:ss") },
+                //                            { "dt_mov_movimento", DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
+                //                            { "pc_acrescimo", titulo_material != null?titulo_material["pc_taxa_cartao"] : 0 },
+                //                            { "vl_acrescimo", titulo_material != null?titulo_material["vl_taxa_cartao"] : 0 },
+                //                            { "pc_desconto", titulo_material != null?titulo_material["pc_desconto_total"] : 0 },
+                //                            { "vl_desconto", titulo_material != null?titulo_material["vl_desconto_total"] : 0 },
+                //                            { "id_nf", 0},
+                //                            { "id_nf_escola", 0},
+                //                            { "vl_base_calculo_ICMS_nf", 0 },
+                //                            { "vl_base_calculo_PIS_nf", 0 },
+                //                            { "vl_base_calculo_COFINS_nf", 0},
+                //                            { "vl_base_calculo_IPI_nf", 0},
+                //                            { "vl_base_calculo_ISS_nf", 0},
+                //                            { "vl_ICMS_nf", 0 },
+                //                            { "vl_PIS_nf", 0 },
+                //                            { "vl_COFINS_nf", 0},
+                //                            { "vl_IPI_nf", 0 },
+                //                            { "vl_ISS_nf", 0 },
+                //                            { "pc_aliquota_aproximada", 0 },
+                //                            { "vl_aproximado", titulo_material != null?titulo_material["vl_titulo"] : 0 },
+                //                            { "id_exportado", 0 },
+                //                            { "id_importacao_xml", 0 },
+                //                            { "id_material_didatico", 1 },
+                //                            { "id_venda_futura", 0 }
+                //                        };
+                //            var t_movimento_Result = await SQLServerService.Insert("T_MOVIMENTO", movimento_dict, source);
+                //            if (!t_movimento_Result.success) return BadRequest(t_movimento_Result.error);
+                //            var movimento_inseridoGet = await SQLServerService.GetList("T_MOVIMENTO", 1, 1, "cd_movimento", true, null, null, "", source, SearchModeEnum.Equals, null, null);
+                //            var movimento_inserido = movimento_inseridoGet.data.First();
+                //            var cd_movimento = movimento_inserido["cd_movimento"];
+                //            //movimento item
 
-        //            var item_movimento_dict = new Dictionary<string, object>
-        //                        {
-        //                            { "cd_movimento", cd_movimento },
-        //                            { "cd_item",cd_item },
-        //                            { "qt_item_movimento", 1 },
-        //                            { "vl_unitario_item", titulo_material != null? titulo_material["vl_material_titulo"] : 0  },
-        //                            { "vl_total_item",titulo_material != null? titulo_material["vl_material_titulo"] : 0 },
-        //                            { "vl_liquido_item", titulo_material != null? titulo_material["vl_material_titulo"] : 0 },
-        //                            { "vl_acrescimo_item", 0 },
-        //                            { "vl_desconto_item", movimento_dict.ContainsKey("vl_desconto") ? movimento_dict["vl_desconto"] : 0 },
-        //                            { "vl_base_calculo_ICMS_item",0 },
-        //                            { "vl_base_calculo_PIS_item",0 },
-        //                            { "vl_base_calculo_COFINS_item", 0 },
-        //                            { "vl_base_calculo_IPI_item",0 },
-        //                            { "vl_base_calculo_ISS_item", 0 },
-        //                            { "vl_ICMS_item",0 },
-        //                            { "vl_PIS_item", 0},
-        //                            { "vl_COFINS_item", 0 },
-        //                            { "vl_IPI_item", 0 },
-        //                            { "vl_ISS_item", 0 },
-        //                            { "pc_aliquota_ICMS", 0},
-        //                            { "pc_aliquota_PIS", 0},
-        //                            { "pc_aliquota_COFINS", 0 },
-        //                            { "pc_aliquota_IPI", 0 },
-        //                            { "pc_aliquota_ISS", 0 },
-        //                            { "pc_aliquota_aproximada", movimento_dict.ContainsKey("pc_aliquota_aproximada") ? movimento_dict["pc_aliquota_aproximada"] : 0 },
-        //                            { "vl_aproximado", movimento_dict.ContainsKey("vl_aproximado") ? movimento_dict["vl_aproximado"] : 0},
-        //                            { "pc_desconto_item", movimento_dict.ContainsKey("pc_desconto") ? movimento_dict["pc_desconto"] : 0 }
-        //                        };
-        //            var t_item_movimento_Result = await SQLServerService.Insert("T_ITEM_MOVIMENTO", item_movimento_dict, source);
-        //            if (!t_item_movimento_Result.success) return BadRequest(t_item_movimento_Result.error);
-        //            //remover do estoque
+                //            var item_movimento_dict = new Dictionary<string, object>
+                //                        {
+                //                            { "cd_movimento", cd_movimento },
+                //                            { "cd_item",cd_item },
+                //                            { "qt_item_movimento", 1 },
+                //                            { "vl_unitario_item", titulo_material != null? titulo_material["vl_material_titulo"] : 0  },
+                //                            { "vl_total_item",titulo_material != null? titulo_material["vl_material_titulo"] : 0 },
+                //                            { "vl_liquido_item", titulo_material != null? titulo_material["vl_material_titulo"] : 0 },
+                //                            { "vl_acrescimo_item", 0 },
+                //                            { "vl_desconto_item", movimento_dict.ContainsKey("vl_desconto") ? movimento_dict["vl_desconto"] : 0 },
+                //                            { "vl_base_calculo_ICMS_item",0 },
+                //                            { "vl_base_calculo_PIS_item",0 },
+                //                            { "vl_base_calculo_COFINS_item", 0 },
+                //                            { "vl_base_calculo_IPI_item",0 },
+                //                            { "vl_base_calculo_ISS_item", 0 },
+                //                            { "vl_ICMS_item",0 },
+                //                            { "vl_PIS_item", 0},
+                //                            { "vl_COFINS_item", 0 },
+                //                            { "vl_IPI_item", 0 },
+                //                            { "vl_ISS_item", 0 },
+                //                            { "pc_aliquota_ICMS", 0},
+                //                            { "pc_aliquota_PIS", 0},
+                //                            { "pc_aliquota_COFINS", 0 },
+                //                            { "pc_aliquota_IPI", 0 },
+                //                            { "pc_aliquota_ISS", 0 },
+                //                            { "pc_aliquota_aproximada", movimento_dict.ContainsKey("pc_aliquota_aproximada") ? movimento_dict["pc_aliquota_aproximada"] : 0 },
+                //                            { "vl_aproximado", movimento_dict.ContainsKey("vl_aproximado") ? movimento_dict["vl_aproximado"] : 0},
+                //                            { "pc_desconto_item", movimento_dict.ContainsKey("pc_desconto") ? movimento_dict["pc_desconto"] : 0 }
+                //                        };
+                //            var t_item_movimento_Result = await SQLServerService.Insert("T_ITEM_MOVIMENTO", item_movimento_dict, source);
+                //            if (!t_item_movimento_Result.success) return BadRequest(t_item_movimento_Result.error);
+                //            //remover do estoque
 
-        //            var item_escola = await SQLServerService.GetFirstByFields(source, "T_ITEM_ESCOLA", new List<(string campo, object valor)> { new("cd_item", cd_item) });
-        //            if (item_escola != null)
-        //            {
-        //                var cd_item_escola = item_escola["cd_item_escola"];
-        //                var qtde = item_escola["qt_estoque"];
+                //            var item_escola = await SQLServerService.GetFirstByFields(source, "T_ITEM_ESCOLA", new List<(string campo, object valor)> { new("cd_item", cd_item) });
+                //            if (item_escola != null)
+                //            {
+                //                var cd_item_escola = item_escola["cd_item_escola"];
+                //                var qtde = item_escola["qt_estoque"];
 
-        //                item_escola.Remove("cd_item_escola");
-        //                item_escola["qt_estoque"] = int.Parse(qtde?.ToString() ?? "1") - 1;
-        //                var t_item_escola_update = await SQLServerService.Update("T_ITEM_ESCOLA", item_escola, source, "cd_item_escola", cd_item_escola);
-        //                if (!t_item_escola_update.success) return BadRequest(t_item_escola_update.error);
-        //            }
-        //        }
+                //                item_escola.Remove("cd_item_escola");
+                //                item_escola["qt_estoque"] = int.Parse(qtde?.ToString() ?? "1") - 1;
+                //                var t_item_escola_update = await SQLServerService.Update("T_ITEM_ESCOLA", item_escola, source, "cd_item_escola", cd_item_escola);
+                //                if (!t_item_escola_update.success) return BadRequest(t_item_escola_update.error);
+                //            }
+                //        }
 
-        //        if (itens_movimento.Any())
-        //        {
-        //            //validar se pessoa ja não possui Raf
-        //            var pessoaRaf = await SQLServerService.GetFirstByFields(source, "T_PESSOA_RAF", new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa_aluno) });
+                //        if (itens_movimento.Any())
+                //        {
+                //            //validar se pessoa ja não possui Raf
+                //            var pessoaRaf = await SQLServerService.GetFirstByFields(source, "T_PESSOA_RAF", new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa_aluno) });
 
-        //            //valida se pessoa esta em alguma turma
-        //            var alunoTurma = await SQLServerService.GetFirstByFields(source, "T_ALUNO_TURMA", new List<(string campo, object valor)> { new("cd_aluno", cd_aluno) });
+                //            //valida se pessoa esta em alguma turma
+                //            var alunoTurma = await SQLServerService.GetFirstByFields(source, "T_ALUNO_TURMA", new List<(string campo, object valor)> { new("cd_aluno", cd_aluno) });
 
-        //            if (pessoaRaf == null && alunoTurma != null)
-        //            {
-        //                //pegar ultimo raf existente
-        //                var ultimoRafGet = await SQLServerService.GetList("T_PESSOA_RAF", 1, 1, "cd_pessoa_raf", true, null, null, "", source, SearchModeEnum.Equals, null, null);
-        //                var ultimo_raf = ultimoRafGet.data.FirstOrDefault();
-        //                if (ultimo_raf != null)
-        //                {
-        //                    var ultimo_nm_raf = ultimo_raf["nm_raf"]?.ToString() ?? "";
+                //            if (pessoaRaf == null && alunoTurma != null)
+                //            {
+                //                //pegar ultimo raf existente
+                //                var ultimoRafGet = await SQLServerService.GetList("T_PESSOA_RAF", 1, 1, "cd_pessoa_raf", true, null, null, "", source, SearchModeEnum.Equals, null, null);
+                //                var ultimo_raf = ultimoRafGet.data.FirstOrDefault();
+                //                if (ultimo_raf != null)
+                //                {
+                //                    var ultimo_nm_raf = ultimo_raf["nm_raf"]?.ToString() ?? "";
 
-        //                    var partes = ultimo_nm_raf.Split('-');
-        //                    string prefixo = partes[0];
-        //                    int numero = int.Parse(partes[1]);
-        //                    numero++;
-        //                    string novo_nm_raf = $"{prefixo}-{numero:D3}";
-        //                    //gerar novo raf
-        //                    var novoRafPessoa = new Dictionary<string, object>
-        //                        {
-        //                            { "cd_pessoa", cd_pessoa_aluno },
-        //                            { "nm_raf",novo_nm_raf  },
-        //                            { "dc_senha_raf", null },
-        //                            { "id_raf_liberado", 1 },
-        //                            { "nm_tentativa", 0 },
-        //                            { "id_bloqueado", 0 },
-        //                            { "id_trocar_senha", 1 },
-        //                            { "dt_expiracao_senha", DateTime.Now.Date.AddDays(30).ToString("yyyy-MM-ddTHH:mm:ss") },
-        //                        };
+                //                    var partes = ultimo_nm_raf.Split('-');
+                //                    string prefixo = partes[0];
+                //                    int numero = int.Parse(partes[1]);
+                //                    numero++;
+                //                    string novo_nm_raf = $"{prefixo}-{numero:D3}";
+                //                    //gerar novo raf
+                //                    var novoRafPessoa = new Dictionary<string, object>
+                //                        {
+                //                            { "cd_pessoa", cd_pessoa_aluno },
+                //                            { "nm_raf",novo_nm_raf  },
+                //                            { "dc_senha_raf", null },
+                //                            { "id_raf_liberado", 1 },
+                //                            { "nm_tentativa", 0 },
+                //                            { "id_bloqueado", 0 },
+                //                            { "id_trocar_senha", 1 },
+                //                            { "dt_expiracao_senha", DateTime.Now.Date.AddDays(30).ToString("yyyy-MM-ddTHH:mm:ss") },
+                //                        };
 
-        //                    var t_pessoa_raf_Result = await SQLServerService.Insert("T_PESSOA_RAF", novoRafPessoa, source);
-        //                    if (!t_pessoa_raf_Result.success) return BadRequest(t_pessoa_raf_Result.error);
-        //                }
-        //            }
-        //        }
-        //        return ResponseDefault();
-        //    }
-        //    return BadRequest(new
-        //    {
-        //        error = "Fonte de dados não configurada ou inativa."
-        //    });
-        //}
+                //                    var t_pessoa_raf_Result = await SQLServerService.Insert("T_PESSOA_RAF", novoRafPessoa, source);
+                //                    if (!t_pessoa_raf_Result.success) return BadRequest(t_pessoa_raf_Result.error);
+                //                }
+                //            }
+                //        }
+                //        return ResponseDefault();
+                //    }
+                //    return BadRequest(new
+                //    {
+                //        error = "Fonte de dados não configurada ou inativa."
+                //    });
+                //}
 
         [Authorize]
         [HttpPut]
@@ -2736,6 +2993,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                 //Aditamentos
                 if (!model.IsNullOrEmpty())
                 {
+                    var dict_contrato = new Dictionary<string, object>();
                     foreach (var ad in model)
                     {
                         var dict = new Dictionary<string, object>
@@ -2776,7 +3034,27 @@ namespace Simjob.Framework.Services.Api.Controllers
 
                         var dict_bolsa = new Dictionary<string, object>();
 
-                        if (ad.pc_bolsa != null) dict_bolsa["pc_bolsa"] = ad.pc_bolsa;
+                        if (ad.pc_bolsa != null && ad.pc_bolsa >0)
+                        {
+
+                            if(dict_contrato.ContainsKey("pc_bolsa"))
+                            {
+                                dict_contrato["pc_bolsa"] = ad.pc_bolsa;
+                            }
+                            else
+                                dict_contrato.Add("pc_desconto_bolsa", ad.pc_bolsa);
+
+                            dict_bolsa["pc_bolsa"] = ad.pc_bolsa;
+
+                        }
+                        if (ad.pc_desconto_contrato != null && ad.pc_desconto_contrato > 0)
+                        {
+                            if (dict_contrato.ContainsKey("pc_desconto_contrato"))
+                            {
+                                dict_contrato["pc_desconto_contrato"] = ad.pc_desconto_contrato;
+                            }
+                            else  dict_contrato.Add("pc_desconto_contrato", ad.pc_desconto_contrato);
+                        }
 
                         if (ad.dt_comunicado_bolsa != null) dict_bolsa["dt_comunicado_bolsa"] = ad.dt_comunicado_bolsa?.ToString("yyyy-MM-ddTHH:mm:ss");
 
@@ -2785,156 +3063,31 @@ namespace Simjob.Framework.Services.Api.Controllers
                         if (ad.cd_motivo_bolsa != null) dict_bolsa["cd_motivo_bolsa"] = ad.cd_motivo_bolsa;
 
                         int? cd_aditamento = ad.cd_aditamento;
-
-                        var desconto_contrato = new Dictionary<string, object>
-                        {
-                            { "pc_desconto_contrato", ad.pc_desconto_contrato },
-                            { "id_desconto_ativo", 1 },
-                            { "vl_desconto_contrato", ad.vl_desconto_contrato ??0 },
-                            { "id_incide_baixa", 0 },
-                            { "nm_parcela_ini", 1 },
-                            { "nm_parcela_fim", 1 },
-                            { "id_incide_parcela_1", 0 },
-                            { "id_aditamento", 1 }
-                        };
-
                         if (ad.cd_aditamento == null)
                         {
                             var t_aditamento_Result = await SQLServerService.Insert("T_ADITAMENTO", dict, source);
                             if (!t_aditamento_Result.success) continue;
                             var aditamentoCadastradaGet = await SQLServerService.GetList("T_ADITAMENTO", 1, 1, "cd_aditamento", true, null, null, "", source, SearchModeEnum.Equals, null, null);
                             var aditamentoCadastrado = aditamentoCadastradaGet.data.First();
+
                             cd_aditamento = int.Parse(aditamentoCadastrado["cd_aditamento"].ToString());
                             await AddHistoricoAditamento(cd_aditamento.Value, ad.cd_usuario, 0, source);
-                            if (ad.pc_bolsa != null)
-                            {
-                                dict_bolsa.Add("cd_aditamento", cd_aditamento);
-                                var t_aditamento_bolsa_Result = await SQLServerService.Insert("T_ADITAMENTO_BOLSA", dict_bolsa, source);
-                                if (!t_aditamento_bolsa_Result.success) continue;
-                            }
-                            if (ad.pc_desconto_contrato != null && ad.vl_desconto_contrato != null && ad.id_tipo_aditamento == 3)
-                            {
-                                desconto_contrato.Add("cd_aditamento", cd_aditamento);
-                                var t_desconto_contrato_Result = await SQLServerService.Insert("T_DESCONTO_CONTRATO", desconto_contrato, source);
-                                if (!t_desconto_contrato_Result.success) continue;
-                            }
+
                         }
-                        else
-                        {
-                            var t_aditamento_Result = await SQLServerService.Update("T_ADITAMENTO", dict, source, "cd_aditamento", ad.cd_aditamento);
-                            if (!t_aditamento_Result.success) continue;
-                            var t_aditamento_historico_result = await SQLServerService.GetFirstByFields(source, "T_ADITAMENTO_HISTORICO", new List<(string campo, object valor)> { new("cd_aditamento", ad.cd_aditamento.ToString()) });
-                            if (t_aditamento_historico_result == null) await AddHistoricoAditamento(cd_aditamento.Value, ad.cd_usuario, 0, source);
-
-                            var filtros_bolsa = new List<(string campo, object valor)> { new("cd_aditamento", ad.cd_aditamento.ToString()) };
-                            var t_aditamento_bolsa_result = await SQLServerService.GetFirstByFields(source, "T_ADITAMENTO_BOLSA", filtros_bolsa);
-
-                            var t_desconto_result = await SQLServerService.GetFirstByFields(source, "T_DESCONTO_CONTRATO", new List<(string campo, object valor)> { new("cd_aditamento", ad.cd_aditamento.ToString()) });
-
-                            if (t_desconto_result == null)
-                            {
-                                if (ad.pc_desconto_contrato != null && ad.vl_desconto_contrato != null && ad.id_tipo_aditamento == 3)
-                                {
-                                    desconto_contrato.Add("cd_aditamento", cd_aditamento);
-                                    var t_desconto_contrato_Result = await SQLServerService.Insert("T_DESCONTO_CONTRATO", desconto_contrato, source);
-                                    if (!t_desconto_contrato_Result.success) continue;
-                                }
-
-
-                            }
-                            else
-                            {
-                                desconto_contrato.Add("cd_aditamento", cd_aditamento);
-                                var cd_desconto_contrato = t_desconto_result["cd_desconto_contrato"];
-                                var t_desconto_contrato_Result = await SQLServerService.Update("T_DESCONTO_CONTRATO", desconto_contrato, source, "cd_desconto_contrato", cd_desconto_contrato);
-                                if (!t_desconto_contrato_Result.success) continue;
-                            }
-
-
-                            if (t_aditamento_bolsa_result == null)
-                            {
-                                if (dict_bolsa.Any())
-                                {
-                                    dict_bolsa.Add("cd_aditamento", ad.cd_aditamento);
-                                    var t_aditamento_bolsa_Result = await SQLServerService.Insert("T_ADITAMENTO_BOLSA", dict_bolsa, source);
-                                    if (!t_aditamento_bolsa_Result.success) continue;
-                                }
-                            }
-                            else
-                            {
-                                if (dict_bolsa.Any())
-                                {
-                                    dict_bolsa.Add("cd_aditamento", ad.cd_aditamento);
-                                    var cd_aditamento_bolsa = t_aditamento_bolsa_result["cd_aditamento_bolsa"];
-                                    var t_aditamento_bolsa_Result = await SQLServerService.Update("T_ADITAMENTO_BOLSA", dict_bolsa, source, "cd_aditamento_bolsa", cd_aditamento_bolsa);
-                                    if (!t_aditamento_bolsa_Result.success) continue;
-                                }
-                            }
-                        }
-
-
-                        //adiciona titulos para adicionar parcelas e adicionar parcelas material
+                        //Adicionar Parcelas/material
                         if (ad.id_tipo_aditamento == 5 || ad.id_tipo_aditamento == 8)
-                        {
-                            var dictTitulo = new Dictionary<string, object>
-                            {
-                                {"cd_origem_titulo",cd_aditamento },
-                                { "cd_pessoa_empresa", cd_escola },
-                                { "cd_pessoa_titulo", ultimo_titulo_contrato["cd_pessoa_titulo"] },
-                                { "cd_pessoa_responsavel", cd_pessoa_responsavel },
-                                { "cd_local_movto",  ultimo_titulo_contrato["cd_local_movto"]??0},
-                                { "dt_emissao_titulo",  DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
-                                { "dt_vcto_titulo", ad.dt_vcto_aditamento.ToString() ?? DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
-                                { "vl_titulo", ad.vl_parcela_titulo_aditamento },
-                                { "vl_saldo_titulo", ad.vl_saldo_aberto },
-                                { "cd_tipo_financeiro", cd_tipo_financeiro },
-                                { "id_status_cnab", 0 },
-                                { "vl_multa_titulo", 0 },
-                                { "vl_juros_titulo", 0 },
-                                { "vl_desconto_titulo", 0 },
-                                { "vl_liquidacao_titulo", 0 },
-                                { "vl_multa_liquidada", 0 },
-                                { "vl_juros_liquidado", 0 },
-                                { "vl_desconto_juros", 0 },
-                                { "vl_desconto_multa", 0 },
-                                { "pc_juros_titulo", 0 },
-                                { "vl_material_titulo", 0 },
-                                { "vl_abatimento", 0 },
-                                { "vl_desconto_contrato", 0 },
-                                { "pc_taxa_cartao", 0 },
-                                { "nm_dias_cartao", 0 },
-                                { "id_cnab_contrato",0 },
-                                { "vl_taxa_cartao", 0 },
-                                { "id_origem_titulo",22 },
-                                { "id_natureza_titulo", 1 },
-                                { "nm_parcela_titulo",ad.nm_titulos_aditamento }
-                            };
-                            var t_titulo_Result = await SQLServerService.Insert("T_TITULO", dictTitulo, source);
-                            if (!t_titulo_Result.success) return BadRequest(t_titulo_Result.error);
-                        }
-
-                        if (ad.id_tipo_aditamento == 2 || ad.id_tipo_aditamento == 3)
                         {
                             if (!ad.TitulosMensalidade.IsNullOrEmpty())
                             {
                                 foreach (var titulo in ad.TitulosMensalidade)
                                 {
-
-                                    var dict_titulo_inativar = new Dictionary<string, object>
-                                    {
-                                        ["id_status_titulo"] = 0
-                                    };
-                                    var t_titulo_update_Result = await SQLServerService.Update("T_TITULO", dict_titulo_inativar, source, "cd_titulo", titulo.cd_titulo);
-                                    if (!t_titulo_update_Result.success) return BadRequest(t_titulo_update_Result.error);
-
-
                                     var dictTitulo = new Dictionary<string, object>
                                     {
                                         ["cd_pessoa_empresa"] = cd_escola,
                                         ["cd_pessoa_titulo"] = titulo.cd_pessoa_titulo,
                                         ["cd_pessoa_responsavel"] = titulo.cd_pessoa_responsavel != 0 ? titulo.cd_pessoa_responsavel : responsavel,
-                                        ["cd_local_movto"] = titulo.cd_local_movto,
-                                        ["dt_emissao_titulo"] = titulo.dt_emissao_titulo.ToString("yyyy-MM-ddTHH:mm:ss"),
+                                        ["cd_local_movto"] = parametroExists["cd_local_movto"],
+                                        ["dt_emissao_titulo"] = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"),
                                         ["cd_origem_titulo"] = cd_contrato,
                                         ["dt_vcto_titulo"] = titulo.dt_vcto_titulo.ToString("yyyy-MM-ddTHH:mm:ss"),
                                         ["dh_cadastro_titulo"] = DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss"),
@@ -3008,22 +3161,14 @@ namespace Simjob.Framework.Services.Api.Controllers
 
                             if (!ad.TitulosMaterial.IsNullOrEmpty())
                             {
-
                                 foreach (var titulo in ad.TitulosMaterial)
                                 {
-                                    var dict_titulo_inativar = new Dictionary<string, object>
-                                    {
-                                        ["id_status_titulo"] = 0
-                                    };
-                                    var t_titulo_update_Result = await SQLServerService.Update("T_TITULO", dict_titulo_inativar, source, "cd_titulo", titulo.cd_titulo);
-                                    if (!t_titulo_update_Result.success) return BadRequest(t_titulo_update_Result.error);
-
                                     var dictTitulo = new Dictionary<string, object>
                                     {
                                         ["cd_pessoa_empresa"] = cd_escola,
                                         ["cd_pessoa_titulo"] = titulo.cd_pessoa_titulo,
                                         ["cd_pessoa_responsavel"] = titulo.cd_pessoa_responsavel != 0 ? titulo.cd_pessoa_responsavel : responsavel,
-                                        ["cd_local_movto"] = titulo.cd_local_movto,
+                                        ["cd_local_movto"] = parametroExists["cd_local_movto"],
                                         ["dt_emissao_titulo"] = titulo.dt_emissao_titulo.ToString("yyyy-MM-ddTHH:mm:ss"),
                                         ["cd_origem_titulo"] = cd_contrato,
                                         ["dt_vcto_titulo"] = titulo.dt_vcto_titulo.ToString("yyyy-MM-ddTHH:mm:ss"),
@@ -3082,11 +3227,51 @@ namespace Simjob.Framework.Services.Api.Controllers
                                 }
                             }
                         }
+                        
+                        //perda de desconto
+                        if (ad.id_tipo_aditamento == 2)
+                        {
+                            await SQLServerService.Delete("T_DESCONTO_CONTRATO","cd_contrato",cd_contrato.ToString(),source);
+                        }
+
+                        //concessão desconto
+                        if(ad.id_tipo_aditamento == 3)
+                        {
+                            var desconto_contrato = new Dictionary<string, object>
+                            {
+                                { "pc_desconto_contrato", ad.pc_desconto_contrato??0 },
+                                { "id_desconto_ativo", 1 },
+                                { "vl_desconto_contrato", ad.vl_desconto_contrato ??0 },
+                                { "id_incide_baixa", 0 },
+                                { "nm_parcela_ini", 1 },
+                                { "nm_parcela_fim", 1 },
+                                { "id_incide_parcela_1", 0 },
+                                { "id_aditamento", 1 },
+                                { "cd_contrato",cd_contrato }
+                            };
+                            if ((ad.pc_desconto_contrato != null || ad.vl_desconto_contrato != null) && ad.id_tipo_aditamento == 3)
+                            {
+                                desconto_contrato.Add("cd_aditamento", cd_aditamento);
+                                var t_desconto_contrato_Result = await SQLServerService.Insert("T_DESCONTO_CONTRATO", desconto_contrato, source);
+                                if (!t_desconto_contrato_Result.success) continue;
+                            }
+
+                        }
+                        //bolsa
+                        if(ad.id_tipo_aditamento == 7)
+                        {
+                            
+                            if (ad.pc_bolsa != null)
+                            {
+                                dict_bolsa.Add("cd_aditamento", cd_aditamento);
+                                var t_aditamento_bolsa_Result = await SQLServerService.Insert("T_ADITAMENTO_BOLSA", dict_bolsa, source);
+                                if (!t_aditamento_bolsa_Result.success) continue;
+                            }
+                        }
+
                     }
 
-                    //desconto e remoção desconto
-
-
+                    if(dict_contrato.Any())  await SQLServerService.Update("T_CONTRATO", dict_contrato, source, "cd_contrato", cd_contrato);
 
                     return ResponseDefault();
                 }
@@ -3353,7 +3538,43 @@ namespace Simjob.Framework.Services.Api.Controllers
                     var logradouroExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtroLogradouro);
                     if (logradouroExists != null)
                     {
-                        enderecoResponsavel = $"{logradouroExists["no_localidade"]},{endereco_responsavel["dc_num_endereco"]}";
+                        enderecoResponsavel = $"{logradouroExists["no_localidade"]} ";
+                    }
+                    if (!String.IsNullOrEmpty(endereco_responsavel["dc_num_endereco"].ToString()))
+                        enderecoResponsavel += " Nº " + endereco_responsavel["dc_num_endereco"];
+                    if (!String.IsNullOrEmpty(endereco_responsavel["dc_compl_endereco"].ToString()))
+                        enderecoResponsavel += " / " + endereco_responsavel["dc_compl_endereco"];
+                    if (!String.IsNullOrEmpty(endereco_responsavel["dc_num_cep"].ToString()))
+                        enderecoResponsavel += ", CEP: " + endereco_responsavel["dc_num_cep"];
+                    if (!String.IsNullOrEmpty(endereco_responsavel["cd_loc_bairro"].ToString()))
+                    {
+
+                        var filtroBairro = new List<(string campo, object valor)> { new("cd_localidade", endereco_responsavel["cd_loc_bairro"].ToString()) };
+                        var bairroExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtroBairro);
+                        if(bairroExists != null)
+                        {
+                            enderecoResponsavel += ", Bairro: " + bairroExists["no_localidade"];
+                        }
+                    }
+                    if (!String.IsNullOrEmpty(endereco_responsavel["cd_loc_cidade"].ToString()))
+                    {
+
+                        var filtroCidade = new List<(string campo, object valor)> { new("cd_localidade", endereco_responsavel["cd_loc_cidade"].ToString()) };
+                        var cidadeExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtroCidade);
+                        if (cidadeExists != null)
+                        {
+                            enderecoResponsavel += ", Cidade: " + cidadeExists["no_localidade"];
+                        }
+                    }
+                    if (!String.IsNullOrEmpty(endereco_responsavel["cd_loc_estado"].ToString()))
+                    {
+
+                        var filtroEstado = new List<(string campo, object valor)> { new("cd_localidade", endereco_responsavel["cd_loc_estado"].ToString()) };
+                        var estadoExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtroEstado);
+                        if (estadoExists != null)
+                        {
+                            enderecoResponsavel += " - " + estadoExists["no_localidade"];
+                        }
                     }
                 }
 
@@ -3486,10 +3707,160 @@ namespace Simjob.Framework.Services.Api.Controllers
                 }
 
                 var matriculaRematricula = "";
-                if (matriculaExists["id_tipo_matricula"] != null)
+                if (matriculaExists["vl_matricula_contrato"] != null)
                 {
-                    matriculaRematricula = matriculaExists["id_tipo_matricula"].ToString() == "1" ? "Matrícula" : "Rematrícula";
+                    decimal vlMatriculaContrato = Convert.ToDecimal(matriculaExists["vl_matricula_contrato"]);
+                    matriculaRematricula = string.Format("{0:#,0.00}", vlMatriculaContrato);
                 }
+
+                // Calcular ValorSemDesconto conforme regra de negócio
+                decimal vlMaterialMatricula = 0;
+                decimal vlSemDesconto = Convert.ToDecimal(matriculaExists["vl_curso_contrato"]) / Convert.ToDecimal(matriculaExists["nm_parcelas_mensalidade"]);
+                byte nm_parcelas_material = 0;
+
+                if (Convert.ToInt32(matriculaExists["nm_parcelas_material"] ?? 0) > 0)
+                {
+                    nm_parcelas_material = (byte)Convert.ToInt32(matriculaExists["nm_parcelas_material"]);
+                    vlMaterialMatricula = Convert.ToDecimal(matriculaExists["vl_material_contrato"] ?? 0);
+                    if (nm_parcelas_material > 0) //Evitar divisão por zero
+                        vlSemDesconto = vlSemDesconto + vlMaterialMatricula / nm_parcelas_material;
+                }
+
+                #region Valor Com Desconto
+                nm_parcelas_material = 0;
+                string valor_com_desconto = "";
+                vlMaterialMatricula = 0;
+                
+                // Buscar títulos abertos do contrato
+                var titulosAbertos = await SQLServerService.GetList("T_TITULO", null, "[cd_origem_titulo],[id_status_titulo]", $"[{cd_contrato}],[1]", source, SearchModeEnum.Equals);
+                var statusCnabTitulo = new List<int> { 0, 1 }; // Status CNAB válidos
+                
+                if (Convert.ToDecimal(matriculaExists["vl_parcela_contrato"] ?? 0) > 0)
+                {
+                    // Buscar aditamentos
+                    var aditamentos_result = await SQLServerService.GetList("T_ADITAMENTO", null, "[cd_contrato]", $"[{cd_contrato}]", source, SearchModeEnum.Equals);
+                    var aditamentos = aditamentos_result.success ? aditamentos_result.data : new List<Dictionary<string, object>>();
+                    
+                    decimal valorbaixaDesc = 0;
+                    
+                    if (!titulosAbertos.success || titulosAbertos.data.Count == 0)
+                    {
+                        // Caso quando não há títulos abertos - simular baixa do contrato
+                        var parametrosEscola = await BuscarParametrosEscola(Convert.ToInt32(matriculaExists["cd_pessoa_escola"]), source);
+                        if (parametrosEscola != null)
+                        {
+                            // Criar um título simulado para cálculo
+                            var tituloSimulado = new Dictionary<string, object>
+                            {
+                                {"cd_titulo", 0},
+                                {"vl_titulo", matriculaExists["vl_parcela_contrato"]},
+                                {"vl_saldo", matriculaExists["vl_parcela_contrato"]},
+                                {"dt_vencimento", DateTime.Now},
+                                {"vl_material", 0},
+                                {"cd_pessoa_empresa", matriculaExists["cd_pessoa_escola"]},
+                                {"no_aluno", "Simulação"}
+                            };
+                            
+                            var simulacaoBaixa = await _simulacaoBaixaService.SimularBaixaTitulo(tituloSimulado, DateTime.Now, parametrosEscola, source);
+                            valorbaixaDesc = simulacaoBaixa.vl_liquidacao_baixa;
+                        }
+                        else
+                        {
+                            valorbaixaDesc = Convert.ToDecimal(matriculaExists["vl_parcela_contrato"]);
+                        }
+                    }
+                    else
+                    {
+                        // Filtrar títulos conforme lógica de aditamento
+                        var titulosAbertosLista = titulosAbertos.data;
+                        var aditamento = aditamentos.OrderByDescending(a => Convert.ToDateTime(a["dt_aditamento"])).FirstOrDefault();
+                        
+                        Dictionary<string, object> tituloParaCalculo = null;
+                        
+                        if (aditamento == null || aditamentos.Count <= 0)
+                        {
+                            // Sem aditamento - pegar primeiro título aberto
+                            tituloParaCalculo = titulosAbertosLista.Where(x => 
+                                Convert.ToInt32(x["id_status_titulo"]) == 1 &&
+                                statusCnabTitulo.Contains(Convert.ToInt32(x["id_status_cnab"] ?? 0)) &&
+                                x["dc_tipo_titulo"]?.ToString() != "TM" && 
+                                x["dc_tipo_titulo"]?.ToString() != "TA" &&
+                                x["dc_tipo_titulo"]?.ToString() != "AD" && 
+                                x["dc_tipo_titulo"]?.ToString() != "AA"
+                            ).OrderBy(x => Convert.ToInt32(x["nm_parcela_titulo"] ?? 0)).FirstOrDefault();
+                        }
+                        else
+                        {
+                            var tipoAditamento = Convert.ToByte(aditamento["id_tipo_aditamento"] ?? 0);
+                            
+                            if (tipoAditamento != 3) // Não é "Adicionar Parcelas"
+                            {
+                                tituloParaCalculo = titulosAbertosLista.Where(x => 
+                                    Convert.ToInt32(x["id_status_titulo"]) == 1 &&
+                                    statusCnabTitulo.Contains(Convert.ToInt32(x["id_status_cnab"] ?? 0)) &&
+                                    x["dc_tipo_titulo"]?.ToString() != "TM" && 
+                                    x["dc_tipo_titulo"]?.ToString() != "TA" &&
+                                    x["dc_tipo_titulo"]?.ToString() != "AD" && 
+                                    x["dc_tipo_titulo"]?.ToString() != "AA"
+                                ).OrderBy(x => Convert.ToInt32(x["nm_parcela_titulo"] ?? 0)).FirstOrDefault();
+                            }
+                            else // É "Adicionar Parcelas"
+                            {
+                                tituloParaCalculo = titulosAbertosLista.Where(x => 
+                                    Convert.ToInt32(x["id_status_titulo"]) == 1 &&
+                                    statusCnabTitulo.Contains(Convert.ToInt32(x["id_status_cnab"] ?? 0)) &&
+                                    Convert.ToDecimal(x["vl_titulo"]) == Convert.ToDecimal(x["vl_saldo_titulo"] ?? x["vl_titulo"]) &&
+                                    (x["dc_tipo_titulo"]?.ToString() == "AD" || x["dc_tipo_titulo"]?.ToString() == "AA")
+                                ).OrderBy(x => Convert.ToInt32(x["nm_parcela_titulo"] ?? 0)).FirstOrDefault();
+                            }
+                        }
+                        
+                        if (tituloParaCalculo != null)
+                        {
+                            // Simular baixa do título encontrado
+                            var parametrosEscola = await BuscarParametrosEscola(Convert.ToInt32(matriculaExists["cd_pessoa_escola"]), source);
+                            if (parametrosEscola != null)
+                            {
+                                var simulacaoBaixa = await _simulacaoBaixaService.SimularBaixaTitulo(tituloParaCalculo, DateTime.Now, parametrosEscola, source);
+                                valorbaixaDesc = simulacaoBaixa.vl_liquidacao_baixa;
+                            }
+                            else
+                            {
+                                valorbaixaDesc = Convert.ToDecimal(tituloParaCalculo["vl_saldo_titulo"] ?? tituloParaCalculo["vl_titulo"]);
+                            }
+                        }
+                        else
+                        {
+                            valorbaixaDesc = Convert.ToDecimal(matriculaExists["vl_parcela_contrato"]);
+                        }
+                    }
+                    
+                    valor_com_desconto = string.Format("{0:#,0.00}", decimal.Round(valorbaixaDesc, 2));
+                }
+                else
+                {
+                    valor_com_desconto = "0,00";
+                }
+                #endregion
+
+                var aditamentos_final = new List<Dictionary<string,object>>();
+                var aditamentos_result_final = await SQLServerService.GetList("T_ADITAMENTO", null, "[cd_contrato]", $"[{cd_contrato}]", source, SearchModeEnum.Equals);
+                if (aditamentos_result_final.success)
+                {
+                    aditamentos_final = aditamentos_result_final.data;
+                }
+
+                // Calcular NroVencimentoComDesconto
+                byte? dtaVctoAditamento = null;
+                if (aditamentos_final.Count > 0)
+                {
+                    var ultimoAditamento = aditamentos_final.OrderBy(a => Convert.ToDateTime(a["dt_aditamento"])).Last();
+                    if (ultimoAditamento.ContainsKey("nm_dia_vcto_desconto") && ultimoAditamento["nm_dia_vcto_desconto"] != null)
+                    {
+                        dtaVctoAditamento = Convert.ToByte(ultimoAditamento["nm_dia_vcto_desconto"]);
+                    }
+                }
+                string nroVencimentoComDesconto = !dtaVctoAditamento.HasValue ? "" : dtaVctoAditamento.ToString();
                 #endregion
 
 
@@ -3528,10 +3899,10 @@ namespace Simjob.Framework.Services.Api.Controllers
                 { "«MatriculaRematricula»", matriculaRematricula },
 
                 { "«ValorMaterial»", $"R$ {matriculaExists["vl_material_contrato"]}" },
-                { "«ValorSemDesconto»", $"R$ {matriculaExists["vl_liquido_contrato"]}" },
+                { "«ValorSemDesconto»", $"R$ {decimal.Round(vlSemDesconto, 2).ToString("N2")}" },
                 { "«NroVencimento»", matriculaExists["nm_dia_vcto"].ToString()??"" },
-                { "«ValorComDesconto»", $"R$ {matriculaExists["vl_curso_contrato"]}" },
-                { "«NroVencimentoComDesconto»",  matriculaExists["nm_dia_vcto"].ToString()??"" },
+                { "«ValorComDesconto»", $"R$ {valor_com_desconto}" },
+                { "«NroVencimentoComDesconto»", nroVencimentoComDesconto },
                 { "«OpcoesPagamento»", "" },
                 { "«NroParcelas»", $"{matriculaExists["nm_parcelas_mensalidade"]}" }
             };
@@ -3633,10 +4004,12 @@ namespace Simjob.Framework.Services.Api.Controllers
             if (cd_produto == null) return (false, "contrato sem produto vinculado");
             if (cd_aluno == null) return (false, "contrato sem aluno vinculado");
             //pegar bolsas do aluno
-            var bolsas = await SQLServerService.GetList("vi_aluno_bolsa", null, "[cd_aluno],[cd_produto]", $"[{cd_aluno}],[{cd_produto}]", source, SearchModeEnum.Equals);
-            if (!bolsas.data.Any()) return (true, null);
-            var bolsa_aluno = bolsas.data.First();
-            if (bolsa_aluno["pc_bolsa"] == null && bolsa_aluno["pc_bolsa_material"] == null) return (true, "porcentagem de bolsa não configuradas");
+            var bolsas = await SQLServerService.GetList("vi_aluno_bolsa", null, "[cd_aluno]", $"[{cd_aluno}]", source, SearchModeEnum.Equals);
+            if (!bolsas.data.Any()) return (true, "nenhuma bolsa configurada");
+            var bolsa_aluno = bolsas.data.FirstOrDefault(x => x["cd_produto"] != null && x["cd_produto"].ToString() == cd_produto.ToString());
+            if (bolsa_aluno == null) bolsa_aluno = bolsas.data.FirstOrDefault();
+            if (bolsa_aluno == null) return (false, "bolsa não configuradas");
+            if (bolsa_aluno["pc_bolsa"] == null && bolsa_aluno["pc_bolsa_material"] == null) return (false, "porcentagem de bolsa não configuradas");
             var pc_bolsa = bolsa_aluno["pc_bolsa"] != null ? Convert.ToDecimal(bolsa_aluno["pc_bolsa"]) : 0;
             var pc_bolsa_material = bolsa_aluno["pc_bolsa_material"] != null ? Convert.ToDecimal(bolsa_aluno["pc_bolsa_material"]) : 0;
             //aplicar mesma logica de baixa automatica do conta receber
@@ -3925,6 +4298,19 @@ namespace Simjob.Framework.Services.Api.Controllers
             }
 
             return (true, null);
+        }
+
+        private async Task<Dictionary<string, object>> BuscarParametrosEscola(int cd_empresa, Source source)
+        {
+            try
+            {
+                var filtroParametro = new List<(string campo, object valor)> { new("cd_pessoa_escola", cd_empresa) };
+                return await SQLServerService.GetFirstByFields(source, "T_PARAMETRO", filtroParametro);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

@@ -2,9 +2,10 @@
 
 namespace Simjob.Framework.Services.Api.Enums
 {
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum SearchModeEnum
-    {
-        Contains, Equals, Range
-    }
+  [JsonConverter(typeof(JsonStringEnumConverter))]
+  public enum SearchModeEnum
+  {
+    Contains, Equals, Range,
+    LessThan, GreaterThan
+  }
 }
