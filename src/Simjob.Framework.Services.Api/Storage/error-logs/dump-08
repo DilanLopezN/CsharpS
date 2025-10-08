@@ -1,56 +1,20 @@
-MongoDB.Driver.MongoConnectionException: An exception occurred while opening a connection to the server.
- ---> MongoDB.Driver.MongoConnectionException: An exception occurred while receiving a message from the server.
- ---> System.IO.IOException: Unable to read data from the transport connection: Uma tentativa de conexão falhou porque o componente conectado não respondeu
-corretamente após um período de tempo ou a conexão estabelecida falhou
-porque o host conectado não respondeu..
- ---> System.Net.Sockets.SocketException (10060): Uma tentativa de conexão falhou porque o componente conectado não respondeu
-corretamente após um período de tempo ou a conexão estabelecida falhou
-porque o host conectado não respondeu.
-   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
-   --- End of inner exception stack trace ---
-   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
-   at MongoDB.Driver.Core.Misc.StreamExtensionMethods.ReadBytes(Stream stream, Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken)
-   at MongoDB.Driver.Core.Connections.BinaryConnection.ReceiveBuffer(CancellationToken cancellationToken)
-   --- End of inner exception stack trace ---
-   at MongoDB.Driver.Core.Connections.BinaryConnection.ReceiveMessage(Int32 responseTo, IMessageEncoderSelector encoderSelector, MessageEncoderSettings messageEncoderSettings, CancellationToken cancellationToken)
-   at MongoDB.Driver.Core.WireProtocol.CommandUsingQueryMessageWireProtocol`1.Execute(IConnection connection, CancellationToken cancellationToken)
-   at MongoDB.Driver.Core.Connections.IsMasterHelper.GetResult(IConnection connection, CommandWireProtocol`1 isMasterProtocol, CancellationToken cancellationToken)
-   at MongoDB.Driver.Core.Connections.ConnectionInitializer.InitializeConnection(IConnection connection, CancellationToken cancellationToken)
-   at MongoDB.Driver.Core.Connections.BinaryConnection.OpenHelper(CancellationToken cancellationToken)
-   --- End of inner exception stack trace ---
-   at MongoDB.Driver.Core.Connections.BinaryConnection.OpenHelper(CancellationToken cancellationToken)
-   at MongoDB.Driver.Core.Connections.BinaryConnection.Open(CancellationToken cancellationToken)
-   at MongoDB.Driver.Core.ConnectionPools.ExclusiveConnectionPool.AcquiredConnection.Open(CancellationToken cancellationToken)
-   at MongoDB.Driver.Core.Servers.Server.GetChannel(CancellationToken cancellationToken)
-   at MongoDB.Driver.Core.Bindings.ServerChannelSource.GetChannel(CancellationToken cancellationToken)
-   at MongoDB.Driver.Core.Bindings.ChannelSourceHandle.GetChannel(CancellationToken cancellationToken)
-   at MongoDB.Driver.Core.Operations.RetryableReadContext.Create(IReadBinding binding, Boolean retryRequested, CancellationToken cancellationToken)
-   at MongoDB.Driver.Core.Operations.FindOperation`1.Execute(IReadBinding binding, CancellationToken cancellationToken)
-   at MongoDB.Driver.OperationExecutor.ExecuteReadOperation[TResult](IReadBinding binding, IReadOperation`1 operation, CancellationToken cancellationToken)
-   at MongoDB.Driver.MongoCollectionImpl`1.ExecuteReadOperation[TResult](IClientSessionHandle session, IReadOperation`1 operation, ReadPreference readPreference, CancellationToken cancellationToken)
-   at MongoDB.Driver.MongoCollectionImpl`1.ExecuteReadOperation[TResult](IClientSessionHandle session, IReadOperation`1 operation, CancellationToken cancellationToken)
-   at MongoDB.Driver.MongoCollectionImpl`1.FindSync[TProjection](IClientSessionHandle session, FilterDefinition`1 filter, FindOptions`2 options, CancellationToken cancellationToken)
-   at MongoDB.Driver.MongoCollectionImpl`1.<>c__DisplayClass45_0`1.<FindSync>b__0(IClientSessionHandle session)
-   at MongoDB.Driver.MongoCollectionImpl`1.UsingImplicitSession[TResult](Func`2 func, CancellationToken cancellationToken)
-   at MongoDB.Driver.MongoCollectionImpl`1.FindSync[TProjection](FilterDefinition`1 filter, FindOptions`2 options, CancellationToken cancellationToken)
-   at MongoDB.Driver.FindFluent`2.ToCursor(CancellationToken cancellationToken)
-   at MongoDB.Driver.IAsyncCursorSourceExtensions.ToList[TDocument](IAsyncCursorSource`1 source, CancellationToken cancellationToken)
-   at Simjob.Framework.Infra.Identity.Services.UserService.SearchFieldsByTenanty(String groupId, String name, String value, Nullable`1 page, Nullable`1 limit, String sortField, Boolean sortDesc, String ids, String companySiteId) in L:\Z.Evolution\sgf-frm-api\src\Simjob.Framework.Infra.Identity\Services\UserService.cs:line 418
-   at Simjob.Framework.Services.Api.Controllers.UserController.GetAllUsersByTenanty(String groupId, String name, Nullable`1 page, Nullable`1 limit, String sortField, Boolean sortDesc, String ids, String companySiteId)
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Simjob.Framework.Services.Api.Controllers.LocalidadeController.ValidarFonteDados() in C:\Works\accist\sgf-frm-api\sgf-frm-api\src\Simjob.Framework.Services.Api\Controllers\LocalidadeController.cs:line 85
+   at Simjob.Framework.Services.Api.Controllers.LocalidadeController.ValidarHierarquia(String cep) in C:\Works\accist\sgf-frm-api\sgf-frm-api\src\Simjob.Framework.Services.Api\Controllers\LocalidadeController.cs:line 401
    at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
-   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Logged|12_1(ControllerActionInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
    at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
    at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
    at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
    at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
 --- End of stack trace from previous location ---
    at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
-   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
    at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
    at Microsoft.AspNetCore.Authorization.Policy.AuthorizationMiddlewareResultHandler.HandleAsync(RequestDelegate next, HttpContext context, AuthorizationPolicy policy, PolicyAuthorizationResult authorizeResult)
    at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
    at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
    at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
    at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
-   at Simjob.Framework.Services.Api.Middleware.ContextHandler.HandleIncomingRequests(HttpContext context, Func`1 next)
-   at Simjob.Framework.Services.Api.Startup.<>c.<<Configure>b__5_0>d.MoveNext()
+   at Simjob.Framework.Services.Api.Middleware.ContextHandler.HandleIncomingRequests(HttpContext context, Func`1 next) in C:\Works\accist\sgf-frm-api\sgf-frm-api\src\Simjob.Framework.Services.Api\Middleware\ContextHandler.cs:line 25
+   at Simjob.Framework.Services.Api.Startup.<>c.<<Configure>b__5_0>d.MoveNext() in C:\Works\accist\sgf-frm-api\sgf-frm-api\src\Simjob.Framework.Services.Api\Startup.cs:line 114
