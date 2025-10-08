@@ -127,14 +127,14 @@ namespace Simjob.Framework.Services.Api.Services
         {
           cod_feriado = (int)item["cod_feriado"],
           cd_pessoa_escola = item["cd_pessoa_escola"] != null ? (int?)item["cd_pessoa_escola"] : null,
-          dd_feriado = (int)item["dd_feriado"],
-          aa_feriado = (int)item["aa_feriado"],
-          mm_feriado = (int)item["mm_feriado"],
+          dd_feriado = Convert.ToInt32(item["dd_feriado"]),  // ALTERADO
+          aa_feriado = item["aa_feriado"] != null ? Convert.ToInt32(item["aa_feriado"]) : 0,  // ALTERADO
+          mm_feriado = Convert.ToInt32(item["mm_feriado"]),  // ALTERADO
           dc_feriado = item["dc_feriado"]?.ToString(),
           id_feriado_financeiro = (bool)item["id_feriado_financeiro"],
-          aa_feriado_fim = item["aa_feriado_fim"] != null ? (int?)item["aa_feriado_fim"] : null,
-          mm_feriado_fim = item["mm_feriado_fim"] != null ? (int?)item["mm_feriado_fim"] : null,
-          dd_feriado_fim = item["dd_feriado_fim"] != null ? (int?)item["dd_feriado_fim"] : null,
+          aa_feriado_fim = item["aa_feriado_fim"] != null ? (int?)Convert.ToInt32(item["aa_feriado_fim"]) : null,  // ALTERADO
+          mm_feriado_fim = item["mm_feriado_fim"] != null ? (int?)Convert.ToInt32(item["mm_feriado_fim"]) : null,  // ALTERADO
+          dd_feriado_fim = item["dd_feriado_fim"] != null ? (int?)Convert.ToInt32(item["dd_feriado_fim"]) : null,  // ALTERADO
           id_feriado_ativo = (bool)item["id_feriado_ativo"],
           cd_ferias = item["cd_ferias"] != null ? (int?)item["cd_ferias"] : null
         }).ToList();
