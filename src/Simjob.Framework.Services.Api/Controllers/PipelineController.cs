@@ -78,13 +78,13 @@ namespace Simjob.Framework.Services.Api.Controllers
 
                 var pessoas_pipeline = pipelines.Select(x => x["cd_pessoa_pipeline"]);
 
-                var dependentes_query = await SQLServerService.GetList("vi_relacionamento", string.Join(",", pessoas_pipeline), "cd_pessoa_pai", null, source, SearchModeEnum.Contains);
+                var dependentes_query = await SQLServerService.GetList("vi_relacionamento", string.Join(",", pessoas_pipeline), "cd_pessoa_filho", null, source, SearchModeEnum.Contains);
                 var dependentes = dependentes_query.data;
                 var retorno = new
                 {
                     data = pipelines.Select(x =>
                     {
-                        var dependentes_pessoa = dependentes.Where(y => y["cd_pessoa_pai"].ToString() == x["cd_pessoa_pipeline"].ToString());
+                        var dependentes_pessoa = dependentes.Where(y => y["cd_pessoa_filho"].ToString() == x["cd_pessoa_pipeline"].ToString());
 
                         return new
                         {
@@ -204,7 +204,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                     { "dt_inicial", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss") },
                     { "dt_reprogramar", null },
                     { "cd_etapa_posterior", null },
-                    { "dt_realizada", null },
+                    { "dt_realizada", model.DataRealizada?.ToString("yyyy-MM-ddTHH:mm:ss")??null },
                     { "cd_motivo_perda", null },
                     { "tx_obs_pipeline", null },
                     { "cd_produto_pipeline", cd_produto_pipeline },
@@ -291,7 +291,8 @@ namespace Simjob.Framework.Services.Api.Controllers
                 if (model.cd_motivo_perda != null) pipeline_dict.Add("cd_motivo_perda", model.cd_motivo_perda);
                 if (model.Reprogramar == null)
                 {
-                    pipeline_dict.Add("dt_realizada", DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss"));
+                    if(model.DataRealizada != null) pipeline_dict.Add("dt_realizada", model.DataRealizada.Value.ToString("yyyy-MM-ddTHH:mm:ss"));
+
                     pipeline_dict.Add("dt_reprogramar", null);
                 }
                 if (model.Reprogramar != null)
@@ -565,36 +566,59 @@ namespace Simjob.Framework.Services.Api.Controllers
                 //var t_historio = await SQLServerService.Insert("T_HISTORICO_PESSOA", historico, source);
                 //if (!t_historio.success) return BadRequest(t_historio.error);
 
+                //JA TEM NA TRIGGER [tU_T_PIPELINE]
                 //validar cd_etapa_pipeline
                 //4 - validar se pessoa ja não esta na fila de matricula, e inserir um registro na fila de matricula
-                if (model.cd_etapa_pipeline == 4)
-                {
-                    //validar se pessoa ja não esta na fila de matricula
-                    var filtrosFilaMatriculaPendente = new List<(string campo, object valor)> { new("cd_pessoa_fila", cd_pessoa), new("id_status_fila", 1) };
-                    var filaMatriculaPendente = await SQLServerService.GetFirstByFields(source, "T_FILA_MATRICULA", filtrosFilaMatriculaPendente);
+                //if (model.cd_etapa_pipeline == 4)
+                //{
+                //    //validar se pessoa ja não esta na fila de matricula
+                //    var cd_fila_matricula = "";
+                //    var filtrosFilaMatriculaPendente = new List<(string campo, object valor)> { new("cd_pessoa_fila", cd_pessoa), new("id_status_fila", 1) };
+                //    var filaMatriculaPendente = await SQLServerService.GetFirstByFields(source, "T_FILA_MATRICULA", filtrosFilaMatriculaPendente);
+                //    if (filaMatriculaPendente != null)
+                //        cd_fila_matricula = filaMatriculaPendente["cd_fila_matricula"].ToString();
 
-                    var filtrosFilaMatriculaMatriculado = new List<(string campo, object valor)> { new("cd_pessoa_fila", cd_pessoa), new("id_status_fila", 3) };
-                    var filaMatriculaMatriculado = await SQLServerService.GetFirstByFields(source, "T_FILA_MATRICULA", filtrosFilaMatriculaMatriculado);
+                //    var filtrosFilaMatriculaMatriculado = new List<(string campo, object valor)> { new("cd_pessoa_fila", cd_pessoa), new("id_status_fila", 3) };
+                //    var filaMatriculaMatriculado = await SQLServerService.GetFirstByFields(source, "T_FILA_MATRICULA", filtrosFilaMatriculaMatriculado);
+                //    if (filaMatriculaMatriculado != null)
+                //        cd_fila_matricula = filaMatriculaMatriculado["cd_fila_matricula"].ToString();
 
-                    var filtrosFilaMatriculaContato = new List<(string campo, object valor)> { new("cd_pessoa_fila", cd_pessoa), new("cd_contato", cd_contato_pipeline) };
-                    var filaMatriculaContato = await SQLServerService.GetFirstByFields(source, "T_FILA_MATRICULA", filtrosFilaMatriculaContato);
+                //    var filtrosFilaMatriculaContato = new List<(string campo, object valor)> { new("cd_pessoa_fila", cd_pessoa), new("cd_contato", cd_contato_pipeline) };
+                //    var filaMatriculaContato = await SQLServerService.GetFirstByFields(source, "T_FILA_MATRICULA", filtrosFilaMatriculaContato);
+                //    if (filaMatriculaContato != null)
+                //        cd_fila_matricula = filaMatriculaContato["cd_fila_matricula"].ToString();
 
-                    if (filaMatriculaMatriculado == null && filaMatriculaPendente == null && filaMatriculaContato == null)
-                    {
-                        //cria registro em fila matricula
-                        var fila_matricula_dict = new Dictionary<string, object>
-                        {
-                            { "cd_pessoa_escola", cd_pessoa_escola },
-                            { "cd_pessoa_fila", cd_pessoa },
-                            { "id_status_fila", 1 },
-                            { "dt_programada_contato", model.Reprogramar?.ToString("yyyy-MM-ddTHH:mm:ss") ?? model.DataRealizada.ToString("yyyy-MM-ddTHH:mm:ss") },
-                            { "cd_acao", cd_acao },
-                            { "cd_contato",cd_contato_pipeline }
-                        };
-                        var fila_matricula_insert = await SQLServerService.InsertWithResult("T_FILA_MATRICULA", fila_matricula_dict, source);
-                    }
-                    return ResponseDefault();
-                }
+                //    if (filaMatriculaMatriculado == null && filaMatriculaPendente == null && filaMatriculaContato == null)
+                //    {
+                //        //cria registro em fila matricula
+                //        var fila_matricula_dict = new Dictionary<string, object>
+                //        {
+                //            { "cd_pessoa_escola", cd_pessoa_escola },
+                //            { "cd_pessoa_fila", cd_pessoa },
+                //            { "id_status_fila", 1 },
+                //            { "dt_programada_contato", model.Reprogramar?.ToString("yyyy-MM-ddTHH:mm:ss") ?? model.DataRealizada.Value.ToString("yyyy-MM-ddTHH:mm:ss") },
+                //            { "cd_acao", cd_acao },
+                //            { "cd_contato",cd_contato_pipeline }
+                //        };
+                //        var fila_matricula_insert = await SQLServerService.InsertWithResult("T_FILA_MATRICULA", fila_matricula_dict, source);
+                //    }
+                //    else
+                //    {
+                //        //cria registro em fila matricula
+                //        var fila_matricula_dict = new Dictionary<string, object>
+                //        {
+                //            { "cd_pessoa_escola", cd_pessoa_escola },
+                //            { "cd_pessoa_fila", cd_pessoa },
+                //            { "id_status_fila", 1 },
+                //            { "dt_programada_contato", model.Reprogramar?.ToString("yyyy-MM-ddTHH:mm:ss") ?? model.DataRealizada.Value.ToString("yyyy-MM-ddTHH:mm:ss") },
+                //            { "cd_acao", cd_acao },
+                //            { "cd_contato",cd_contato_pipeline }
+                //        };
+                //        var fila_matricula_insert = await SQLServerService.UpdateWithResult("T_FILA_MATRICULA", fila_matricula_dict, source, "cd_fila_matricula", cd_fila_matricula);
+
+                //    }
+                //    return ResponseDefault();
+                //}
                 return ResponseDefault();
             }
 

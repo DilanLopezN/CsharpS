@@ -161,33 +161,37 @@ namespace Simjob.Framework.Services.Api.Controllers
         {
             var t_pessoa = new Dictionary<string, object>();
             var t_aluno = new Dictionary<string, object>();
-            //valida cpf
-            if (!string.IsNullOrEmpty(command.pessoa.nm_cpf))
+            if(command.pessoa.cd_pessoa == 0)
             {
-                var filtros = new List<(string campo, object valor)> { new("nm_cpf", command.pessoa.nm_cpf) };
-                var cpfExist = await SQLServerService.GetFirstByFields(source, "T_PESSOA_FISICA", filtros);
-                if (cpfExist != null) return (false, $"Já existe um registro com este CPF({command.pessoa.nm_cpf}) cadastrado", null);
-            }
-
-            //valida email
-            if (command.pessoa.dc_email != null && !string.IsNullOrEmpty(command.pessoa.dc_email))
-            {
-                var filtros = new List<(string campo, object valor)> { new("dc_fone_mail", command.pessoa.dc_email) };
-                var emailExist = await SQLServerService.GetFirstByFields(source, "T_TELEFONE", filtros);
-                if (emailExist != null)
+                //valida cpf
+                if (!string.IsNullOrEmpty(command.pessoa.nm_cpf))
                 {
-                    var responsavelFinanceiro = command.relacionamentosAluno.FirstOrDefault(r => r.cd_papel_pai == 9 && r.cd_papel_filho == 3);
-                    if(responsavelFinanceiro == null)
-                        return (false, $"Já existe um registro com este e-mail({command.pessoa.dc_email}) cadastrado", null);
+                    var filtros = new List<(string campo, object valor)> { new("nm_cpf", command.pessoa.nm_cpf) };
+                    var cpfExist = await SQLServerService.GetFirstByFields(source, "T_PESSOA_FISICA", filtros);
+                    if (cpfExist != null) return (false, $"Já existe um registro com este CPF({command.pessoa.nm_cpf}) cadastrado", null);
+                }
 
-                    var filtrosResponsavel = new List<(string campo, object valor)> { new("dc_fone_mail", command.pessoa.dc_email),
+                //valida email
+                if (command.pessoa.dc_email != null && !string.IsNullOrEmpty(command.pessoa.dc_email))
+                {
+                    var filtros = new List<(string campo, object valor)> { new("dc_fone_mail", command.pessoa.dc_email) };
+                    var emailExist = await SQLServerService.GetFirstByFields(source, "T_TELEFONE", filtros);
+                    if (emailExist != null)
+                    {
+                        var responsavelFinanceiro = command.relacionamentosAluno?.FirstOrDefault(r => r.cd_papel_pai == 9 && r.cd_papel_filho == 3);
+                        if (responsavelFinanceiro == null)
+                            return (false, $"Já existe um registro com este e-mail({command.pessoa.dc_email}) cadastrado", null);
+
+                        var filtrosResponsavel = new List<(string campo, object valor)> { new("dc_fone_mail", command.pessoa.dc_email),
                             new("cd_pessoa", responsavelFinanceiro.cd_pessoa_filho)};
-                    var exists = await SQLServerService.GetFirstByFields(source, "T_TELEFONE", filtrosResponsavel);
-                    if (exists == null)
-                        return (false, $"Já existe um registro com este e-mail({command.pessoa.dc_email}) cadastrado", null);
+                        var exists = await SQLServerService.GetFirstByFields(source, "T_TELEFONE", filtrosResponsavel);
+                        if (exists == null)
+                            return (false, $"Já existe um registro com este e-mail({command.pessoa.dc_email}) cadastrado", null);
 
+                    }
                 }
             }
+            
 
             try
             {
@@ -213,9 +217,27 @@ namespace Simjob.Framework.Services.Api.Controllers
                     var imgBytes = Convert.FromBase64String(command.pessoa.img_pessoa);
                     pessoaDict.Add("img_pessoa", imgBytes);
                 }
-                var t_pessoa_insert = await SQLServerService.InsertWithResult("T_PESSOA", pessoaDict, source);
-                if (!t_pessoa_insert.success) return new(t_pessoa_insert.success, t_pessoa_insert.error, null);
-                t_pessoa = t_pessoa_insert.inserted;
+                if(command.pessoa.cd_pessoa != 0)
+                {
+                    var t_pessoa_insert = await SQLServerService.UpdateWithResult("T_PESSOA", pessoaDict, source, "cd_pessoa", command.pessoa.cd_pessoa);
+                    if (!t_pessoa_insert.success) return new(t_pessoa_insert.success, t_pessoa_insert.error, null);
+                    t_pessoa = t_pessoa_insert.updatedData;
+                }
+                else
+                {
+                    var t_pessoa_insert = await SQLServerService.InsertWithResult("T_PESSOA", pessoaDict, source);
+                    if (!t_pessoa_insert.success) return new(t_pessoa_insert.success, t_pessoa_insert.error, null);
+                    t_pessoa = t_pessoa_insert.inserted;
+
+                    //T_PESSOA_EMPRESA
+                    var t_pessoa_empresa_dict = new Dictionary<string, object>
+                    {
+                        { "cd_pessoa", t_pessoa["cd_pessoa"] },
+                        { "cd_empresa", command.cd_pessoa_escola }
+                    };
+                    var t_pessoa_empresa_insert = await SQLServerService.Insert("T_PESSOA_EMPRESA", t_pessoa_empresa_dict, source);
+                    if (!t_pessoa_empresa_insert.success) return new(t_pessoa_empresa_insert.success, t_pessoa_empresa_insert.error, null);
+                }
                 var cd_pessoa = t_pessoa["cd_pessoa"];
 
                 if (command.relacionamentosAluno != null)
@@ -234,7 +256,10 @@ namespace Simjob.Framework.Services.Api.Controllers
                         if (relacionamento_dict.Any())
                         {
                             var t_relacionamento_insert = await SQLServerService.Insert("T_RELACIONAMENTO", relacionamento_dict, source);
-                            if (!t_relacionamento_insert.success) continue;
+                            if (!t_relacionamento_insert.success)
+                            {
+                                return (false, $"Erro ao criar relacionamento com pessoa {dependente.cd_pessoa_filho}: {t_relacionamento_insert.error}", null);
+                            }
                         }
                     }
                 }
@@ -254,8 +279,19 @@ namespace Simjob.Framework.Services.Api.Controllers
                         { "id_telefone_principal",1 },
                         { "cd_operadora", null }
                     };
-                    var t_telefone_email_insert = await SQLServerService.Insert("T_TELEFONE", telefoneDictEmail, source);
-                    if (!t_telefone_email_insert.success) return new(t_telefone_email_insert.success, t_telefone_email_insert.error, null);
+                    var filtrosEmail = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa), new("cd_tipo_telefone", 4) };
+                    var emailExists = await SQLServerService.GetFirstByFields(source, "T_Telefone", filtrosEmail);
+                    if (emailExists != null)
+                    {
+                        var cd_telefone = emailExists["cd_telefone"];
+                        var t_telefone_email_insert = await SQLServerService.Update("T_TELEFONE", telefoneDictEmail, source, "cd_telefone", cd_telefone);
+                        if (!t_telefone_email_insert.success) return new(t_telefone_email_insert.success, t_telefone_email_insert.error, null);
+                    }
+                    else
+                    {
+                        var t_telefone_email_insert = await SQLServerService.Insert("T_TELEFONE", telefoneDictEmail, source);
+                        if (!t_telefone_email_insert.success) return new(t_telefone_email_insert.success, t_telefone_email_insert.error, null);
+                    }
                 }
 
                 if (!string.IsNullOrEmpty(command.pessoa.telefone))
@@ -272,10 +308,19 @@ namespace Simjob.Framework.Services.Api.Controllers
                         { "id_telefone_principal", 1 },
                         { "cd_operadora", null }
                     };
-
-                    var t_telefone_telefone_insert = await SQLServerService.Insert("T_TELEFONE", telefoneDictTelefone, source);
-
-                    if (!t_telefone_telefone_insert.success) return new(t_telefone_telefone_insert.success, t_telefone_telefone_insert.error, null);
+                    var filtrosEmail = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa), new("cd_tipo_telefone", 1) };
+                    var emailExists = await SQLServerService.GetFirstByFields(source, "T_Telefone", filtrosEmail);
+                    if (emailExists != null)
+                    {
+                        var cd_telefone = emailExists["cd_telefone"];
+                        var t_telefone_email_insert = await SQLServerService.Update("T_TELEFONE", telefoneDictTelefone, source, "cd_telefone", cd_telefone);
+                        if (!t_telefone_email_insert.success) return new(t_telefone_email_insert.success, t_telefone_email_insert.error, null);
+                    }
+                    else
+                    {
+                        var t_telefone_email_insert = await SQLServerService.Insert("T_TELEFONE", telefoneDictTelefone, source);
+                        if (!t_telefone_email_insert.success) return new(t_telefone_email_insert.success, t_telefone_email_insert.error, null);
+                    }
 
                     var filtrosTelefone = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa), new("dc_fone_mail", command.pessoa.telefone) };
                     var telefone_cadastrado = await SQLServerService.GetFirstByFields(source, "T_TELEFONE", filtrosTelefone);
@@ -294,9 +339,19 @@ namespace Simjob.Framework.Services.Api.Controllers
                         { "cd_operadora", null }
                     };
 
-                    var t_telefone_celular_insert = await SQLServerService.Insert("T_TELEFONE", telefoneDictCelular, source);
-
-                    if (!t_telefone_celular_insert.success) return new(t_telefone_celular_insert.success, t_telefone_celular_insert.error, null);
+                    var filtrosEmail = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa), new("cd_tipo_telefone", 3) };
+                    var emailExists = await SQLServerService.GetFirstByFields(source, "T_Telefone", filtrosEmail);
+                    if (emailExists != null)
+                    {
+                        var cd_telefone = emailExists["cd_telefone"];
+                        var t_telefone_email_insert = await SQLServerService.Update("T_TELEFONE", telefoneDictCelular, source, "cd_telefone", cd_telefone);
+                        if (!t_telefone_email_insert.success) return new(t_telefone_email_insert.success, t_telefone_email_insert.error, null);
+                    }
+                    else
+                    {
+                        var t_telefone_email_insert = await SQLServerService.Insert("T_TELEFONE", telefoneDictCelular, source);
+                        if (!t_telefone_email_insert.success) return new(t_telefone_email_insert.success, t_telefone_email_insert.error, null);
+                    }
 
                     var filtrosTelefone = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa), new("dc_fone_mail", command.pessoa.celular) };
                     var telefone_cadastrado = await SQLServerService.GetFirstByFields(source, "T_TELEFONE", filtrosTelefone);
@@ -346,8 +401,19 @@ namespace Simjob.Framework.Services.Api.Controllers
                 };
                 if (command.pessoa.cd_escolaridade != null) pessoa_fisicaDict.Add("cd_escolaridade", command.pessoa.cd_escolaridade);
 
-                var t_pessoa_fisica_insert = await SQLServerService.Insert("T_PESSOA_FISICA", pessoa_fisicaDict, source);
-                if (!t_pessoa_fisica_insert.success) return new(t_pessoa_fisica_insert.success, t_pessoa_fisica_insert.error, null);
+
+                var filtroPessoaFisica = new List<(string campo, object valor)> { new("cd_pessoa_fisica", cd_pessoa) };
+                var pfExists = await SQLServerService.GetFirstByFields(source, "T_PESSOA_FISICA", filtroPessoaFisica);
+                if (pfExists != null)
+                {
+                    var t_telefone_email_insert = await SQLServerService.Update("T_PESSOA_FISICA", pessoa_fisicaDict, source, "cd_pessoa_fisica", cd_pessoa);
+                    if (!t_telefone_email_insert.success) return new(t_telefone_email_insert.success, t_telefone_email_insert.error, null);
+                }
+                else
+                {
+                    var t_pessoa_fisica_insert = await SQLServerService.Insert("T_PESSOA_FISICA", pessoa_fisicaDict, source);
+                    if (!t_pessoa_fisica_insert.success) return new(t_pessoa_fisica_insert.success, t_pessoa_fisica_insert.error, null);
+                }
 
                 var cd_pessoa_escola = command.cd_pessoa_escola;
 
@@ -522,16 +588,41 @@ namespace Simjob.Framework.Services.Api.Controllers
                 var emailExist = await SQLServerService.GetFirstByFields(source, "T_TELEFONE", filtros);
                 if (emailExist != null && emailExist["cd_pessoa"].ToString() != cd_pessoa.ToString())
                 {
-                    var responsavelFinanceiro = command.relacionamentosAluno.FirstOrDefault(r => r.cd_papel_pai == 9 && r.cd_papel_filho == 3);
-                    if (responsavelFinanceiro == null)
-                        return (false, $"Já existe um registro com este e-mail({command.pessoa.dc_email}) cadastrado");
+                    // Busca todos os responsáveis financeiros (papel_filho=3) que terão o mesmo email
+                    // A regra de negócio permite que aluno e responsável financeiro compartilhem o mesmo email
+                    // Verifica tanto nos relacionamentos ATUAIS (banco) quanto nos NOVOS (payload)
 
-                    var filtrosResponsavel = new List<(string campo, object valor)> { new("dc_fone_mail", command.pessoa.dc_email),
-                            new("cd_pessoa", responsavelFinanceiro.cd_pessoa_filho)};
-                    var exists = await SQLServerService.GetFirstByFields(source, "T_TELEFONE", filtrosResponsavel);
-                    if (exists == null)
-                        return (false, $"Já existe um registro com este e-mail({command.pessoa.dc_email}) cadastrado");
+                    var cd_pessoa_email_duplicado = Convert.ToInt32(emailExist["cd_pessoa"]);
 
+                    // Busca relacionamentos ATUAIS no banco onde cd_pessoa_pai = aluno atual
+                    var relacionamentosAtuaisBanco = await SQLServerService.GetList(
+                        "T_RELACIONAMENTO", null, "[cd_pessoa_pai]", $"[{cd_pessoa}]", source, SearchModeEnum.Equals);
+
+                    // Filtra apenas responsáveis financeiros (cd_papel_filho = 3)
+                    var responsaveisAtuais = relacionamentosAtuaisBanco.data
+                        ?.Where(r => {
+                            var papel_filho = r.ContainsKey("cd_papel_filho") && r["cd_papel_filho"] != null
+                                ? Convert.ToInt32(r["cd_papel_filho"])
+                                : 0;
+                            return papel_filho == 3;
+                        })
+                        .Select(r => Convert.ToInt32(r["cd_pessoa_filho"]))
+                        .ToList() ?? new List<int>();
+
+                    // Busca responsáveis financeiros no payload (cd_papel_filho = 3)
+                    var responsaveisNovos = command.relacionamentosAluno
+                        ?.Where(r => r.cd_papel_filho == 3)
+                        .Select(r => r.cd_pessoa_filho)
+                        .ToList() ?? new List<int>();
+
+                    // Combina: considera responsáveis que existem ATUALMENTE ou que EXISTIRÃO após o update
+                    var todosResponsaveis = responsaveisAtuais.Union(responsaveisNovos).Distinct().ToList();
+
+                    // Se o email duplicado pertence a algum responsável financeiro (atual ou futuro), permite
+                    if (!todosResponsaveis.Contains(cd_pessoa_email_duplicado))
+                    {
+                        return (false, $"Já existe um registro com este e-mail({command.pessoa.dc_email}) cadastrado");
+                    }
                 }
             }
 
@@ -553,28 +644,6 @@ namespace Simjob.Framework.Services.Api.Controllers
                 }
                 var t_pessoa_insert = await SQLServerService.Update("T_PESSOA", pessoaDict, source, "cd_pessoa", cd_pessoa);
                 if (!t_pessoa_insert.success) return new(t_pessoa_insert.success, t_pessoa_insert.error);
-
-                if (command.relacionamentosAluno != null)
-                {
-                    //remover todas os relacionamentos
-                    await SQLServerService.Delete("T_RELACIONAMENTO", "cd_pessoa_pai", cd_pessoa.ToString(), source);
-                    foreach (var dependente in command.relacionamentosAluno)
-                    {
-                        var relacionamento_dict = new Dictionary<string, object>
-                        {
-                            { "cd_pessoa_filho", dependente.cd_pessoa_filho },
-                            { "cd_pessoa_pai", cd_pessoa },
-                            { "cd_papel_filho", dependente.cd_papel_filho }
-                        };
-                        if (dependente.cd_papel_pai != null) relacionamento_dict.Add("cd_papel_pai", dependente.cd_papel_pai);
-
-                        if (relacionamento_dict.Any())
-                        {
-                            var t_relacionamento_insert = await SQLServerService.Insert("T_RELACIONAMENTO", relacionamento_dict, source);
-                            if (!t_relacionamento_insert.success) continue;
-                        }
-                    }
-                }
 
                 if (command.pessoa.dc_email != null)
                 {
@@ -602,6 +671,81 @@ namespace Simjob.Framework.Services.Api.Controllers
                         if (!t_telefone_email_insert.success) return new(t_telefone_email_insert.success, t_telefone_email_insert.error);
                     }
                 }
+
+                if (command.relacionamentosAluno != null)
+                {
+                    // ESTRATÉGIA: Não deletar todos e recriar, mas sim fazer MERGE (delete apenas removidos, insert apenas novos)
+                    // Isso evita trigger que impede exclusão quando aluno e responsável têm o mesmo e-mail
+
+                    // Busca os relacionamentos atuais do aluno
+                    var relacionamentosAtuais = await SQLServerService.GetList(
+                        "T_RELACIONAMENTO", null, "[cd_pessoa_pai]", $"[{cd_pessoa}]", source, SearchModeEnum.Equals);
+
+                    // Cria listas para comparar
+                    var atuais = relacionamentosAtuais.data
+                        .Select(r => new {
+                            cd_relacionamento = Convert.ToInt32(r["cd_relacionamento"]),
+                            cd_pessoa_filho = Convert.ToInt32(r["cd_pessoa_filho"]),
+                            cd_papel_filho = Convert.ToInt32(r["cd_papel_filho"]),
+                            cd_papel_pai = r.ContainsKey("cd_papel_pai") && r["cd_papel_pai"] != null
+                                ? (int?)Convert.ToInt32(r["cd_papel_pai"])
+                                : null
+                        })
+                        .ToList();
+
+                    var novos = command.relacionamentosAluno
+                        .Select(r => new {
+                            cd_pessoa_filho = r.cd_pessoa_filho,
+                            cd_papel_filho = r.cd_papel_filho,
+                            cd_papel_pai = r.cd_papel_pai
+                        })
+                        .ToList();
+
+                    // Identifica relacionamentos a REMOVER (existem em atuais mas não em novos)
+                    var paraRemover = atuais
+                        .Where(a => !novos.Any(n =>
+                            n.cd_pessoa_filho == a.cd_pessoa_filho &&
+                            n.cd_papel_filho == a.cd_papel_filho &&
+                            n.cd_papel_pai == a.cd_papel_pai))
+                        .ToList();
+
+                    // Identifica relacionamentos a ADICIONAR (existem em novos mas não em atuais)
+                    var paraAdicionar = novos
+                        .Where(n => !atuais.Any(a =>
+                            n.cd_pessoa_filho == a.cd_pessoa_filho &&
+                            n.cd_papel_filho == a.cd_papel_filho &&
+                            n.cd_papel_pai == a.cd_papel_pai))
+                        .ToList();
+
+                    // REMOVE apenas os relacionamentos que foram excluídos do payload
+                    foreach (var rel in paraRemover)
+                    {
+                        var deleteRelacionamento = await SQLServerService.Delete("T_RELACIONAMENTO", "cd_relacionamento", rel.cd_relacionamento.ToString(), source);
+                        if (!deleteRelacionamento.success)
+                        {
+                            return new(deleteRelacionamento.success, $"Erro ao excluir relacionamento com pessoa {rel.cd_pessoa_filho}: {deleteRelacionamento.error}");
+                        }
+                    }
+
+                    // ADICIONA apenas os novos relacionamentos
+                    foreach (var rel in paraAdicionar)
+                    {
+                        var relacionamento_dict = new Dictionary<string, object>
+                        {
+                            { "cd_pessoa_filho", rel.cd_pessoa_filho },
+                            { "cd_pessoa_pai", cd_pessoa },
+                            { "cd_papel_filho", rel.cd_papel_filho }
+                        };
+                        if (rel.cd_papel_pai != null) relacionamento_dict.Add("cd_papel_pai", rel.cd_papel_pai);
+
+                        var t_relacionamento_insert = await SQLServerService.Insert("T_RELACIONAMENTO", relacionamento_dict, source);
+                        if (!t_relacionamento_insert.success)
+                        {
+                            return new(t_relacionamento_insert.success, $"Erro ao criar relacionamento com pessoa {rel.cd_pessoa_filho}: {t_relacionamento_insert.error}");
+                        }
+                    }
+                }
+
                 if (command.Raf != null)
                 {
                     var dict_raf = new Dictionary<string, object?>
@@ -809,9 +953,22 @@ namespace Simjob.Framework.Services.Api.Controllers
 
                         if (command.horarios != null && command.horarios.gridHorario != null)
                         {
-                            //remover todas os horarios
-                            await SQLServerService.Delete("T_HORARIO", "cd_registro", cd_aluno.ToString(), source);
-                            //T_HORARIO
+                            // Deletar horários de Aluno do banco
+                            // Observação: alguns horários antigos podem ter id_origem = 0, então deletamos ambos (0 e 10)
+                            // Não deletamos horários de Turma (id_origem = 19) para evitar erro da trigger
+
+                            // Deletar horários com id_origem = 0 (horários antigos de aluno)
+                            var resDeleteHorario0 = await SQLServerService.DeleteByTwoFields("T_HORARIO", "cd_registro", cd_aluno.ToString(), "id_origem", "0", source);
+                            // Deletar horários com id_origem = 10 (horários de aluno)
+                            var resDeleteHorario10 = await SQLServerService.DeleteByTwoFields("T_HORARIO", "cd_registro", cd_aluno.ToString(), "id_origem", "10", source);
+
+                            // Se algum delete falhou (não por falta de registros), retornar erro
+                            if (!resDeleteHorario0.success && (resDeleteHorario0.error == null || !resDeleteHorario0.error.Contains("No records")))
+                                return resDeleteHorario0;
+                            if (!resDeleteHorario10.success && (resDeleteHorario10.error == null || !resDeleteHorario10.error.Contains("No records")))
+                                return resDeleteHorario10;
+
+                            //T_HORARIO - Inserir novos horários
                             foreach (var h in command.horarios.gridHorario)
                             {
                                 var horarioDict = new Dictionary<string, object>
@@ -819,7 +976,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                                 //{ "cd_horario", null },
                                 { "cd_pessoa_escola", command.cd_pessoa_escola },
                                 { "cd_registro",cd_aluno },
-                                { "id_origem", h.id_origem },
+                                { "id_origem", h.id_origem != 0 ? h.id_origem : 10 }, // Se vier 0, corrigir para 10
                                 { "id_disponivel", h.id_disponivel },
                                 { "id_dia_semana", h.id_dia_semana },
                                 { "dt_hora_ini", h.dt_hora_ini },
@@ -833,7 +990,8 @@ namespace Simjob.Framework.Services.Api.Controllers
                         if (command.alunoBolsas != null)
                         {
                             //remover todas as bolsas
-                            await SQLServerService.Delete("T_ALUNO_BOLSA", "cd_aluno", cd_aluno.ToString(), source);
+                            var resDeleteAlunoBolsa = await SQLServerService.Delete("T_ALUNO_BOLSA", "cd_aluno", cd_aluno.ToString(), source);
+                            if (!resDeleteAlunoBolsa.success) return resDeleteAlunoBolsa;
 
                             foreach (var bolsa in command.alunoBolsas)
                             {
@@ -858,7 +1016,8 @@ namespace Simjob.Framework.Services.Api.Controllers
 
                         if (command.restricoes != null && command.restricoes.Count() > 0)
                         {
-                            await SQLServerService.Delete("T_ALUNO_RESTRICAO", "cd_aluno", cd_aluno.ToString(), source);
+                            var resDeleteAlunoRestricao = await SQLServerService.Delete("T_ALUNO_RESTRICAO", "cd_aluno", cd_aluno.ToString(), source);
+                            if (!resDeleteAlunoRestricao.success) return resDeleteAlunoRestricao;
                             foreach (var restricao in command.restricoes)
                             {
                                 var dict = new Dictionary<string, object>
@@ -880,7 +1039,16 @@ namespace Simjob.Framework.Services.Api.Controllers
             }
             catch (Exception ex)
             {
-                return (false, $"Erro: {ex.Message}");
+                var errorMessage = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    errorMessage += $"\r\n{ex.InnerException.Message}";
+                }
+
+                // Log completo para debug
+                Console.WriteLine($"[ProcessaUpdate] Erro completo: {ex.ToString()}");
+
+                return (false, $"Erro: {errorMessage}");
             }
 
             return (true, string.Empty);
@@ -904,6 +1072,10 @@ namespace Simjob.Framework.Services.Api.Controllers
                 var filtrosCep = new List<(string campo, object valor)> { new("dc_num_cep", cepTratado) };
                 var cepExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosCep);
                 if (cepExists == null) return NotFound("cep");
+
+                // Busca a quantidade de registros com o mesmo CEP
+                var cepList = await SQLServerService.GetList("T_LOCALIDADE", null, "[dc_num_cep]", $"[{cepTratado}]", source, SearchModeEnum.Equals);
+                var count = cepList.success ? cepList.total : 0;
 
                 var filtroBairro = new List<(string campo, object valor)> { new("cd_localidade", cepExists["cd_loc_relacionada"].ToString()) };
                 var bairroExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtroBairro);
@@ -934,7 +1106,8 @@ namespace Simjob.Framework.Services.Api.Controllers
                     no_cidade = cidadeExists["no_localidade"],
                     no_estado = estadoExists["no_localidade"],
                     no_logradouro = cepExists["no_localidade"],
-                    no_pais = paisExists["no_localidade"]
+                    no_pais = paisExists["no_localidade"],
+                    count = count
                     //no_tipo_logradouro = "Rua",
                     ///sg_estado = "SP",
                     //sg_tipo_logradouro = "Rua"
@@ -968,8 +1141,8 @@ namespace Simjob.Framework.Services.Api.Controllers
 
                 retorno.pessoa.txt_obs_pessoa = pessoaExists.ContainsKey("txt_obs_pessoa") && pessoaExists["txt_obs_pessoa"] != null ? pessoaExists["txt_obs_pessoa"].ToString() : string.Empty;
                 retorno.pessoa.img_pessoa = pessoaExists.ContainsKey("img_pessoa") && pessoaExists["img_pessoa"] is byte[] bytes
-     ? Convert.ToBase64String(bytes)
-     : null;
+                 ? Convert.ToBase64String(bytes)
+                 : null;
                 retorno.pessoa.ext_img_pessoa = pessoaExists.ContainsKey("ext_img_pessoa") ? pessoaExists["ext_img_pessoa"]?.ToString() : null;
                 retorno.pessoa.cd_pessoa = cd_pessoa;
                 retorno.pessoa.no_pessoa = pessoaExists["no_pessoa"].ToString();
@@ -1082,7 +1255,8 @@ namespace Simjob.Framework.Services.Api.Controllers
                             dt_hora_ini = h.ContainsKey("dt_hora_ini") ? h["dt_hora_ini"]?.ToString() ?? "" : "",
                             dt_hora_fim = h.ContainsKey("dt_hora_fim") ? h["dt_hora_fim"]?.ToString() ?? "" : ""
                         };
-                        horariosAdicionar.Add(horario);
+                        if(horario.cd_pessoa_escola == retorno.cd_pessoa_escola)
+                            horariosAdicionar.Add(horario);
                     }
 
                     retorno.horarios = new Horarios { gridHorario = horariosAdicionar.ToArray() };
@@ -1102,13 +1276,21 @@ namespace Simjob.Framework.Services.Api.Controllers
                     foreach (var prop in retorno.GetType().GetProperties())
                     {
                         ((IDictionary<string, object>)aluno)[prop.Name] = prop.GetValue(retorno);
-                    }                   
+                    }
 
+                    var ultima_matricula = await SQLServerService.GetList("T_CONTRATO", 1, 1, "dt_matricula_contrato", true, null,"[cd_aluno]", $"[{alunoExists["cd_aluno"]}]", source, SearchModeEnum.Equals, null, null);
+
+                    var cd_ultimo_curso = ultima_matricula.data.Any() ? (int)ultima_matricula.data.First()["cd_curso_atual"] : (int?)null;
+                    bool? id_permitir_matricula = null;
+                    var ultimo_curso = await SQLServerService.GetFirstByFields(source, "T_CURSO", new List<(string campo, object valor)> { new("cd_curso", cd_ultimo_curso ?? 0) });
+                    id_permitir_matricula = ultimo_curso != null && ultimo_curso.ContainsKey("id_permitir_matricula") && ultimo_curso["id_permitir_matricula"] != null ? (bool?)ultimo_curso["id_permitir_matricula"] : null;
                     aluno.bolsas = bolsas.data;
                     aluno.restricoes = restricoes.data;
                     aluno.relacionamentos = relacionamentos_query.data;
                     aluno.existeMatricula = alunoExistsView["existeMatricula"];
                     aluno.Raf = pessoaRaf;
+                    aluno.cd_ultimo_curso = cd_ultimo_curso;
+                    aluno.id_permitir_matricula = id_permitir_matricula;
 
                     return ResponseDefault(aluno);
                 }
@@ -1273,6 +1455,13 @@ namespace Simjob.Framework.Services.Api.Controllers
                     //enviar email com a nova senha
                     string nova_senha = MD5CryptoHelper.gerarSenha(8);
 
+                    // Validar configurações de email
+                    if (string.IsNullOrEmpty(_config["EmailSettings:PrimaryDomain"]) ||
+                        string.IsNullOrEmpty(_config["EmailSettings:FromUser"]))
+                    {
+                        return BadRequest("Configurações de email não encontradas. Verifique o appsettings.json.");
+                    }
+
                     SendEmailUI sendEmail = new SendEmailUI()
                     {
                         login = nm_raf,
@@ -1282,14 +1471,14 @@ namespace Simjob.Framework.Services.Api.Controllers
                     var emailConfig = new EmailConfigUI
                     {
                         PrimaryDomain = _config["EmailSettings:PrimaryDomain"],
-                        PrimaryPort = int.Parse(_config["EmailSettings:PrimaryPort"]),
+                        PrimaryPort = int.Parse(_config["EmailSettings:PrimaryPort"] ?? "587"),
                         UsernameEmail = _config["EmailSettings:UsernameEmail"],
                         UsernamePassword = _config["EmailSettings:UsernamePassword"],
                         FromEmail = _config["EmailSettings:FromEmail"],
                         FromUser = _config["EmailSettings:FromUser"],
-                        CcEmail = _config["EmailSettings:CcEmail"],
-                        ssl = _config["EmailSettings:ssl"],
-                        UseDefaultCredentials = _config["EmailSettings:UseDefaultCredentials"]
+                        CcEmail = _config["EmailSettings:CcEmail"] ?? "",
+                        ssl = _config["EmailSettings:ssl"] ?? "true",
+                        UseDefaultCredentials = _config["EmailSettings:UseDefaultCredentials"] ?? "false"
                     };
 
                     SendEmailUI.configurarEmailSection(sendEmail, emailConfig);
@@ -1321,7 +1510,15 @@ namespace Simjob.Framework.Services.Api.Controllers
                       TemplatesEmailRaf.getTemplateEmailChangePassword(emailParams);
 
                     var result = await EnviarEmailAsync(sendEmail, emailConfig);
-                    if (!result) return BadRequest("erro ao enviar email.");
+                    if (!result.success)
+                    {
+                        Console.WriteLine($"[EnviarSenhaRAF] Falha ao enviar email para {dc_email}: {result.errorMessage}");
+                        return BadRequest(new
+                        {
+                            error = "Erro ao enviar email",
+                            message = result.errorMessage
+                        });
+                    }
 
                     // Atualiza a senha no banco de dados
                     //Gera o hash da senha do usuário
@@ -1340,7 +1537,8 @@ namespace Simjob.Framework.Services.Api.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return BadRequest("Erro interno ao processar a requisição." + ex);
+                    Console.WriteLine($"[EnviarSenhaRAF] Erro: {ex.ToString()}");
+                    return BadRequest($"Erro ao processar requisição: {ex.Message}");
                 }
             }
 
@@ -1420,44 +1618,60 @@ namespace Simjob.Framework.Services.Api.Controllers
             }
         }
 
-        private async Task<bool> EnviarEmailAsync(SendEmailUI email, EmailConfigUI emailConfig)
+        private async Task<(bool success, string errorMessage)> EnviarEmailAsync(SendEmailUI email, EmailConfigUI emailConfig)
         {
-            var client = new SmtpClient
-            {
-                UseDefaultCredentials = Convert.ToBoolean(emailConfig.UseDefaultCredentials),
-                Host = emailConfig.PrimaryDomain,
-                Port = emailConfig.PrimaryPort,
-                EnableSsl = Convert.ToBoolean(emailConfig.ssl),
-                Credentials = new NetworkCredential(emailConfig.UsernameEmail, emailConfig.UsernamePassword)
-            };
-
-            // Trusting in all certificates
-            if (client.EnableSsl && ServicePointManager.ServerCertificateValidationCallback == null)
-                ServicePointManager.ServerCertificateValidationCallback += (o, c, ch, er) => true;
-
-            // Applying message settings
-            MailMessage message = new()
-            {
-                From = new MailAddress(email.FromEmail.Trim(), emailConfig.FromUser.Trim(), Encoding.UTF8),
-                IsBodyHtml = true,
-                Body = email.mensagem,
-                Priority = MailPriority.Normal,
-                Subject = email.assunto,
-                BodyEncoding = Encoding.UTF8,
-                SubjectEncoding = Encoding.UTF8
-            };
-
-            message.To.Add(email.destinatario);
-
             try
             {
+                Console.WriteLine($"[EnviarEmailAsync] Iniciando envio de email para: {email.destinatario}");
+                Console.WriteLine($"[EnviarEmailAsync] SMTP: {emailConfig.PrimaryDomain}:{emailConfig.PrimaryPort}");
+                Console.WriteLine($"[EnviarEmailAsync] SSL: {emailConfig.ssl}");
+                Console.WriteLine($"[EnviarEmailAsync] From: {emailConfig.FromEmail}");
+
+                var client = new SmtpClient
+                {
+                    UseDefaultCredentials = Convert.ToBoolean(emailConfig.UseDefaultCredentials),
+                    Host = emailConfig.PrimaryDomain,
+                    Port = emailConfig.PrimaryPort,
+                    EnableSsl = Convert.ToBoolean(emailConfig.ssl),
+                    Credentials = new NetworkCredential(emailConfig.UsernameEmail, emailConfig.UsernamePassword)
+                };
+
+                // Trusting in all certificates
+                if (client.EnableSsl && ServicePointManager.ServerCertificateValidationCallback == null)
+                    ServicePointManager.ServerCertificateValidationCallback += (o, c, ch, er) => true;
+
+                // Applying message settings
+                MailMessage message = new()
+                {
+                    From = new MailAddress(email.FromEmail.Trim(), emailConfig.FromUser.Trim(), Encoding.UTF8),
+                    IsBodyHtml = true,
+                    Body = email.mensagem,
+                    Priority = MailPriority.Normal,
+                    Subject = email.assunto,
+                    BodyEncoding = Encoding.UTF8,
+                    SubjectEncoding = Encoding.UTF8
+                };
+
+                message.To.Add(email.destinatario);
+
+                Console.WriteLine($"[EnviarEmailAsync] Enviando email...");
                 await Task.Run(() => client.Send(message));
-                return true;
+                Console.WriteLine($"[EnviarEmailAsync] Email enviado com sucesso!");
+                return (true, null);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-                return false;
+                Console.WriteLine($"[EnviarEmailAsync] ERRO: {ex.ToString()}");
+
+                // Capturar inner exception se existir
+                string errorMessage = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    errorMessage += $" | Inner: {ex.InnerException.Message}";
+                    Console.WriteLine($"[EnviarEmailAsync] INNER EXCEPTION: {ex.InnerException.ToString()}");
+                }
+
+                return (false, errorMessage);
             }
         }
     }

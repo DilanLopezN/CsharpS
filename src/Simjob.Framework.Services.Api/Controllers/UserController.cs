@@ -137,15 +137,15 @@ namespace Simjob.Framework.Services.Api.Controllers
 
                         { "cd_pessoa", command.cd_pessoa },
                         { "no_login", command.Name },
-                        { "dc_senha_usuario", "B3CD07C0E568F76C404F8895D320D39EF7CFC1D9" },
-                        { "id_master", 1 },
+                        { "dc_senha_usuario", UserService.GeraHashAntigo(command.Password) },
+                        { "id_master", 0 },
                         { "id_manter_tela", 0 },
-                        { "id_usuario_ativo", 0 },
+                        { "id_usuario_ativo", 1 },
                         { "nm_tentativa", 0 },
                         { "id_bloqueado", 0 },
                         { "id_trocar_senha", 0 },
                         { "dt_expiracao_senha", new DateTime(2035, 05, 09, 0, 0, 0) },
-                        { "id_admin", 0 },
+                        { "id_admin", command.ControlAccess },
                         { "id_administrador", 0 }
                     };
 
@@ -291,10 +291,19 @@ namespace Simjob.Framework.Services.Api.Controllers
         /// <response code="200">Returns the User object with the changes</response>
         [AllowAnonymous]
         [HttpPut("updateSenha")]
-        public IActionResult UpdatePassword(string userId, string oldPassword, string newPassword)
+        public IActionResult UpdatePassword([FromBody] UpdatePasswordRequest updatePasswordRequest)
         {
+            var userId = updatePasswordRequest.UserId;
+            if (string.IsNullOrEmpty(userId))
+            {
+                var acesstoken = Request.Headers[HeaderNames.Authorization];
+                var claims = User.Claims.ToList();
+                var jwtUserId = User.FindFirst("userId")?.Value;
+                userId = jwtUserId;
+            }
+
             var user = _userService.GetUserById(userId);
-            _userService.UpdatePassword(user, oldPassword, newPassword);
+            _userService.UpdatePassword(user, updatePasswordRequest.OldPassword, updatePasswordRequest.NewPassword);
             return ResponseDefault(_userService.GetUserById(userId));
         }
 
@@ -764,10 +773,11 @@ namespace Simjob.Framework.Services.Api.Controllers
         {
             var acesstoken = Request.Headers[HeaderNames.Authorization];
 
-            string userIdLogado = "";
+            var claims = User.Claims.ToList();
 
+            var jwtUserId = User.FindFirst("userId")?.Value;
 
-            if(userIdLogado != userId)  return BadRequest("user precisa estar logado");
+            if (jwtUserId != userId)  return BadRequest("user precisa estar logado");
 
             var user = _userService.GetUserById(userId);
 

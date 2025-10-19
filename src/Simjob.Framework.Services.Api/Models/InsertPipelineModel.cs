@@ -1,4 +1,6 @@
-﻿namespace Simjob.Framework.Services.Api.Models
+﻿using System;
+
+namespace Simjob.Framework.Services.Api.Models
 {
     public class InsertPipelineModel
     {
@@ -8,6 +10,7 @@
         public int? cd_usuario { get; set; }
         public int? nm_resultado_teste { get; set; }
         public bool? manual { get; set; }
+        public DateTime? DataRealizada { get; set; }
 
     }
 }

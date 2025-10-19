@@ -74,42 +74,99 @@ namespace Simjob.Framework.Services.Api.Controllers
                 var filtrosFilaMatricula = new List<(string campo, object valor)> { new("cd_fila_matricula", model.cd_fila_matricula) };
                 var filaMatriculaExists = await SQLServerService.GetFirstByFields(source, "T_FILA_MATRICULA", filtrosFilaMatricula);
                 if (filaMatriculaExists == null) return NotFound("fila matricula não encontrada");
+
                 var cd_pessoa = filaMatriculaExists["cd_pessoa_fila"];
-                var cd_pessoa_escola = filaMatriculaExists["cd_pessoa_escola"];
-                var cd_contato = filaMatriculaExists["cd_contato"];
                 var cd_acao = filaMatriculaExists["cd_acao"];
-                var filtrosPipeline = new List<(string campo, object valor)>();
-                if(cd_contato != null) filtrosPipeline.Add( new("cd_contato_pipeline", cd_contato));
-                filtrosPipeline.Add(new("cd_acao", cd_acao));
-                var pipeline = await SQLServerService.GetFirstByFields(source, "T_PIPELINE",filtrosPipeline);
-                if (pipeline == null) return NotFound("Pipeline não encontrada");
-                var cd_pipeline = pipeline["cd_pipeline"];
+                object cd_pipeline = null;
+                object cd_pessoa_filho = null;
 
-                var dict = new Dictionary<string, object>();
-                dict.Add("cd_etapa_pipeline", 6);
-                dict.Add("cd_motivo_perda", model.cd_motivo_perda);
-                dict.Add("cd_usuario",model.cd_usuario );
-
-                var updateResult = await SQLServerService.Update("T_PIPELINE", dict, source, "cd_pipeline", cd_pipeline);
-                if(!updateResult.success) return BadRequest(new
+                // Buscar pipeline da pessoa principal (como no SP)
+                var filtrosPipelinePrincipal = new List<(string campo, object valor)> 
+                { 
+                    new("cd_pessoa_pipeline", cd_pessoa),
+                    new("cd_acao", cd_acao),
+                    new("cd_etapa_pipeline", 3)
+                };
+                var pipelinePrincipal = await SQLServerService.GetFirstByFields(source, "T_PIPELINE", filtrosPipelinePrincipal);
+                
+                if (pipelinePrincipal != null)
                 {
-                    updateResult.success,
-                    updateResult.error
-                });
-
-                var dict_fila = new Dictionary<string, object>();
-                dict_fila.Add("id_status_fila",2);
-                var updateFilaResult = await SQLServerService.Update("T_FILA_MATRICULA", dict_fila, source, "cd_fila_matricula", model.cd_fila_matricula);
-                if (!updateFilaResult.success) return BadRequest(new
+                    cd_pipeline = pipelinePrincipal["cd_pipeline"];
+                }
+                else
                 {
-                    updateFilaResult.success,
-                    updateFilaResult.error
-                });
+                    // Se não encontrou pipeline da pessoa principal, verificar se é responsável por dependente
+                    var filtrosRelacionamento = new List<(string campo, object valor)> 
+                    { 
+                        new("cd_pessoa_pai", cd_pessoa),
+                        new("cd_papel_filho", 3)
+                    };
+                    var relacionamento = await SQLServerService.GetFirstByFields(source, "T_RELACIONAMENTO", filtrosRelacionamento);
+                    
+                    if (relacionamento != null)
+                    {
+                        cd_pessoa_filho = relacionamento["cd_pessoa_filho"];
+                        
+                        // Buscar pipeline do dependente
+                        var filtrosPipelineFilho = new List<(string campo, object valor)> 
+                        { 
+                            new("cd_pessoa_pipeline", cd_pessoa_filho),
+                            new("cd_acao", cd_acao),
+                            new("cd_etapa_pipeline", 3)
+                        };
+                        var pipelineFilho = await SQLServerService.GetFirstByFields(source, "T_PIPELINE", filtrosPipelineFilho);
+                        
+                        if (pipelineFilho != null)
+                        {
+                            cd_pipeline = pipelineFilho["cd_pipeline"];
+                        }
+                    }
+                }
+
+                // Atualizar pipeline se encontrado (seguindo lógica da SP)
+                if (cd_pipeline != null)
+                {
+                    var observacao = cd_pessoa_filho == null 
+                        ? "Motivo de Perda realizado através da fila de matricula " 
+                        : "Motivo de Perda realizado através da fila de matricula do responsável";
+
+                    var pipelineDict = new Dictionary<string, object>
+                    {
+                        { "cd_motivo_perda", model.cd_motivo_perda },
+                        { "dt_realizada", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss") },
+                        { "tx_obs_pipeline", observacao }
+                    };
+
+                    var updatePipelineResult = await SQLServerService.Update("T_PIPELINE", pipelineDict, source, "cd_pipeline", cd_pipeline);
+                    if (!updatePipelineResult.success) 
+                    {
+                        return BadRequest(new
+                        {
+                            success = false,
+                            error = updatePipelineResult.error
+                        });
+                    }
+                }
+
+                // Atualizar status da fila para 2 (perdida) - como no SP
+                var filaDict = new Dictionary<string, object>
+                {
+                    { "id_status_fila", 2 }
+                };
+                var updateFilaResult = await SQLServerService.Update("T_FILA_MATRICULA", filaDict, source, "cd_fila_matricula", model.cd_fila_matricula);
+                if (!updateFilaResult.success) 
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        error = updateFilaResult.error
+                    });
+                }
 
                 return ResponseDefault(new
                 {
-                    sucess = true,
-                    error = ""
+                    success = true,
+                    message = "Registro alterado com sucesso!"
                 });
             }
             return BadRequest(new
@@ -394,13 +451,6 @@ namespace Simjob.Framework.Services.Api.Controllers
 
                     var filas = filasResult.data;
                     //dependentes
-                    var cd_pessoa_pai = string.Join(",", filas.Select(x => x["cd_pessoa_fila"]));
-                    var relacionamentos_query = await SQLServerService.GetList("vi_relacionamento", null, "[cd_pessoa_pai]", $"[{cd_pessoa_pai}]", source, SearchModeEnum.Equals);
-                    var dependentes = new List<Dictionary<string, object>>();
-                    if (relacionamentos_query.success && relacionamentos_query.data.Count > 0)
-                    {
-                        dependentes = relacionamentos_query.data;
-                    } 
                        
                     var retorno = new
                     {
@@ -419,13 +469,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                             id_status_fila = x["id_status_fila"],
                             Email = x["email"],
                             Celular = x["celular"],
-                            Telefone = x["telefone"],
-                            no_dependentes = dependentes
-                            .Where(d => d["cd_pessoa_pai"].ToString() == x["cd_pessoa_fila"].ToString()).Count() > 0?
-                            string.Join(",", dependentes
-                            .Where(d => d["cd_pessoa_pai"].ToString() == x["cd_pessoa_fila"].ToString())
-                            .Select(d => d["no_pessoa_filho"].ToString())
-                            .ToList()): null
+                            Telefone = x["telefone"]
             
                         }),
                         filasResult.total,
@@ -470,6 +514,7 @@ namespace Simjob.Framework.Services.Api.Controllers
 
                 var cd_pessoa = fila_matriculaExistente["cd_pessoa_fila"].ToString();
                 retorno.no_pessoa = fila_matriculaExistente["no_pessoa"].ToString();
+                retorno.cd_pessoa = cd_pessoa;
                 retorno.cd_pessoa_escola = (int)fila_matriculaExistente["cd_pessoa_escola"];
                 retorno.cd_acao = (int)fila_matriculaExistente["cd_acao"];
                 retorno.id_status_fila = int.Parse(fila_matriculaExistente["id_status_fila"].ToString());

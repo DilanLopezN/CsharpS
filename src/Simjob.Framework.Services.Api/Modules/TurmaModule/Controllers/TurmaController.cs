@@ -13,7 +13,10 @@ using Simjob.Framework.Infra.Schemas.Entities;
 using Simjob.Framework.Services.Api.Enums;
 using Simjob.Framework.Services.Api.Models.Turmas;
 using Simjob.Framework.Services.Api.Modules.TurmaModule.Services;
+using Simjob.Framework.Services.Api.Services;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Simjob.Framework.Services.Api.Controllers
@@ -67,47 +70,69 @@ namespace Simjob.Framework.Services.Api.Controllers
     /// <summary>
     /// Criar nova turma
     /// </summary>
+    ///   // MÉTODO INSERT REFATORADO
     [Authorize]
-    [HttpPost]
+    [HttpPost()]
     public async Task<IActionResult> Insert([FromBody] InsertTurmaModel command)
     {
-      var (source, valid) = GetSource();
-      if (!valid)
-        return BadRequest(new { error = "Fonte de dados não configurada ou inativa." });
-
-      var resultado = await _turmaService.CriarTurma(command, source);
-
-      if (!resultado.success)
-        return BadRequest(new { success = false, error = resultado.error });
-
-      return ResponseDefault(new
+      var schemaName = "T_Turma";
+      if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
+      var schema = _schemaRepository.GetSchemaByField("name", schemaName);
+      var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
+      var source = _sourceRepository.GetByField("description", schemaModel.Source);
+      if (source != null && source.Active != null && source.Active == true)
       {
-        success = true,
-        cd_turma = resultado.cdTurma,
-        message = "Turma criada com sucesso"
+        var resultReturn = await _turmaService.ValidateAndCreateTurma(command, source);
+        var result = new
+        {
+          resultReturn.sucess,
+          resultReturn.error
+        };
+        return resultReturn.sucess ? ResponseDefault(result) : BadRequest(result);
+      }
+      return BadRequest(new
+      {
+        error = "Fonte de dados não configurada ou inativa."
       });
     }
+
+
+
+
+
+
+
+
+
+
 
     /// <summary>
     /// Atualizar turma existente
     /// </summary>
+    // MÉTODO UPDATE REFATORADO
     [Authorize]
-    [HttpPut("{cd_turma}")]
+    [HttpPut()]
+    [Route("{cd_turma}")]
     public async Task<IActionResult> Update([FromBody] InsertTurmaModel command, int cd_turma)
     {
-      var (source, valid) = GetSource();
-      if (!valid)
-        return BadRequest(new { error = "Fonte de dados não configurada ou inativa." });
-
-      var resultado = await _turmaService.AtualizarTurma(cd_turma, command, source);
-
-      if (!resultado.success)
-        return BadRequest(new { success = false, error = resultado.error });
-
-      return ResponseDefault(new
+      var schemaName = "T_Turma";
+      if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
+      var schema = _schemaRepository.GetSchemaByField("name", schemaName);
+      var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
+      var source = _sourceRepository.GetByField("description", schemaModel.Source);
+      if (source != null && source.Active != null && source.Active == true)
       {
-        success = true,
-        message = "Turma atualizada com sucesso"
+        var resultReturn = await _turmaService.UpdateTurma(cd_turma, command, source);
+        var result = new
+        {
+          resultReturn.sucess,
+          resultReturn.error
+        };
+        return resultReturn.sucess ? ResponseDefault(result) : BadRequest(result);
+      }
+      return BadRequest(new
+      {
+        error = "Fonte de dados não configurada ou inativa."
       });
     }
 
@@ -174,6 +199,66 @@ namespace Simjob.Framework.Services.Api.Controllers
         return ResponseDefault(resultado.data);
       }
 
+      return BadRequest(new
+      {
+        error = "Fonte de dados não configurada ou inativa."
+      });
+    }
+
+
+    [Authorize]
+    [HttpGet()]
+    [Route("{cd_turma}")]
+    public async Task<IActionResult> Get(int cd_turma)
+    {
+      var schemaName = "T_Turma";
+      if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
+      var schema = _schemaRepository.GetSchemaByField("name", schemaName);
+      var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
+      var source = _sourceRepository.GetByField("description", schemaModel.Source);
+      if (source != null && source.Active != null && source.Active == true)
+      {
+        var filtros = new List<(string campo, object valor)> { new("cd_turma", cd_turma) };
+        var turma = await SQLServerService.GetFirstByFields(source, "vi_turma", filtros);
+        if (turma == null) return NotFound();
+        var horariosResult = await SQLServerService.GetListIn("vi_horario_turma", 1, 10000000, "cd_turma", true, null, null, null, source, SearchModeEnum.Contains, null, null, "cd_turma", new List<string>() { turma["cd_turma"].ToString() });
+
+        var programacoesResult = await SQLServerService.GetListIn("T_PROGRAMACAO_TURMA", 1, 10000000, "cd_turma", true, null, null, null, source, SearchModeEnum.Contains, null, null, "cd_turma", new List<string>() { turma["cd_turma"].ToString() });
+        var retorno = new
+        {
+          cd_turma = turma["cd_turma"],
+          cd_turma_ppt = turma["cd_turma_ppt"],
+          no_turma = turma["no_turma"],
+          cd_pessoa_escola = turma["cd_pessoa_escola"],
+          id_turma_ativa = turma["id_turma_ativa"],
+          cd_curso = turma["cd_curso"],
+          cd_sala = turma["cd_sala"],
+          cd_duracao = turma["cd_duracao"],
+          cd_regime = turma["cd_regime"],
+          dt_inicio_aula = turma["dt_inicio_aula"],
+          dt_final_aula = turma["dt_inicio_aula"],
+          id_aula_externa = turma["id_aula_externa"],
+          nro_aulas_programadas = turma["nro_aulas_programadas"],
+          id_turma_ppt = turma["id_turma_ppt"],
+          cd_produto = turma["cd_produto"],
+          nm_turma = turma["nm_turma"],
+          dt_termino_turma = turma["dt_termino_turma"],
+          no_apelido = turma["no_apelido"],
+          id_percentual_faltas = turma["id_percentual_faltas"],
+          cd_sala_online = turma["cd_sala_online"],
+          dc_situacao_turma = turma["dc_situacao_turma"],
+
+          horariosAulas = horariosResult.data?.Where(x => x.ContainsKey("cd_turma")).Select(x => new
+          {
+            dia_semana = x["diaSemana"],
+            cd_horario = x["cd_horario"],
+            dt_hora_ini = x["dt_hora_ini"],
+            dt_hora_fim = x["dt_hora_fim"],
+          }).ToList(),
+          programacoesTurma = programacoesResult.data?.Where(x => x.ContainsKey("cd_turma")).ToList()
+        };
+        return ResponseDefault(retorno);
+      }
       return BadRequest(new
       {
         error = "Fonte de dados não configurada ou inativa."
@@ -419,6 +504,50 @@ namespace Simjob.Framework.Services.Api.Controllers
         return NotFound(new { error = resultado.error });
 
       return ResponseDefault(resultado.data);
+    }
+
+
+
+
+
+
+
+    /// <summary>
+    /// Buscar histórico de alterações de uma turma
+    /// </summary>
+    [Authorize]
+    [HttpGet("historico/{cd_turma}")]
+    public async Task<IActionResult> GetHistoricoTurma(int cd_turma, int? page = 1, int? limit = 50)
+    {
+      var (source, valid) = GetSource();
+      if (!valid)
+        return BadRequest(new { error = "Fonte de dados não configurada ou inativa." });
+
+      var historicoResult = await SQLServerService.GetList(
+          "T_LOG_GERAL",
+          page,
+          limit,
+          "dt_log_geral",
+          true, // desc
+          null,
+          "[cd_origem]",
+          $"[{cd_turma}]",
+          source,
+          SearchModeEnum.Equals,
+          null,
+          null);
+
+      if (!historicoResult.success)
+        return BadRequest(new { error = historicoResult.error });
+
+      return ResponseDefault(new
+      {
+        data = historicoResult.data,
+        total = historicoResult.total,
+        page,
+        limit,
+        pages = limit != null ? (int)Math.Ceiling((double)historicoResult.total / limit.Value) : 0
+      });
     }
 
     #endregion

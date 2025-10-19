@@ -29,11 +29,13 @@ namespace Simjob.Framework.Services.Api.Controllers
     {
         private readonly IRepository<SourceContext, Source> _sourceRepository;
         private readonly IRepository<MongoDbContext, Schema> _schemaRepository;
+        private readonly SimulacaoBaixaService _simulacaoBaixaService;
 
         public ContaPagarController(IMediatorHandler bus, INotificationHandler<DomainNotification> notifications, IRepository<SourceContext, Source> sourceRepository, IRepository<MongoDbContext, Schema> schemaRepository) : base(bus, notifications)
         {
             _sourceRepository = sourceRepository;
             _schemaRepository = schemaRepository;
+            _simulacaoBaixaService = new SimulacaoBaixaService();
         }
 
         [Authorize]
@@ -339,14 +341,14 @@ namespace Simjob.Framework.Services.Api.Controllers
             {
                 //validação de token
                 var cd_pessoa_logada = "";
-                var cd_usuario = "1";
+                var cd_usuario = "0";
                 if (tokenInfo.Count > 0) cd_pessoa_logada = tokenInfo["cd_pessoa"];
 
                 if (string.IsNullOrEmpty(cd_pessoa_logada)) return BadRequest("cd_pessoa não configurado");
 
                 var filtrosUsuario = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa_logada) };
                 var sys_usuario = await SQLServerService.GetFirstByFields(source, "T_SYS_USUARIO", filtrosUsuario);
-                if (sys_usuario != null) cd_usuario = sys_usuario["cd_usuario"].ToString() ?? "1";
+                if (sys_usuario != null) cd_usuario = sys_usuario["cd_usuario"].ToString() ?? "0";
 
 
 
@@ -397,41 +399,84 @@ namespace Simjob.Framework.Services.Api.Controllers
                 {
                     //validações de LOCAL_MOVTO
                 }
+
                 if (!model.gridBaixaEfetuada.IsNullOrEmpty())
                 {
                     foreach (var baixa in model.gridBaixaEfetuada)
                     {
                         nm_recibo++;
-                        var titulo_baixa_dic = new Dictionary<string, object>
+
+                        var titulo = await SQLServerService.GetFirstByFields(source, "T_TITULO", new List<(string campo, object valor)> { new("cd_titulo", baixa.cd_titulo) });
+
+                        var titulo_baixa_dic = new Dictionary<string, object>();
+                        if ((int)titulo["id_natureza_titulo"] == 1)
                         {
-                            { "cd_titulo", baixa.cd_titulo },
-                            { "cd_tran_finan", cd_tran_fin },
-                            { "cd_tipo_liquidacao", baixa.cd_tipo_liquidacao },
-                            { "cd_local_movto", model.cd_tipo_liquidacao == 6 ? cd_local_movto_final : baixa.cd_local_movto },
-                            { "dt_baixa_titulo", model.dt_baixa.ToString("yyyy-MM-ddTHH:mm:ss") },
-                            { "id_baixa_processada", 0 },
-                            { "id_baixa_parcial", baixa.id_baixa_parcial },
-                            { "nm_dias_float", 0 },
-                            { "vl_liquidacao_baixa", baixa.vl_liquidacao_baixa },
-                            { "vl_juros_baixa", baixa.vl_juros_baixa },
-                            { "vl_desconto_baixa", baixa.vl_desconto_baixa },
-                            { "vl_principal_baixa", baixa.vl_principal_baixa },
-                            { "vl_juros_calculado", baixa.vl_juros_calculado },
-                            { "vl_multa_calculada", baixa.vl_multa_calculada },
-                            { "vl_desc_multa_baixa", baixa.vl_desc_multa_baixa },
-                            { "vl_desc_juros_baixa", baixa.vl_desc_juros_baixa },
-                            { "vl_multa_baixa", baixa.vl_multa_baixa },
-                            { "pc_pontualidade", baixa.pc_pontualidade },
-                            { "tx_obs_baixa", baixa.tx_obs_baixa },
-                            { "vl_desconto_baixa_calculado", baixa.vl_desconto_baixa_calculado },
-                            { "vl_baixa_saldo_titulo", baixa.vl_baixa_saldo_titulo + baixa.vl_desconto_baixa },
-                            { "cd_politica_desconto", baixa.cd_politica_desconto },
-                            { "cd_usuario", 1},
-                            { "vl_taxa_cartao", baixa.vl_taxa_cartao },
-                            { "vl_acr_liquidacao", baixa.vl_acr_liquidacao },
-                            { "vl_liquidacao_calculado", baixa.vl_liquidacao_calculado },
-                            { "nm_recibo", nm_recibo }
-                        };
+                            var simulacao_baixa = await _simulacaoBaixaService.SimularBaixaTitulo(titulo, model.dt_baixa, parametroExists, source);
+                            titulo_baixa_dic = new Dictionary<string, object>
+                            {
+                                { "cd_titulo", baixa.cd_titulo },
+                                { "cd_tran_finan", cd_tran_fin },
+                                { "cd_tipo_liquidacao", baixa.cd_tipo_liquidacao },
+                                { "cd_local_movto", model.cd_tipo_liquidacao == 6 ? cd_local_movto_final : baixa.cd_local_movto },
+                                { "dt_baixa_titulo", model.dt_baixa.ToString("yyyy-MM-ddTHH:mm:ss") },
+                                { "id_baixa_processada", 0 },
+                                { "id_baixa_parcial", baixa.id_baixa_parcial },
+                                { "nm_dias_float", 0 },
+                                { "vl_liquidacao_baixa", baixa.vl_liquidacao_baixa },
+                                { "vl_juros_baixa", simulacao_baixa.vl_juros_baixa },
+                                { "vl_desconto_baixa", baixa.vl_desconto_baixa },
+                                { "vl_principal_baixa", baixa.vl_principal_baixa },
+                                { "vl_juros_calculado", simulacao_baixa.vl_juros_calculado },
+                                { "vl_multa_calculada", simulacao_baixa.vl_multa_calculada },
+                                { "vl_desc_multa_baixa", baixa.vl_desc_multa_baixa },
+                                { "vl_desc_juros_baixa", baixa.vl_desc_juros_baixa },
+                                { "vl_multa_baixa", simulacao_baixa.vl_multa_baixa },
+                                { "pc_pontualidade", simulacao_baixa.pc_pontualidade },
+                                { "tx_obs_baixa", simulacao_baixa.obs_baixa },
+                                { "vl_desconto_baixa_calculado", baixa.vl_desconto_baixa_calculado },
+                                { "vl_baixa_saldo_titulo", baixa.vl_baixa_saldo_titulo + baixa.vl_desconto_baixa },
+                                { "cd_politica_desconto", baixa.cd_politica_desconto },
+                                { "cd_usuario", cd_usuario},
+                                { "vl_taxa_cartao", baixa.vl_taxa_cartao },
+                                { "vl_acr_liquidacao", baixa.vl_acr_liquidacao },
+                                { "vl_liquidacao_calculado", baixa.vl_liquidacao_calculado },
+                                { "nm_recibo", nm_recibo }
+                            };
+                        }
+                        else
+                        {
+                            titulo_baixa_dic = new Dictionary<string, object>
+                            {
+                                { "cd_titulo", baixa.cd_titulo },
+                                { "cd_tran_finan", cd_tran_fin },
+                                { "cd_tipo_liquidacao", baixa.cd_tipo_liquidacao },
+                                { "cd_local_movto", model.cd_tipo_liquidacao == 6 ? cd_local_movto_final : baixa.cd_local_movto },
+                                { "dt_baixa_titulo", model.dt_baixa.ToString("yyyy-MM-ddTHH:mm:ss") },
+                                { "id_baixa_processada", 0 },
+                                { "id_baixa_parcial", baixa.id_baixa_parcial },
+                                { "nm_dias_float", 0 },
+                                { "vl_liquidacao_baixa", baixa.vl_liquidacao_baixa },
+                                { "vl_juros_baixa", baixa.vl_juros_baixa },
+                                { "vl_desconto_baixa", baixa.vl_desconto_baixa },
+                                { "vl_principal_baixa", baixa.vl_principal_baixa },
+                                { "vl_juros_calculado", baixa.vl_juros_calculado },
+                                { "vl_multa_calculada", baixa.vl_multa_calculada },
+                                { "vl_desc_multa_baixa", baixa.vl_desc_multa_baixa },
+                                { "vl_desc_juros_baixa", baixa.vl_desc_juros_baixa },
+                                { "vl_multa_baixa", baixa.vl_multa_baixa },
+                                { "pc_pontualidade", baixa.pc_pontualidade },
+                                { "tx_obs_baixa", baixa.txt_obs_baixa },
+                                { "vl_desconto_baixa_calculado", baixa.vl_desconto_baixa_calculado },
+                                { "vl_baixa_saldo_titulo", baixa.vl_baixa_saldo_titulo + baixa.vl_desconto_baixa },
+                                { "cd_politica_desconto", baixa.cd_politica_desconto },
+                                { "cd_usuario", cd_usuario},
+                                { "vl_taxa_cartao", baixa.vl_taxa_cartao },
+                                { "vl_acr_liquidacao", baixa.vl_acr_liquidacao },
+                                { "vl_liquidacao_calculado", baixa.vl_liquidacao_calculado },
+                                { "nm_recibo", nm_recibo }
+                            };
+                        }
+                        
                         var t_titulo_baixa = await SQLServerService.Insert("T_BAIXA_TITULO", titulo_baixa_dic, source);
                         if (!t_titulo_baixa.success) return BadRequest(t_titulo_baixa.error);
                         var titulo_baixa_CadastradaGet = await SQLServerService.GetList("T_BAIXA_TITULO", 1, 1, "cd_baixa_titulo", true, null, null, "", source, SearchModeEnum.Equals, null, null);
@@ -463,27 +508,24 @@ namespace Simjob.Framework.Services.Api.Controllers
                         }
 
                         //atualiza status renegociação do aditamento se houver
-                        var titulo = await SQLServerService.GetFirstByFields(source, "T_TITULO", new List<(string campo, object valor)> { new("cd_titulo", baixa.cd_titulo) });
-                        if(titulo != null)
+                        var titulo_aditamento = await SQLServerService.GetFirstByFields(source, "v_titulos_aditamentos", new List<(string campo, object valor)> { new("cd_titulo", baixa.cd_titulo) });
+                        if(titulo_aditamento != null)
                         {
-                            var cd_origem_titulo = titulo["id_origem_titulo"];
-                            var aditamento = await SQLServerService.GetFirstByFields(source, "T_ADITAMENTO", new List<(string campo, object valor)> { new("cd_aditamento", cd_origem_titulo) });
-                            if(aditamento != null)
+                            var cd_aditamento = titulo_aditamento["cd_aditamento"];                            
+                            var titulos_pagar = await SQLServerService.GetList("v_titulos_aditamentos", null, "[cd_aditamento],[id_status_titulo]", $"[{cd_aditamento}],[1]",source,SearchModeEnum.Equals);
+                            if(titulos_pagar.success)
                             {
-                                var titulos = await SQLServerService.GetList("T_TITULO", null, "[cd_origem_titulo],[id_status_titulo]", $"[{aditamento["cd_aditamento"]}],[1]",source,SearchModeEnum.Equals);
-                                if(titulos.success)
-                                {
-                                    var id_status_renegociacao = titulos.data.Count == 0 ? 2 : 1;
+                                var id_status_renegociacao = titulos_pagar.data.Count == 0 ? 2 : 1;
                                    
-                                    var aditamentoUpdate = new Dictionary<string, object>
-                                    {
-                                        { "id_status_renegociacao", id_status_renegociacao }
-                                    };
-                                    var updateAditamento = await SQLServerService.Update("T_ADITAMENTO", aditamentoUpdate, source, "cd_aditamento", aditamento["cd_aditamento"]);
-                                    if (!updateAditamento.success) return BadRequest(updateAditamento.error);
-                                    await AddHistoricoAditamento(int.Parse(aditamento["cd_aditamento"].ToString()), int.Parse(cd_usuario), id_status_renegociacao, source);
-                                }
+                                var aditamentoUpdate = new Dictionary<string, object>
+                                {
+                                    { "id_status_renegociacao", id_status_renegociacao }
+                                };
+                                var updateAditamento = await SQLServerService.Update("T_ADITAMENTO", aditamentoUpdate, source, "cd_aditamento", cd_aditamento);
+                                if (!updateAditamento.success) return BadRequest(updateAditamento.error);
+                                await AddHistoricoAditamento(int.Parse(cd_aditamento.ToString()), int.Parse(cd_usuario), id_status_renegociacao, source);
                             }
+                            
 
                         }
 

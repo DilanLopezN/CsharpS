@@ -254,7 +254,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                         pessoa.Add("cd_tipo_sociedade", pessoaJuridicaExists["cd_tipo_sociedade"]?.ToString() ?? "");
                         pessoa.Add("dc_num_insc_estadual", pessoaJuridicaExists["dc_num_insc_estadual"]?.ToString() ?? "");
                         pessoa.Add("dc_num_insc_municipal", pessoaJuridicaExists["dc_num_insc_municipal"]?.ToString() ?? "");
-                        pessoa.Add("nm_cnpj_cgc", pessoaJuridicaExists["dc_num_cnpj_cnab"]?.ToString() ?? "");
+                        pessoa.Add("nm_cnpj_cgc", pessoaJuridicaExists["dc_num_cgc"]?.ToString() ?? "");
                     }
                 }
                 //dependentes
@@ -504,7 +504,11 @@ namespace Simjob.Framework.Services.Api.Controllers
                             Celular = x["celular"],
                             CPF = x["nm_cpf"],
                             existe_pipeline = x["existe_pipeline"],
-                            id_status_contato = x["id_status_contato"]
+                            id_status_contato = x["id_status_contato"],
+                            cd_curso_pipeline = x["cd_curso_pipeline"],
+                            cd_produto_pipeline = x["cd_produto_pipeline"],
+                            cd_motivo_perda = x["cd_motivo_perda"]
+
                         };
                     }),
                     contatosResult.total,
@@ -701,7 +705,7 @@ namespace Simjob.Framework.Services.Api.Controllers
             {
                 if (command.pessoa.nm_cnpj_cgc != null && !string.IsNullOrEmpty(command.pessoa.nm_cnpj_cgc))
                 {
-                    var filtros = new List<(string campo, object valor)> { new("dc_num_cnpj_cnab", command.pessoa.nm_cnpj_cgc) };
+                    var filtros = new List<(string campo, object valor)> { new("dc_num_cgc", command.pessoa.nm_cnpj_cgc) };
                     var cpfExist = await SQLServerService.GetFirstByFields(source, "T_PESSOA_JURIDICA", filtros);
                     if (cpfExist != null) return (false, $"Já existe um registro com este CPF({command.pessoa.nm_cnpj_cgc}) cadastrado", null);
                 }
@@ -877,7 +881,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                             { "dc_num_insc_estadual", command.pessoa.dc_num_insc_estadual },
                             { "id_exportado", 0 },
                             { "dc_num_insc_municipal", command.pessoa.dc_num_insc_municipal },
-                            { "dc_num_cnpj_cnab", command.pessoa.nm_cnpj_cgc },
+                            { "dc_num_cgc", command.pessoa.nm_cnpj_cgc },
                             //{ "dc_registro_junta_comercial", "" },
                             //{ "dt_baixa", "[NULO]" },
                             { "dc_nom_presidente", command.pessoa.no_pessoa }
@@ -1286,7 +1290,7 @@ namespace Simjob.Framework.Services.Api.Controllers
             {
                 if (command.pessoa.nm_cnpj_cgc != null && !string.IsNullOrEmpty(command.pessoa.nm_cnpj_cgc))
                 {
-                    var filtros = new List<(string campo, object valor)> { new("dc_num_cnpj_cnab", command.pessoa.nm_cnpj_cgc) };
+                    var filtros = new List<(string campo, object valor)> { new("dc_num_cgc", command.pessoa.nm_cnpj_cgc) };
                     var cnpjExist = await SQLServerService.GetFirstByFields(source, "T_PESSOA_JURIDICA", filtros);
                     if (cnpjExist != null)
                     {
@@ -1505,7 +1509,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                             { "dc_num_insc_estadual", command.pessoa.dc_num_insc_estadual },
                             { "id_exportado", 0 },
                             { "dc_num_insc_municipal", command.pessoa.dc_num_insc_municipal },
-                            { "dc_num_cnpj_cnab", command.pessoa.nm_cnpj_cgc },
+                            { "dc_num_cgc", command.pessoa.nm_cnpj_cgc },
                             { "dc_nom_presidente", command.pessoa.no_pessoa }
                         };
                         var t_pessoa_juridica_insert = await SQLServerService.Update("T_PESSOA_JURIDICA", pessoa_juridica_dic, source, "cd_pessoa_juridica", cd_pessoa);

@@ -13,6 +13,7 @@ using Simjob.Framework.Services.Api.Interfaces;
 using Simjob.Framework.Services.Api.Middleware;
 using Simjob.Framework.Services.Api.Services;
 using Simjob.Framework.Services.Api.ViewModels;
+using Simjob.Framework.Services.Api.Modules.TurmaModule.Services;
 using System;
 using System.IO;
 using System.Reflection;
@@ -41,7 +42,7 @@ namespace Simjob.Framework.Services.Api
             {
                 options.ValueCountLimit = int.MaxValue;
 
-                options.MultipartBodyLengthLimit = long.MaxValue; // Define o tamanho máximo permitido para o corpo da requisição (multipart/form-data)
+                options.MultipartBodyLengthLimit = long.MaxValue; // Define o tamanho mï¿½ximo permitido para o corpo da requisiï¿½ï¿½o (multipart/form-data)
                 options.MemoryBufferThreshold = int.MaxValue;
             });
             services.AddAuthenticationConfiguration(Configuration);
@@ -60,6 +61,10 @@ namespace Simjob.Framework.Services.Api
 
             services.AddScoped<ITokenService, TokenService>();
             NativeInjection.InjectDependecies(services);
+
+            // Registrar serviÃ§os de mÃ³dulos
+            services.AddScoped<MatriculaService>();
+            services.AddScoped<SimulacaoBaixaService>();
 
             services.AddSwaggerGen(c =>
             {

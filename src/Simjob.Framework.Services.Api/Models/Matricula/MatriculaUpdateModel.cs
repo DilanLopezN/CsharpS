@@ -69,6 +69,7 @@ namespace Simjob.Framework.Services.Api.Models.Matricula
         public string? nm_matricula_contrato { get; set; }
         public int? cd_turma { get; set; }
         public List<TurmaModel>? Turmas { get; set; }
+        public List<CursoContrato>? CursoContrato { get; set; }
 
     }
 
@@ -99,6 +100,7 @@ namespace Simjob.Framework.Services.Api.Models.Matricula
         public bool? id_incide_matricula { get; set; }
         public bool? id_incide_material { get; set; }
         public bool? id_aditamento { get; set; }
+        public int cd_tipo_desconto { get; set; }
     }
 
     public class Aditamento

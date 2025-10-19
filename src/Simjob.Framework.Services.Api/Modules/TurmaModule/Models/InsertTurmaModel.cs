@@ -24,6 +24,7 @@ namespace Simjob.Framework.Services.Api.Models.Turmas
     public int? cd_turma_enc { get; set; }
     public bool id_percentual_faltas { get; set; }
     public int? cd_sala_online { get; set; }
+
     public int? nm_carga_horaria_aula { get; set; }
     public List<HorarioModel>? Horarios { get; set; } = new List<HorarioModel>();
     public List<ProfessorTurmaModel>? ProfessoresTurma { get; set; } = new List<ProfessorTurmaModel>();

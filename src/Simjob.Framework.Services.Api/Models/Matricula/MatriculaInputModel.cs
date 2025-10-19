@@ -81,7 +81,7 @@ namespace Simjob.Framework.Services.Api.Models.Matricula
         public string? nm_ano_vcto { get; set; }
         public string? nm_dia_vcto { get; set; }
         public string? nm_mes_vcto { get; set; }
-        public string nm_parcelas_mensalidade { get; set; }
+        public int nm_parcelas_mensalidade { get; set; }
 
         public TaxaMatriculaModel? Taxa { get; set; }
 

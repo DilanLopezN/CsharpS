@@ -444,91 +444,6 @@ namespace Simjob.Framework.Services.Api.Controllers
                     }
                 }
 
-                //caso o tipo de movimento seja um caixa, deve relacionar com o caixa
-                //Origem
-                var localMovtoOrigem = await SQLServerService.GetFirstByFields(
-                    source,
-                    "T_LOCAL_MOVTO",
-                    new List<(string campo, object valor)> { ("cd_local_movto", command.cd_local_origem), ("nm_tipo_local", 3) }
-                );
-                if( localMovtoOrigem != null)
-                {
-                    var caixaOrigem = await SQLServerService.GetFirstByFields(
-                        source,
-                        "T_CAIXA",
-                        new List<(string campo, object valor)> { ("cd_local_movto", command.cd_local_origem), ("id_status_caixa", 0) }
-                    );
-                    //se nao tiver um caixa aberto, abrir
-                    if(caixaOrigem == null)
-                    {
-                        var insertCaixaData = new Dictionary<string, object>
-                        {
-                            ["dc_caixa"] = $"{localMovtoOrigem["no_local_movto"]} ({DateTime.Now.ToString("dd/MM/yyyy")})",
-                            ["cd_local_movto"] = localMovtoOrigem["cd_local_movto"],
-                            ["dt_abertura"] = DateTime.Now,
-                            ["id_status_caixa"] = 0,
-                            ["cd_empresa"] = localMovtoOrigem["cd_pessoa_empresa"],
-                            ["id_caixa_central"] = false
-                        };
-
-                        var insertCaixaResult = await SQLServerService.InsertWithResult("T_CAIXA", insertCaixaData, source);
-                        caixaOrigem = insertCaixaResult.inserted;
-                    }
-
-                    var caixaTituloDict = new Dictionary<string, object>
-                    {
-                        { "cd_caixa", caixaOrigem["cd_caixa"] },
-                        { "cd_conta_corrente", insertedRecord["cd_conta_corrente"] },
-                        { "dt_recebimento", command.dta_conta_corrente ?? DateTime.Today }
-                    };
-                    var insertCaixaTitulo = await SQLServerService.Insert("T_CAIXA_TITULO", caixaTituloDict, source);
-                    if (!insertCaixaTitulo.success) return BadRequest(insertCaixaTitulo.error);
-                }
-                //Destino
-                if (command.cd_local_destino.HasValue)
-                {
-                    var localMovtoDestino = await SQLServerService.GetFirstByFields(
-                        source,
-                        "T_LOCAL_MOVTO",
-                        new List<(string campo, object valor)> { ("cd_local_movto", command.cd_local_destino), ("nm_tipo_local", 3) }
-                    );
-                    if (localMovtoDestino != null)
-                    {
-                        var caixaDestino = await SQLServerService.GetFirstByFields(
-                            source,
-                            "T_CAIXA",
-                            new List<(string campo, object valor)> { ("cd_local_movto", command.cd_local_destino), ("id_status_caixa", 0) }
-                        );
-                        //se nao tiver um caixa aberto, abrir
-                        if (caixaDestino == null)
-                        {
-                            var insertCaixaData = new Dictionary<string, object>
-                            {
-                                ["dc_caixa"] = $"{localMovtoDestino["no_local_movto"]} ({DateTime.Now.ToString("dd/MM/yyyy")})",
-                                ["cd_local_movto"] = localMovtoDestino["cd_local_movto"],
-                                ["dt_abertura"] = DateTime.Now,
-                                ["id_status_caixa"] = 0,
-                                ["cd_empresa"] = localMovtoDestino["cd_pessoa_empresa"],
-                                ["id_caixa_central"] = false
-                            };
-
-                            var insertCaixaResult = await SQLServerService.InsertWithResult("T_CAIXA", insertCaixaData, source);
-                            caixaDestino = insertCaixaResult.inserted;
-                        }
-
-                        var caixaTituloDict = new Dictionary<string, object>
-                        {
-                        { "cd_caixa", caixaDestino["cd_caixa"] },
-                        { "cd_conta_corrente", insertedRecord["cd_conta_corrente"] },
-                        { "dt_recebimento", command.dta_conta_corrente ?? DateTime.Today }
-                        };
-                        var insertCaixaTitulo = await SQLServerService.Insert("T_CAIXA_TITULO", caixaTituloDict, source);
-                        if (!insertCaixaTitulo.success) return BadRequest(insertCaixaTitulo.error);
-                    }
-
-                }
-
-
                 if (command.cd_caixa != null)
                 {
                     if (insertedRecord != null)
@@ -543,6 +458,94 @@ namespace Simjob.Framework.Services.Api.Controllers
                         if (!insertCaixaTitulo.success) return BadRequest(insertCaixaTitulo.error);
                     }
                 }
+                else
+                {
+
+                    //caso o tipo de movimento seja um caixa, deve relacionar com o caixa
+                    //Origem
+                    var localMovtoOrigem = await SQLServerService.GetFirstByFields(
+                        source,
+                        "T_LOCAL_MOVTO",
+                        new List<(string campo, object valor)> { ("cd_local_movto", command.cd_local_origem), ("nm_tipo_local", 3) }
+                    );
+                    if (localMovtoOrigem != null)
+                    {
+                        var caixaOrigem = await SQLServerService.GetFirstByFields(
+                            source,
+                            "T_CAIXA",
+                            new List<(string campo, object valor)> { ("cd_local_movto", command.cd_local_origem), ("id_status_caixa", 0) }
+                        );
+                        //se nao tiver um caixa aberto, abrir
+                        if (caixaOrigem == null)
+                        {
+                            var insertCaixaData = new Dictionary<string, object>
+                            {
+                                ["dc_caixa"] = $"{localMovtoOrigem["no_local_movto"]} ({DateTime.Now.ToString("dd/MM/yyyy")})",
+                                ["cd_local_movto"] = localMovtoOrigem["cd_local_movto"],
+                                ["dt_abertura"] = DateTime.Now,
+                                ["id_status_caixa"] = 0,
+                                ["cd_empresa"] = localMovtoOrigem["cd_pessoa_empresa"],
+                                ["id_caixa_central"] = false
+                            };
+
+                            var insertCaixaResult = await SQLServerService.InsertWithResult("T_CAIXA", insertCaixaData, source);
+                            caixaOrigem = insertCaixaResult.inserted;
+                        }
+
+                        var caixaTituloDict = new Dictionary<string, object>
+                    {
+                        { "cd_caixa", caixaOrigem["cd_caixa"] },
+                        { "cd_conta_corrente", insertedRecord["cd_conta_corrente"] },
+                        { "dt_recebimento", command.dta_conta_corrente ?? DateTime.Today }
+                    };
+                        var insertCaixaTitulo = await SQLServerService.Insert("T_CAIXA_TITULO", caixaTituloDict, source);
+                        if (!insertCaixaTitulo.success) return BadRequest(insertCaixaTitulo.error);
+                    }
+                    //Destino
+                    if (command.cd_local_destino.HasValue)
+                    {
+                        var localMovtoDestino = await SQLServerService.GetFirstByFields(
+                            source,
+                            "T_LOCAL_MOVTO",
+                            new List<(string campo, object valor)> { ("cd_local_movto", command.cd_local_destino), ("nm_tipo_local", 3) }
+                        );
+                        if (localMovtoDestino != null)
+                        {
+                            var caixaDestino = await SQLServerService.GetFirstByFields(
+                                source,
+                                "T_CAIXA",
+                                new List<(string campo, object valor)> { ("cd_local_movto", command.cd_local_destino), ("id_status_caixa", 0) }
+                            );
+                            //se nao tiver um caixa aberto, abrir
+                            if (caixaDestino == null)
+                            {
+                                var insertCaixaData = new Dictionary<string, object>
+                                {
+                                    ["dc_caixa"] = $"{localMovtoDestino["no_local_movto"]} ({DateTime.Now.ToString("dd/MM/yyyy")})",
+                                    ["cd_local_movto"] = localMovtoDestino["cd_local_movto"],
+                                    ["dt_abertura"] = DateTime.Now,
+                                    ["id_status_caixa"] = 0,
+                                    ["cd_empresa"] = localMovtoDestino["cd_pessoa_empresa"],
+                                    ["id_caixa_central"] = false
+                                };
+
+                                var insertCaixaResult = await SQLServerService.InsertWithResult("T_CAIXA", insertCaixaData, source);
+                                caixaDestino = insertCaixaResult.inserted;
+                            }
+
+                            var caixaTituloDict = new Dictionary<string, object>
+                        {
+                        { "cd_caixa", caixaDestino["cd_caixa"] },
+                        { "cd_conta_corrente", insertedRecord["cd_conta_corrente"] },
+                        { "dt_recebimento", command.dta_conta_corrente ?? DateTime.Today }
+                        };
+                            var insertCaixaTitulo = await SQLServerService.Insert("T_CAIXA_TITULO", caixaTituloDict, source);
+                            if (!insertCaixaTitulo.success) return BadRequest(insertCaixaTitulo.error);
+                        }
+
+                    }
+                }
+
 
                 if (insertedRecord == null)
                 {

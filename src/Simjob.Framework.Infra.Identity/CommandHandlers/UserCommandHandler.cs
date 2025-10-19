@@ -72,7 +72,9 @@ namespace Simjob.Framework.Infra.Identity.CommandHandlers
                 Root = request.Root,
                 ControlAccess = request.ControlAccess,
                 LogonAzure = request.LogonAzure,
-                UpdateBy = request.UpdateBy
+                UpdateBy = request.UpdateBy,
+                Cd_pessoa = request.cd_pessoa,
+                Cd_usuario = request.cd_usuario
             };
 
             _userService.UpdateGroup(entity, request.GroupId);

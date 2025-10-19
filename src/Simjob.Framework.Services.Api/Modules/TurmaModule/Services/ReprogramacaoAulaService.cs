@@ -467,15 +467,12 @@ namespace Simjob.Framework.Services.Api.Services
 
         await SQLServerService.Insert("T_PROGRAMACAO_TURMA", novaAulaFinal, source);
 
+
+
         // 5. Registrar no histórico
-        await RegistrarHistoricoReprogramacao(
-            cd_programacao_turma,
-            cd_turma,
-            cd_usuario,
-            data_original,
-            nova_data,
-            "Reprogramação com reordenação",
-            source);
+
+
+
 
         // 6. Atualizar dt_final_aula da turma
         await AtualizarDataFinalTurma(cd_turma, source);
@@ -620,39 +617,7 @@ namespace Simjob.Framework.Services.Api.Services
       return ultima_data.AddDays(7); // Fallback
     }
 
-    /// <summary>
-    /// Registra histórico de reprogramação
-    /// </summary>
-    private static async Task RegistrarHistoricoReprogramacao(
-        int cd_programacao_turma,
-        int cd_turma,
-        int cd_usuario,
-        DateTime data_original,
-        DateTime data_nova,
-        string tipo_reprogramacao,
-        Source source)
-    {
-      try
-      {
-        var historico = new Dictionary<string, object>
-        {
-          ["cd_programacao_turma"] = cd_programacao_turma,
-          ["cd_turma"] = cd_turma,
-          ["cd_usuario"] = cd_usuario,
-          ["tipo_acao"] = tipo_reprogramacao,
-          ["data_original"] = data_original.ToString("yyyy-MM-dd"),
-          ["data_nova"] = data_nova.ToString("yyyy-MM-dd"),
-          ["descricao_alteracao"] = $"Aula reprogramada de {data_original:dd/MM/yyyy} para {data_nova:dd/MM/yyyy}",
-          ["data_hora_alteracao"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-        };
 
-        await SQLServerService.Insert("T_HISTORICO_PROGRAMACAO", historico, source);
-      }
-      catch
-      {
-        // Não falhar a operação se o histórico não for salvo
-      }
-    }
 
     /// <summary>
     /// Atualiza dt_final_aula da turma baseado na última programação
@@ -799,5 +764,95 @@ namespace Simjob.Framework.Services.Api.Services
         return (false, $"Erro ao gerar programações provisórias: {ex.Message}");
       }
     }
+
+
+
+
+
+
+    /// <summary>
+    /// Registra histórico de reprogramação
+    /// </summary>
+    private static async Task RegistrarHistoricoReprogramacao(
+      int cd_programacao_turma,
+      int cd_turma,
+      int cd_usuario,
+      DateTime data_original,
+      DateTime data_nova,
+      string tipo_reprogramacao,
+      Source source)
+    {
+      try
+      {
+        // Buscar cd_tipo_log para "Reprogramação"
+        var tipoLogResult = await SQLServerService.GetFirstByFields(
+            source,
+            "T_TIPO_LOG",
+            new List<(string campo, object valor)> { ("no_tipo_log", "Reprogramação") }
+        );
+
+        int cd_tipo_log = tipoLogResult != null ? (int)tipoLogResult["cd_tipo_log"] : 1;
+
+        // Inserir log principal
+        var logGeral = new Dictionary<string, object>
+        {
+          ["dt_log_geral"] = DateTime.Now,
+          ["cd_registro_pai"] = cd_programacao_turma,
+          ["cd_tipo_log"] = cd_tipo_log,
+          ["cd_usuario"] = cd_usuario,
+          ["cd_origem"] = cd_turma,
+          ["tx_obs_log"] = $"{tipo_reprogramacao}: {data_original:dd/MM/yyyy} -> {data_nova:dd/MM/yyyy}"
+        };
+
+        var logResult = await SQLServerService.Insert("T_LOG_GERAL", logGeral, source);
+
+        if (!logResult.success) return;
+
+        // Buscar o último log inserido para obter o cd_log_geral
+        var lastLog = await SQLServerService.GetList(
+            "T_LOG_GERAL",
+            1,
+            1,
+            "dt_log_geral",
+            true,
+            null,
+            "[cd_registro_pai],[cd_tipo_log],[cd_usuario],[cd_origem]",
+            $"[{cd_programacao_turma}],[{cd_tipo_log}],[{cd_usuario}],[{cd_turma}]",
+            source,
+            SearchModeEnum.Equals,
+            null,
+            null);
+
+        if (lastLog.success && lastLog.data != null && lastLog.data.Any())
+        {
+          int cd_log_geral = (int)lastLog.data.First()["cd_log_geral"];
+
+          // Inserir detalhes da alteração
+          var detalhe = new Dictionary<string, object>
+          {
+            ["cd_log_geral"] = cd_log_geral,
+            ["no_coluna"] = "dta_programacao_turma",
+            ["dc_valor_antigo"] = data_original.ToString("yyyy-MM-dd"),
+            ["dc_valor_novo"] = data_nova.ToString("yyyy-MM-dd")
+          };
+
+          await SQLServerService.Insert("T_LOG_GERAL_DETALHE", detalhe, source);
+        }
+      }
+      catch (Exception ex)
+      {
+        // Log error
+      }
+    }
+
+
+
+
+
+
+
+
+
+
   }
 }

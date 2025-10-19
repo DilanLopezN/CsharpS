@@ -14,7 +14,7 @@ namespace Simjob.Framework.Services.Api.Models
         public int? cd_produto_pipeline { get; set; }
 
         [Required]
-        public DateTime DataRealizada { get; set; } = DateTime.Now;
+        public DateTime? DataRealizada { get; set; }
 
         public DateTime? Reprogramar { get; set; }
         public int? Aproveitamento { get; set; }

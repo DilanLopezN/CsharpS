@@ -794,8 +794,8 @@ object value)
 
 
       var orderClause = !string.IsNullOrWhiteSpace(sortField)
-          ? $"ORDER BY [{sortField}] {(sortDesc ? "DESC" : "ASC")}"
-          : "ORDER BY [Id] ASC"; // Default ordering
+          ? $"ORDER BY {sortField} {(sortDesc ? "DESC" : "ASC")}"
+          : ""; // Default ordering
 
       var selectSql = $"SELECT * FROM [{schemaName}] {whereClause} {orderClause} {topClause};";
       var countSql = $"SELECT COUNT(*) FROM [{schemaName}] {whereClause};";
@@ -1112,7 +1112,8 @@ DateTime? dateEnd = null,
 string? dateField2 = null,
 DateTime? dateStart2 = null,
 DateTime? dateEnd2 = null,
-string? campoDiaAtual = null
+string? campoDiaAtual = null,
+List<(string join, string where)>? joins = null
 )
     {
       if (string.IsNullOrWhiteSpace(schemaName))

@@ -4,8 +4,7 @@ using System.Collections.Generic;
 namespace Simjob.Framework.Services.Api.Models.Matricula
 {
     public class MatriculaUpdateAditamentosModel
-    {
-        public int? cd_aditamento { get; set; }                         
+    {                    
         public int cd_contrato { get; set; }                           
         public int id_tipo_data_inicio { get; set; }                   
         public int vl_aula_hora { get; set; }                          
@@ -35,23 +34,32 @@ namespace Simjob.Framework.Services.Api.Models.Matricula
         public string? dc_validade_bolsa { get; set; }
         public DateTime? dt_comunicado_bolsa { get; set; }
         public double? pc_bolsa { get; set; }
+        public double? pc_bolsa_material { get; set; }
 
 
         // Desconto
         public double? pc_desconto_contrato { get; set; }
         public decimal? vl_desconto_contrato { get; set; }
+        public bool? id_incide_matricula { get; set; }
+        public bool? id_incide_material { get; set; }
+        public bool? id_incide_baixa { get; set; } = false;
+        public int? nm_parcela_inicial { get; set; }
+        public int? nm_parcela_final { get; set; }
+
+
 
         public List<TituloModelAditamento>? TitulosMensalidade { get; set; }
         public List<TituloModelAditamento>? TitulosMaterial { get; set; }
+        public List<TituloModelAditamento>? TitulosTaxa { get; set; }
 
 
 
         public class TituloModelAditamento
         {
             public int? cd_titulo { get; set; }
-            public int cd_pessoa_titulo { get; set; }
-            public int cd_pessoa_responsavel { get; set; }
-            public int cd_local_movto { get; set; }
+            public int? cd_pessoa_titulo { get; set; }
+            public int? cd_pessoa_responsavel { get; set; }
+            public int? cd_local_movto { get; set; }
             public DateTime dt_emissao_titulo { get; set; }
             public int cd_origem_titulo { get; set; }
             public DateTime dt_vcto_titulo { get; set; }
@@ -60,7 +68,7 @@ namespace Simjob.Framework.Services.Api.Models.Matricula
             public string? dc_tipo_titulo { get; set; }
             public string? dc_num_documento_titulo { get; set; }
             public string? nm_parcela_titulo { get; set; }
-            public int cd_tipo_financeiro { get; set; }
+            public int? cd_tipo_financeiro { get; set; }
             public bool id_status_cnab { get; set; }
             public decimal vl_material_titulo { get; set; }
             public decimal pc_taxa_cartao { get; set; }

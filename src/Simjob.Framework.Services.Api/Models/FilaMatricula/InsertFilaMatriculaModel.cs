@@ -8,6 +8,7 @@ namespace Simjob.Framework.Services.Api.Models.FilaMatricula
         public int nm_sexo { get; set; }
 
         public string no_pessoa { get; set; }
+        public string cd_pessoa { get; set; }
         public int cd_pessoa_escola { get; set; }
         public string email { get; set; }
         public string telefone { get; set; }

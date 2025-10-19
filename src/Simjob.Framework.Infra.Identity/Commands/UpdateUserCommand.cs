@@ -20,6 +20,8 @@ namespace Simjob.Framework.Infra.Identity.Commands
         public bool LogonAzure { get; set; }
         [JsonIgnore]
         public string UpdateBy { get; set; }
+        public string cd_pessoa { get; set; }
+        public string? cd_usuario { get; set; }
         public override bool IsValid()
         {
             //ValidationResult = new SignInUserValidation().Validate(this);

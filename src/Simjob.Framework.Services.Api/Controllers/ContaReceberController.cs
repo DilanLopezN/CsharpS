@@ -676,6 +676,8 @@ namespace Simjob.Framework.Services.Api.Controllers
                 var tituloExiste = await SQLServerService.GetFirstByFields(source, "vi_titulo", filtros);
                 if (tituloExiste == null) return NotFound();
 
+                var planoTituloExiste = await SQLServerService.GetList(schemaName: "T_PLANO_TITULO", page: 1, limit: 1, sortField: "cd_titulo", sortDesc: false, ids: null, searchFields: "[cd_titulo]", value: $"[{cd_titulo}]", source: source, mode: SearchModeEnum.Equals);
+
                 var retorno = new
                 {
                     cd_titulo = tituloExiste["cd_titulo"],
@@ -714,7 +716,8 @@ namespace Simjob.Framework.Services.Api.Controllers
                     pc_taxa_cartao = tituloExiste["pc_taxa_cartao"],
                     nm_dias_cartao = tituloExiste["nm_dias_cartao"],
                     id_cnab_contrato = tituloExiste["id_cnab_contrato"],
-                    vl_taxa_cartao = tituloExiste["vl_taxa_cartao"]
+                    vl_taxa_cartao = tituloExiste["vl_taxa_cartao"],
+                    plano_titulo = planoTituloExiste.data
                 };
                 return ResponseDefault(retorno);
             }
@@ -742,7 +745,7 @@ namespace Simjob.Framework.Services.Api.Controllers
 
                 var tituloDict = new Dictionary<string, object>
                 {
-                    { "id_status_titulo", 2 }
+                    { "id_status_titulo", 2 } // Status cancelado (endpoint original de cancelamento)
                 };
 
                 var t_titulo_insert = await SQLServerService.Update("T_TITULO", tituloDict, source, "cd_titulo", cd_titulo);
@@ -758,6 +761,8 @@ namespace Simjob.Framework.Services.Api.Controllers
         [Authorize]
         [HttpPost]
         [Route("cancelarMultiplosTitulos")]
+        // OBSERVAÇÃO: Apesar do nome "cancelar", este endpoint está sendo usado para BAIXAS AUTOMÁTICAS
+        // Status alterado para 3 (Baixado) ao invés de 2 (Cancelado)
         public async Task<IActionResult> CancelarMultiplosTitulos([FromBody] CancelamentoMultiploTitulosModel dados)
         {
             var schemaName = "T_Titulo";
@@ -843,8 +848,21 @@ namespace Simjob.Framework.Services.Api.Controllers
                             if (!t_tranFin_insert.success) return BadRequest(t_tranFin_insert.error);
                             var cd_tran_fin = t_tranFin_insert.inserted["cd_tran_finan"];
 
+                            var claims = User.Claims.ToList();
+                            var cd_usuario = User.FindFirst("cd_usuario")?.Value;
+                            if (cd_usuario == null)
+                            {
+                                var cd_pessoa = User.FindFirst("cd_pessoa")?.Value;
+                                var usuario = await SQLServerService.GetFirstByFields(source, "T_SYS_USUARIO", new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa) });
+                                cd_usuario = usuario != null && usuario.ContainsKey("cd_usuario") ? usuario["cd_usuario"].ToString() : "0";
 
-                            // Inserir registro de baixa na T_BAIXA_TITULO com valores totais
+                                if(cd_usuario == "0")
+                                {
+                                    return BadRequest("Usuário não encontrado");
+                                }
+                            }
+
+                                // Inserir registro de baixa na T_BAIXA_TITULO com valores totais
                             var baixaDict = new Dictionary<string, object>
                             {
                                 { "cd_titulo", cd_titulo },
@@ -869,7 +887,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                                 { "vl_desconto_baixa_calculado", 0 },
                                 { "vl_baixa_saldo_titulo", vl_saldo_titulo },
                                 { "cd_politica_desconto", DBNull.Value },
-                                { "cd_usuario", 1 },
+                                { "cd_usuario", cd_usuario }, //TODO: arrumar isso!
                                 { "vl_taxa_cartao", 0 },
                                 { "vl_acr_liquidacao", 0 },
                                 { "vl_liquidacao_calculado", vl_saldo_titulo },
@@ -883,10 +901,10 @@ namespace Simjob.Framework.Services.Api.Controllers
                                 continue;
                             }
 
-                            // Atualizar status do título para cancelado
+                            // Atualizar status do título para baixado
                             var tituloDict = new Dictionary<string, object>
                             {
-                                { "id_status_titulo", 2 } // Status cancelado
+                                { "id_status_titulo", 3 } // Status baixado/pago
                             };
 
                             var updateResult = await SQLServerService.Update("T_TITULO", tituloDict, source, "cd_titulo", cd_titulo);
@@ -1247,7 +1265,11 @@ namespace Simjob.Framework.Services.Api.Controllers
                 }
 
                 // Se está em atraso ou no vencimento, não há desconto por antecipação
-                if (dataBaixa >= dtVencimento)
+                if (dataBaixa.Date > dtVencimento.Date)
+                {
+                    return (0, 0);
+                }
+                if (titulo["dc_tipo_titulo"]?.ToString() == "TX")
                 {
                     return (0, 0);
                 }
