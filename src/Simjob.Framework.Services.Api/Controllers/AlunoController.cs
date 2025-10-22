@@ -1174,7 +1174,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                     retorno.pessoa.endereco.cd_loc_logradouro = (int)enderecoExists["cd_loc_logradouro"];
                     retorno.pessoa.endereco.dc_compl_endereco = enderecoExists["dc_compl_endereco"] != null ? enderecoExists["dc_compl_endereco"].ToString() : "";
                     retorno.pessoa.endereco.dc_num_cep = enderecoExists["dc_num_cep"] != null ? enderecoExists["dc_num_cep"].ToString() : "";
-                    retorno.pessoa.endereco.dc_num_endereco = enderecoExists["dc_num_endereco"].ToString();
+                    retorno.pessoa.endereco.dc_num_endereco = enderecoExists["dc_num_endereco"]?.ToString();
                 }
                 var filtrosPessoaFisica = new List<(string campo, object valor)> { new("cd_pessoa_fisica", cd_pessoa) };
                 var pessoaFisicaExists = await SQLServerService.GetFirstByFields(source, "T_PESSOA_FISICA", filtrosPessoaFisica);
@@ -1493,7 +1493,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                         titulo = _config.GetSection("EmailParameters:titulo").Value,
                         subTitulo = String.Format(_config.GetSection("EmailParameters:subTitulo").Value, _config.GetSection("EmailParameters:nomeApp").Value),
                         usuario = sendEmail.login,
-                        senha = senha,
+                        senha = nova_senha,
                         escola = unidade + nomesEscolas,
                         btnLinkValue = _config.GetSection("EmailParameters:urlApp").Value,
                         btnValue = String.Format(_config.GetSection("EmailParameters:labelLinkUrl").Value, _config.GetSection("EmailParameters:nomeApp").Value),
@@ -1522,7 +1522,7 @@ namespace Simjob.Framework.Services.Api.Controllers
 
                     // Atualiza a senha no banco de dados
                     //Gera o hash da senha do usuário
-                    string senhaHash = MD5CryptoHelper.geraSenhaHashSHA1(senha);
+                    string senhaHash = MD5CryptoHelper.geraSenhaHashSHA1(nova_senha);
 
                     var cd_pessoa_raf = pessoa_raf["cd_pessoa_raf"];
                     pessoa_raf.Remove("cd_pessoa_raf");

@@ -26,7 +26,7 @@ namespace Simjob.Framework.Services.Api.Models.Contas
         public string? dc_nosso_numero { get; set; }
         public string? dc_num_documento_titulo { get; set; }
         public decimal? vl_saldo_titulo { get; set; }
-        public int? nm_titulo { get; set; }
+        public string? nm_titulo { get; set; }
         public int? nm_parcela_titulo { get; set; }
         [Required]
         public int cd_tipo_financeiro { get; set; }
@@ -87,6 +87,7 @@ namespace Simjob.Framework.Services.Api.Models.Contas
         public decimal? vl_desconto_total { get; set; }
         public int? opcao_venda { get; set; }
         public int? cd_curso { get; set; }
+        public string? dc_obs_titulo { get; set; }
 
         public List<PlanoTituloContaPagarModel>? plano_titulo { get; set; }
     }

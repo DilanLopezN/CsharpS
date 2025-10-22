@@ -41,6 +41,7 @@ namespace Simjob.Framework.Services.Api.Models.Matricula
         public decimal? vl_material_contrato { get; set; }
         public decimal? vl_parcela_liq_material { get; set; }
         public decimal? pc_bolsa_material { get; set; }
+        public DateTime? dt_inicio_aditamento { get; set; }
         public int? id_tipo_data_inicio { get; set; }
         public string? nm_dia_vcto_desconto { get; set; }
         public string? nm_previsao_inicial { get; set; }
@@ -64,6 +65,7 @@ namespace Simjob.Framework.Services.Api.Models.Matricula
         public List<DescontoContratoUpdateModel>? Descontos { get; set; }
         public List<Aditamento>? Aditamentos { get; set; }
         public List<VendaMaterial> VendasMaterial { get; set; }
+        public List<TituloModel>? TitulosTaxa { get; set; }
         public List<TituloModel>? TitulosMensalidade { get; set; }
         public List<TituloModel>? TitulosMaterial { get; set; }
         public string? nm_matricula_contrato { get; set; }

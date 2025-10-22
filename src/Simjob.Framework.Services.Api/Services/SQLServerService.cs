@@ -1310,6 +1310,14 @@ List<(string join, string where)>? joins = null
     /// </summary>
     private static string GenerateSearchCondition(string field, string value, SearchModeEnum mode)
     {
+      if(value == "null")
+      {
+        return $"[{field}] is null";
+      }
+      if(value == "not null")
+      {
+        return $"[{field}] is not null";
+      }
       // Se o campo inicia com "cd_", sempre usar igualdade, independente do mode
       if (field.StartsWith("cd_", StringComparison.OrdinalIgnoreCase))
       {

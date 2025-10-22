@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using MongoDB.Driver.Builders;
@@ -44,7 +45,7 @@ namespace Simjob.Framework.Services.Api.Controllers
     private readonly IRepository<MongoDbContext, Schema> _schemaRepository;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly SimulacaoBaixaService _simulacaoBaixaService;
-
+    private readonly ILogger<MatriculaController> _logger;
     private readonly MatriculaService _matriculaService;
 
     public MatriculaController(IMediatorHandler bus, INotificationHandler<DomainNotification> notifications, IRepository<SourceContext, Source> sourceRepository, IRepository<MongoDbContext, Schema> schemaRepository, IWebHostEnvironment webHostEnvironment, MatriculaService matriculaService) : base(bus, notifications)
@@ -300,10 +301,12 @@ namespace Simjob.Framework.Services.Api.Controllers
         //aditamento
         var aditamentos_result = await SQLServerService.GetList("T_ADITAMENTO", null, "[cd_contrato]", $"[{cd_contrato}]", source, SearchModeEnum.Equals);
         List<Dictionary<string, object>>? aditamentos = null;
-        if (aditamentos_result.success)
-        {
-          aditamentos = aditamentos_result.data.Where(x => x["id_status_renegociacao"] != null).ToList();
-        }
+        //if (aditamentos_result.success)
+        //{
+        //  aditamentos = aditamentos_result.data.Where(x => x["id_status_renegociacao"] != null).ToList();
+        //}
+        aditamentos = aditamentos_result.data.ToList();
+        var ultimo_aditamento = aditamentos.Count > 0 ? aditamentos.OrderByDescending(x => x["cd_aditamento"]).First() : null;
         var cd_aditamentos = aditamentos.Select(x => x["cd_aditamento"]);
         List<Dictionary<string, object>>? titulos_aditamentos = null;
         var titulos_aditamento_result = await SQLServerService.GetList("T_TITULO_ADITAMENTO", string.Join(",", cd_aditamentos), "cd_aditamento", null, source);
@@ -418,7 +421,13 @@ namespace Simjob.Framework.Services.Api.Controllers
 
           ["possui_titulo_baixado"] = titulosComBaixa == null ? false : true,
           ["possui_cnab"] = titulosComCnab == null ? false : true,
-          ["item_movimento"] = item_movimento.data
+          ["item_movimento"] = item_movimento.data,
+
+          ["cd_nome_contrato"] = ultimo_aditamento?["cd_nome_contrato"],
+          ["dt_inicio_aditamento"] = ultimo_aditamento?["dt_inicio_aditamento"],
+          ["id_tipo_data_inicio"] = ultimo_aditamento?["id_tipo_data_inicio"],
+          ["nm_previsao_inicial"] = ultimo_aditamento?["nm_previsao_inicial"],
+          ["nm_dia_vcto_desconto"] = ultimo_aditamento?["nm_dia_vcto_desconto"]
         };
 
 
@@ -660,7 +669,6 @@ namespace Simjob.Framework.Services.Api.Controllers
         var dict_aditamento = new Dictionary<string, object>
         {
           ["cd_contrato"] = cd_contrato,
-          ["id_tipo_data_inicio"] = 0,
           ["vl_aula_hora"] = 0,
           ["nm_titulos_aditamento"] = 0,
           ["cd_usuario"] = model.cd_usuario,
@@ -670,7 +678,11 @@ namespace Simjob.Framework.Services.Api.Controllers
           ["dt_aditamento"] = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"),
           ["cd_tipo_financeiro"] = model.cd_tipo_financeiro,
           ["cd_nome_contrato"] = model.cd_nome_contrato,
-          ["nm_sequencia_aditamento"] = sequencia_aditamento.ToString()
+          ["nm_sequencia_aditamento"] = sequencia_aditamento.ToString(),
+          ["dt_inicio_aditamento"] = model.dt_inicio_aditamento,
+          ["id_tipo_data_inicio"] = model.id_tipo_data_inicio ?? 0,
+          ["nm_previsao_inicial"] = model.nm_previsao_inicial,
+          ["nm_dia_vcto_desconto"] = model.nm_dia_vcto_desconto
         };
         var result_aditamento = await SQLServerService.Insert("T_ADITAMENTO", dict_aditamento, source);
         if (!result_aditamento.success) return BadRequest(result_aditamento.error);
@@ -1028,6 +1040,7 @@ namespace Simjob.Framework.Services.Api.Controllers
         ////venda material
         if (!model.VendasMaterial.IsNullOrEmpty())
         {
+            nm_nf_mercantil++;
           var estoque_ok = true;
           foreach (var venda in model.VendasMaterial)
           {
@@ -1069,23 +1082,6 @@ namespace Simjob.Framework.Services.Api.Controllers
             var item_escola = await SQLServerService.GetFirstByFields(source, "T_ITEM_ESCOLA", new List<(string campo, object valor)> { new("cd_item", venda.cd_item), new("cd_pessoa_escola", cd_escola) });
 
             var item = await SQLServerService.GetFirstByFields(source, "T_ITEM", new List<(string campo, object valor)> { new("cd_item", venda.cd_item) });
-            if (venda.venda)
-            {
-              if (item_escola != null)
-              {
-                var cd_item_escola = item_escola["cd_item_escola"];
-                var qtde = item_escola["qt_estoque"];
-                var qtde_item = int.Parse(qtde?.ToString() ?? "1");
-
-                if ((qtde_item - 1) < 0)
-                {
-                  estoque_ok = false;
-                  continue;
-                }
-                //nm_nf_mercantil++;
-              }
-            }
-            nm_nf_mercantil++;
 
             //não gerar venda se não ha estoque para livro ou apostila
             if (venda.venda && !estoque_ok) continue;
@@ -1178,9 +1174,9 @@ namespace Simjob.Framework.Services.Api.Controllers
                                     { "id_tipo_movimento", 2 },
                                     { "nm_movimento", nm_nf_mercantil},
                                     { "dc_serie_movimento", (bool)parametroExists["id_emitir_nf_mercantil"] ? parametroExists["dc_serie_nf_mercantil"] ?? "1" : (venda.venda ? "M" : "F") },
-                                    { "dt_emissao_movimento", DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
-                                    { "dt_vcto_movimento", DateTime.Now.Date.AddDays(60).ToString("yyyy-MM-ddTHH:mm:ss") },
-                                    { "dt_mov_movimento", DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
+                                    { "dt_emissao_movimento", model.dt_matricula_contrato?.ToString("yyyy-MM-ddTHH:mm:ss") ?? DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
+                                    { "dt_vcto_movimento", model.dt_matricula_contrato?.ToString("yyyy-MM-ddTHH:mm:ss") ?? DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
+                                    { "dt_mov_movimento", model.dt_matricula_contrato?.ToString("yyyy-MM-ddTHH:mm:ss") ?? DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
                                     { "pc_acrescimo",  0 },
                                     { "vl_acrescimo",  0 },
                                     { "pc_desconto",  0 },
@@ -1403,7 +1399,8 @@ namespace Simjob.Framework.Services.Api.Controllers
             if (primeiroEhPERS)
             {
               //remove campos que não serão inseridos
-              turmaExists.Remove("cd_turma");
+              //comentando para funcionar o cadastro de turma personalizada
+              //turmaExists.Remove("cd_turma");
               turmaExists.Remove("no_turma");
 
               string novo_nome = primeiroEhPERS
@@ -1686,6 +1683,112 @@ namespace Simjob.Framework.Services.Api.Controllers
       });
     }
 
+    /// <summary>
+    /// Valida se existe matrícula duplicada por produto/aluno (contratos SEM turma)
+    /// Equivalente ao método existeMatriculaByProdutoAluno do SGF1
+    /// </summary>
+    [Authorize]
+    [HttpPost("validar-matricula-duplicada")]
+    public async Task<IActionResult> ValidarMatriculaDuplicada([FromBody] ValidarMatriculaDuplicadaModel model)
+    {
+      try
+      {
+        var schemaName = "T_Pessoa";
+        if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
+        var schema = _schemaRepository.GetSchemaByField("name", schemaName);
+        var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
+        var source = _sourceRepository.GetByField("description", schemaModel.Source);
+        
+        if (source == null || source.Active != true)
+        {
+          return BadRequest(new { error = "Fonte de dados não configurada ou inativa." });
+        }
+
+        // Para cada curso do contrato, verificar se existe conflito
+        var conflitos = new List<object>();
+        
+        if (model.CursoContrato != null && model.CursoContrato.Any())
+        {
+          foreach (var cursoContrato in model.CursoContrato)
+          {
+            // Calcular data final se não fornecida
+            var dt_final_calculada = model.dt_final_contrato;
+            if (dt_final_calculada == null && model.cd_duracao.HasValue)
+            {
+              dt_final_calculada = await CalcularDataFinalContrato(cursoContrato.cd_curso, model.cd_duracao.Value, model.dt_inicial_contrato, source);
+            }
+
+            bool existeConflito = await VerificarMatriculaPorProdutoAluno(
+              model.cd_produto_atual,
+              model.cd_aluno,
+              model.cd_pessoa_escola,
+              model.dt_inicial_contrato,
+              cursoContrato.cd_curso,
+              model.cd_contrato_ignorar ?? 0,
+              dt_final_calculada,
+              model.cd_duracao ?? 0,
+              source
+            );
+
+            if (existeConflito)
+            {
+              conflitos.Add(new
+              {
+                cd_curso = cursoContrato.cd_curso,
+                conflito = true,
+                mensagem = "Já existe matrícula para este curso/produto no período informado"
+              });
+            }
+          }
+        }
+        else
+        {
+          // Calcular data final se não fornecida
+          var dt_final_calculada = model.dt_final_contrato;
+          if (dt_final_calculada == null && model.cd_duracao.HasValue)
+          {
+            dt_final_calculada = await CalcularDataFinalContrato(model.cd_curso_atual, model.cd_duracao.Value, model.dt_inicial_contrato, source);
+          }
+
+          // Validação para o curso atual apenas
+          bool existeConflito = await VerificarMatriculaPorProdutoAluno(
+            model.cd_produto_atual,
+            model.cd_aluno,
+            model.cd_pessoa_escola,
+            model.dt_inicial_contrato,
+            model.cd_curso_atual,
+            model.cd_contrato_ignorar ?? 0,
+            dt_final_calculada,
+            model.cd_duracao ?? 0,
+            source
+          );
+
+          if (existeConflito)
+          {
+            conflitos.Add(new
+            {
+              cd_curso = model.cd_curso_atual,
+              conflito = true,
+              mensagem = "Já existe matrícula para este curso/produto no período informado"
+            });
+          }
+        }
+
+        return Ok(new
+        {
+          temConflito = conflitos.Any(),
+          conflitos = conflitos,
+          mensagem = conflitos.Any() 
+            ? "Foram encontrados conflitos de matrícula" 
+            : "Não foram encontrados conflitos de matrícula"
+        });
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, new { error = "Erro interno do servidor", details = ex.Message });
+      }
+    }
+
     [Authorize]
     [HttpPut]
     public async Task<IActionResult> Put(MatriculaUpdateModel model)
@@ -1761,6 +1864,7 @@ namespace Simjob.Framework.Services.Api.Controllers
           ["cd_pessoa_responsavel"] = model.cd_pessoa_responsavel,
           ["pc_responsavel_material"] = (model.pc_responsavel_material ?? 0m) == 0m ? 100m : Math.Round(model.pc_responsavel_material.Value, 2),
           ["id_status_contrato"] = 0,
+          ["cd_nome_contrato"] = model.cd_nome_contrato,
           ["cd_fila_matricula"] = model.cd_fila_matricula
         };
 
@@ -1910,16 +2014,13 @@ namespace Simjob.Framework.Services.Api.Controllers
         if (!matriculaResult.success) return BadRequest(matriculaResult.error);
 
         //aditamento cd_nome_contrato
-        if (matricula_dict.ContainsKey("cd_nome_contrato"))
-        {
-          // Buscar aditamentos anteriores para gerar sequência
-          var aditamentos_update = await SQLServerService.GetList("T_ADITAMENTO", null, "[cd_contrato]", $"[{model.cd_contrato}]", source);
-          var sequencia_update = aditamentos_update.success && aditamentos_update.data != null ? aditamentos_update.data.Count + 1 : 1;
+        // Buscar aditamentos anteriores para gerar sequência
+        var aditamentos_update = await SQLServerService.GetList("T_ADITAMENTO", null, "[cd_contrato]", $"[{model.cd_contrato}]", source);
+        var sequencia_update = aditamentos_update.success && aditamentos_update.data != null ? aditamentos_update.data.Count + 1 : 1;
 
-          var dict_aditamento = new Dictionary<string, object>
-          {
+        var dict_aditamento = new Dictionary<string, object>
+        {
             ["cd_contrato"] = model.cd_contrato,
-            ["id_tipo_data_inicio"] = 0,
             ["vl_aula_hora"] = 0,
             ["nm_titulos_aditamento"] = 0,
             ["cd_usuario"] = model.cd_usuario,
@@ -1927,15 +2028,16 @@ namespace Simjob.Framework.Services.Api.Controllers
             ["vl_parcela_titulo_aditamento"] = 0,
             ["id_ajuste_manual"] = 0,
             ["dt_aditamento"] = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"),
-            ["cd_nome_contrato"] = model.cd_nome_contrato,
             ["cd_tipo_financeiro"] = model.cd_tipo_financeiro,
-            ["nm_sequencia_aditamento"] = sequencia_update.ToString()
-          };
-          var result_aditamento = await SQLServerService.Insert("T_ADITAMENTO", dict_aditamento, source);
-          if (!result_aditamento.success) return BadRequest(result_aditamento.error);
-
-        }
-
+            ["nm_sequencia_aditamento"] = sequencia_update.ToString(),
+            ["cd_nome_contrato"] = model.cd_nome_contrato,
+            ["dt_inicio_aditamento"] = model.dt_inicio_aditamento,
+            ["id_tipo_data_inicio"] = model.id_tipo_data_inicio ?? 0,
+            ["nm_previsao_inicial"] = model.nm_previsao_inicial,
+            ["nm_dia_vcto_desconto"] = model.nm_dia_vcto_desconto
+        };
+        var result_aditamento = await SQLServerService.Insert("T_ADITAMENTO", dict_aditamento, source);
+        if (!result_aditamento.success) return BadRequest(result_aditamento.error);
         //cadastra ou atualiza taxa da matricula
         if (model.Taxa != null && model.Taxa.vl_matricula_taxa != null && model.Taxa.vl_matricula_taxa > 0 && atualizarPlanoConta)
         {
@@ -2008,6 +2110,89 @@ namespace Simjob.Framework.Services.Api.Controllers
         if (string.IsNullOrEmpty(responsavel))
         {
           responsavel = model.cd_aluno.ToString();
+        }
+        
+        if (!model.TitulosTaxa.IsNullOrEmpty() && atualizarPlanoConta)
+        {
+          await SQLServerService.DeleteByTwoFields("T_TITULO", "cd_origem_titulo", model.cd_contrato.ToString(), "dc_tipo_titulo", model.TitulosTaxa.First().dc_tipo_titulo, source);
+          foreach (var titulo in model.TitulosTaxa)
+          {
+            var dictTitulo = new Dictionary<string, object>
+            {
+              ["cd_pessoa_empresa"] = cd_escola,
+              ["cd_pessoa_titulo"] = titulo.cd_pessoa_titulo,
+              ["cd_pessoa_responsavel"] = titulo.cd_pessoa_responsavel != 0 ? titulo.cd_pessoa_responsavel : responsavel,
+              ["cd_local_movto"] = parametroExists["cd_local_movto"],
+              ["dt_emissao_titulo"] = titulo.dt_emissao_titulo.ToString("yyyy-MM-ddTHH:mm:ss"),
+              ["cd_origem_titulo"] = model.cd_contrato,
+              ["dt_vcto_titulo"] = titulo.dt_vcto_titulo.ToString("yyyy-MM-ddTHH:mm:ss"),
+              ["dh_cadastro_titulo"] = DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss"),
+              ["vl_titulo"] = titulo.vl_titulo,
+              ["vl_saldo_titulo"] = titulo.vl_saldo_titulo,
+              ["dc_tipo_titulo"] = titulo.dc_tipo_titulo,
+              ["dc_num_documento_titulo"] = titulo.dc_num_documento_titulo,
+              ["nm_titulo"] = matriculaExists["nm_contrato"],
+              ["nm_parcela_titulo"] = titulo.nm_parcela_titulo,
+              ["cd_tipo_financeiro"] = titulo.cd_tipo_financeiro,
+              ["id_status_titulo"] = 1,
+              ["id_status_cnab"] = titulo.id_status_cnab,
+              ["id_origem_titulo"] = 22,
+              ["id_natureza_titulo"] = 1,
+              ["vl_material_titulo"] = titulo.vl_material_titulo,
+              ["pc_taxa_cartao"] = titulo.pc_taxa_cartao,
+              ["nm_dias_cartao"] = titulo.nm_dias_cartao,
+              ["id_cnab_contrato"] = titulo.id_cnab_contrato,
+              ["vl_taxa_cartao"] = titulo.vl_taxa_cartao,
+              ["cd_aluno"] = titulo.cd_aluno,
+              ["pc_responsavel"] = titulo.pc_responsavel == null || titulo.pc_responsavel == 0 ? 100 : titulo.pc_responsavel,
+              ["vl_mensalidade"] = titulo.vl_mensalidade,
+              ["pc_bolsa"] = titulo.pc_bolsa,
+              ["vl_bolsa"] = titulo.vl_bolsa,
+              ["pc_desconto_mensalidade"] = titulo.pc_desconto_mensalidade,
+              ["vl_desconto_mensalidade"] = titulo.vl_desconto_mensalidade,
+              ["pc_bolsa_material"] = titulo.pc_bolsa_material,
+              ["vl_bolsa_material"] = titulo.vl_bolsa_material,
+              ["pc_desconto_material"] = titulo.pc_desconto_material,
+              ["vl_desconto_material"] = titulo.vl_desconto_material,
+              ["pc_desconto_total"] = titulo.pc_desconto_total,
+              ["vl_desconto_total"] = titulo.vl_desconto_total,
+              ["opcao_venda"] = titulo.opcao_venda,
+              ["cd_curso"] = titulo.cd_curso
+            };
+            var t_titulo_Result = await SQLServerService.Insert("T_TITULO", dictTitulo, source);
+            if (!t_titulo_Result.success) return BadRequest(t_titulo_Result.error);
+
+            var t_tituloGet = await SQLServerService.GetList("T_TITULO", 1, 1, "cd_titulo", true, null, null, "", source, SearchModeEnum.Equals, null, null);
+            var titulo_inserido = t_tituloGet.data.First();
+
+            var id_origem_titulo = titulo_inserido["id_origem_titulo"]?.ToString() ?? "0";
+
+            if (id_origem_titulo == "22" && titulo.dc_tipo_titulo == "ME")
+            {
+              //T_plano_titulo
+              var dict_plano = new Dictionary<string, object>
+              {
+                ["cd_titulo"] = titulo_inserido["cd_titulo"],
+                ["cd_plano_conta"] = cd_plano_conta_mat,
+                ["vl_plano_titulo"] = titulo.opcao_venda != null && titulo.opcao_venda == "1" ? titulo.vl_mensalidade : 0
+              };
+              var t_plano_titulo_Result = await SQLServerService.Insert("T_PLANO_TITULO", dict_plano, source);
+              if (!t_plano_titulo_Result.success) return BadRequest(t_plano_titulo_Result.error);
+            }
+
+            if (id_origem_titulo == "22" && titulo.dc_tipo_titulo == "ME" && titulo.vl_material_titulo > 0)
+            {
+              //T_plano_titulo
+              var dict_plano = new Dictionary<string, object>
+              {
+                ["cd_titulo"] = titulo_inserido["cd_titulo"],
+                ["cd_plano_conta"] = cd_plano_conta_mtr,
+                ["vl_plano_titulo"] = titulo.vl_material_titulo
+              };
+              var t_plano_titulo_Result = await SQLServerService.Insert("T_PLANO_TITULO", dict_plano, source);
+              if (!t_plano_titulo_Result.success) return BadRequest(t_plano_titulo_Result.error);
+            }
+          }
         }
 
         if (!model.TitulosMensalidade.IsNullOrEmpty() && atualizarPlanoConta)
@@ -2298,190 +2483,335 @@ namespace Simjob.Framework.Services.Api.Controllers
 
 
         //Venda material
-        if (!model.VendasMaterial.IsNullOrEmpty())
         {
-          foreach (var venda in model.VendasMaterial)
-          {
-            var item_escola = await SQLServerService.GetFirstByFields(source, "T_ITEM_ESCOLA", new List<(string campo, object valor)> { new("cd_item", venda.cd_item), new("cd_pessoa_escola", cd_escola) });
-            if (venda.venda)
-            {
-              if (item_escola != null)
-              {
-                var cd_item_escola = item_escola["cd_item_escola"];
-                var qtde = item_escola["qt_estoque"];
-                var qtde_item = int.Parse(qtde?.ToString() ?? "1");
-
-                if ((qtde_item - 1) < 0)
-                {
-                  continue;
-                }
-              }
-              //nm_nf_mercantil++;
-            }
             nm_nf_mercantil++;
-            var movimento_existente = await SQLServerService.GetFirstByFields(source, "T_MOVIMENTO", new List<(string campo, object valor)> { new("cd_curso", venda.cd_curso), new("cd_aluno", model.cd_aluno) });
-            var cd_tipo_nota_fiscal = parametroExists["cd_tipo_nf_material"];
-            var tipo_nota_fiscal = await SQLServerService.GetFirstByFields(source, "t_tipo_nota_fiscal", new List<(string campo, object valor)> { new("cd_tipo_nota_fiscal", cd_tipo_nota_fiscal) });
-            var dc_cfop = tipo_nota_fiscal["dc_CFOP"];
-            var tx_obs_fiscal = tipo_nota_fiscal["tx_obs_tipo_nota"];
-            var cd_cfop = tipo_nota_fiscal["cd_cfop"];
-            var cd_movimento = 0;
-            Dictionary<string, object>? movimento = null;
-            if (movimento_existente == null)
+            var estoque_ok = true;
+            foreach (var venda in model.VendasMaterial)
             {
-              //movimento
-              var movimento_dict = new Dictionary<string, object>
-                                {
-                                    {"cd_origem_movimento",model.cd_contrato },
-                                    { "cd_pessoa_empresa", cd_escola},
-                                    { "cd_pessoa", cd_pessoa_aluno},
-                                    { "cd_politica_comercial", parametroExists["cd_politica_comercial_nf"]},
-                                    { "cd_tipo_financeiro",  3 },
-                                    { "id_tipo_movimento", 2 },
-                                    { "nm_movimento",nm_nf_mercantil},
-                                    { "dc_serie_movimento", (bool)parametroExists["id_emitir_nf_mercantil"] ? parametroExists["dc_serie_nf_mercantil"]?.ToString() ?? "1" : "M" },
-                                    { "dt_emissao_movimento", DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
-                                    { "dt_vcto_movimento", DateTime.Now.Date.AddDays(60).ToString("yyyy-MM-ddTHH:mm:ss") },
-                                    { "dt_mov_movimento", DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
-                                    { "pc_acrescimo",  0 },
-                                    { "vl_acrescimo",  0 },
-                                    { "pc_desconto",  0 },
-                                    { "vl_desconto", 0 },
-                                    { "id_nf", parametroExists["id_emitir_nf_mercantil"]},
-                                    { "id_nf_escola", parametroExists["id_emitir_nf_mercantil"]},
-                                    { "vl_base_calculo_ICMS_nf", 0 },
-                                    { "vl_base_calculo_PIS_nf", 0 },
-                                    { "vl_base_calculo_COFINS_nf", 0},
-                                    { "vl_base_calculo_IPI_nf", 0},
-                                    { "vl_base_calculo_ISS_nf", 0},
-                                    { "vl_ICMS_nf", 0 },
-                                    { "vl_PIS_nf", 0 },
-                                    { "vl_COFINS_nf", 0},
-                                    { "vl_IPI_nf", 0 },
-                                    { "vl_ISS_nf", 0 },
-                                    { "pc_aliquota_aproximada", 0 },
-                                    { "vl_aproximado", 0 },
-                                    { "id_exportado", 0 },
-                                    { "id_importacao_xml", 0 },
-                                    { "id_material_didatico", 1 },
-                                    { "id_venda_futura", venda.venda?0:1 },
-                                    { "id_origem_movimento", 22 },
-                                    { "nm_nfe",venda.venda?nm_nf_mercantil:null },
-                                    { "cd_curso",venda.cd_curso },
-                                    { "cd_aluno",model.cd_aluno },
-                                    { "tx_obs_fiscal",tx_obs_fiscal},
-                                    { "cd_tipo_nota_fiscal",parametroExists["cd_tipo_nf_material"]},
-                                    { "cd_cfop_nf",cd_cfop},
-                                    { "dc_cfop_nf", await VerificaEstadoEscAluno(Convert.ToInt32(cd_escola), Convert.ToInt32(cd_pessoa_aluno), (int)TipoMovimentoEnum.SERVICO, source) }
-                                };
-              var t_movimento_Result = await SQLServerService.Insert("T_MOVIMENTO", movimento_dict, source);
-              if (!t_movimento_Result.success) return BadRequest(t_movimento_Result.error);
-              var movimento_inseridoGet = await SQLServerService.GetList("T_MOVIMENTO", 1, 1, "cd_movimento", true, null, null, "", source, SearchModeEnum.Equals, null, null);
-              var movimento_inserido = movimento_inseridoGet.data.First();
-              movimento = movimento_inserido;
-              cd_movimento = int.Parse(movimento_inserido["cd_movimento"]?.ToString());
-              //movimento item
-            }
-            else
-            {
-              movimento = movimento_existente;
-              cd_movimento = int.Parse(movimento_existente["cd_movimento"]?.ToString());
-
-              var movimento_update_dict = new Dictionary<string, object>
-                            {
-                                { "id_nf", parametroExists["id_emitir_nf_mercantil"]},
-                                { "id_venda_futura", 0 },
-                                { "nm_nfe",venda.venda?nm_nf_mercantil:null }
-
-                            };
-              var t_movimento_Result = await SQLServerService.Update("T_MOVIMENTO", movimento_update_dict, source, "cd_movimento", cd_movimento);
-              if (!t_movimento_Result.success) return BadRequest(t_movimento_Result.error);
-            }
-
-
-            var item_movimento_existente = await SQLServerService.GetFirstByFields(source, "T_ITEM_MOVIMENTO", new List<(string campo, object valor)> { new("cd_item", venda.cd_item), new("cd_movimento", cd_movimento) });
-            if (item_movimento_existente == null)
-            {
-              var item = await SQLServerService.GetFirstByFields(source, "T_ITEM", new List<(string campo, object valor)> { new("cd_item", venda.cd_item) });
-              var item_movimento_dict = new Dictionary<string, object>
-                                {
-                                    {"cd_plano_conta",cd_plano_conta_mtr },
-                                    {"dc_item_movimento",item != null? item["no_item"]:"" },
-                                    { "cd_movimento", cd_movimento },
-                                    { "cd_item",venda.cd_item },
-                                    { "qt_item_movimento", 1 },
-                                    { "vl_unitario_item",  0  },
-                                    { "vl_total_item",0 },
-                                    { "vl_liquido_item",  0 },
-                                    { "vl_acrescimo_item", 0 },
-                                    { "vl_desconto_item", movimento.ContainsKey("vl_desconto") ? movimento["vl_desconto"] : 0 },
-                                    { "vl_base_calculo_ICMS_item",0 },
-                                    { "vl_base_calculo_PIS_item",0 },
-                                    { "vl_base_calculo_COFINS_item", 0 },
-                                    { "vl_base_calculo_IPI_item",0 },
-                                    { "vl_base_calculo_ISS_item", 0 },
-                                    { "vl_ICMS_item",0 },
-                                    { "vl_PIS_item", 0},
-                                    { "vl_COFINS_item", 0 },
-                                    { "vl_IPI_item", 0 },
-                                    { "vl_ISS_item", 0 },
-                                    { "pc_aliquota_ICMS", 0},
-                                    { "pc_aliquota_PIS", 0},
-                                    { "pc_aliquota_COFINS", 0 },
-                                    { "pc_aliquota_IPI", 0 },
-                                    { "pc_aliquota_ISS", 0 },
-                                    { "pc_aliquota_aproximada", movimento.ContainsKey("pc_aliquota_aproximada") ? movimento["pc_aliquota_aproximada"] : 0 },
-                                    { "vl_aproximado", movimento.ContainsKey("vl_aproximado") ? movimento["vl_aproximado"] : 0},
-                                    { "pc_desconto_item", movimento.ContainsKey("pc_desconto") ? movimento["pc_desconto"] : 0 },
-                                    { "cd_cfop",cd_cfop},
-                                    { "dc_cfop",dc_cfop}
-                                };
-              var t_item_movimento_Result = await SQLServerService.Insert("T_ITEM_MOVIMENTO", item_movimento_dict, source);
-              if (!t_item_movimento_Result.success) return BadRequest(t_item_movimento_Result.error);
-            }
-
-            //remover do estoque
-            if (venda.venda)
-            {
-
-              if (item_escola != null)
-              {
-                var cd_item_escola = item_escola["cd_item_escola"];
-                var qtde = item_escola["qt_estoque"];
-                var qtde_item = int.Parse(qtde?.ToString() ?? "1");
-
-                if ((qtde_item - 1) < 0)
+                // Validação conforme procedure: verificar se curso está vinculado ao contrato
+                if (venda.cd_curso == null || venda.cd_curso == 0)
                 {
-                  continue;
+                    return BadRequest("Parâmetro Curso não informado.");
                 }
-                item_escola.Remove("cd_item_escola");
-                item_escola["qt_estoque"] = int.Parse(qtde?.ToString() ?? "1") - 1;
-                var t_item_escola_update = await SQLServerService.Update("T_ITEM_ESCOLA", item_escola, source, "cd_item_escola", cd_item_escola);
-                if (!t_item_escola_update.success) return BadRequest(t_item_escola_update.error);
 
-                //atualizar parâmetros conforme stored procedure
-                var isEmitirNF = (bool)parametroExists["id_emitir_nf_mercantil"];
-                var parametroUpdate = new Dictionary<string, object>();
+                var curso_contrato = await SQLServerService.GetFirstByFields(source, "T_CURSO_CONTRATO",
+                    new List<(string campo, object valor)> { new("cd_curso", venda.cd_curso), new("cd_contrato", model.cd_contrato) });
 
-                if (isEmitirNF)
+                if (curso_contrato == null)
                 {
-                  // Se emite NF mercantil, atualiza nm_nf_mercantil
-                  parametroUpdate["nm_nf_mercantil"] = nm_nf_mercantil;
+                    return BadRequest("Favor salvar a alteração do curso primeiro para poder prosseguir com a geração da venda de material.");
+                }
+
+                // Validação da modalidade/regime conforme procedure
+                var contrato = await SQLServerService.GetFirstByFields(source, "T_CONTRATO",
+                    new List<(string campo, object valor)> { new("cd_contrato", model.cd_contrato) });
+
+                var cd_regime = model.cd_regime_atual;
+
+                if (cd_regime == null)
+                {
+                    return BadRequest("A modalidade do contrato não foi definida. Para vincular a venda de material didático esta informação é necessária.");
+                }
+
+                var regime = await SQLServerService.GetFirstByFields(source, "T_REGIME",
+                    new List<(string campo, object valor)> { new("cd_regime", cd_regime) });
+
+                var no_regime_abreviado = regime?["no_regime_abreviado"]?.ToString();
+
+                if (string.IsNullOrEmpty(no_regime_abreviado))
+                {
+                    return BadRequest("A modalidade do contrato não foi definida. Para vincular a venda de material didático esta informação é necessária.");
+                }
+
+                var item_escola = await SQLServerService.GetFirstByFields(source, "T_ITEM_ESCOLA", new List<(string campo, object valor)> { new("cd_item", venda.cd_item), new("cd_pessoa_escola", cd_escola) });
+
+                var item = await SQLServerService.GetFirstByFields(source, "T_ITEM", new List<(string campo, object valor)> { new("cd_item", venda.cd_item) });
+
+                //não gerar venda se não ha estoque para livro ou apostila
+                if (venda.venda && !estoque_ok) continue;
+
+                // Verificação de movimento existente conforme procedure
+                List<(string campo, object valor)> filtroMovimento;
+                var id_normal = contrato?["id_tipo_contrato"]?.ToString() == "0"; // Matricula normal
+
+                if (id_normal)
+                {
+                    // Para matrículas normais, verificar sem o curso
+                    filtroMovimento = new List<(string campo, object valor)>
+                    {
+                        new("id_origem_movimento", 22),
+                        new("cd_origem_movimento", model.cd_contrato),
+                        new("id_venda_futura", venda.venda ? 0 : 1),
+                        new("id_material_didatico", 1)
+                    };
                 }
                 else
                 {
-                  // Se não emite NF mercantil, atualiza nm_nf_material
-                  parametroUpdate["nm_nf_material"] = nm_nf_mercantil;
+                    // Para outras matrículas, verificar com o curso
+                    filtroMovimento = new List<(string campo, object valor)>
+                    {
+                        new("id_origem_movimento", 22),
+                        new("cd_origem_movimento", model.cd_contrato),
+                        new("cd_curso", venda.cd_curso),
+                        new("id_venda_futura", venda.venda ? 0 : 1),
+                        new("id_material_didatico", 1)
+                    };
                 }
 
-                var parametroResult = await SQLServerService.Update("T_PARAMETRO", parametroUpdate, source, "cd_pessoa_escola", model.cd_pessoa_escola);
-                if (!parametroResult.success) return BadRequest(parametroResult.error);
-              }
+                var movimento_existente = await SQLServerService.GetFirstByFields(source, "T_MOVIMENTO", filtroMovimento);
+
+                // Verificar se já existe nota sem curso definido (conforme procedure)
+                var movimento_sem_curso = await SQLServerService.GetFirstByFields(source, "T_MOVIMENTO",
+                    new List<(string campo, object valor)>
+                    {
+                        new("id_origem_movimento", 22),
+                        new("cd_origem_movimento", model.cd_contrato),
+                        new("id_venda_futura", venda.venda ? 0 : 1),
+                        new("id_material_didatico", 1),
+                        new("cd_curso", DBNull.Value)
+                    });
+
+                if (movimento_sem_curso != null)
+                {
+                    var nm_movimento = movimento_sem_curso["nm_movimento"];
+                    var id_nf = movimento_sem_curso["id_nf"];
+                    var tipoDoc = (bool)id_nf ? "Nota Fiscal" : "Movimento";
+                    return BadRequest($"Não foi definido o curso no {tipoDoc}, já existente com o número {nm_movimento}");
+                }
+
+                if (movimento_existente != null)
+                {
+                    // Conforme procedure, verificar se precisa gerar novos itens ou se já está completo
+                    // Por ora, vamos permitir o processamento se o movimento já existe
+                    // mas verificar se está completo conforme a lógica da procedure
+                }
+
+                var cd_tipo_nota_fiscal = parametroExists["cd_tipo_nf_material"];
+                var tipo_nota_fiscal = await SQLServerService.GetFirstByFields(source, "t_tipo_nota_fiscal", new List<(string campo, object valor)> { new("cd_tipo_nota_fiscal", cd_tipo_nota_fiscal) });
+                var dc_cfop = tipo_nota_fiscal?["dc_CFOP"];
+                // Calcular CFOP baseado nos estados (conforme procedure)
+                var cfopCalculado = await VerificaEstadoEscAluno(Convert.ToInt32(cd_escola), Convert.ToInt32(cd_pessoa_aluno), (int)TipoMovimentoEnum.SERVICO, source);
+                var dc_cfop_final = cfopCalculado;
+
+                var tx_obs_fiscal = tipo_nota_fiscal?["tx_obs_tipo_nota"];
+                var cd_cfop = tipo_nota_fiscal?["cd_cfop"];
+                var cd_movimento = 0;
+                Dictionary<string, object>? movimento = null;
+                if (movimento_existente == null)
+                {
+                    // Buscar o responsável do contrato (conforme a procedure)
+                    var cd_responsavel = contrato?["cd_pessoa_responsavel"];
+
+                    // Buscar tipo financeiro (conforme procedure: 'Titulo')
+                    var tipoFinanceiro = await SQLServerService.GetFirstByFields(source, "T_TIPO_FINANCEIRO", new List<(string campo, object valor)> { new("dc_tipo_financeiro", "Titulo") });
+                    var cd_tipo_financeiro = tipoFinanceiro?["cd_tipo_financeiro"] ?? 3;
+
+                    //movimento
+                    var movimento_dict = new Dictionary<string, object>
+                        {
+                            {"cd_origem_movimento",model.cd_contrato },
+                            { "cd_pessoa_empresa", cd_escola},
+                            { "cd_pessoa", cd_responsavel ?? cd_pessoa_aluno}, // Usar responsável conforme procedure
+                            { "cd_aluno", model.cd_aluno},
+                            { "cd_politica_comercial", parametroExists["cd_politica_comercial_nf"]},
+                            { "cd_tipo_financeiro", cd_tipo_financeiro },
+                            { "id_tipo_movimento", 2 },
+                            { "nm_movimento", nm_nf_mercantil},
+                            { "dc_serie_movimento", (bool)parametroExists["id_emitir_nf_mercantil"] ? parametroExists["dc_serie_nf_mercantil"] ?? "1" : (venda.venda ? "M" : "F") },
+                            { "dt_emissao_movimento", model.dt_matricula_contrato?.ToString("yyyy-MM-ddTHH:mm:ss") ?? DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
+                            { "dt_vcto_movimento", model.dt_matricula_contrato?.ToString("yyyy-MM-ddTHH:mm:ss") ?? DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
+                            { "dt_mov_movimento", model.dt_matricula_contrato?.ToString("yyyy-MM-ddTHH:mm:ss") ?? DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss") },
+                            { "pc_acrescimo",  0 },
+                            { "vl_acrescimo",  0 },
+                            { "pc_desconto",  0 },
+                            { "vl_desconto", 0 },
+                            { "id_nf", parametroExists["id_emitir_nf_mercantil"]},
+                            { "id_status_nf", 1 }, // Conforme procedure
+                            { "id_nf_escola", parametroExists["id_emitir_nf_mercantil"]},
+                            { "vl_base_calculo_ICMS_nf", 0 }, // Será calculado pelos itens
+                            { "vl_base_calculo_PIS_nf", 0 },
+                            { "vl_base_calculo_COFINS_nf", 0},
+                            { "vl_base_calculo_IPI_nf", 0},
+                            { "vl_base_calculo_ISS_nf", 0},
+                            { "vl_ICMS_nf", 0 }, // Será calculado pelos itens
+                            { "vl_PIS_nf", 0 },
+                            { "vl_COFINS_nf", 0},
+                            { "vl_IPI_nf", 0 },
+                            { "vl_ISS_nf", 0 },
+                            { "pc_aliquota_aproximada", 0 },
+                            { "vl_aproximado", 0 },
+                            { "id_exportado", 0 },
+                            { "id_importacao_xml", 0 },
+                            { "id_material_didatico", 1 },
+                            { "id_venda_futura", venda.venda ? 0 : 1 },
+                            { "id_origem_movimento", 22 },
+                            { "nm_nfe", venda.venda ? nm_nf_mercantil : (object)DBNull.Value },
+                            { "cd_curso", venda.cd_curso },
+                            { "tx_obs_fiscal", tx_obs_fiscal},
+                            { "cd_tipo_nota_fiscal", (bool)parametroExists["id_emitir_nf_mercantil"] ? parametroExists["cd_tipo_nf_material"] : (object)DBNull.Value},
+                            { "cd_cfop_nf", (bool)parametroExists["id_emitir_nf_mercantil"] ? cd_cfop : (object)DBNull.Value},
+                            { "dc_cfop_nf", (bool)parametroExists["id_emitir_nf_mercantil"] ? dc_cfop_final : (object)DBNull.Value },
+                            { "dc_key_nfe", "" } // Conforme procedure
+                        };
+                    var t_movimento_Result = await SQLServerService.Insert("T_MOVIMENTO", movimento_dict, source);
+                    if (!t_movimento_Result.success) return BadRequest(t_movimento_Result.error);
+
+                    var movimento_inseridoGet = await SQLServerService.GetList("T_MOVIMENTO", 1, 1, "cd_movimento", true, null, null, "", source, SearchModeEnum.Equals, null, null);
+                    var movimento_inserido = movimento_inseridoGet.data.First();
+                    movimento = movimento_inserido;
+                    cd_movimento = int.Parse(movimento_inserido["cd_movimento"]?.ToString());
+
+                    // Atualizar numeração conforme stored procedure - DEPOIS de inserir o movimento
+                    var isEmitirNF = (bool)parametroExists["id_emitir_nf_mercantil"];
+                    var numeroMovimento = 0;
+
+                    // Atualizar parâmetros conforme SP (linhas 858-877)
+                    var parametro_update = new Dictionary<string, object>();
+
+                    if (isEmitirNF)
+                    {
+                        // Se emitir NF mercantil, atualizar nm_nf_mercantil
+                        parametro_update["nm_nf_mercantil"] = nm_nf_mercantil;
+                    }
+                    else
+                    {
+                        // Se não emitir NF mercantil, atualizar nm_nf_material (conforme SP linha 869-877)
+                        parametro_update["nm_nf_material"] = nm_nf_mercantil;
+                    }
+
+                    var param_result = await SQLServerService.Update("T_PARAMETRO", parametro_update, source, "cd_pessoa_escola", cd_escola);
+                    if (!param_result.success) return BadRequest(param_result.error);
+                    //movimento item
+                }
+                else
+                {
+                    movimento = movimento_existente;
+                    cd_movimento = int.Parse(movimento_existente["cd_movimento"]?.ToString());
+
+                    var movimento_update_dict = new Dictionary<string, object>
+                    {
+                        { "id_venda_futura", venda.venda ? 0 : 1 },
+                        { "nm_nfe", venda.venda ? nm_nf_mercantil : (object)DBNull.Value },
+                        { "nm_movimento", nm_nf_mercantil },
+                        { "dc_serie_movimento", (bool)parametroExists["id_emitir_nf_mercantil"] ? parametroExists["dc_serie_nf_mercantil"] ?? "1" : (venda.venda ? "M" : "F") }
+                    };
+                    var t_movimento_Result = await SQLServerService.Update("T_MOVIMENTO", movimento_update_dict, source, "cd_movimento", cd_movimento);
+                    if (!t_movimento_Result.success) return BadRequest(t_movimento_Result.error);
+                }
+
+
+                var item_movimento_existente = await SQLServerService.GetFirstByFields(source, "T_ITEM_MOVIMENTO", new List<(string campo, object valor)> { new("cd_item", venda.cd_item), new("cd_movimento", cd_movimento) });
+
+
+                if (item_movimento_existente == null)
+                {
+                    // Buscar valor do item na escola conforme procedure
+                    var vl_item = 0m;
+                    if (item_escola != null)
+                    {
+                        var vl_item_escola = item_escola["vl_item"];
+                        var vl_custo_escola = item_escola["vl_custo"];
+                        vl_item = Convert.ToDecimal(vl_item_escola) > 0 ? Convert.ToDecimal(vl_item_escola) : Convert.ToDecimal(vl_custo_escola ?? 0);
+                    }
+
+                    // Buscar plano de conta conforme procedure
+                    var cd_plano_conta_item = cd_plano_conta_mtr; // default
+                    var item_subgrupo = await SQLServerService.GetFirstByFields(source, "T_ITEM_SUBGRUPO",
+                        new List<(string campo, object valor)> { new("cd_item", venda.cd_item), new("id_tipo_movimento", 2) });
+
+                    if (item_subgrupo != null)
+                    {
+                        var cd_subgrupo_conta = item_subgrupo["cd_subgrupo_conta"];
+                        var plano_conta = await SQLServerService.GetFirstByFields(source, "T_PLANO_CONTA",
+                            new List<(string campo, object valor)> { new("cd_pessoa_empresa", cd_escola), new("cd_subgrupo_conta", cd_subgrupo_conta) });
+
+                        if (plano_conta != null)
+                            cd_plano_conta_item = plano_conta["cd_plano_conta"].ToString();
+                    }
+
+                    // Situações tributárias conforme procedure (valores padrão)
+                    var cd_situacao_tributaria_ICMS = (object)DBNull.Value;
+                    var cd_situacao_tributaria_PIS = 65;
+                    var cd_situacao_tributaria_COFINS = 107;
+                    var vl_base_calculo_ICMS = 0m;
+                    var vl_base_calculo_PIS = vl_item;
+                    var vl_base_calculo_COFINS = vl_item;
+                    var vl_base_calculo_IPI = vl_item;
+                    var vl_ICMS_item = 0m;
+
+                    // Se for para emitir NF, calcular impostos
+                    if ((bool)parametroExists["id_emitir_nf_mercantil"] && parametroExists["cd_tipo_nf_material"] != null)
+                    {
+                        // Aqui seria necessário implementar os cálculos tributários da procedure
+                        // Por ora, manter valores zerados para não quebrar
+                    }
+
+                    var item_movimento_dict = new Dictionary<string, object>
+                        {
+                            {"cd_plano_conta", cd_plano_conta_item },
+                            {"dc_item_movimento", item != null ? item["no_item"] : "" },
+                            { "cd_movimento", cd_movimento },
+                            { "cd_item", venda.cd_item },
+                            { "qt_item_movimento", 1 },
+                            { "vl_unitario_item", vl_item },
+                            { "vl_total_item", vl_item },
+                            { "vl_liquido_item", vl_item },
+                            { "vl_acrescimo_item", 0 },
+                            { "vl_desconto_item", 0 },
+                            { "cd_situacao_tributaria_ICMS", cd_situacao_tributaria_ICMS },
+                            { "cd_situacao_tributaria_PIS", cd_situacao_tributaria_PIS },
+                            { "cd_situacao_tributaria_COFINS", cd_situacao_tributaria_COFINS },
+                            { "vl_base_calculo_ICMS_item", vl_base_calculo_ICMS },
+                            { "vl_base_calculo_PIS_item", vl_base_calculo_PIS },
+                            { "vl_base_calculo_COFINS_item", vl_base_calculo_COFINS },
+                            { "vl_base_calculo_IPI_item", vl_base_calculo_IPI },
+                            { "vl_base_calculo_ISS_item", 0 },
+                            { "vl_ICMS_item", vl_ICMS_item },
+                            { "vl_PIS_item", 0},
+                            { "vl_COFINS_item", 0 },
+                            { "vl_IPI_item", 0 },
+                            { "vl_ISS_item", 0 },
+                            { "pc_aliquota_ICMS", 0},
+                            { "pc_aliquota_PIS", 0},
+                            { "pc_aliquota_COFINS", 0 },
+                            { "pc_aliquota_IPI", 0 },
+                            { "pc_aliquota_ISS", 0 },
+                            { "cd_cfop", (bool)parametroExists["id_emitir_nf_mercantil"] ? cd_cfop : (object)DBNull.Value },
+                            { "dc_cfop", (bool)parametroExists["id_emitir_nf_mercantil"] ? dc_cfop_final : (object)DBNull.Value },
+                            { "pc_aliquota_aproximada", 0 },
+                            { "vl_aproximado", 0},
+                            { "pc_desconto_item", 0 }
+                        };
+                    var t_item_movimento_Result = await SQLServerService.Insert("T_ITEM_MOVIMENTO", item_movimento_dict, source);
+                    if (!t_item_movimento_Result.success) return BadRequest(t_item_movimento_Result.error);
+                }
+
+                //remover do estoque
+                if (venda.venda)
+                {
+
+                    if (item_escola != null)
+                    {
+                        var cd_item_escola = item_escola["cd_item_escola"];
+                        var qtde = item_escola["qt_estoque"];
+                        var qtde_item = int.Parse(qtde?.ToString() ?? "1");
+
+                        if ((qtde_item - 1) < 0)
+                        {
+                            estoque_ok = false;
+                            continue;
+                        }
+                        item_escola.Remove("cd_item_escola");
+                        item_escola["qt_estoque"] = int.Parse(qtde?.ToString() ?? "1") - 1;
+                        var t_item_escola_update = await SQLServerService.Update("T_ITEM_ESCOLA", item_escola, source, "cd_item_escola", cd_item_escola);
+                        if (!t_item_escola_update.success) return BadRequest(t_item_escola_update.error);
+
+                    }
+                }
+
+
+
             }
-
-
-
-          }
 
 
         }
@@ -2490,10 +2820,10 @@ namespace Simjob.Framework.Services.Api.Controllers
         var curso_contratos_get = await SQLServerService.GetList("T_CURSO_CONTRATO", null, "[cd_contrato]", $"[{model.cd_contrato}]", source);
         var cursosContrato_remover = curso_contratos_get.data.Select(x => int.Parse(x["cd_curso_contrato"].ToString())).ToList();
         // remover vinculos aluno turma
-        for(int i = 0; i < cursosContrato_remover.Count; i++)
+        for (int i = 0; i < cursosContrato_remover.Count; i++)
         {
-            var t_aluno_turma_result = await SQLServerService.Delete("T_ALUNO_TURMA", "cd_curso_contrato", cursosContrato_remover[i].ToString(), source);
-            if (!t_aluno_turma_result.success) return BadRequest("erro ao remover vinculo de t_aluno_turma e curso_contrato: " + t_aluno_turma_result.error);
+          var t_aluno_turma_result = await SQLServerService.Delete("T_ALUNO_TURMA", "cd_curso_contrato", cursosContrato_remover[i].ToString(), source);
+          if (!t_aluno_turma_result.success) return BadRequest("erro ao remover vinculo de t_aluno_turma e curso_contrato: " + t_aluno_turma_result.error);
         }
         //remover todos os cursos do contrato
         var t_curso_contrato_result = await SQLServerService.Delete("T_CURSO_CONTRATO", "cd_contrato", model.cd_contrato.ToString(), source);
@@ -2583,7 +2913,8 @@ namespace Simjob.Framework.Services.Api.Controllers
             if (primeiroEhPERS)
             {
               //remove campos que não serão inseridos
-              turmaExists.Remove("cd_turma");
+              //comentando para funcionar o cadastro de turma personalizada
+              //turmaExists.Remove("cd_turma");
               turmaExists.Remove("no_turma");
 
               string novo_nome = primeiroEhPERS
@@ -2861,7 +3192,11 @@ namespace Simjob.Framework.Services.Api.Controllers
       {
         if (model == null || model.cd_contrato == 0) return BadRequest("dados invalidos");
 
-        var query = $@"SELECT 1 FROM T_BAIXA_TITULO bt INNER JOIN T_titulo t ON bt.cd_titulo = t.cd_titulo WHERE t.cd_origem_titulo = {model.cd_contrato}";
+        // Validar se existem baixas que não sejam de bolsa (tipo 100)
+        var query = $@"SELECT 1 FROM T_BAIXA_TITULO bt
+                       INNER JOIN T_titulo t ON bt.cd_titulo = t.cd_titulo
+                       WHERE t.cd_origem_titulo = {model.cd_contrato}
+                       AND bt.cd_tipo_liquidacao != 100";
         var connectionString = $"Server={source.Host};Database={source.DbName};User Id={source.User};Password={source.Password};";
         bool possui_baixa = false;
         using (var connection = new SqlConnection(connectionString))
@@ -2883,8 +3218,30 @@ namespace Simjob.Framework.Services.Api.Controllers
         var filtrosContrato = new List<(string campo, object valor)> { new("cd_contrato", model.cd_contrato) };
         var matriculaExists = await SQLServerService.GetFirstByFields(source, "T_CONTRATO", filtrosContrato);
         if (matriculaExists == null) return NotFound("matricula não encontrata");
-        var titulosComBaixa = await SQLServerService.GetFirstByFields(source, "T_TITULO", new List<(string campo, object valor)> { ("cd_origem_titulo", model.cd_contrato), ("id_status_titulo", 2) });
-        if (titulosComBaixa != null) return BadRequest("Existem titulos com baixa, não é possivel atualizar os titulos");
+
+        // Verificar se há títulos com status baixado (2) mas que não sejam baixas de bolsa
+        var titulosComBaixaNaoBolsa = await SQLServerService.GetList("T_TITULO", null, "[cd_origem_titulo],[id_status_titulo]", $"[{model.cd_contrato}],[2]", source, SearchModeEnum.Equals);
+        if (titulosComBaixaNaoBolsa.success && titulosComBaixaNaoBolsa.data != null && titulosComBaixaNaoBolsa.data.Any())
+        {
+          // Verificar se essas baixas são apenas de bolsa
+          var cd_titulos_baixados = string.Join(",", titulosComBaixaNaoBolsa.data.Select(x => x["cd_titulo"].ToString()));
+          var baixas_nao_bolsa = await SQLServerService.GetList("T_BAIXA_TITULO", cd_titulos_baixados, "cd_titulo", null, source);
+
+          bool tem_baixa_nao_bolsa = false;
+          if (baixas_nao_bolsa.success && baixas_nao_bolsa.data != null && baixas_nao_bolsa.data.Any())
+          {
+            tem_baixa_nao_bolsa = baixas_nao_bolsa.data.Any(b =>
+              b.ContainsKey("cd_tipo_liquidacao") &&
+              b["cd_tipo_liquidacao"] != null &&
+              b["cd_tipo_liquidacao"].ToString() != "100"
+            );
+          }
+
+          if (tem_baixa_nao_bolsa)
+          {
+            return BadRequest("Existem titulos com baixa, não é possivel atualizar os titulos");
+          }
+        }
         var nm_matricula = matriculaExists["nm_matricula_contrato"];
         var cd_escola = matriculaExists["cd_pessoa_escola"];
 
@@ -2895,7 +3252,7 @@ namespace Simjob.Framework.Services.Api.Controllers
         var cd_plano_conta_mat = parametroExists["cd_plano_conta_mat"] != null ? parametroExists["cd_plano_conta_mat"].ToString() : "0";
         var cd_plano_conta_mtr = parametroExists["cd_plano_conta_material"] != null ? parametroExists["cd_plano_conta_material"].ToString() : "0";
 
-var responsavel = matriculaExists["cd_pessoa_responsavel"];
+        var responsavel = matriculaExists["cd_pessoa_responsavel"];
         if (responsavel == null || Convert.ToInt32(responsavel) == 0)
         {
           var cd_aluno = matriculaExists["cd_aluno"];
@@ -3293,41 +3650,6 @@ var responsavel = matriculaExists["cd_pessoa_responsavel"];
             //Adicionar Parcelas/material
             if (ad.id_tipo_aditamento == 5 || ad.id_tipo_aditamento == 8)
             {
-
-              //remover aditamentos e titulos vinculados aos aditamentos anteriores
-              if ((ad.TitulosMaterial != null && ad.TitulosMaterial.Any()) || (ad.TitulosMensalidade != null && ad.TitulosMensalidade.Any()))
-              {
-                //buscar todos os aditamentos ja vinculados a este contrato
-                if (aditamentos_contrato.success && aditamentos_contrato.data.Count() > 0)
-                {
-                  var aditamentosIds = string.Join(",", aditamentos_contrato.data.Select(x => x["cd_aditamento"].ToString()).ToList());
-                  var aditamentos_titulo = await SQLServerService.GetList("T_TITULO_ADITAMENTO", aditamentosIds, "cd_aditamento", null, source);
-                  if (aditamentos_titulo.success && aditamentos_titulo.data.Count() > 0)
-                  {
-                    var titulosIds = string.Join(",", aditamentos_titulo.data.Select(x => x["cd_titulo"].ToString()).ToList());
-
-                    // Validar se algum título está baixado antes de tentar deletar
-                    var titulosBaixados = await SQLServerService.GetList("T_BAIXA_TITULO", titulosIds, "cd_titulo", null, source);
-                    if (titulosBaixados.success && titulosBaixados.data.Any())
-                    {
-                      var parcelasBaixadas = string.Join(", ", aditamentos_titulo.data
-                        .Where(at => titulosBaixados.data.Any(tb => tb["cd_titulo"].ToString() == at["cd_titulo"].ToString()))
-                        .Select(at => {
-                          var titulo = aditamentos_titulo.data.FirstOrDefault(x => x["cd_titulo"].ToString() == at["cd_titulo"].ToString());
-                          return titulo != null ? titulo["nm_parcela_titulo"]?.ToString() : "?";
-                        }));
-
-                      return BadRequest($"Não é possível criar/editar este aditamento porque existem títulos que já foram baixados (parcelas: {parcelasBaixadas}). Para prosseguir, é necessário estornar as baixas desses títulos primeiro.");
-                    }
-
-                    //remover todos os titulos vinculados a estes aditamentos
-                    await SQLServerService.Delete("T_TITULO", "cd_titulo", titulosIds, source);
-                  }
-                  //remover todos os aditamentos vinculados a este contrato
-                  await SQLServerService.Delete("T_ADITAMENTO", "cd_aditamento", aditamentosIds, source);
-                }
-
-              }
 
               if (!ad.TitulosMensalidade.IsNullOrEmpty())
               {
@@ -3765,8 +4087,15 @@ var responsavel = matriculaExists["cd_pessoa_responsavel"];
           }
 
           if (dict_contrato.Any()) await SQLServerService.Update("T_CONTRATO", dict_contrato, source, "cd_contrato", cd_contrato);
-          var resultado = await BaixaAutomaticaBolsaAluno(int.Parse(cd_contrato.ToString()), source);
-          if (!resultado.success) return BadRequest(resultado.error);
+
+          // Não executar baixa automática se houver perda de bolsa/desconto (tipo 2 ou 7)
+          bool temPerdaBolsa = model.Any(ad => ad.id_tipo_aditamento == 2 || ad.id_tipo_aditamento == 7);
+          if (!temPerdaBolsa)
+          {
+            var resultado = await BaixaAutomaticaBolsaAluno(int.Parse(cd_contrato.ToString()), source);
+            if (!resultado.success) return BadRequest(resultado.error);
+          }
+
           return ResponseDefault();
         }
       }
@@ -3781,7 +4110,7 @@ var responsavel = matriculaExists["cd_pessoa_responsavel"];
     [Route("{cd_contrato}")]
     public async Task<IActionResult> Patch(int cd_contrato)
     {
-      var schemaName = "T_CONTRATO";
+      var schemaName = "T_Contrato";
       if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
       var schema = _schemaRepository.GetSchemaByField("name", schemaName);
       var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
@@ -3950,18 +4279,20 @@ var responsavel = matriculaExists["cd_pessoa_responsavel"];
     [Authorize]
     [HttpGet]
     [Route("gerar-contrato")]
-    public async Task<IActionResult> GerarContrato(int cd_contrato)
+    public async Task<IActionResult> GerarContrato(int cd_contrato, int cd_id_escola)
     {
       try
       {
-        var (arquivo, nomeContrato) = await _matriculaService.GerarContratoMatricula(cd_contrato);
+        var (arquivo, nomeContrato) = await _matriculaService.GerarContratoMatricula(cd_contrato, cd_id_escola);
 
-        return File(arquivo, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"{nomeContrato}.docx");
+        return File(arquivo, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"{nomeContrato}");
       }
       catch (Exception ex)
       {
+        _logger.LogError(ex, "Erro ao gerar contrato para cd_contrato: {cd_contrato}", cd_contrato);
         Console.WriteLine(ex);
-        return BadRequest(new {
+        return BadRequest(new
+        {
           error = ex.Message,
           stackTrace = ex.StackTrace,
           innerException = ex.InnerException?.Message,
@@ -4495,14 +4826,68 @@ var responsavel = matriculaExists["cd_pessoa_responsavel"];
     /// </summary>
     private async Task ValidarMatriculaDuplicada(MatriculaInputModel model, Source source)
     {
-      // Se não há turmas (contrato sem turma), validar por curso
-      if (model.Turmas == null || !model.Turmas.Any())
+      // Implementa a mesma lógica da rota ValidarMatriculaDuplicada
+      if (model.CursoContrato != null && model.CursoContrato.Any())
       {
-        await ValidarMatriculaDuplicadaSemTurma(model, source);
+        foreach (var cursoContrato in model.CursoContrato)
+        {
+          // Calcular data final se não fornecida
+          var dt_final_calculada = model.dt_final_contrato;
+          if (dt_final_calculada == null && !string.IsNullOrEmpty(model.cd_duracao_atual))
+          {
+            if (int.TryParse(model.cd_duracao_atual, out int duracao))
+            {
+              dt_final_calculada = await CalcularDataFinalContrato(cursoContrato.cd_curso, duracao, model.dt_inicial_contrato, source);
+            }
+          }
+
+          bool existeConflito = await VerificarMatriculaPorProdutoAluno(
+            Convert.ToInt32(model.cd_produto_atual ?? "0"),
+            model.cd_aluno,
+            Convert.ToInt32(model.cd_pessoa_escola ?? "0"),
+            model.dt_inicial_contrato,
+            cursoContrato.cd_curso,
+            0, // cd_contrato_ignorar = 0 pois ainda não existe
+            dt_final_calculada,
+            int.TryParse(model.cd_duracao_atual, out int dur) ? dur : 0,
+            source
+          );
+
+          if (existeConflito)
+          {
+            throw new Exception("Já existe matrícula para este curso/produto no período informado");
+          }
+        }
       }
       else
       {
-        await ValidarMatriculaDuplicadaComTurma(model, source);
+        // Calcular data final se não fornecida
+        var dt_final_calculada = model.dt_final_contrato;
+        if (dt_final_calculada == null && !string.IsNullOrEmpty(model.cd_duracao_atual))
+        {
+          if (int.TryParse(model.cd_duracao_atual, out int duracao) && int.TryParse(model.cd_curso_atual, out int curso))
+          {
+            dt_final_calculada = await CalcularDataFinalContrato(curso, duracao, model.dt_inicial_contrato, source);
+          }
+        }
+
+        // Validação para o curso atual apenas
+        bool existeConflito = await VerificarMatriculaPorProdutoAluno(
+          Convert.ToInt32(model.cd_produto_atual ?? "0"),
+          model.cd_aluno,
+          Convert.ToInt32(model.cd_pessoa_escola ?? "0"),
+          model.dt_inicial_contrato,
+          Convert.ToInt32(model.cd_curso_atual ?? "0"),
+          0, // cd_contrato_ignorar = 0 pois ainda não existe
+          dt_final_calculada,
+          int.TryParse(model.cd_duracao_atual, out int dur) ? dur : 0,
+          source
+        );
+
+        if (existeConflito)
+        {
+          throw new Exception("Já existe matrícula para este curso/produto no período informado");
+        }
       }
     }
 
@@ -4697,7 +5082,7 @@ var responsavel = matriculaExists["cd_pessoa_responsavel"];
     /// </summary>
     private async Task<bool> VerificarMatriculaPorProdutoAluno(
         int cd_produto, int cd_aluno, int cd_escola, DateTime? dt_inicial, int cd_curso,
-        int cd_contrato_excluir, DateTime? dt_final, int cd_duracao, Source source)
+        int cd_contrato_ignorar, DateTime? dt_final, int cd_duracao, Source source)
     {
       try
       {
@@ -4710,7 +5095,7 @@ var responsavel = matriculaExists["cd_pessoa_responsavel"];
         foreach (var contrato in contratos.data)
         {
           var cd_contrato = Convert.ToInt32(contrato["cd_contrato"]);
-          if (cd_contrato == cd_contrato_excluir) continue;
+          if (cd_contrato == cd_contrato_ignorar) continue;
 
           // Verificar se este contrato NÃO tem turmas
           var alunoTurmas = await SQLServerService.GetList("T_ALUNO_TURMA", null, null, "cd_aluno_turma", false,
@@ -4750,6 +5135,46 @@ var responsavel = matriculaExists["cd_pessoa_responsavel"];
         return false;
       }
     }
+
+    /// <summary>
+    /// Calcula a data final do contrato baseada na carga horária do curso e duração
+    /// Equivalente ao cálculo: dt_inicio_aula.Value.AddDays((carga_horaria/nmDuracao)*7)
+    /// </summary>
+    private async Task<DateTime> CalcularDataFinalContrato(int cd_curso, int cd_duracao, DateTime dt_inicial, Source source)
+    {
+      try
+      {
+        // Buscar carga horária do curso
+        var curso = await SQLServerService.GetFirstByFields(source, "T_CURSO",
+            new List<(string campo, object valor)> { ("cd_curso", cd_curso) });
+
+        // Buscar duração
+        var duracao = await SQLServerService.GetFirstByFields(source, "T_DURACAO", 
+            new List<(string campo, object valor)> { ("cd_duracao", cd_duracao) });
+
+        if (curso != null && duracao != null)
+        {
+          var carga_horaria = Convert.ToInt32(curso["nm_carga_horaria"] ?? "0");
+          var nm_duracao = Convert.ToDecimal(duracao["nm_duracao"] ?? "0");
+
+          if (nm_duracao > 0)
+          {
+            // Cálculo: (carga_horaria / nm_duracao) * 7 dias por semana
+            int diasTotais = (int)((carga_horaria / nm_duracao) * 7);
+            return dt_inicial.AddDays(diasTotais);
+          }
+        }
+
+        // Fallback: se não conseguir calcular, usar 12 meses (padrão do sistema)
+        return dt_inicial.AddMonths(12);
+      }
+      catch
+      {
+        // Fallback em caso de erro
+        return dt_inicial.AddMonths(12);
+      }
+    }
+
     private string FormatarData(object data)
     {
       if (data != null && DateTime.TryParse(data.ToString(), out DateTime dt))

@@ -409,7 +409,8 @@ namespace Simjob.Framework.Services.Api.Controllers
                         var titulo = await SQLServerService.GetFirstByFields(source, "T_TITULO", new List<(string campo, object valor)> { new("cd_titulo", baixa.cd_titulo) });
 
                         var titulo_baixa_dic = new Dictionary<string, object>();
-                        if ((int)titulo["id_natureza_titulo"] == 1)
+                        var id_natureza_titulo = titulo["id_natureza_titulo"].ToString();
+                        if (id_natureza_titulo == "1")
                         {
                             var simulacao_baixa = await _simulacaoBaixaService.SimularBaixaTitulo(titulo, model.dt_baixa, parametroExists, source);
                             titulo_baixa_dic = new Dictionary<string, object>
