@@ -865,10 +865,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
       { "«TipoMatricula»", tipoMatriculaTexto },
       { "«Modalidade»", regime?["no_regime"]?.ToString() ?? "" },
       { "«BolsaMaterial»", decimal.Parse(matriculaExists["pc_bolsa_material"]?.ToString() ?? "0").ToString("N2") + "%" },
-      { "«GradeValoresDescontosAntecipa»", "" },
-      { "«GradeValoresParcelas»", "" },
-      { "«GradeDescontosContrato»", "" },
-      { "«GradeValoresLiquidos»", "" }
+
     };
 
         var (success, arquivo, erro) = GerarContrato(nomeContrato, replacements, cdPessoaEscola);
@@ -901,16 +898,12 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
 
             // Preencher grade de descontos
             PreencherGradeDescontosAntecipacao(doc, descontosAntecipacao);
-            // ADICIONAR AQUI:
+
+            // Preencher grade de valores das parcelas (consolidando ME e MT por vencimento)
             if (parcelasTitulos != null && parcelasTitulos.Any())
             {
-              PreencherGradeValoresParcelas(doc, parcelasTitulos);
-            }
-
-            var parcelasMensalidade = await ObterParcelasDoContrato(source, cdContrato);
-            if (parcelasMensalidade != null && parcelasMensalidade.Any())
-            {
-              PreencherGradeValoresParcelas(doc, parcelasMensalidade);
+              var parcelasConsolidadas = ConsolidarTitulosPorVencimento(parcelasTitulos);
+              PreencherGradeValoresParcelas(doc, parcelasConsolidadas);
             }
 
           }
@@ -966,39 +959,62 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
       catch { return new List<Dictionary<string, object>>(); }
     }
 
-    private async Task<List<Dictionary<string, object>>> ObterParcelasDoContrato(Source source, int cdContrato)
+    /// <summary>
+    /// Consolida títulos de mensalidade (ME) e material (MT) agrupando por data de vencimento.
+    /// Isso replica a lógica do sistema antigo onde cada linha da tabela representa um vencimento
+    /// com os valores de material e mensalidade separados.
+    /// </summary>
+    private static List<Dictionary<string, object>> ConsolidarTitulosPorVencimento(List<Dictionary<string, object>> titulos)
     {
-      try
-      {
-        // Buscar títulos do contrato (mensalidade)
-        var titulos = await SQLServerService.GetList(
-          "T_TITULO",
-          null,
-          null,
-          "nm_parcela",
-          false,
-          null,
-          "[cd_origem_titulo],[id_origem_titulo],[dc_tipo_titulo]",
-          $"[{cdContrato}],[22],[ME]",
-          source,
-          SearchModeEnum.Equals,
-          null,
-          null
-        );
+      var resultado = new List<Dictionary<string, object>>();
 
-        if (titulos.success && titulos.data != null)
+      // Agrupa títulos por data de vencimento
+      var titulosPorVencimento = titulos
+          .OrderBy(t => Convert.ToDateTime(t["dt_vcto_titulo"]))
+          .ThenBy(t => Convert.ToInt32(t["nm_parcela_titulo"] ?? t["nm_parcela"] ?? 0))
+          .GroupBy(t => Convert.ToDateTime(t["dt_vcto_titulo"]).Date);
+
+      foreach (var grupo in titulosPorVencimento)
+      {
+        DateTime dtVcto = grupo.Key;
+
+        // Separa valores de material e mensalidade
+        decimal vlMaterial = grupo
+            .Where(t => t["dc_tipo_titulo"]?.ToString() == "MT")
+            .Sum(t => Convert.ToDecimal(t["vl_titulo"] ?? 0));
+
+        decimal vlMensalidade = grupo
+            .Where(t => t["dc_tipo_titulo"]?.ToString() == "ME")
+            .Sum(t => Convert.ToDecimal(t["vl_titulo"] ?? 0));
+
+        // Pega o número da parcela (pode vir como nm_parcela_titulo ou nm_parcela)
+        var primeiroParcela = grupo.FirstOrDefault();
+        int nmParcela = 0;
+        if (primeiroParcela != null)
         {
-          return titulos.data.OrderBy(t => Convert.ToInt32(t["nm_parcela"] ?? 0)).ToList();
+          if (primeiroParcela.ContainsKey("nm_parcela_titulo") && primeiroParcela["nm_parcela_titulo"] != null)
+            nmParcela = Convert.ToInt32(primeiroParcela["nm_parcela_titulo"]);
+          else if (primeiroParcela.ContainsKey("nm_parcela") && primeiroParcela["nm_parcela"] != null)
+            nmParcela = Convert.ToInt32(primeiroParcela["nm_parcela"]);
         }
 
-        return new List<Dictionary<string, object>>();
+        // Cria um dicionário consolidado para este vencimento
+        var parcelaConsolidada = new Dictionary<string, object>
+        {
+            { "dt_vcto_titulo", dtVcto },
+            { "nm_parcela", nmParcela },
+            { "vl_material", vlMaterial },
+            { "vl_mensalidade", vlMensalidade },
+            { "vl_total", vlMaterial + vlMensalidade },
+            { "dc_tipo_titulo", "CONSOLIDADO" } // Marca como consolidado
+        };
+
+        resultado.Add(parcelaConsolidada);
       }
-      catch (Exception ex)
-      {
-        Console.WriteLine($"[ObterParcelasDoContratoErro]: {ex.Message}");
-        return new List<Dictionary<string, object>>();
-      }
+
+      return resultado;
     }
+
     private (bool success, MemoryStream? arquivo, string? erro) GerarContrato(string nomeContrato, Dictionary<string, string> replacements, int? cd_pessoa_escola = null)
     {
       try
@@ -2059,80 +2075,217 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
         WordprocessingDocument doc,
         List<Dictionary<string, object>> parcelas)
     {
-      var body = doc.MainDocumentPart.Document.Body;
-      string tag = "GradeValoresParcelas";
-
-      var paragrafoComTag = body.Descendants<Paragraph>()
-          .FirstOrDefault(p => p.InnerText.Contains($"«{tag}»") ||
-                              p.InnerText.Contains($"<{tag}>"));
-
-      if (paragrafoComTag != null)
+      try
       {
-        if (parcelas == null || parcelas.Count == 0)
+        Console.WriteLine("[PreencherGradeValoresParcelas] Iniciando...");
+        Console.WriteLine($"[PreencherGradeValoresParcelas] Parcelas recebidas: {parcelas?.Count ?? 0}");
+
+        var body = doc.MainDocumentPart.Document.Body;
+        string tag = "GradeValoresParcelas";
+
+        // Log de todos os parágrafos para debug
+        var todosParagrafos = body.Descendants<Paragraph>().ToList();
+        Console.WriteLine($"[PreencherGradeValoresParcelas] Total de parágrafos no documento: {todosParagrafos.Count}");
+
+        // MÉTODO 1: Procurar pela tag como texto simples
+        var paragrafoComTag = body.Descendants<Paragraph>()
+            .FirstOrDefault(p => p.InnerText.Contains($"«{tag}»") ||
+                                p.InnerText.Contains($"<{tag}>") ||
+                                p.InnerText.Contains(tag));
+
+        // MÉTODO 2: Se não encontrou, procurar em SimpleFields (campos do Word)
+        if (paragrafoComTag == null)
         {
-          var paragrafoMensagem = new Paragraph(new Run(new Text("Não há parcelas a exibir.")));
-          paragrafoComTag.InsertAfterSelf(paragrafoMensagem);
+          Console.WriteLine($"[PreencherGradeValoresParcelas] Tag não encontrada como texto, buscando em campos...");
+
+          // Buscar em SimpleField
+          var campoSimples = body.Descendants<SimpleField>()
+              .FirstOrDefault(f => f.Instruction?.Value?.Contains(tag) == true);
+
+          if (campoSimples != null)
+          {
+            Console.WriteLine($"[PreencherGradeValoresParcelas] Tag encontrada em SimpleField: {campoSimples.Instruction?.Value}");
+            paragrafoComTag = campoSimples.Ancestors<Paragraph>().FirstOrDefault();
+          }
+        }
+
+        // MÉTODO 3: Se ainda não encontrou, procurar em FieldCode (campos complexos)
+        if (paragrafoComTag == null)
+        {
+          Console.WriteLine($"[PreencherGradeValoresParcelas] Tag não encontrada em SimpleField, buscando em FieldCode...");
+
+          var campoComplexo = body.Descendants<FieldCode>()
+              .FirstOrDefault(f => f.Text?.Contains(tag) == true);
+
+          if (campoComplexo != null)
+          {
+            Console.WriteLine($"[PreencherGradeValoresParcelas] Tag encontrada em FieldCode: {campoComplexo.Text}");
+            paragrafoComTag = campoComplexo.Ancestors<Paragraph>().FirstOrDefault();
+          }
+        }
+
+        // MÉTODO 4: Busca case-insensitive em todo o texto
+        if (paragrafoComTag == null)
+        {
+          Console.WriteLine($"[PreencherGradeValoresParcelas] Buscando case-insensitive...");
+
+          paragrafoComTag = body.Descendants<Paragraph>()
+              .FirstOrDefault(p => p.InnerText.ToLower().Contains(tag.ToLower()));
+
+          if (paragrafoComTag != null)
+          {
+            Console.WriteLine($"[PreencherGradeValoresParcelas] Tag encontrada (case-insensitive): {paragrafoComTag.InnerText}");
+          }
+        }
+
+        if (paragrafoComTag != null)
+        {
+          Console.WriteLine($"[PreencherGradeValoresParcelas] Tag encontrada!");
+          Console.WriteLine($"[PreencherGradeValoresParcelas] Conteúdo do parágrafo: {paragrafoComTag.InnerText.Substring(0, Math.Min(100, paragrafoComTag.InnerText.Length))}");
+
+          if (parcelas == null || parcelas.Count == 0)
+          {
+            Console.WriteLine("[PreencherGradeValoresParcelas] Nenhuma parcela para exibir");
+            var paragrafoMensagem = new Paragraph(new Run(new Text("Não há parcelas a exibir.")));
+            paragrafoComTag.InsertAfterSelf(paragrafoMensagem);
+          }
+          else
+          {
+            Console.WriteLine($"[PreencherGradeValoresParcelas] Criando tabela com {parcelas.Count} parcelas...");
+            var tabela = CriarTabelaValoresParcelas(parcelas);
+            paragrafoComTag.InsertAfterSelf(tabela);
+            Console.WriteLine("[PreencherGradeValoresParcelas] Tabela inserida com sucesso!");
+          }
+
+          // Remover o parágrafo inteiro (incluindo campos)
+          paragrafoComTag.Remove();
+          Console.WriteLine("[PreencherGradeValoresParcelas] Tag removida");
         }
         else
         {
-          var tabela = CriarTabelaValoresParcelas(parcelas);
-          paragrafoComTag.InsertAfterSelf(tabela);
+          Console.WriteLine($"[PreencherGradeValoresParcelas] AVISO: Tag '{tag}' NÃO encontrada no documento!");
+
+          // Log de debug dos primeiros parágrafos
+          var primeiros = todosParagrafos.Take(20).Select(p => p.InnerText).ToList();
+          Console.WriteLine("[PreencherGradeValoresParcelas] Primeiros 20 parágrafos:");
+          for (int i = 0; i < primeiros.Count; i++)
+          {
+            var texto = primeiros[i];
+            if (texto.Length > 150) texto = texto.Substring(0, 150) + "...";
+            Console.WriteLine($"  [{i}]: {texto}");
+          }
+
+          // Log de campos encontrados
+          var todosSimpleFields = body.Descendants<SimpleField>().ToList();
+          var todosFieldCodes = body.Descendants<FieldCode>().ToList();
+          Console.WriteLine($"[PreencherGradeValoresParcelas] Total de SimpleFields: {todosSimpleFields.Count}");
+          Console.WriteLine($"[PreencherGradeValoresParcelas] Total de FieldCodes: {todosFieldCodes.Count}");
+
+          if (todosSimpleFields.Any())
+          {
+            Console.WriteLine("[PreencherGradeValoresParcelas] Primeiros SimpleFields:");
+            foreach (var sf in todosSimpleFields.Take(10))
+            {
+              Console.WriteLine($"  - {sf.Instruction?.Value}");
+            }
+          }
         }
 
-        paragrafoComTag.Remove();
+        doc.MainDocumentPart.Document.Save();
+        Console.WriteLine("[PreencherGradeValoresParcelas] Documento salvo");
       }
-
-      doc.MainDocumentPart.Document.Save();
+      catch (Exception ex)
+      {
+        Console.WriteLine($"[PreencherGradeValoresParcelas] ERRO: {ex.Message}");
+        Console.WriteLine($"[PreencherGradeValoresParcelas] StackTrace: {ex.StackTrace}");
+        throw;
+      }
     }
     private static Table CriarTabelaValoresParcelas(List<Dictionary<string, object>> parcelas)
     {
-      var table = new Table();
-
-      var tableProperties = new TableProperties(
-        new TableBorders(
-          new TopBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
-          new BottomBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
-          new LeftBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
-          new RightBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
-          new InsideHorizontalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
-          new InsideVerticalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 }
-        ),
-        new TableWidth { Width = "5000", Type = TableWidthUnitValues.Pct }
-      );
-      table.AppendChild(tableProperties);
-
-      // Cabeçalho igual ao legado
-      var headerRow = new TableRow();
-      headerRow.Append(
-        CriarCelula("VENCIMENTO", true),
-        CriarCelula("DIA", true),
-        CriarCelula("MATERIAL (R$)", true),
-        CriarCelula("PARCELA (R$)", true),
-        CriarCelula("TOTAL (R$)", true)
-      );
-      table.Append(headerRow);
-
-      // Dados
-      foreach (var titulo in parcelas)
+      try
       {
-        DateTime dtVcto = Convert.ToDateTime(titulo["dt_vcto_titulo"]);
-        int dia = dtVcto.Day;
-        decimal vlMaterial = titulo["dc_tipo_titulo"]?.ToString() == "MT" ? Convert.ToDecimal(titulo["vl_titulo"] ?? 0) : 0;
-        decimal vlParcela = titulo["dc_tipo_titulo"]?.ToString() == "ME" ? Convert.ToDecimal(titulo["vl_titulo"] ?? 0) : 0;
-        decimal vlTotal = vlMaterial + vlParcela;
+        Console.WriteLine($"[CriarTabelaValoresParcelas] Criando tabela com {parcelas.Count} parcelas");
 
-        var dataRow = new TableRow();
-        dataRow.Append(
-          CriarCelula(dtVcto.ToString("dd/MM/yyyy")),
-          CriarCelula(dia.ToString()),
-          CriarCelula($"R$ {vlMaterial:N2}"),
-          CriarCelula($"R$ {vlParcela:N2}"),
-          CriarCelula($"R$ {vlTotal:N2}")
+        var table = new Table();
+
+        var tableProperties = new TableProperties(
+          new TableBorders(
+            new TopBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+            new BottomBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+            new LeftBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+            new RightBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+            new InsideHorizontalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+            new InsideVerticalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 }
+          ),
+          new TableWidth { Width = "5000", Type = TableWidthUnitValues.Pct }
         );
-        table.Append(dataRow);
-      }
+        table.AppendChild(tableProperties);
 
-      return table;
+        // Cabeçalho igual ao legado
+        var headerRow = new TableRow();
+        headerRow.Append(
+          CriarCelula("VENCIMENTO", true),
+          CriarCelula("DIA", true),
+          CriarCelula("MATERIAL (R$)", true),
+          CriarCelula("PARCELA (R$)", true),
+          CriarCelula("TOTAL (R$)", true)
+        );
+        table.Append(headerRow);
+        Console.WriteLine("[CriarTabelaValoresParcelas] Cabeçalho criado");
+
+        // Dados
+        int linhaCount = 0;
+        foreach (var parcela in parcelas)
+        {
+          DateTime dtVcto = Convert.ToDateTime(parcela["dt_vcto_titulo"]);
+          int dia = dtVcto.Day;
+
+          // Verifica se é consolidado ou individual
+          decimal vlMaterial = 0;
+          decimal vlMensalidade = 0;
+
+          string tipoParcela = parcela["dc_tipo_titulo"]?.ToString() ?? "DESCONHECIDO";
+          Console.WriteLine($"[CriarTabelaValoresParcelas] Linha {linhaCount + 1}: Tipo={tipoParcela}, Data={dtVcto:dd/MM/yyyy}");
+
+          if (tipoParcela == "CONSOLIDADO")
+          {
+            // Dados já consolidados
+            vlMaterial = Convert.ToDecimal(parcela["vl_material"] ?? 0);
+            vlMensalidade = Convert.ToDecimal(parcela["vl_mensalidade"] ?? 0);
+            Console.WriteLine($"[CriarTabelaValoresParcelas]   Material: {vlMaterial:N2}, Mensalidade: {vlMensalidade:N2}");
+          }
+          else
+          {
+            // Dados individuais (mantém compatibilidade)
+            vlMaterial = tipoParcela == "MT" ? Convert.ToDecimal(parcela["vl_titulo"] ?? 0) : 0;
+            vlMensalidade = tipoParcela == "ME" ? Convert.ToDecimal(parcela["vl_titulo"] ?? 0) : 0;
+            Console.WriteLine($"[CriarTabelaValoresParcelas]   Material: {vlMaterial:N2}, Mensalidade: {vlMensalidade:N2} (Individual)");
+          }
+
+          decimal vlTotal = vlMaterial + vlMensalidade;
+
+          var dataRow = new TableRow();
+          dataRow.Append(
+            CriarCelula(dtVcto.ToString("dd/MM/yyyy")),
+            CriarCelula(dia.ToString()),
+            CriarCelula($"R$ {vlMaterial:N2}"),
+            CriarCelula($"R$ {vlMensalidade:N2}"),
+            CriarCelula($"R$ {vlTotal:N2}")
+          );
+          table.Append(dataRow);
+          linhaCount++;
+        }
+
+        Console.WriteLine($"[CriarTabelaValoresParcelas] Tabela criada com sucesso! Total de linhas de dados: {linhaCount}");
+        return table;
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"[CriarTabelaValoresParcelas] ERRO: {ex.Message}");
+        Console.WriteLine($"[CriarTabelaValoresParcelas] StackTrace: {ex.StackTrace}");
+        throw;
+      }
     }
     /// <summary>
     /// Preenche a grade de Descontos do Contrato (DESCONTOS APLICADOS)
