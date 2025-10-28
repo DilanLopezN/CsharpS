@@ -843,7 +843,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                         Root = false,
                         // Manter os valores atuais do usuário para não alterá-los
                         Name = user.Name,
-                        Email = user.UserName,
+                        UserName = user.UserName,
                         Telefone = user.Telefone,
                         CompanySiteIdDefault = user.CompanySiteIdDefault,
                         CompanySiteIds = user.CompanySiteIds,

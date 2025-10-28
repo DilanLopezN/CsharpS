@@ -71,7 +71,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                             cd_pessoa = x["cd_pessoa"],
                             no_pessoa = x["no_pessoa"],
                             nm_cpf = x["nm_cpf"],
-                            nm_cnpj = x["nm_cnpj2"],
+                            nm_cnpj = x["nm_cnpj"] ?? x["nm_cnpj2"],
                             Email = x["email"],
                             Telefone = x["telefone"],
                             Celular = x["celular"],
@@ -621,7 +621,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                     var complemento = enderecoExists["dc_compl_endereco"]?.ToString() ?? "";
                     var numero = enderecoExists["dc_num_endereco"]?.ToString() ?? "";
                     var cd_tipo_logradouro = enderecoExists["cd_tipo_logradouro"]?.ToString() ?? "";
-                    var infosCep = await BuscarCEP(cep.ToString(), numero, complemento, cd_tipo_logradouro, source);
+                    var infosCep = await BuscarCEP(cep?.ToString(), numero, complemento, cd_tipo_logradouro, source);
                     if (infosCep != null)
                     {
                         retorno.Add("endereco", infosCep);

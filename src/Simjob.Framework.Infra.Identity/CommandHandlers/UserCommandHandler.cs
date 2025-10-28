@@ -63,7 +63,7 @@ namespace Simjob.Framework.Infra.Identity.CommandHandlers
             {
                 Id = request.UserId,
                 Name = request.Name,
-                UserName = request.Email,
+                UserName = request.UserName,
                 Telefone = request.Telefone,
                 CompanySiteIdDefault = request.CompanySiteIdDefault,
                 CompanySiteIds = request.CompanySiteIds,
@@ -73,8 +73,7 @@ namespace Simjob.Framework.Infra.Identity.CommandHandlers
                 ControlAccess = request.ControlAccess,
                 LogonAzure = request.LogonAzure,
                 UpdateBy = request.UpdateBy,
-                Cd_pessoa = request.cd_pessoa,
-                Cd_usuario = request.cd_usuario
+                Cd_pessoa = request.cd_pessoa
             };
 
             _userService.UpdateGroup(entity, request.GroupId);

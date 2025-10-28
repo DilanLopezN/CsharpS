@@ -1644,12 +1644,26 @@ namespace Simjob.Framework.Services.Api.Controllers
             return (true, null);
         }
 
+        /// <summary>
+        /// Busca caixas com filtros opcionais
+        /// </summary>
+        /// <param name="cd_empresa">Código da empresa</param>
+        /// <param name="cd_pessoa">Código da pessoa (funcionário)</param>
+        /// <param name="status">Array de status no formato string "[0,1,2]" para filtrar por múltiplos status</param>
+        /// <param name="dc_caixa">Descrição do caixa (busca parcial)</param>
+        /// <param name="dt_inicio">Data de início do período</param>
+        /// <param name="dt_fim">Data de fim do período</param>
+        /// <param name="page">Página para paginação</param>
+        /// <param name="limit">Limite de registros por página</param>
+        /// <param name="sortField">Campo para ordenação</param>
+        /// <param name="sortDesc">Ordenação decrescente</param>
+        /// <returns>Lista de caixas com filtros aplicados</returns>
         [Authorize]
         [HttpGet("")]
         public async Task<IActionResult> GetCaixas(
             int? cd_empresa = null,
             int? cd_pessoa = null, 
-            int? status = null,
+            string status = null,
             string dc_caixa = null,
             DateTime? dt_inicio = null,
             DateTime? dt_fim = null,
@@ -1690,11 +1704,33 @@ namespace Simjob.Framework.Services.Api.Controllers
                     parameters.Add(("@cd_pessoa", cd_pessoa.Value));
                 }
 
-                // Filtro por status
-                if (status.HasValue)
+                // Filtro por status - parse da string "[0,1,2]"
+                if (!string.IsNullOrWhiteSpace(status))
                 {
-                    whereConditions.Add("c.id_status_caixa = @status");
-                    parameters.Add(("@status", status.Value));
+                    try
+                    {
+                        // Remove os colchetes e faz split por vírgula
+                        var statusClean = status.Trim('[', ']');
+                        var statusArray = statusClean.Split(',')
+                            .Where(s => !string.IsNullOrWhiteSpace(s))
+                            .Select(s => int.Parse(s.Trim()))
+                            .ToArray();
+
+                        if (statusArray.Length > 0)
+                        {
+                            var statusPlaceholders = string.Join(",", statusArray.Select((_, index) => $"@status{index}"));
+                            whereConditions.Add($"c.id_status_caixa IN ({statusPlaceholders})");
+                            
+                            for (int i = 0; i < statusArray.Length; i++)
+                            {
+                                parameters.Add(($"@status{i}", statusArray[i]));
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(new { message = "Formato do parâmetro 'status' inválido. Use o formato: [0,1,2]", error = ex.Message });
+                    }
                 }
 
                 // Filtro por dc_caixa
@@ -1850,10 +1886,27 @@ namespace Simjob.Framework.Services.Api.Controllers
                 if (!string.IsNullOrWhiteSpace(dc_caixa)) filtrosAplicados["dc_caixa"] = dc_caixa;
                 if (dt_inicio.HasValue) filtrosAplicados["dt_inicio"] = dt_inicio.Value.ToString("yyyy-MM-dd");
                 if (dt_fim.HasValue) filtrosAplicados["dt_fim"] = dt_fim.Value.ToString("yyyy-MM-dd");
-                if (status.HasValue) 
+                if (!string.IsNullOrWhiteSpace(status)) 
                 {
-                    var statusEnum = (StatusCaixa)status.Value;
-                    filtrosAplicados["status"] = new { id = status.Value, descricao = statusEnum.GetDescription() };
+                    try
+                    {
+                        var statusClean = status.Trim('[', ']');
+                        var statusArray = statusClean.Split(',')
+                            .Where(s => !string.IsNullOrWhiteSpace(s))
+                            .Select(s => int.Parse(s.Trim()))
+                            .ToArray();
+
+                        var statusList = statusArray.Select(s => {
+                            var statusEnum = (StatusCaixa)s;
+                            return new { id = s, descricao = statusEnum.GetDescription() };
+                        }).ToArray();
+                        filtrosAplicados["status"] = statusList;
+                    }
+                    catch
+                    {
+                        // Se houver erro no parse, ignora o filtro na resposta
+                        filtrosAplicados["status"] = status;
+                    }
                 }
 
                 return ResponseDefault(new

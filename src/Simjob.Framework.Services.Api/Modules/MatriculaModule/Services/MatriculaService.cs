@@ -16,7 +16,9 @@ using Microsoft.AspNetCore.Hosting;
 using MongoDB.Bson.IO;
 using Newtonsoft.Json;
 using SendGrid.Helpers.Errors.Model;
-
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
 {
@@ -148,28 +150,45 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
             dataNascResponsavel = dt_nasc_resp.ToString("dd/MM/yyyy");
           }
         }
-
-        var endereco_responsavel = await SQLServerService.GetFirstByFields(source, "T_ENDERECO", new List<(string campo, object valor)> { new("cd_pessoa", cd_responsavel) });
+        var endereco_responsavel = await SQLServerService.GetFirstByFields(source, "T_ENDERECO",
+          new List<(string campo, object valor)> { new("cd_pessoa", cd_responsavel) });
         var enderecoResponsavel = "";
+
         if (endereco_responsavel != null)
         {
-          if (endereco_responsavel.ContainsKey("cd_loc_logradouro") && endereco_responsavel["cd_loc_logradouro"] != null)
+          // NOVO: Buscar TIPO de logradouro (Rua, Avenida, etc.)
+          if (endereco_responsavel.ContainsKey("cd_tipo_logradouro") &&
+              endereco_responsavel["cd_tipo_logradouro"] != null)
           {
-            var filtroLogradouro = new List<(string campo, object valor)> { new("cd_localidade", endereco_responsavel["cd_loc_logradouro"].ToString()) };
+            var filtroTipoLogradouro = new List<(string campo, object valor)>
+            { new("cd_localidade", endereco_responsavel["cd_tipo_logradouro"].ToString()) };
+            var tipoLogradouroExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtroTipoLogradouro);
+            if (tipoLogradouroExists != null && tipoLogradouroExists.ContainsKey("no_localidade"))
+            {
+              enderecoResponsavel = $"{tipoLogradouroExists["no_localidade"]?.ToString() ?? ""} ";
+            }
+          }
+
+          // Buscar nome do logradouro
+          if (endereco_responsavel.ContainsKey("cd_loc_logradouro") &&
+              endereco_responsavel["cd_loc_logradouro"] != null)
+          {
+            var filtroLogradouro = new List<(string campo, object valor)>
+            { new("cd_localidade", endereco_responsavel["cd_loc_logradouro"].ToString()) };
             var logradouroExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtroLogradouro);
             if (logradouroExists != null && logradouroExists.ContainsKey("no_localidade"))
             {
-              enderecoResponsavel = $"{logradouroExists["no_localidade"]?.ToString() ?? ""} ";
+              enderecoResponsavel += $"{logradouroExists["no_localidade"]?.ToString() ?? ""}";
             }
           }
 
           var numEndereco = endereco_responsavel["dc_num_endereco"]?.ToString() ?? "";
           if (!String.IsNullOrEmpty(numEndereco))
-            enderecoResponsavel += " Nº " + numEndereco;
+            enderecoResponsavel += ", Nº " + numEndereco;
 
           var complEndereco = endereco_responsavel["dc_compl_endereco"]?.ToString() ?? "";
           if (!String.IsNullOrEmpty(complEndereco))
-            enderecoResponsavel += " / " + complEndereco;
+            enderecoResponsavel += ", " + complEndereco;
 
           var cep = endereco_responsavel["dc_num_cep"]?.ToString() ?? "";
           if (!String.IsNullOrEmpty(cep))
@@ -445,6 +464,16 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
         var titulosAbertos = await SQLServerService.GetList("T_TITULO", null, "[cd_origem_titulo],[id_status_titulo]", $"[{cdContrato}],[1]", source, SearchModeEnum.Equals);
         var statusCnabTitulo = new List<int> { 0, 1 };
 
+        var descontosContrato_result = await SQLServerService.GetList(
+    "T_DESCONTO_CONTRATO",
+    null,
+    "cd_contrato",
+    cdContrato.ToString(),
+    source
+);
+        var descontosContrato = descontosContrato_result.success && descontosContrato_result.data != null
+            ? descontosContrato_result.data.Where(d => Convert.ToBoolean(d["id_desconto_ativo"] ?? false)).ToList()
+            : new List<Dictionary<string, object>>();
         var aditamentos_result = await SQLServerService.GetList("T_ADITAMENTO", null, "[cd_contrato]", $"[{cdContrato}]", source, SearchModeEnum.Equals);
         var aditamentos = aditamentos_result.success ? aditamentos_result.data : new List<Dictionary<string, object>>();
 
@@ -717,6 +746,18 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
         var dataFimContrato = FormatarData(matriculaExists["dt_final_contrato"]);
         var dataMatriculaContrato = FormatarData(matriculaExists["dt_matricula_contrato"]);
 
+        var tipoMatriculaTexto = "";
+        var idTipoMatricula = matriculaExists["id_tipo_matricula"];
+        if (idTipoMatricula != null)
+        {
+          int tipoId = Convert.ToInt32(idTipoMatricula);
+          tipoMatriculaTexto = tipoId switch
+          {
+            1 => "Matrícula",
+            _ => "Rematrícula"
+          };
+        }
+
         var replacements = new Dictionary<string, string>
     {
       { "«NomeEscola»", nomeEscola },
@@ -785,17 +826,15 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
       { "«NumeroContrato»", matriculaExists["nm_contrato"]?.ToString() ?? "" },
       { "«OpcoesPagamento»", tipoFinanceiro?["dc_tipo_financeiro"]?.ToString() ?? "" },
       { "«TipoFinanceiroTaxa»", tipoFinanceiro?["dc_tipo_financeiro"]?.ToString() ?? "" },
-      { "«TipoMatricula»", matriculaExists["id_tipo_matricula"]?.ToString() ?? "" },
+      { "«TipoMatricula»", tipoMatriculaTexto },
       { "«Modalidade»", regime?["no_regime"]?.ToString() ?? "" },
       { "«BolsaMaterial»", decimal.Parse(matriculaExists["vl_material_contrato"]?.ToString() ?? "0").ToString("N2") },
-      { "«GradeCursos»", "" },
+      { "«GradeValoresDescontosAntecipa»", "" },
       { "«GradeValoresParcelas»", "" },
-      { "«GradeDescontosAntecip»", "" },
       { "«GradeDescontosContrato»", "" },
       { "«GradeValoresLiquidos»", "" }
     };
 
-        Console.WriteLine("Replacements para o contrato:", replacements);
         var (success, arquivo, erro) = GerarContrato(nomeContrato, replacements, cdPessoaEscola);
 
         if (!success)
@@ -803,7 +842,50 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
           throw new Exception(erro);
         }
 
-        return (arquivo, nomeContrato);
+        // Buscar dados para as grades
+        var cursosContrato = await ObterCursosDoContrato(source, cdContrato);
+        var descontosAntecipacao = await ObterDescontosAntecipacao(source, cdContrato, cd_pessoa_escola);
+
+        // Criar um novo MemoryStream que não será fechado automaticamente
+        var novoArquivo = new MemoryStream();
+
+        // Copiar o arquivo original para o novo stream
+        arquivo.Position = 0;
+        await arquivo.CopyToAsync(novoArquivo);
+        novoArquivo.Position = 0;
+
+        // Abrir documento e preencher grades
+        using (var doc = WordprocessingDocument.Open(novoArquivo, true))
+        {
+          try
+          {
+            // Preencher grade de cursos
+            PreencherGradeCursos(doc, cursosContrato);
+
+            // Preencher grade de descontos
+            PreencherGradeDescontosAntecipacao(doc, descontosAntecipacao);
+
+          }
+          catch (Exception ex)
+          {
+            Console.WriteLine("[PreencherGradesErro]: " + ex);
+          }
+
+          try
+          {
+            ContratoFormatacao.AplicarFormatacaoPadrao(doc);
+            doc.MainDocumentPart.Document.Save();
+          }
+          catch (Exception ex)
+          {
+            Console.WriteLine("[FormatarFinalErro]: " + ex);
+          }
+        }
+
+        // Resetar posição para o início
+        novoArquivo.Position = 0;
+
+        return (novoArquivo, nomeContrato);
       }
       catch (Exception ex)
       {
@@ -1039,40 +1121,6 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
 
 
 
-    // OPCIONAL: Método auxiliar para listar todos os templates disponíveis (útil para debug)
-    private List<string> ListarTemplatesDisponiveis()
-    {
-      try
-      {
-        string webRootPath = _webHostEnvironment.WebRootPath;
-        string caminhoPastaBase = Path.Combine(webRootPath, "Contratos");
-
-        if (!Directory.Exists(caminhoPastaBase))
-        {
-          return new List<string>();
-        }
-
-        var templates = Directory.GetFiles(caminhoPastaBase, "*.*", SearchOption.AllDirectories)
-          .Where(f => f.EndsWith(".docx", StringComparison.OrdinalIgnoreCase) ||
-                      f.EndsWith(".dotx", StringComparison.OrdinalIgnoreCase))
-          .Select(f => Path.GetRelativePath(caminhoPastaBase, f))
-          .ToList();
-
-        Console.WriteLine($"[INFO] Templates disponíveis: {templates.Count}");
-        foreach (var template in templates)
-        {
-          Console.WriteLine($"  - {template}");
-        }
-
-        return templates;
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine($"[ERRO] Erro ao listar templates: {ex.Message}");
-        return new List<string>();
-      }
-    }
-
 
 
     private string FormatarData(object data)
@@ -1304,57 +1352,872 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
     /// <summary>
     /// Método auxiliar para listar templates disponíveis de uma escola (útil para debug)
     /// </summary>
-    private async Task<List<Dictionary<string, object>>> ListarTemplatesEscola(int cd_pessoa_escola, Source source)
+
+    public static class ContratoFormatacao
+    {
+      public const string FONTE_PADRAO = "Arial";
+      public const int TAMANHO_FONTE_NORMAL = 10;
+
+      public static void AplicarFormatacaoPadrao(WordprocessingDocument doc)
+      {
+        var body = doc.MainDocumentPart.Document.Body;
+
+        // Formatar todos os runs do documento
+        foreach (var run in body.Descendants<Run>())
+        {
+          if (run.RunProperties == null)
+            run.RunProperties = new RunProperties();
+
+          // Remove formatações antigas de fonte
+          run.RunProperties.RemoveAllChildren<RunFonts>();
+          run.RunProperties.RemoveAllChildren<FontSize>();
+
+          // Aplica nova formatação
+          run.RunProperties.Append(new RunFonts()
+          {
+            Ascii = FONTE_PADRAO,
+            HighAnsi = FONTE_PADRAO,
+            ComplexScript = FONTE_PADRAO
+          });
+
+          run.RunProperties.Append(new FontSize()
+          {
+            Val = (TAMANHO_FONTE_NORMAL * 2).ToString() // Word usa half-points
+          });
+        }
+
+        doc.MainDocumentPart.Document.Save();
+      }
+    }
+
+    private async Task<List<Dictionary<string, object>>> ObterCursosDoContrato(
+       Source source,
+      int cdContrato)
+    {
+      var query = @"
+        SELECT
+            CC.cd_curso_contrato,
+            C.no_curso,
+            D.dc_duracao,
+            R.no_regime,
+            CC.vl_curso_contrato,
+            CC.nm_parcelas_mensalidade,
+            CC.vl_parcela_contrato,
+            CC.pc_desconto_contrato,
+            CC.vl_desconto_contrato,
+            CC.vl_parcela_liquida,
+            CC.vl_curso_liquido
+        FROM T_CURSO_CONTRATO CC
+        INNER JOIN T_CURSO C ON C.cd_curso = CC.cd_curso
+        INNER JOIN T_DURACAO D ON D.cd_duracao = CC.cd_duracao
+        LEFT JOIN T_REGIME R ON R.cd_regime = CC.cd_regime
+        WHERE CC.cd_contrato = @cdContrato
+        ORDER BY CC.cd_curso_contrato";
+
+      var parameters = new Dictionary<string, object>
+    {
+        { "@cdContrato", cdContrato }
+    };
+
+      var result = await SQLServerService.ExecuteQuery(source, query, parameters);
+
+      Console.WriteLine($"[ObterCursosDoContrato] Result: Success={result.Success}, Count={result.Data?.Count}, Data={result.Data}");
+
+      if (!result.Success) Console.WriteLine($"[ObterCursosDoContratoError]");
+      return result.Data;
+    }
+
+
+    /// <summary>
+    /// Obtém os descontos de antecipação simulando as baixas dos títulos
+    /// Baseado na lógica do sistema legado (RelatorioController.cs)
+    /// </summary>
+    private async Task<List<Dictionary<string, object>>> ObterDescontosAntecipacao(
+        Source source, int cdContrato, int cdPessoaEscola)
     {
       try
       {
-        var result = await SQLServerService.GetList(
-          "T_NOME_CONTRATO",
-          null,
-          "[cd_pessoa_escola]",
-          $"[{cd_pessoa_escola}]",
-          source,
-          SearchModeEnum.Equals
+        Console.WriteLine($"[ObterDescontosAntecipacao] Início - Contrato: {cdContrato}, Escola: {cdPessoaEscola}");
+
+        // 1. Buscar dados do contrato
+        var contrato = await SQLServerService.GetFirstByFields(
+            source,
+            "T_CONTRATO",
+            new List<(string campo, object valor)> { new("cd_contrato", cdContrato) }
         );
 
-        if (result.success && result.data != null)
+        if (contrato == null)
         {
-          Console.WriteLine($"\n=== TEMPLATES DISPONÍVEIS PARA ESCOLA {cd_pessoa_escola} ===");
-          Console.WriteLine($"Total: {result.data.Count}");
-          Console.WriteLine($"Ativos: {result.data.Count(t => Convert.ToInt32(t["id_nome_ativo"] ?? 0) == 1)}");
-          Console.WriteLine($"Inativos: {result.data.Count(t => Convert.ToInt32(t["id_nome_ativo"] ?? 0) == 0)}");
-
-          Console.WriteLine("\nTemplates Ativos:");
-          foreach (var template in result.data.Where(t => Convert.ToInt32(t["id_nome_ativo"] ?? 0) == 1))
-          {
-            Console.WriteLine($"  [{template["cd_nome_contrato"]}] {template["no_contrato"]} → {template["no_relatorio"]}");
-          }
-
-          return result.data;
+          Console.WriteLine("[ObterDescontosAntecipacao] Contrato não encontrado");
+          return new List<Dictionary<string, object>>();
         }
 
-        return new List<Dictionary<string, object>>();
+        // Verificar se o contrato tem política de desconto configurada
+        var cdPoliticaDesconto = contrato.ContainsKey("cd_politica_desconto") && contrato["cd_politica_desconto"] != null
+            ? Convert.ToInt32(contrato["cd_politica_desconto"])
+            : 0;
+
+        if (cdPoliticaDesconto == 0)
+        {
+          Console.WriteLine("[ObterDescontosAntecipacao] Contrato sem política de desconto configurada");
+          return new List<Dictionary<string, object>>();
+        }
+
+        // 2. Buscar parâmetros da escola
+        var parametrosEscola = await BuscarParametrosEscola(cdPessoaEscola, source);
+        if (parametrosEscola == null)
+        {
+          Console.WriteLine("[ObterDescontosAntecipacao] Parâmetros da escola não encontrados");
+          return new List<Dictionary<string, object>>();
+        }
+
+        // 3. Buscar títulos abertos do contrato
+        var titulosAbertos = await BuscarTitulosAbertosParaSimulacao(source, cdContrato, cdPessoaEscola);
+        if (!titulosAbertos.Any())
+        {
+          Console.WriteLine("[ObterDescontosAntecipacao] Nenhum título aberto encontrado");
+          return new List<Dictionary<string, object>>();
+        }
+
+        Console.WriteLine($"[ObterDescontosAntecipacao] {titulosAbertos.Count} títulos abertos encontrados");
+
+        // 4. Simular baixa dos títulos para obter os descontos de política
+        var descontosPoliticaTitulos = new List<Dictionary<string, object>>();
+
+        foreach (var titulo in titulosAbertos)
+        {
+          // Simular baixa do título na data atual
+          var simulacaoBaixa = await _simulacaoBaixaService.SimularBaixaTitulo(
+              titulo,
+              DateTime.Now,
+              parametrosEscola,
+              source
+          );
+
+          if (simulacaoBaixa.ExtraData.ContainsKey("diasPoliticaAntecipacao"))
+          {
+            var diasPolitica = simulacaoBaixa.ExtraData["diasPoliticaAntecipacao"] as List<Dictionary<string, object>>;
+            if (diasPolitica != null)
+            {
+              descontosPoliticaTitulos.AddRange(diasPolitica);
+            }
+          }
+
+        }
+
+        // Se não retornou dias de política da simulação, buscar diretamente
+        if (!descontosPoliticaTitulos.Any() && cdPoliticaDesconto > 0)
+        {
+          Console.WriteLine($"[ObterDescontosAntecipacao] Buscando dias da política {cdPoliticaDesconto}");
+
+          // Buscar dias da política
+          var diasPoliticaResult = await SQLServerService.GetList(
+              "T_DIAS_POLITICA",
+              null,
+              "[cd_politica_desconto]",
+              $"[{cdPoliticaDesconto}]",
+              source
+          );
+
+          if (diasPoliticaResult.success && diasPoliticaResult.data != null && diasPoliticaResult.data.Any())
+          {
+            var nmDiaVcto = Convert.ToInt32(contrato.GetValueOrDefault("nm_dia_vcto", 5));
+            var nmMesVcto = Convert.ToInt32(contrato.GetValueOrDefault("nm_mes_vcto", DateTime.Now.Month));
+            var nmAnoVcto = Convert.ToInt32(contrato.GetValueOrDefault("nm_ano_vcto", DateTime.Now.Year));
+
+            // Calcular data de vencimento da matrícula
+            DateTime dataVencimentoMatricula;
+            try
+            {
+              dataVencimentoMatricula = new DateTime(nmAnoVcto, nmMesVcto, nmDiaVcto);
+            }
+            catch
+            {
+              dataVencimentoMatricula = DateTime.Now;
+            }
+
+            foreach (var diaPolitica in diasPoliticaResult.data)
+            {
+              var nmDiaLimite = Convert.ToInt32(diaPolitica["nm_dia_limite_politica"]);
+              var pcDesconto = Convert.ToDecimal(diaPolitica["pc_desconto"]);
+
+              // Calcular data da política
+              var dataPolitica = CalcularDataPolitica(dataVencimentoMatricula, nmDiaLimite);
+
+              // Se a data da política for anterior ao vencimento da matrícula, usar o vencimento
+              if (dataPolitica < dataVencimentoMatricula)
+                dataPolitica = dataVencimentoMatricula;
+
+              descontosPoliticaTitulos.Add(new Dictionary<string, object>
+                    {
+                        { "cd_politica_desconto", cdPoliticaDesconto },
+                        { "nm_dia_limite_politica", nmDiaLimite },
+                        { "pc_desconto", pcDesconto },
+                        { "pc_pontualidade", pcDesconto }, // Compatibilidade
+                        { "dt_limite_desconto", dataPolitica },
+                        { "Data_politica", dataPolitica }
+                    });
+            }
+          }
+        }
+
+        // 5. Agrupar descontos por política e dia limite (igual ao sistema legado)
+        var grupoDescontosAntecipacao = descontosPoliticaTitulos
+            .GroupBy(x => new
+            {
+              cd_politica = Convert.ToInt32(x["cd_politica_desconto"]),
+              nm_dia = Convert.ToInt32(x["nm_dia_limite_politica"])
+            })
+            .Select(g =>
+            {
+              var primeiro = g.First();
+              return new Dictionary<string, object>
+                {
+                    { "cd_politica_desconto", primeiro["cd_politica_desconto"] },
+                    { "nm_dia_limite_politica", primeiro["nm_dia_limite_politica"] },
+                    { "pc_desconto", primeiro.ContainsKey("pc_desconto") ? primeiro["pc_desconto"] : primeiro["pc_pontualidade"] },
+                    { "dt_limite_desconto", primeiro.ContainsKey("dt_limite_desconto") ? primeiro["dt_limite_desconto"] : primeiro["Data_politica"] }
+                };
+            })
+            .OrderBy(d => Convert.ToInt32(d["nm_dia_limite_politica"]))
+            .ToList();
+
+        Console.WriteLine($"[ObterDescontosAntecipacao] Total de {grupoDescontosAntecipacao.Count} descontos agrupados");
+
+        return grupoDescontosAntecipacao;
       }
       catch (Exception ex)
       {
-        Console.WriteLine($"[ERRO] Erro ao listar templates: {ex.Message}");
+        Console.WriteLine($"[ObterDescontosAntecipacaoError]: {ex.Message}");
+        Console.WriteLine($"[StackTrace]: {ex.StackTrace}");
         return new List<Dictionary<string, object>>();
       }
     }
 
-    private string GetDiaSemanaPorDia(string dia)
+    /// <summary>
+    /// Busca títulos abertos para simulação (baseado no sistema legado)
+    /// </summary>
+    private async Task<List<Dictionary<string, object>>> BuscarTitulosAbertosParaSimulacao(
+        Source source, int cdContrato, int cdPessoaEscola)
     {
-      return dia.Trim() switch
+      var query = @"
+        SELECT
+            t.cd_titulo,
+            t.nm_parcela_titulo,
+            t.dt_vcto_titulo,
+            t.vl_titulo,
+            t.vl_saldo_titulo,
+            ISNULL(t.vl_material_titulo, 0) as vl_material_titulo,
+            t.cd_origem_titulo,
+            t.id_origem_titulo,
+            t.cd_pessoa_empresa,
+            t.dc_tipo_titulo,
+            t.id_status_titulo,
+            t.id_status_cnab
+        FROM T_TITULO t
+        WHERE t.cd_origem_titulo = @cdContrato
+            AND t.id_origem_titulo = 1 -- Origem Contrato
+            AND t.cd_pessoa_empresa = @cdEscola
+            AND t.vl_saldo_titulo > 0
+            AND t.id_status_titulo IN (1, 2) -- Aberto ou Parcialmente Baixado
+            AND t.dc_tipo_titulo = 'ME' -- Mensalidade
+        ORDER BY t.dt_vcto_titulo";
+
+      var parameters = new Dictionary<string, object>
+    {
+        { "@cdContrato", cdContrato },
+        { "@cdEscola", cdPessoaEscola }
+    };
+
+      var result = await SQLServerService.ExecuteQuery(source, query, parameters);
+
+      if (result.Success && result.Data != null)
       {
-        "1" => "Segunda",
-        "2" => "Terça",
-        "3" => "Quarta",
-        "4" => "Quinta",
-        "5" => "Sexta",
-        "6" => "Sábado",
-        "7" => "Domingo",
-        _ => dia
-      };
+        Console.WriteLine($"[BuscarTitulosAbertosParaSimulacao] {result.Data.Count} títulos encontrados");
+        return result.Data;
+      }
+
+      return new List<Dictionary<string, object>>();
+    }
+
+
+    /// <summary>
+    /// Calcula a data da política com base no dia limite
+    /// </summary>
+    private DateTime CalcularDataPolitica(DateTime dtBase, int diaLimite)
+    {
+      try
+      {
+        return new DateTime(dtBase.Year, dtBase.Month, diaLimite);
+      }
+      catch (ArgumentOutOfRangeException)
+      {
+        // Se o dia não existe no mês, tenta dias anteriores
+        for (int i = 1; i <= 3; i++)
+        {
+          try
+          {
+            return new DateTime(dtBase.Year, dtBase.Month, diaLimite - i);
+          }
+          catch
+          {
+            continue;
+          }
+        }
+      }
+
+      return dtBase;
+    }
+
+    /// <summary>
+    /// Preenche a grade de descontos de antecipação no documento
+    /// Baseado no sistema legado: GradeValoresDescontosAntecipa
+    /// </summary>
+    public static void PreencherGradeDescontosAntecipacao(
+        WordprocessingDocument doc,
+        List<Dictionary<string, object>> descontos)
+    {
+      var body = doc.MainDocumentPart.Document.Body;
+      string tag = "GradeDescontosAntecip"; // Tag usada no template
+      bool tabelaInserida = false;
+
+      // Procura parágrafo com a TAG
+      var paragrafoComTag = body.Descendants<Paragraph>()
+          .FirstOrDefault(p => p.InnerText.Contains($"«{tag}»") || p.InnerText.Contains($"<{tag}>"));
+
+      if (paragrafoComTag != null)
+      {
+        if (descontos == null || descontos.Count == 0)
+        {
+          // Se não há descontos, adiciona mensagem "Não informado"
+          var paragrafoMensagem = new Paragraph(new Run(new Text("Não informado")));
+          paragrafoComTag.InsertAfterSelf(paragrafoMensagem);
+        }
+        else
+        {
+          // Cria a tabela de descontos de antecipação
+          var tabela = CriarTabelaDescontosAntecipacao(descontos);
+          paragrafoComTag.InsertAfterSelf(tabela);
+        }
+
+        // Remove a tag
+        paragrafoComTag.Remove();
+        tabelaInserida = true;
+      }
+
+      // Se não encontrou a tag, adiciona no final
+      if (!tabelaInserida && descontos != null && descontos.Count > 0)
+      {
+        var tabela = CriarTabelaDescontosAntecipacao(descontos);
+        body.AppendChild(new Paragraph(new Run(new Text(""))));
+        body.AppendChild(tabela);
+      }
+
+      doc.MainDocumentPart.Document.Save();
+    }
+    /// <summary>
+    /// Cria a tabela de descontos de antecipação (baseada no sistema legado)
+    /// </summary>
+    private static Table CriarTabelaDescontosAntecipacao(List<Dictionary<string, object>> descontos)
+    {
+      var table = new Table();
+
+      // Propriedades da tabela
+      var tableProperties = new TableProperties(
+          new TableBorders(
+              new TopBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
+              new BottomBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
+              new LeftBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
+              new RightBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
+              new InsideHorizontalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 },
+              new InsideVerticalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 6 }
+          ),
+          new TableWidth { Width = "5000", Type = TableWidthUnitValues.Pct }
+      );
+      table.AppendChild(tableProperties);
+
+      // Linha de cabeçalho (igual ao sistema legado)
+      var headerRow = new TableRow();
+      headerRow.Append(
+          CriarCelula("Dia Venc. Desconto por Antecipação", true),
+          CriarCelula("DIA", true),
+          CriarCelula("(%)", true)
+      );
+      table.Append(headerRow);
+
+      // Linhas de dados
+      foreach (var desconto in descontos)
+      {
+        var dtLimiteDesconto = desconto.ContainsKey("dt_limite_desconto")
+            ? Convert.ToDateTime(desconto["dt_limite_desconto"])
+            : DateTime.Now;
+
+        var nmDiaLimite = desconto.ContainsKey("nm_dia_limite_politica")
+            ? desconto["nm_dia_limite_politica"]?.ToString() ?? "0"
+            : "0";
+
+        var pcDesconto = desconto.ContainsKey("pc_desconto")
+            ? Convert.ToDecimal(desconto["pc_desconto"])
+            : 0m;
+
+        // Formatar a primeira coluna igual ao sistema legado: "A partir de dd/MM/yyyy"
+        var textoDataLimite = $"A partir de {dtLimiteDesconto:dd/MM/yyyy}";
+
+        var dataRow = new TableRow();
+        dataRow.Append(
+            CriarCelula(textoDataLimite, false), // Centralizado
+            CriarCelula(nmDiaLimite, false),      // Centralizado
+            CriarCelula($"{pcDesconto:F2}", false) // Formatado com 2 casas decimais e centralizado
+        );
+        table.Append(dataRow);
+      }
+
+      return table;
+    }
+
+
+    private async Task<DateTime> ObterDataVencimentoContrato(Source source, int cdContrato)
+    {
+      var query = @"
+        SELECT *
+        FROM T_ADITAMENTO
+        WHERE cd_contrato = @cdContrato
+        ORDER BY dt_aditamento DESC";
+      var parameters = new Dictionary<string, object> { { "@cdContrato", cdContrato } };
+      var result = await SQLServerService.ExecuteQuery(source, query, parameters);
+      return result.Success && result.Data.Any()
+          ? Convert.ToDateTime(result.Data.First()["dt_vcto_aditamento"])
+          : DateTime.MinValue;
+    }
+    private static Table CriarTabelaCursos(List<Dictionary<string, object>> cursos)
+    {
+      var tabela = new Table();
+
+      // 🔹 Bordas simples
+      var props = new TableProperties(
+          new TableBorders(
+              new TopBorder { Val = BorderValues.Single, Size = 6 },
+              new BottomBorder { Val = BorderValues.Single, Size = 6 },
+              new LeftBorder { Val = BorderValues.Single, Size = 6 },
+              new RightBorder { Val = BorderValues.Single, Size = 6 },
+              new InsideHorizontalBorder { Val = BorderValues.Single, Size = 6 },
+              new InsideVerticalBorder { Val = BorderValues.Single, Size = 6 }
+          )
+      );
+
+      tabela.AppendChild(props);
+
+      // 🔹 Cabeçalho
+      var headerRow = new TableRow();
+      headerRow.Append(
+          CriarCelula("Nome do Curso", true),
+          CriarCelula("Duração", true),
+          CriarCelula("Modalidade", true),
+          CriarCelula("Valor do Curso", true),
+          CriarCelula("Nº Parcelas", true),
+          CriarCelula("Valor da Parcela", true),
+          CriarCelula("% Desconto", true),
+          CriarCelula("Parcela Líquida", true)
+      );
+      tabela.Append(headerRow);
+
+      // 🔹 Linhas dos cursos
+      foreach (var curso in cursos)
+      {
+        var row = new TableRow();
+
+        row.Append(
+            CriarCelula(curso["no_curso"]?.ToString() ?? ""),
+            CriarCelula(curso["dc_duracao"]?.ToString() ?? ""),
+            CriarCelula(curso["no_regime"]?.ToString() ?? ""),
+            CriarCelula($"R$ {Convert.ToDecimal(curso["vl_curso_contrato"] ?? 0):N2}"),
+            CriarCelula(curso["nm_parcelas_mensalidade"]?.ToString() ?? ""),
+            CriarCelula($"R$ {Convert.ToDecimal(curso["vl_parcela_contrato"] ?? 0):N2}"),
+            CriarCelula($"{Convert.ToDecimal(curso["pc_desconto_contrato"] ?? 0):N2}%"),
+            CriarCelula($"R$ {Convert.ToDecimal(curso["vl_parcela_liquida"] ?? 0):N2}")
+        );
+
+        tabela.Append(row);
+      }
+
+      return tabela;
+    }
+
+    private static TableCell CriarCelula(string texto, bool negrito = false)
+    {
+      var run = new Run(new Text(texto));
+      if (negrito)
+        run.RunProperties = new RunProperties(new Bold());
+
+      var cell = new TableCell(new Paragraph(run));
+      cell.Append(new TableCellProperties(
+          new TableCellWidth { Type = TableWidthUnitValues.Auto }));
+
+      return cell;
+    }
+
+
+
+    // Método auxiliar para criar a tabela
+    private static Table CriarTabelaDescontos(List<Dictionary<string, object>> descontos)
+    {
+      var table = new Table();
+
+      // Propriedades da tabela
+      var tableProperties = new TableProperties(
+          new TableBorders(
+              new TopBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new BottomBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new LeftBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new RightBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new InsideHorizontalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new InsideVerticalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 }
+          ),
+          new TableWidth { Width = "5000", Type = TableWidthUnitValues.Pct }
+      );
+      table.AppendChild(tableProperties);
+
+      // Linha de cabeçalho
+      var headerRow = new TableRow();
+      headerRow.Append(
+          CriarCelula("Dias de Antecipação", true),
+          CriarCelula("% Desconto", true),
+          CriarCelula("Valor Desconto", true),
+          CriarCelula("Valor com Desconto", true)
+      );
+      table.Append(headerRow);
+
+      // Linhas de dados
+      foreach (var desconto in descontos)
+      {
+        var nmDiaLimite = desconto.ContainsKey("nm_dia_limite_politica") ? desconto["nm_dia_limite_politica"]?.ToString() ?? "0" : "0";
+        var pcDesconto = desconto.ContainsKey("pc_desconto") ? Convert.ToDecimal(desconto["pc_desconto"]).ToString("N2") : "0.00";
+        var vlDesconto = desconto.ContainsKey("vl_desconto") ? Convert.ToDecimal(desconto["vl_desconto"]).ToString("N2") : "0.00";
+        var vlComDesconto = desconto.ContainsKey("vl_com_desconto") ? Convert.ToDecimal(desconto["vl_com_desconto"]).ToString("N2") : "0.00";
+
+        var dataRow = new TableRow();
+        dataRow.Append(
+            CriarCelula(nmDiaLimite),
+            CriarCelula($"{pcDesconto}%"),
+            CriarCelula($"R$ {vlDesconto}"),
+            CriarCelula($"R$ {vlComDesconto}")
+        );
+        table.Append(dataRow);
+      }
+
+      return table;
+    }
+    public static void PreencherGradeCursos(WordprocessingDocument doc, List<Dictionary<string, object>> cursos)
+    {
+
+      {
+        var body = doc.MainDocumentPart.Document.Body;
+        string tag = "GradeCursos";
+        bool tabelaInserida = false;
+
+        // 🔹 Procura parágrafo com a TAG
+        var paragrafoComTag = body.Descendants<Paragraph>()
+            .FirstOrDefault(p => p.InnerText.Contains($"«{tag}»") || p.InnerText.Contains($"<{tag}>"));
+
+        if (paragrafoComTag != null)
+        {
+          // 🔹 Cria a tabela
+          var tabela = CriarTabelaCursos(cursos);
+
+          // 🔹 Insere logo após o parágrafo da tag
+          paragrafoComTag.InsertAfterSelf(tabela);
+
+          // 🔹 Remove a tag
+          paragrafoComTag.Remove();
+
+          tabelaInserida = true;
+        }
+
+        // 🔹 Caso não exista a tag no documento, adiciona no final
+        if (!tabelaInserida)
+        {
+          var tabela = CriarTabelaCursos(cursos);
+          body.AppendChild(new Paragraph(new Run(new Text("Grade de Cursos:"))));
+          body.AppendChild(tabela);
+        }
+
+        doc.MainDocumentPart.Document.Save();
+      }
+    }
+
+
+    /// <summary>
+    /// Preenche a grade de Valores das Parcelas (VALORES BRUTOS)
+    /// </summary>
+    public static void PreencherGradeValoresParcelas(
+        WordprocessingDocument doc,
+        List<Dictionary<string, object>> parcelas)
+    {
+      var body = doc.MainDocumentPart.Document.Body;
+      string tag = "GradeValoresParcelas";
+
+      var paragrafoComTag = body.Descendants<Paragraph>()
+          .FirstOrDefault(p => p.InnerText.Contains($"«{tag}»") ||
+                              p.InnerText.Contains($"<{tag}>"));
+
+      if (paragrafoComTag != null)
+      {
+        if (parcelas == null || parcelas.Count == 0)
+        {
+          var paragrafoMensagem = new Paragraph(new Run(new Text("Não há parcelas a exibir.")));
+          paragrafoComTag.InsertAfterSelf(paragrafoMensagem);
+        }
+        else
+        {
+          var tabela = CriarTabelaValoresParcelas(parcelas);
+          paragrafoComTag.InsertAfterSelf(tabela);
+        }
+
+        paragrafoComTag.Remove();
+      }
+
+      doc.MainDocumentPart.Document.Save();
+    }
+
+    private static Table CriarTabelaValoresParcelas(List<Dictionary<string, object>> parcelas)
+    {
+      var table = new Table();
+
+      var tableProperties = new TableProperties(
+          new TableBorders(
+              new TopBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new BottomBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new LeftBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new RightBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new InsideHorizontalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new InsideVerticalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 }
+          ),
+          new TableWidth { Width = "5000", Type = TableWidthUnitValues.Pct }
+      );
+      table.AppendChild(tableProperties);
+
+      // Cabeçalho
+      var headerRow = new TableRow();
+      headerRow.Append(
+          CriarCelula("Parcela", true),
+          CriarCelula("Vencimento", true),
+          CriarCelula("Valor Bruto", true)
+      );
+      table.Append(headerRow);
+
+      // Dados
+      foreach (var parcela in parcelas)
+      {
+        decimal valorBruto = Convert.ToDecimal(parcela["vl_titulo"] ?? 0);
+        DateTime dtVencimento = Convert.ToDateTime(parcela["dt_vcto_titulo"]);
+        int numParcela = Convert.ToInt32(parcela["nm_parcela"] ?? 0);
+
+        var dataRow = new TableRow();
+        dataRow.Append(
+            CriarCelula(numParcela.ToString()),
+            CriarCelula(dtVencimento.ToString("dd/MM/yyyy")),
+            CriarCelula($"R$ {valorBruto.ToString("N2")}")
+        );
+        table.Append(dataRow);
+      }
+
+      return table;
+    }
+
+    /// <summary>
+    /// Preenche a grade de Descontos do Contrato (DESCONTOS APLICADOS)
+    /// </summary>
+    public static void PreencherGradeDescontosContrato(
+        WordprocessingDocument doc,
+        List<Dictionary<string, object>> descontos)
+    {
+      var body = doc.MainDocumentPart.Document.Body;
+      string tag = "GradeDescontosContrato";
+
+      var paragrafoComTag = body.Descendants<Paragraph>()
+          .FirstOrDefault(p => p.InnerText.Contains($"«{tag}»") ||
+                              p.InnerText.Contains($"<{tag}>"));
+
+      if (paragrafoComTag != null)
+      {
+        if (descontos == null || descontos.Count == 0)
+        {
+          var paragrafoMensagem = new Paragraph(new Run(new Text("Não há descontos aplicados.")));
+          paragrafoComTag.InsertAfterSelf(paragrafoMensagem);
+        }
+        else
+        {
+          var tabela = CriarTabelaDescontosContrato(descontos);
+          paragrafoComTag.InsertAfterSelf(tabela);
+        }
+
+        paragrafoComTag.Remove();
+      }
+
+      doc.MainDocumentPart.Document.Save();
+    }
+
+    private static Table CriarTabelaDescontosContrato(List<Dictionary<string, object>> descontos)
+    {
+      var table = new Table();
+
+      var tableProperties = new TableProperties(
+          new TableBorders(
+              new TopBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new BottomBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new LeftBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new RightBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new InsideHorizontalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new InsideVerticalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 }
+          ),
+          new TableWidth { Width = "5000", Type = TableWidthUnitValues.Pct }
+      );
+      table.AppendChild(tableProperties);
+
+      // Cabeçalho
+      var headerRow = new TableRow();
+      headerRow.Append(
+          CriarCelula("Descrição", true),
+          CriarCelula("Percentual", true),
+          CriarCelula("Valor", true),
+          CriarCelula("Parcela Inicial", true),
+          CriarCelula("Parcela Final", true)
+      );
+      table.Append(headerRow);
+
+      // Dados
+      foreach (var desconto in descontos)
+      {
+        string descricao = desconto["dc_desconto_contrato"]?.ToString() ?? "Desconto";
+        decimal percentual = Convert.ToDecimal(desconto["pc_desconto_contrato"] ?? 0);
+        decimal valor = Convert.ToDecimal(desconto["vl_desconto_contrato"] ?? 0);
+        string parcelaIni = desconto["nm_parcela_ini"]?.ToString() ?? "-";
+        string parcelaFim = desconto["nm_parcela_fim"]?.ToString() ?? "-";
+
+        var dataRow = new TableRow();
+        dataRow.Append(
+            CriarCelula(descricao),
+            CriarCelula($"{percentual.ToString("N2")}%"),
+            CriarCelula($"R$ {valor.ToString("N2")}"),
+            CriarCelula(parcelaIni),
+            CriarCelula(parcelaFim)
+        );
+        table.Append(dataRow);
+      }
+
+      return table;
+    }
+
+    /// <summary>
+    /// Preenche a grade de Valores Líquidos (VALORES COM DESCONTO)
+    /// </summary>
+    public static void PreencherGradeValoresLiquidos(
+        WordprocessingDocument doc,
+        List<Dictionary<string, object>> parcelas)
+    {
+      var body = doc.MainDocumentPart.Document.Body;
+      string tag = "GradeValoresLiquidos";
+
+      var paragrafoComTag = body.Descendants<Paragraph>()
+          .FirstOrDefault(p => p.InnerText.Contains($"«{tag}»") ||
+                              p.InnerText.Contains($"<{tag}>"));
+
+      if (paragrafoComTag != null)
+      {
+        if (parcelas == null || parcelas.Count == 0)
+        {
+          var paragrafoMensagem = new Paragraph(new Run(new Text("Não há parcelas a exibir.")));
+          paragrafoComTag.InsertAfterSelf(paragrafoMensagem);
+        }
+        else
+        {
+          var tabela = CriarTabelaValoresLiquidos(parcelas);
+          paragrafoComTag.InsertAfterSelf(tabela);
+        }
+
+        paragrafoComTag.Remove();
+      }
+
+      doc.MainDocumentPart.Document.Save();
+    }
+
+    private static Table CriarTabelaValoresLiquidos(List<Dictionary<string, object>> parcelas)
+    {
+      var table = new Table();
+
+      var tableProperties = new TableProperties(
+          new TableBorders(
+              new TopBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new BottomBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new LeftBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new RightBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new InsideHorizontalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+              new InsideVerticalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 }
+          ),
+          new TableWidth { Width = "5000", Type = TableWidthUnitValues.Pct }
+      );
+      table.AppendChild(tableProperties);
+
+      // Cabeçalho
+      var headerRow = new TableRow();
+      headerRow.Append(
+          CriarCelula("Parcela", true),
+          CriarCelula("Vencimento", true),
+          CriarCelula("Valor Líquido", true)
+      );
+      table.Append(headerRow);
+
+      // Dados
+      foreach (var parcela in parcelas)
+      {
+        decimal valorLiquido = Convert.ToDecimal(parcela["vl_saldo_titulo"] ??
+                                                  parcela["vl_titulo"] ?? 0);
+        DateTime dtVencimento = Convert.ToDateTime(parcela["dt_vcto_titulo"]);
+        int numParcela = Convert.ToInt32(parcela["nm_parcela"] ?? 0);
+
+        var dataRow = new TableRow();
+        dataRow.Append(
+            CriarCelula(numParcela.ToString()),
+            CriarCelula(dtVencimento.ToString("dd/MM/yyyy")),
+            CriarCelula($"R$ {valorLiquido.ToString("N2")}")
+        );
+        table.Append(dataRow);
+      }
+
+      return table;
+    }
+
+    private async Task<List<Dictionary<string, object>>> BuscarTitulosAbertos(
+        Source source, int cdContrato, int cdPessoaEscola)
+    {
+      var query = @"
+        SELECT
+            T.cd_titulo,
+            T.cd_origem_titulo,
+            T.nm_parcela_titulo,
+            T.dc_tipo_titulo,
+            T.vl_titulo,
+            T.vl_saldo_titulo,
+            T.dt_vcto_titulo,
+            T.id_status_titulo,
+            T.id_status_cnab,
+            T.cd_pessoa_empresa
+        FROM T_TITULO T
+        WHERE T.cd_origem_titulo = @cdContrato
+          AND T.cd_pessoa_empresa = @cdPessoaEscola
+          AND T.id_status_titulo = 1  -- ABERTO
+          AND T.id_status_cnab IN (0, 1)  -- INICIAL ou CONFIRMADO_PEDIDO_BAIXA
+          AND T.vl_titulo = T.vl_saldo_titulo  -- Saldo total em aberto
+        ORDER BY T.dt_vcto_titulo, T.nm_parcela_titulo";
+
+      var parameters = new Dictionary<string, object>
+    {
+        { "@cdContrato", cdContrato },
+        { "@cdPessoaEscola", cdPessoaEscola }
+    };
+
+      var result = await SQLServerService.ExecuteQuery(source, query, parameters);
+      return result.Success ? result.Data : new List<Dictionary<string, object>>();
     }
 
   }

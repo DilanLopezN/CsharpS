@@ -512,39 +512,177 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
           }
         }
 
-        // 2. Buscar turmas com filtros (CORREÇÃO: usar cd_pessoa_escola)
-        // Assinatura correta do GetListFiltroData (20 parâmetros):
-        var turmasResult = await SQLServerService.GetListFiltroData(
-            "vi_turma",           // schemaName
-            page,                 // page
-            limit,                // limit
-            sortField,            // sortField
-            sortDesc,             // sortDesc
-            ids,                  // ids
-            "cd_turma",           // idField
-            searchFields,         // searchFields
-            value,                // value
-            source,               // source
-            mode,                 // mode
-            "cd_pessoa_escola",   // ✅ cd_empresa_field (CORREÇÃO: era cd_empresa)
-            cdEmpresa,            // cd_empresa_value
-            "dt_inicio_aula",     // dateFieldStart
-            "dt_final_aula",      // dateFieldEnd
-            dataInicio,           // dateStart
-            dataFim,              // dateEnd
-            null,                 // dateField2
-            null,                 // dateStart2
-            null,                 // dateEnd2
-            null                  // campoDiaAtual
-        );
+        // 2. Buscar turmas compartilhadas
+        var query = @"
+        SELECT t.*, COUNT(*) OVER() as total_records
+        FROM vi_turma t
+        WHERE (
+            t.cd_pessoa_escola = '" + cdEmpresa.Replace("'", "''") + @"'
+            OR EXISTS (
+                SELECT 1
+                FROM T_TURMA_ESCOLA te
+                WHERE te.cd_turma = t.cd_turma
+                  AND te.cd_escola = '" + cdEmpresa.Replace("'", "''") + @"'
+            )
+        )";
 
-        if (!turmasResult.success)
+        // Adicionar filtros adicionais
+        var whereConditions = new List<string>();
+
+        // Filtro por IDs específicos
+        if (!string.IsNullOrEmpty(ids))
         {
-          return (false, null, 0, 0, turmasResult.error);
+            var idList = ids.Split(',').Select(id => $"'{id.Trim()}'");
+            whereConditions.Add($"t.cd_turma IN ({string.Join(",", idList)})");
+        }
+
+        // Filtro por campos de busca (usando a mesma lógica do GetList)
+        if (!string.IsNullOrWhiteSpace(searchFields) && !string.IsNullOrWhiteSpace(value))
+        {
+            // Extrai cada "[item1,item2,...]" em listas separadas
+            var fieldGroups = System.Text.RegularExpressions.Regex.Matches(searchFields, @"\[(.*?)\]")
+                                    .Cast<System.Text.RegularExpressions.Match>()
+                                    .Select(m => m.Groups[1].Value.Split(',')
+                                                                      .Select(f => f.Trim())
+                                                                      .ToList())
+                                    .ToList();
+
+            var valueGroups = System.Text.RegularExpressions.Regex.Matches(value, @"\[(.*?)\]")
+                                    .Cast<System.Text.RegularExpressions.Match>()
+                                    .Select(m => m.Groups[1].Value.Split(',')
+                                                                      .Select(v => v.Trim())
+                                                                      .ToList())
+                                    .ToList();
+
+            // Para cada grupo (até o menor número de grupos entre fields e values)
+            var groupCount = Math.Min(fieldGroups.Count, valueGroups.Count);
+            for (int i = 0; i < groupCount; i++)
+            {
+                var fields = fieldGroups[i];
+                var vals = valueGroups[i];
+                var innerConds = new List<string>();
+
+                // Cross‑product: para cada campo e cada valor
+                foreach (var f in fields)
+                {
+                    // Se o campo começa com dt_, tratar o valor completo como um range de data
+                    if (f.StartsWith("dt_", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Para campos de data, usar o valor original completo (pode conter vírgula para range)
+                        var originalValue = valueGroups[i].Count > 0 ? string.Join(",", valueGroups[i]) : "";
+                        
+                        if (originalValue == "null")
+                        {
+                            innerConds.Add($"t.[{f}] is null");
+                        }
+                        else if (originalValue == "not null")
+                        {
+                            innerConds.Add($"t.[{f}] is not null");
+                        }
+                        else
+                        {
+                            var dates = originalValue.Split(',');
+                            if (dates.Length == 2)
+                            {
+                                // Busca entre duas datas
+                                var dateStart = dates[0].Trim();
+                                var dateEnd = dates[1].Trim();
+                                innerConds.Add($"(CAST(t.[{f}] AS DATE) >= '{dateStart}' AND CAST(t.[{f}] AS DATE) <= '{dateEnd}')");
+                            }
+                            else
+                            {
+                                // Busca por data específica
+                                innerConds.Add($"CAST(t.[{f}] AS DATE) = '{originalValue.Trim()}'");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var v in vals)
+                        {
+                            if (v == "null")
+                            {
+                                innerConds.Add($"t.[{f}] is null");
+                            }
+                            else if (v == "not null")
+                            {
+                                innerConds.Add($"t.[{f}] is not null");
+                            }
+                            else if (f.StartsWith("cd_", StringComparison.OrdinalIgnoreCase))
+                            {
+                                // Se o campo inicia com "cd_", sempre usar igualdade
+                                innerConds.Add($"t.[{f}] = '{v.Replace("'", "''")}'");
+                            }
+                            else
+                            {
+                                // Aplicar o modo de busca
+                                if (mode == SearchModeEnum.Contains)
+                                {
+                                    innerConds.Add($"t.[{f}] LIKE '%{v.Replace("'", "''")}%'");
+                                }
+                                else if (mode == SearchModeEnum.Equals)
+                                {
+                                    innerConds.Add($"t.[{f}] = '{v.Replace("'", "''")}'");
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (innerConds.Any())
+                {
+                    // Agrupa com OR e envolve em parênteses
+                    whereConditions.Add($"({string.Join(" OR ", innerConds)})");
+                }
+            }
+        }
+
+        // Aplicar condições WHERE adicionais
+        if (whereConditions.Any())
+        {
+            query += " AND (" + string.Join(" AND ", whereConditions) + ")";
+        }
+
+        // Filtro por data (se não foi incluído nos searchFields)
+        if (dataInicio.HasValue)
+        {
+            query += $" AND t.dt_inicio_aula >= '{dataInicio.Value:yyyy-MM-dd}'";
+        }
+
+        if (dataFim.HasValue)
+        {
+            query += $" AND t.dt_final_aula <= '{dataFim.Value:yyyy-MM-dd}'";
+        }
+
+        // Aplicar ordenação
+        query += $" ORDER BY t.{sortField} {(sortDesc ? "DESC" : "ASC")}";
+
+        // Aplicar paginação
+        if (page.HasValue && limit.HasValue && page > 0 && limit > 0)
+        {
+            var offset = (page.Value - 1) * limit.Value;
+            query += $" OFFSET {offset} ROWS FETCH NEXT {limit.Value} ROWS ONLY";
+        }
+
+        // Executar a query customizada
+        var turmasResult = await SQLServerService.ExecuteQuery(source, query);
+
+        if (!turmasResult.Success)
+        {
+          return (false, null, 0, 0, "Erro ao buscar turmas");
+        }
+
+        // Calcular total de registros do primeiro resultado (se houver)
+        int totalRecords = 0;
+        if (turmasResult.Data.Any())
+        {
+          totalRecords = turmasResult.Data.First().ContainsKey("total_records") 
+            ? Convert.ToInt32(turmasResult.Data.First()["total_records"]) 
+            : turmasResult.Data.Count;
         }
 
         // 3. Aplicar filtros adicionais de professor e horário (pós-processamento)
-        var turmasFiltradas = turmasResult.data;
+        var turmasFiltradas = turmasResult.Data;
 
         // Filtro por professor (se especificado)
         if (professorId != null)
@@ -622,8 +760,8 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
           }
         }
 
-        // 4. Recalcular total e páginas após filtros
-        var totalFiltrado = turmasFiltradas.Count;
+        // 4. Recalcular páginas com base no total original
+        var totalFiltrado = totalRecords; // Usar o total da query original
         var pagesFiltrado = limit != null ? (int)Math.Ceiling((double)totalFiltrado / limit.Value) : 0;
 
         // 5. Extrair IDs das turmas filtradas para buscar dados relacionados
@@ -668,8 +806,8 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
             "cd_turma",
             true,
             null,
-            null,
-            null,
+            searchFields: "[id_professor_ativo]",
+            value: "[1]",
             source,
             mode,
             null,
@@ -680,14 +818,14 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
 
         // 8. Buscar alunos das turmas
         var alunosResult = await SQLServerService.GetListIn(
-            "vi_turma_aluno",
-            1,
-            10000000,
-            "cd_turma",
-            true,
-            null,
-            null,
-            null,
+            schemaName:"vi_turma_aluno",
+            page:1,
+            limit:10000000,
+            sortField:"cd_turma",
+            sortDesc:true,
+            ids: null,
+            searchFields:"[cd_situacao_aluno_turma]",
+            value:"[1]",
             source,
             mode,
             null,

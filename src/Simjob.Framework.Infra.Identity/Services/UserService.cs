@@ -331,6 +331,7 @@ namespace Simjob.Framework.Infra.Identity.Services
                 userToUpdate.CompanySiteIds = user.CompanySiteIds;
                 userToUpdate.UpdateBy = user.UpdateBy;
                 userToUpdate.ControlAccess = user.ControlAccess;
+                userToUpdate.Cd_pessoa = user.Cd_pessoa;
 
                 _userRepository.Update(userToUpdate);
             }

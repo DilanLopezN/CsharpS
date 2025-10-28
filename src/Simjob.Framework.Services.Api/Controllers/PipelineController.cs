@@ -528,7 +528,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                         //T_PESSOA_FISICA
                         var pessoa_fisicaDict = new Dictionary<string, object>();
 
-                        if (model.Pessoa.nm_cpf != null) pessoa_fisicaDict.Add("nm_cpf", model.Pessoa.nm_cpf);
+                        if (!string.IsNullOrEmpty(model.Pessoa.nm_cpf)) pessoa_fisicaDict.Add("nm_cpf", model.Pessoa.nm_cpf);
                         if (model.Pessoa.nm_sexo != null) pessoa_fisicaDict.Add("nm_sexo", model.Pessoa.nm_sexo);
                         if (model.Pessoa.cd_escolaridade != null) pessoa_fisicaDict.Add("cd_escolaridade", model.Pessoa.cd_escolaridade);
 
@@ -539,7 +539,7 @@ namespace Simjob.Framework.Services.Api.Controllers
 
                 //criar registro de historico de pessoa
 
-                var ultimoHistorico = await SQLServerService.GetList("T_HISTORICO_PESSOA", 1, 1, "nm_sequencia_historico", true, null, "[cd_contato]", $"[{cd_contato_pipeline}]", source, SearchModeEnum.Equals, null, null);
+                //var ultimoHistorico = await SQLServerService.GetList("T_HISTORICO_PESSOA", 1, 1, "nm_sequencia_historico", true, null, "[cd_contato]", $"[{cd_contato_pipeline}]", source, SearchModeEnum.Equals, null, null);
 
                 //var sequencia = 0;
                 //if (ultimoHistorico.success)

@@ -241,7 +241,7 @@ namespace Simjob.Framework.Services.Api.Controllers
             if (source != null && source.Active != null && source.Active == true && schemaModel.Alias != null)
             {
                 if (sortField == null && schemaModel.PrimaryKey != null) sortField = schemaModel.PrimaryKey;
-                var result = await SQLServerService.GetListEntity(schemaModel.Alias, page, limit, sortField, sortDesc, ids, searchFields, value, source, mode, schemaModel.CompanySiteId, companySiteId,schemaModel);
+                var result = await SQLServerService.GetListEntity(schemaModel.Alias, schemaModel.PrimaryKey, page, limit, sortField, sortDesc, ids, searchFields, value, source, mode, schemaModel.CompanySiteId, companySiteId,schemaModel);
                 if(!result.success) return BadRequest(result.error);
                 var resultReturn = new
                 {

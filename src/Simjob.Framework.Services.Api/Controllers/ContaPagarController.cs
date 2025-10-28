@@ -12,6 +12,7 @@ using Simjob.Framework.Domain.Interfaces.Repositories;
 using Simjob.Framework.Infra.Data.Context;
 using Simjob.Framework.Infra.Identity.Contexts;
 using Simjob.Framework.Infra.Identity.Entities;
+using Simjob.Framework.Infra.Identity.Interfaces;
 using Simjob.Framework.Infra.Schemas.Entities;
 using Simjob.Framework.Services.Api.Enums;
 using Simjob.Framework.Services.Api.Models.Contas;
@@ -30,12 +31,16 @@ namespace Simjob.Framework.Services.Api.Controllers
         private readonly IRepository<SourceContext, Source> _sourceRepository;
         private readonly IRepository<MongoDbContext, Schema> _schemaRepository;
         private readonly SimulacaoBaixaService _simulacaoBaixaService;
+        private readonly IUserService _userService;
+        private readonly IGroupService _groupService;
 
-        public ContaPagarController(IMediatorHandler bus, INotificationHandler<DomainNotification> notifications, IRepository<SourceContext, Source> sourceRepository, IRepository<MongoDbContext, Schema> schemaRepository) : base(bus, notifications)
+        public ContaPagarController(IMediatorHandler bus, INotificationHandler<DomainNotification> notifications, IRepository<SourceContext, Source> sourceRepository, IRepository<MongoDbContext, Schema> schemaRepository, IUserService userService, IGroupService groupService) : base(bus, notifications)
         {
             _sourceRepository = sourceRepository;
             _schemaRepository = schemaRepository;
             _simulacaoBaixaService = new SimulacaoBaixaService();
+            _userService = userService;
+            _groupService = groupService;
         }
 
         [Authorize]
@@ -262,7 +267,11 @@ namespace Simjob.Framework.Services.Api.Controllers
                 if (tituloExiste == null) return NotFound();
 
                 var planoTituloExiste = await SQLServerService.GetList(schemaName: "T_PLANO_TITULO", page: 1, limit: 1, sortField: "cd_titulo", sortDesc: false, ids: null, searchFields: "[cd_titulo]", value: $"[{cd_titulo}]", source: source, mode: SearchModeEnum.Equals);
-
+                foreach (var plano in planoTituloExiste.data)
+                {
+                    var planoConta = await SQLServerService.GetFirstByFields(nomeTabela: "vi_plano_conta", filtros: new List<(string campo, object valor)> { ("cd_plano_conta", plano["cd_plano_conta"]) }, source: source);
+                    plano["plano_conta"] = planoConta;
+                }
                 var retorno = new
                 {
                     cd_titulo = tituloExiste["cd_titulo"],
@@ -283,6 +292,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                     cd_pessoa_responsavel = tituloExiste["cd_pessoa_responsavel"],
                     cd_pessoa_empresa = tituloExiste["cd_pessoa_empresa"],
                     id_origem_titulo = tituloExiste["id_origem_titulo"],
+                    dc_obs_titulo = tituloExiste["dc_obs_titulo"],
                     plano_titulo = planoTituloExiste.data
                 };
                 return ResponseDefault(retorno);
@@ -342,7 +352,12 @@ namespace Simjob.Framework.Services.Api.Controllers
                 //validação de token
                 var cd_pessoa_logada = "";
                 var cd_usuario = "0";
-                if (tokenInfo.Count > 0) cd_pessoa_logada = tokenInfo["cd_pessoa"];
+                var userId = "";
+                if (tokenInfo.Count > 0)
+                {
+                    cd_pessoa_logada = tokenInfo["cd_pessoa"];
+                    userId = tokenInfo["userid"]; // ID do MongoDB para verificação de admin
+                }
 
                 if (string.IsNullOrEmpty(cd_pessoa_logada)) return BadRequest("cd_pessoa não configurado");
 
@@ -408,6 +423,34 @@ namespace Simjob.Framework.Services.Api.Controllers
 
                         var titulo = await SQLServerService.GetFirstByFields(source, "T_TITULO", new List<(string campo, object valor)> { new("cd_titulo", baixa.cd_titulo) });
 
+                        // Validar data retroativa
+                        var validacaoData = await ValidacaoDataRetroativaService.ValidarDataRetroativa(
+                            model.dt_baixa,
+                            model.cd_pessoa_empresa,
+                            source,
+                            userId,
+                            _userService,
+                            _groupService);
+
+                        if (!validacaoData.sucesso)
+                        {
+                            return BadRequest($"Título {baixa.cd_titulo}: {validacaoData.mensagemErro}");
+                        }
+
+                        // Validar se existem títulos anteriores em aberto
+                        var validacaoTituloAnterior = await ValidacaoTituloAnteriorService.ValidarTituloAnteriorAberto(
+                            titulo,
+                            model.cd_pessoa_empresa,
+                            source,
+                            userId,
+                            _userService,
+                            _groupService);
+
+                        if (!validacaoTituloAnterior.sucesso)
+                        {
+                            return BadRequest($"Título {baixa.cd_titulo}: {validacaoTituloAnterior.mensagemErro}");
+                        }
+
                         var titulo_baixa_dic = new Dictionary<string, object>();
                         var id_natureza_titulo = titulo["id_natureza_titulo"].ToString();
                         if (id_natureza_titulo == "1")
@@ -433,7 +476,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                                 { "vl_desc_juros_baixa", baixa.vl_desc_juros_baixa },
                                 { "vl_multa_baixa", simulacao_baixa.vl_multa_baixa },
                                 { "pc_pontualidade", simulacao_baixa.pc_pontualidade },
-                                { "tx_obs_baixa", simulacao_baixa.obs_baixa },
+                                { "tx_obs_baixa", baixa.txt_obs_baixa },
                                 { "vl_desconto_baixa_calculado", baixa.vl_desconto_baixa_calculado },
                                 { "vl_baixa_saldo_titulo", baixa.vl_baixa_saldo_titulo + baixa.vl_desconto_baixa },
                                 { "cd_politica_desconto", baixa.cd_politica_desconto },
@@ -618,7 +661,15 @@ namespace Simjob.Framework.Services.Api.Controllers
                         var updateTitulo = new SqlCommand(@"
                         UPDATE t SET
                             t.dt_liquidacao_titulo = @dt_baixa_titulo,
-                            t.vl_saldo_titulo = t.vl_titulo - ISNULL((SELECT SUM(vl_baixa_saldo_titulo) FROM T_BAIXA_TITULO b WHERE b.cd_titulo = t.cd_titulo),0),
+                            t.vl_saldo_titulo = CASE 
+                            WHEN (t.vl_titulo - ISNULL((SELECT SUM(vl_baixa_saldo_titulo) 
+                                                        FROM T_BAIXA_TITULO b 
+                                                        WHERE b.cd_titulo = t.cd_titulo), 0)) < 0 
+                            THEN 0
+                            ELSE (t.vl_titulo - ISNULL((SELECT SUM(vl_baixa_saldo_titulo) 
+                                                        FROM T_BAIXA_TITULO b 
+                                                        WHERE b.cd_titulo = t.cd_titulo), 0))
+                            END,
                             t.vl_juros_titulo = t.vl_juros_titulo + (@vl_juros + t.vl_juros_liquidado - t.vl_juros_titulo),
                             t.vl_multa_titulo = t.vl_multa_titulo + (@vl_multa + t.vl_multa_liquidada - t.vl_multa_titulo),
                             t.vl_desconto_titulo = ISNULL((SELECT SUM(vl_desconto_baixa) FROM T_BAIXA_TITULO b WHERE b.cd_titulo = t.cd_titulo),0),
@@ -763,6 +814,50 @@ namespace Simjob.Framework.Services.Api.Controllers
                 var baixaResult = await SQLServerService.GetList("vi_baixa_titulo", page, limit, sortField, sortDesc, ids, searchFields, value, source, mode, "cd_pessoa_empresa", cd_empresa);
                 if (baixaResult.success)
                 {
+                    var retorno = new
+                    {
+                        data = baixaResult.data,
+                        baixaResult.total,
+                        page,
+                        limit,
+                        pages = limit != null ? (int)Math.Ceiling((double)baixaResult.total / limit.Value) : 0
+                    };
+
+                    return ResponseDefault(retorno);
+                }
+                return BadRequest(new
+                {
+                    sucess = false,
+                    error = baixaResult.error
+                });
+            }
+            return BadRequest(new
+            {
+                error = "Fonte de dados não configurada ou inativa."
+            });
+        }
+
+        [Authorize]
+        [HttpGet()]
+        [Route("baixaMovimento")]
+        public async Task<IActionResult> GetAllBaixaMovimento(string value, SearchModeEnum mode, int? page, int? limit, string sortField, bool sortDesc = false, string ids = "", string searchFields = null, string cd_empresa = null)
+        {
+            if (cd_empresa == null) return BadRequest("campo cd_empresa não informado");
+            var schemaName = "T_Titulo";
+            if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
+            var schema = _schemaRepository.GetSchemaByField("name", schemaName);
+            var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
+            var source = _sourceRepository.GetByField("description", schemaModel.Source);
+            if (source != null && source.Active != null && source.Active == true)
+            {
+                var baixaResult = await SQLServerService.GetList("vi_baixa_titulo", page, limit, sortField, sortDesc, ids, searchFields, value, source, mode, "cd_pessoa_empresa", cd_empresa);
+                if (baixaResult.success)
+                {
+                    foreach (var item in baixaResult.data)
+                    {
+                        var movimentoResult = await SQLServerService.GetFirstByFields(source, "T_CONTA_CORRENTE", new List<(string campo, object valor)> { new("cd_baixa_titulo", item["cd_baixa_titulo"].ToString()) });
+                        item["movimento"] = movimentoResult;
+                    }
                     var retorno = new
                     {
                         data = baixaResult.data,

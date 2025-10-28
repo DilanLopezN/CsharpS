@@ -1,15 +1,18 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using MongoDB.Driver;
 using Newtonsoft.Json;
 using Simjob.Framework.Application.Controllers;
 using Simjob.Framework.Domain.Core.Bus;
 using Simjob.Framework.Domain.Core.Notifications;
+using Simjob.Framework.Domain.Core.Utils;
 using Simjob.Framework.Domain.Interfaces.Repositories;
 using Simjob.Framework.Infra.Data.Context;
 using Simjob.Framework.Infra.Identity.Contexts;
 using Simjob.Framework.Infra.Identity.Entities;
+using Simjob.Framework.Infra.Identity.Interfaces;
 using Simjob.Framework.Infra.Schemas.Entities;
 using Simjob.Framework.Services.Api.Enums;
 using Simjob.Framework.Services.Api.Models.Contas;
@@ -28,11 +31,15 @@ namespace Simjob.Framework.Services.Api.Controllers
     {
         private readonly IRepository<SourceContext, Source> _sourceRepository;
         private readonly IRepository<MongoDbContext, Schema> _schemaRepository;
+        private readonly IUserService _userService;
+        private readonly IGroupService _groupService;
 
-        public ContaReceberController(IMediatorHandler bus, INotificationHandler<DomainNotification> notifications, IRepository<SourceContext, Source> sourceRepository, IRepository<MongoDbContext, Schema> schemaRepository) : base(bus, notifications)
+        public ContaReceberController(IMediatorHandler bus, INotificationHandler<DomainNotification> notifications, IRepository<SourceContext, Source> sourceRepository, IRepository<MongoDbContext, Schema> schemaRepository, IUserService userService, IGroupService groupService) : base(bus, notifications)
         {
             _sourceRepository = sourceRepository;
             _schemaRepository = schemaRepository;
+            _userService = userService;
+            _groupService = groupService;
         }
 
         [Authorize]
@@ -677,7 +684,11 @@ namespace Simjob.Framework.Services.Api.Controllers
                 if (tituloExiste == null) return NotFound();
 
                 var planoTituloExiste = await SQLServerService.GetList(schemaName: "T_PLANO_TITULO", page: 1, limit: 1, sortField: "cd_titulo", sortDesc: false, ids: null, searchFields: "[cd_titulo]", value: $"[{cd_titulo}]", source: source, mode: SearchModeEnum.Equals);
-
+                foreach (var plano in planoTituloExiste.data)
+                {
+                    var planoConta = await SQLServerService.GetFirstByFields(nomeTabela: "vi_plano_conta", filtros: new List<(string campo, object valor)> { ("cd_plano_conta", plano["cd_plano_conta"]) }, source: source);
+                    plano["plano_conta"] = planoConta;
+                }
                 var retorno = new
                 {
                     cd_titulo = tituloExiste["cd_titulo"],
@@ -765,6 +776,16 @@ namespace Simjob.Framework.Services.Api.Controllers
         // Status alterado para 3 (Baixado) ao invés de 2 (Cancelado)
         public async Task<IActionResult> CancelarMultiplosTitulos([FromBody] CancelamentoMultiploTitulosModel dados)
         {
+            var accessToken = Request.Headers[HeaderNames.Authorization];
+            var tokenInfo = Util.GetUserInfoFromToken(accessToken);
+            var cd_pessoa_logada = "";
+            var userId = "";
+            if (tokenInfo.Count > 0)
+            {
+                cd_pessoa_logada = tokenInfo["cd_pessoa"];
+                userId = tokenInfo["userid"]; // ID do MongoDB para verificação de admin
+            }
+
             var schemaName = "T_Titulo";
             if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
             var schema = _schemaRepository.GetSchemaByField("name", schemaName);
@@ -822,7 +843,37 @@ namespace Simjob.Framework.Services.Api.Controllers
                             }
                             // Obter cd_pessoa_empresa do título
                             int cd_pessoa_empresa = Convert.ToInt32(titulo["cd_pessoa_empresa"]);
-                            
+
+                            // Validar data retroativa
+                            var validacaoData = await ValidacaoDataRetroativaService.ValidarDataRetroativa(
+                                dados.dt_cancelamento,
+                                cd_pessoa_empresa,
+                                source,
+                                userId,
+                                _userService,
+                                _groupService);
+
+                            if (!validacaoData.sucesso)
+                            {
+                                erros.Add($"Título {cd_titulo}: {validacaoData.mensagemErro}");
+                                continue;
+                            }
+
+                            // Validar se existem títulos anteriores em aberto
+                            var validacaoTituloAnterior = await ValidacaoTituloAnteriorService.ValidarTituloAnteriorAberto(
+                                titulo,
+                                cd_pessoa_empresa,
+                                source,
+                                userId,
+                                _userService,
+                                _groupService);
+
+                            if (!validacaoTituloAnterior.sucesso)
+                            {
+                                erros.Add($"Título {cd_titulo}: {validacaoTituloAnterior.mensagemErro}");
+                                continue;
+                            }
+
                             // Buscar cd_local_movto dos parâmetros
                             var cd_local_movto = await GetLocalMovto(cd_pessoa_empresa, source);
                             if (cd_local_movto == null)
@@ -1108,7 +1159,9 @@ namespace Simjob.Framework.Services.Api.Controllers
                     var baixasParcialDia = baixasParciais.Where(b => b.ContainsKey("dt_baixa_titulo") && 
                         Convert.ToDateTime(b["dt_baixa_titulo"]).Date == dataBaixa.Date).ToList();
 
-                    if (baixasParcialDia.Any())
+                    //Comentando isso para arrumar a data
+                    //if (baixasParcialDia.Any())
+                    if(false)
                     {
                         // Se existem baixas parciais no mesmo dia
                         resultado.vl_multa_calculada = baixasParcialDia.Sum(b => Convert.ToDecimal(b["vl_multa_calculada"] ?? 0));

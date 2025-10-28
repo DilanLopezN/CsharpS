@@ -31,6 +31,77 @@ namespace Simjob.Framework.Services.Api.Services
 
     }
 
+    public class QueryResult
+    {
+      public bool Success { get; set; }
+      public List<Dictionary<string, object>> Data { get; set; }
+
+      public QueryResult()
+      {
+        Success = false;
+        Data = new List<Dictionary<string, object>>();
+      }
+    }
+
+    public static async Task<QueryResult> ExecuteQuery(
+    Source source,
+    string query,
+    Dictionary<string, object> parameters = null)
+    {
+      var result = new QueryResult();
+
+      try
+      {
+        // CORREÇÃO: Montar connectionString da mesma forma que os outros métodos
+        var connectionString = $"Server={source.Host};Database={source.DbName};User Id={source.User};Password={source.Password};";
+
+        using (var connection = new SqlConnection(connectionString))
+        {
+          await connection.OpenAsync();
+
+          using (var command = new SqlCommand(query, connection))
+          {
+            // Adicionar parâmetros se fornecidos
+            if (parameters != null)
+            {
+              foreach (var param in parameters)
+              {
+                command.Parameters.AddWithValue(param.Key, param.Value ?? DBNull.Value);
+              }
+            }
+
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+              while (await reader.ReadAsync())
+              {
+                var row = new Dictionary<string, object>();
+
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                  var columnName = reader.GetName(i);
+                  var value = reader.IsDBNull(i) ? null : reader.GetValue(i);
+                  row[columnName] = value;
+                }
+
+                result.Data.Add(row);
+              }
+            }
+          }
+        }
+
+        result.Success = true;
+        return result;
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"[ExecuteQuery Error]: {ex.Message}");
+        Console.WriteLine($"[ExecuteQuery StackTrace]: {ex.StackTrace}");
+        return result;
+      }
+    }
+
+
+
     public static async Task<bool> CheckIfTableExists(string connectionString, string tableName)
     {
       var sql = $"SELECT OBJECT_ID('{tableName}', 'U')";
@@ -542,7 +613,7 @@ object value)
       return resultado;
     }
 
-    public static async Task<(bool success, List<Dictionary<string, object>>? data, int total, string? error)> GetListEntity(string schemaName, int? page, int? limit, string sortField = null, bool sortDesc = false, string ids = null, string searchFields = null, string value = null, Source source = null, SearchModeEnum mode = SearchModeEnum.Equals, string? cd_empresa_field = null, string? cd_empresa_value = null, Infra.Domain.Models.SchemaModel? schemaModel = null)
+    public static async Task<(bool success, List<Dictionary<string, object>>? data, int total, string? error)> GetListEntity(string schemaName, string? primaryKey, int? page, int? limit, string sortField = null, bool sortDesc = false, string ids = null, string searchFields = null, string value = null, Source source = null, SearchModeEnum mode = SearchModeEnum.Equals, string? cd_empresa_field = null, string? cd_empresa_value = null, Infra.Domain.Models.SchemaModel? schemaModel = null)
 
     {
       //trocar por string builder
@@ -561,13 +632,14 @@ object value)
       if (!string.IsNullOrWhiteSpace(ids))
       {
         var idList = ids.Split(',').Select(id => $"'{id.Trim()}'");
-        whereConditions.Add($"[{searchFields}] IN ({string.Join(",", idList)})");
+        whereConditions.Add($"[{primaryKey}] IN ({string.Join(",", idList)})");
       }
 
       if (!string.IsNullOrWhiteSpace(searchFields) && !string.IsNullOrWhiteSpace(value))
       {
         // Extrai cada "[item1,item2,...]" em listas separadas
         var fieldGroups = Regex.Matches(searchFields, @"\[(.*?)\]")
+                                .Cast<Match>()
                                 .Cast<Match>()
                                 .Select(m => m.Groups[1].Value.Split(',')
                                                                   .Select(f => f.Trim())
@@ -1310,11 +1382,11 @@ List<(string join, string where)>? joins = null
     /// </summary>
     private static string GenerateSearchCondition(string field, string value, SearchModeEnum mode)
     {
-      if(value == "null")
+      if (value == "null")
       {
         return $"[{field}] is null";
       }
-      if(value == "not null")
+      if (value == "not null")
       {
         return $"[{field}] is not null";
       }

@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using System.Data.SqlClient;
 using MongoDB.Driver;
 using Newtonsoft.Json;
@@ -8,10 +9,12 @@ using Simjob.Framework.Application.Controllers;
 using Simjob.Framework.Domain.Core.Bus;
 using Simjob.Framework.Domain.Core.Commands;
 using Simjob.Framework.Domain.Core.Notifications;
+using Simjob.Framework.Domain.Core.Utils;
 using Simjob.Framework.Domain.Interfaces.Repositories;
 using Simjob.Framework.Infra.Data.Context;
 using Simjob.Framework.Infra.Identity.Contexts;
 using Simjob.Framework.Infra.Identity.Entities;
+using Simjob.Framework.Infra.Identity.Interfaces;
 using Simjob.Framework.Infra.Schemas.Entities;
 using Simjob.Framework.Services.Api.Enums;
 using Simjob.Framework.Services.Api.Models;
@@ -31,11 +34,15 @@ namespace Simjob.Framework.Services.Api.Controllers
     {
         private readonly IRepository<SourceContext, Source> _sourceRepository;
         private readonly IRepository<MongoDbContext, Schema> _schemaRepository;
+        private readonly IUserService _userService;
+        private readonly IGroupService _groupService;
 
-        public MovimentosFinanceirosController(IMediatorHandler bus, INotificationHandler<DomainNotification> notifications, IRepository<SourceContext, Source> sourceRepository, IRepository<MongoDbContext, Schema> schemaRepository) : base(bus, notifications)
+        public MovimentosFinanceirosController(IMediatorHandler bus, INotificationHandler<DomainNotification> notifications, IRepository<SourceContext, Source> sourceRepository, IRepository<MongoDbContext, Schema> schemaRepository, IUserService userService, IGroupService groupService) : base(bus, notifications)
         {
             _sourceRepository = sourceRepository;
             _schemaRepository = schemaRepository;
+            _userService = userService;
+            _groupService = groupService;
         }
 
         [Authorize]
@@ -334,6 +341,14 @@ namespace Simjob.Framework.Services.Api.Controllers
         [HttpPost()]
         public async Task<IActionResult> Insert([FromBody] InsertContaCorrenteModel command)
         {
+            var accessToken = Request.Headers[HeaderNames.Authorization];
+            var tokenInfo = Util.GetUserInfoFromToken(accessToken);
+            var userId = "";
+            if (tokenInfo.Count > 0)
+            {
+                userId = tokenInfo["userid"];
+            }
+
             var schemaName = "T_Conta_Corrente";
             if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "").Replace("_", "");
 
@@ -355,6 +370,23 @@ namespace Simjob.Framework.Services.Api.Controllers
 
             try
             {
+                // Validar data retroativa se informada
+                if (command.dta_conta_corrente.HasValue && command.cd_pessoa_empresa.HasValue)
+                {
+                    var validacaoData = await ValidacaoDataRetroativaService.ValidarDataRetroativa(
+                        command.dta_conta_corrente.Value,
+                        command.cd_pessoa_empresa.Value,
+                        source,
+                        userId,
+                        _userService,
+                        _groupService);
+
+                    if (!validacaoData.sucesso)
+                    {
+                        return BadRequest(validacaoData.mensagemErro);
+                    }
+                }
+
                 // Preparar dados para inserção (seguindo a lógica da procedure sp_add_conta_corrente)
                 var insertData = new Dictionary<string, object>
                 {
@@ -735,6 +767,14 @@ namespace Simjob.Framework.Services.Api.Controllers
         [HttpPost("estorno")]
         public async Task<IActionResult> Estorno([FromBody] EstornoContaCorrenteModel command)
         {
+            var accessToken = Request.Headers[HeaderNames.Authorization];
+            var tokenInfo = Util.GetUserInfoFromToken(accessToken);
+            var userId = "";
+            if (tokenInfo.Count > 0)
+            {
+                userId = tokenInfo["userid"];
+            }
+
             var schemaName = "T_Conta_Corrente";
             if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "").Replace("_", "");
 
@@ -766,6 +806,31 @@ namespace Simjob.Framework.Services.Api.Controllers
                 if (registroOriginal == null)
                 {
                     return NotFound("Conta corrente não encontrada");
+                }
+
+                // Validar data retroativa do estorno
+                // O estorno sempre usa DateTime.Today, mas validamos se o registro original não está muito antigo
+                if (registroOriginal.ContainsKey("dta_conta_corrente") && registroOriginal["dta_conta_corrente"] != null)
+                {
+                    DateTime dataOriginal = Convert.ToDateTime(registroOriginal["dta_conta_corrente"]);
+
+                    if (registroOriginal.ContainsKey("cd_pessoa_empresa") && registroOriginal["cd_pessoa_empresa"] != null)
+                    {
+                        int cd_pessoa_empresa = Convert.ToInt32(registroOriginal["cd_pessoa_empresa"]);
+
+                        var validacaoData = await ValidacaoDataRetroativaService.ValidarDataRetroativa(
+                            dataOriginal,
+                            cd_pessoa_empresa,
+                            source,
+                            userId,
+                            _userService,
+                            _groupService);
+
+                        if (!validacaoData.sucesso)
+                        {
+                            return BadRequest($"Estorno bloqueado: {validacaoData.mensagemErro}");
+                        }
+                    }
                 }
 
                 // Preparar dados para o estorno baseado no registro original

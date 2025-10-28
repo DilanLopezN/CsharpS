@@ -13,7 +13,7 @@ namespace Simjob.Framework.Infra.Identity.Commands
         public string Telefone { get; set; }
         public string CompanySiteIdDefault { get; set; }
         public string[] CompanySiteIds { get; set; }
-        public string Email { get; set; }
+        public string UserName { get; set; }
         public string GroupId { get; set; }
         public bool Root { get; set; }
         public bool ControlAccess { get; set; } = false;
@@ -21,7 +21,6 @@ namespace Simjob.Framework.Infra.Identity.Commands
         [JsonIgnore]
         public string UpdateBy { get; set; }
         public string cd_pessoa { get; set; }
-        public string? cd_usuario { get; set; }
         public override bool IsValid()
         {
             //ValidationResult = new SignInUserValidation().Validate(this);
