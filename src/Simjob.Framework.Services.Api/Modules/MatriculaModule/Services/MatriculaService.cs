@@ -156,19 +156,21 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
 
         if (endereco_responsavel != null)
         {
-          // NOVO: Buscar TIPO de logradouro (Rua, Avenida, etc.)
           if (endereco_responsavel.ContainsKey("cd_tipo_logradouro") &&
-              endereco_responsavel["cd_tipo_logradouro"] != null)
+               endereco_responsavel["cd_tipo_logradouro"] != null)
           {
-            var filtroTipoLogradouro = new List<(string campo, object valor)>
-            { new("cd_localidade", endereco_responsavel["cd_tipo_logradouro"].ToString()) };
-            var tipoLogradouroExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtroTipoLogradouro);
-            if (tipoLogradouroExists != null && tipoLogradouroExists.ContainsKey("no_localidade"))
+            var tipoLogradouroExists = await SQLServerService.GetFirstByFields(
+              source,
+              "T_TIPO_LOGRADOURO",  // ⬅️ TABELA CORRETA!
+              new List<(string campo, object valor)> {
+        new("cd_tipo_logradouro", endereco_responsavel["cd_tipo_logradouro"].ToString())
+              });
+
+            if (tipoLogradouroExists != null && tipoLogradouroExists.ContainsKey("no_tipo_logradouro"))
             {
-              enderecoResponsavel = $"{tipoLogradouroExists["no_localidade"]?.ToString() ?? ""} ";
+              enderecoResponsavel = $"{tipoLogradouroExists["no_tipo_logradouro"]?.ToString() ?? ""} ";
             }
           }
-
           // Buscar nome do logradouro
           if (endereco_responsavel.ContainsKey("cd_loc_logradouro") &&
               endereco_responsavel["cd_loc_logradouro"] != null)
@@ -438,11 +440,21 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
         }
 
         var matriculaRematricula = "";
-        if (matriculaExists.ContainsKey("vl_matricula_contrato") && matriculaExists["vl_matricula_contrato"] != null)
+
+        var taxaMatricula = await SQLServerService.GetFirstByFields(source, "T_TAXA_MATRICULA", new List<(string campo, object valor)> {
+    new("cd_contrato", cdContrato)
+});
+
+        if (taxaMatricula != null && taxaMatricula.ContainsKey("vl_taxa_matricula"))
         {
-          decimal vlMatriculaContrato = Convert.ToDecimal(matriculaExists["vl_matricula_contrato"]);
-          matriculaRematricula = string.Format("{0:#,0.00}", vlMatriculaContrato);
+          matriculaRematricula = string.Format("{0:#,0.00}", taxaMatricula["vl_taxa_matricula"]);
         }
+        else if (matriculaExists["vl_matricula_contrato"] != null)
+        {
+          matriculaRematricula = string.Format("{0:#,0.00}", matriculaExists["vl_matricula_contrato"]);
+        }
+
+
 
         decimal vlMaterialMatricula = 0;
         decimal vlSemDesconto = Convert.ToDecimal(matriculaExists["vl_curso_contrato"] ?? 0) / Convert.ToDecimal(matriculaExists["nm_parcelas_mensalidade"] ?? 1);
@@ -499,6 +511,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
 
               var simulacaoBaixa = await _simulacaoBaixaService.SimularBaixaTitulo(tituloSimulado, DateTime.Now, parametrosEscola, source);
               valorbaixaDesc = simulacaoBaixa.vl_liquidacao_baixa;
+              Console.WriteLine("Valor baixa com desconto simulado: " + simulacaoBaixa);
             }
             else
             {
@@ -550,6 +563,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
               {
                 var simulacaoBaixa = await _simulacaoBaixaService.SimularBaixaTitulo(tituloParaCalculo, DateTime.Now, parametrosEscola, source);
                 valorbaixaDesc = simulacaoBaixa.vl_liquidacao_baixa;
+                Console.WriteLine("Valor baixa com desconto simulado3: " + simulacaoBaixa);
               }
               else
               {
@@ -758,6 +772,28 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
           };
         }
 
+        decimal parcelaLiquida = 0;
+        if (matriculaExists.ContainsKey("vl_parcela_liquida") && matriculaExists["vl_parcela_liquida"] != null)
+        {
+          parcelaLiquida = Convert.ToDecimal(matriculaExists["vl_parcela_liquida"]);
+        }
+
+        // Se estiver zerado, calcular:
+        if (parcelaLiquida == 0)
+        {
+          decimal vlParcela = Convert.ToDecimal(matriculaExists["vl_parcela_contrato"] ?? 0);
+          decimal pcDesconto = Convert.ToDecimal(matriculaExists["pc_desconto_contrato"] ?? 0);
+          decimal pcBolsa = Convert.ToDecimal(matriculaExists["pc_desconto_bolsa"] ?? 0);
+
+          // Aplicar descontos
+          decimal vlDesconto = (vlParcela * pcDesconto) / 100;
+          decimal vlBolsa = (vlParcela * pcBolsa) / 100;
+
+          parcelaLiquida = vlParcela - vlDesconto - vlBolsa;
+        }
+
+
+
         var replacements = new Dictionary<string, string>
     {
       { "«NomeEscola»", nomeEscola },
@@ -811,7 +847,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
       { "«ValorCurso»", $"R$ {decimal.Parse(matriculaExists["vl_curso_contrato"]?.ToString() ?? "0").ToString("N2")}" },
       { "«ValorMaterial»", $"R$ {decimal.Parse(matriculaExists["vl_material_contrato"]?.ToString() ?? "0").ToString("N2")}" },
       { "«ValorComDescontoMaterial»", $"R$ {decimal.Parse(matriculaExists["vl_parcela_liq_material"]?.ToString() ?? "0").ToString("N2")}" },
-      { "«ParcelaLiquida»", $"R$ {decimal.Parse(matriculaExists["vl_parcela_liquida"]?.ToString() ?? "0").ToString("N2")}" },
+     { "«ParcelaLiquida»", $"R$ {parcelaLiquida.ToString("N2")}" },
       { "«NroParcelas»", matriculaExists["nm_parcelas_mensalidade"]?.ToString() ?? "" },
       { "«NroParcelasTotal»", nroParcelas },
       { "«NroParcelasCurso»", matriculaExists["nm_parcelas_mensalidade"]?.ToString() ?? "" },
@@ -820,7 +856,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
       { "«NroVencimentoComDesconto»", nroVencimentoComDesconto },
       { "«VencimentosTitulosComDesc»", vencimentosTitulosComDesc },
       { "«VencimentosTitulosSemDesc»", vencimentosTitulosSemDesc },
-      { "«TipoAdiantamento»", aditamento_nmPrevisaoInicial?["id_tipo_aditamento"]?.ToString() ?? "" },
+{ "«TipoAdiantamento»", aditamento_nmPrevisaoInicial != null && aditamento_nmPrevisaoInicial.ContainsKey("id_tipo_aditamento") && aditamento_nmPrevisaoInicial["id_tipo_aditamento"] != null ? aditamento_nmPrevisaoInicial["id_tipo_aditamento"].ToString() : "" },
       { "«NroPrevisaoDias»", aditamento_nmPrevisaoInicial?["nm_previsao_inicial"]?.ToString() ?? "" },
       { "«Observacao»", aditamento_nmPrevisaoInicial?["tx_obs_aditamento"]?.ToString() ?? "" },
       { "«NumeroContrato»", matriculaExists["nm_contrato"]?.ToString() ?? "" },
@@ -828,7 +864,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
       { "«TipoFinanceiroTaxa»", tipoFinanceiro?["dc_tipo_financeiro"]?.ToString() ?? "" },
       { "«TipoMatricula»", tipoMatriculaTexto },
       { "«Modalidade»", regime?["no_regime"]?.ToString() ?? "" },
-      { "«BolsaMaterial»", decimal.Parse(matriculaExists["vl_material_contrato"]?.ToString() ?? "0").ToString("N2") },
+      { "«BolsaMaterial»", decimal.Parse(matriculaExists["pc_bolsa_material"]?.ToString() ?? "0").ToString("N2") + "%" },
       { "«GradeValoresDescontosAntecipa»", "" },
       { "«GradeValoresParcelas»", "" },
       { "«GradeDescontosContrato»", "" },
@@ -845,6 +881,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
         // Buscar dados para as grades
         var cursosContrato = await ObterCursosDoContrato(source, cdContrato);
         var descontosAntecipacao = await ObterDescontosAntecipacao(source, cdContrato, cd_pessoa_escola);
+        var parcelasTitulos = await ObterTitulosContrato(source, cdContrato, cd_pessoa_escola);
 
         // Criar um novo MemoryStream que não será fechado automaticamente
         var novoArquivo = new MemoryStream();
@@ -864,6 +901,17 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
 
             // Preencher grade de descontos
             PreencherGradeDescontosAntecipacao(doc, descontosAntecipacao);
+            // ADICIONAR AQUI:
+            if (parcelasTitulos != null && parcelasTitulos.Any())
+            {
+              PreencherGradeValoresParcelas(doc, parcelasTitulos);
+            }
+
+            var parcelasMensalidade = await ObterParcelasDoContrato(source, cdContrato);
+            if (parcelasMensalidade != null && parcelasMensalidade.Any())
+            {
+              PreencherGradeValoresParcelas(doc, parcelasMensalidade);
+            }
 
           }
           catch (Exception ex)
@@ -894,6 +942,63 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
       }
     }
 
+    private async Task<List<Dictionary<string, object>>> ObterTitulosContrato(Source source, int cdContrato, int cdPessoaEscola)
+    {
+      try
+      {
+        var titulos = await SQLServerService.GetList(
+          "T_TITULO",
+          null,
+          null,
+          "nm_parcela_titulo",
+          false,
+          null,
+          "[cd_origem_titulo],[id_origem_titulo],[cd_pessoa_empresa]",
+          $"[{cdContrato}],[22],[{cdPessoaEscola}]",
+          source,
+          SearchModeEnum.Equals,
+          null,
+          null
+        );
+
+        return titulos.success && titulos.data != null ? titulos.data : new List<Dictionary<string, object>>();
+      }
+      catch { return new List<Dictionary<string, object>>(); }
+    }
+
+    private async Task<List<Dictionary<string, object>>> ObterParcelasDoContrato(Source source, int cdContrato)
+    {
+      try
+      {
+        // Buscar títulos do contrato (mensalidade)
+        var titulos = await SQLServerService.GetList(
+          "T_TITULO",
+          null,
+          null,
+          "nm_parcela",
+          false,
+          null,
+          "[cd_origem_titulo],[id_origem_titulo],[dc_tipo_titulo]",
+          $"[{cdContrato}],[22],[ME]",
+          source,
+          SearchModeEnum.Equals,
+          null,
+          null
+        );
+
+        if (titulos.success && titulos.data != null)
+        {
+          return titulos.data.OrderBy(t => Convert.ToInt32(t["nm_parcela"] ?? 0)).ToList();
+        }
+
+        return new List<Dictionary<string, object>>();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"[ObterParcelasDoContratoErro]: {ex.Message}");
+        return new List<Dictionary<string, object>>();
+      }
+    }
     private (bool success, MemoryStream? arquivo, string? erro) GerarContrato(string nomeContrato, Dictionary<string, string> replacements, int? cd_pessoa_escola = null)
     {
       try
@@ -1493,6 +1598,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
               parametrosEscola,
               source
           );
+          Console.WriteLine("Valor baixa com desconto simulado2: " + simulacaoBaixa);
 
           if (simulacaoBaixa.ExtraData.ContainsKey("diasPoliticaAntecipacao"))
           {
@@ -1978,52 +2084,56 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
 
       doc.MainDocumentPart.Document.Save();
     }
-
     private static Table CriarTabelaValoresParcelas(List<Dictionary<string, object>> parcelas)
     {
       var table = new Table();
 
       var tableProperties = new TableProperties(
-          new TableBorders(
-              new TopBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
-              new BottomBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
-              new LeftBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
-              new RightBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
-              new InsideHorizontalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
-              new InsideVerticalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 }
-          ),
-          new TableWidth { Width = "5000", Type = TableWidthUnitValues.Pct }
+        new TableBorders(
+          new TopBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+          new BottomBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+          new LeftBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+          new RightBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+          new InsideHorizontalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 },
+          new InsideVerticalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 12 }
+        ),
+        new TableWidth { Width = "5000", Type = TableWidthUnitValues.Pct }
       );
       table.AppendChild(tableProperties);
 
-      // Cabeçalho
+      // Cabeçalho igual ao legado
       var headerRow = new TableRow();
       headerRow.Append(
-          CriarCelula("Parcela", true),
-          CriarCelula("Vencimento", true),
-          CriarCelula("Valor Bruto", true)
+        CriarCelula("VENCIMENTO", true),
+        CriarCelula("DIA", true),
+        CriarCelula("MATERIAL (R$)", true),
+        CriarCelula("PARCELA (R$)", true),
+        CriarCelula("TOTAL (R$)", true)
       );
       table.Append(headerRow);
 
       // Dados
-      foreach (var parcela in parcelas)
+      foreach (var titulo in parcelas)
       {
-        decimal valorBruto = Convert.ToDecimal(parcela["vl_titulo"] ?? 0);
-        DateTime dtVencimento = Convert.ToDateTime(parcela["dt_vcto_titulo"]);
-        int numParcela = Convert.ToInt32(parcela["nm_parcela"] ?? 0);
+        DateTime dtVcto = Convert.ToDateTime(titulo["dt_vcto_titulo"]);
+        int dia = dtVcto.Day;
+        decimal vlMaterial = titulo["dc_tipo_titulo"]?.ToString() == "MT" ? Convert.ToDecimal(titulo["vl_titulo"] ?? 0) : 0;
+        decimal vlParcela = titulo["dc_tipo_titulo"]?.ToString() == "ME" ? Convert.ToDecimal(titulo["vl_titulo"] ?? 0) : 0;
+        decimal vlTotal = vlMaterial + vlParcela;
 
         var dataRow = new TableRow();
         dataRow.Append(
-            CriarCelula(numParcela.ToString()),
-            CriarCelula(dtVencimento.ToString("dd/MM/yyyy")),
-            CriarCelula($"R$ {valorBruto.ToString("N2")}")
+          CriarCelula(dtVcto.ToString("dd/MM/yyyy")),
+          CriarCelula(dia.ToString()),
+          CriarCelula($"R$ {vlMaterial:N2}"),
+          CriarCelula($"R$ {vlParcela:N2}"),
+          CriarCelula($"R$ {vlTotal:N2}")
         );
         table.Append(dataRow);
       }
 
       return table;
     }
-
     /// <summary>
     /// Preenche a grade de Descontos do Contrato (DESCONTOS APLICADOS)
     /// </summary>
