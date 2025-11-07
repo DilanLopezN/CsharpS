@@ -89,6 +89,11 @@ namespace Simjob.Framework.Services.Api.Models
             public int cd_loc_pais { get; set; }
             public int cd_endereco { get; set; }
             public string key { get; set; }
+            public string no_logradouro { get; set; }
+            public string no_bairro { get; set; }
+            public string no_cidade { get; set; }
+            public string no_estado { get; set; }
+            public string no_pais { get; set; }
         }
 
         public class Horarios

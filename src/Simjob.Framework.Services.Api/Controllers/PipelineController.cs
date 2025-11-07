@@ -354,25 +354,25 @@ namespace Simjob.Framework.Services.Api.Controllers
                     var t_pessoa_insert = await SQLServerService.Update("T_PESSOA", pessoaDict, source, "cd_pessoa", cd_pessoa);
                     if (!t_pessoa_insert.success) return BadRequest(t_pessoa_insert.error);
 
+                    var filtrosEmail = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa), new("cd_tipo_telefone", 4) };
+                    var emailExists = await SQLServerService.GetFirstByFields(source, "T_Telefone", filtrosEmail);
+                    var cd_email = emailExists?["cd_telefone"];
                     if (!string.IsNullOrEmpty(model.Pessoa.dc_email))
                     {
-                        var filtrosEmail = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa), new("cd_tipo_telefone", 4) };
-                        var emailExists = await SQLServerService.GetFirstByFields(source, "T_Telefone", filtrosEmail);
 
                         var telefoneDictEmail = new Dictionary<string, object>
-                            {
-                                { "cd_pessoa", cd_pessoa },
-                                { "cd_tipo_telefone", 4 },
-                                { "cd_classe_telefone", 1 },
-                                { "dc_fone_mail", model.Pessoa.dc_email },
-                                { "cd_endereco", null },
-                                { "id_telefone_principal",1 },
-                                { "cd_operadora", null }
-                            };
+                        {
+                            { "cd_pessoa", cd_pessoa },
+                            { "cd_tipo_telefone", 4 },
+                            { "cd_classe_telefone", 1 },
+                            { "dc_fone_mail", model.Pessoa.dc_email },
+                            { "cd_endereco", null },
+                            { "id_telefone_principal",1 },
+                            { "cd_operadora", null }
+                        };
                         if (emailExists != null)
                         {
-                            var cd_telefone = emailExists["cd_telefone"];
-                            var t_telefone_email_insert = await SQLServerService.Update("T_TELEFONE", telefoneDictEmail, source, "cd_telefone", cd_telefone);
+                            var t_telefone_email_insert = await SQLServerService.Update("T_TELEFONE", telefoneDictEmail, source, "cd_telefone", cd_email);
                             if (!t_telefone_email_insert.success) return BadRequest(t_telefone_email_insert.error);
                         }
                         else
@@ -381,10 +381,18 @@ namespace Simjob.Framework.Services.Api.Controllers
                             if (!t_telefone_email_insert.success) return BadRequest(t_telefone_email_insert.error);
                         }
                     }
+                    else
+                    {
+                        if(cd_email != null)
+                        {
+                            var t_telefone_telefone_delete = await SQLServerService.Delete("T_TELEFONE", "cd_telefone", cd_email.ToString(), source);
+                        }
+                    }
+                    var filtrosTelefone = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa), new("cd_tipo_telefone", 1) };
+                    var telefoneExists = await SQLServerService.GetFirstByFields(source, "T_Telefone", filtrosTelefone);
+                    var cd_telefone = telefoneExists?["cd_telefone"];
                     if (!string.IsNullOrEmpty(model.Pessoa.telefone))
                     {
-                        var filtrosTelefone = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa), new("cd_tipo_telefone", 1) };
-                        var telefoneExists = await SQLServerService.GetFirstByFields(source, "T_Telefone", filtrosTelefone);
                         var telefoneDictTelefone = new Dictionary<string, object>
                         {
                             { "cd_pessoa", cd_pessoa },
@@ -397,7 +405,6 @@ namespace Simjob.Framework.Services.Api.Controllers
                         };
                         if (telefoneExists != null)
                         {
-                            var cd_telefone = telefoneExists["cd_telefone"];
                             var t_telefone_telefone_insert = await SQLServerService.Update("T_TELEFONE", telefoneDictTelefone, source, "cd_telefone", cd_telefone);
                             if (!t_telefone_telefone_insert.success) return BadRequest(t_telefone_telefone_insert.error);
                         }
@@ -407,10 +414,18 @@ namespace Simjob.Framework.Services.Api.Controllers
                             if (!t_telefone_telefone_insert.success) return BadRequest(t_telefone_telefone_insert.error);
                         }
                     }
+                    else
+                    {
+                        if(cd_telefone != null)
+                        {
+                            var t_telefone_telefone_delete = await SQLServerService.Delete("T_TELEFONE", "cd_telefone", cd_telefone.ToString(), source);
+                        }
+                    }
+                    var filtrosCelular = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa), new("cd_tipo_telefone", 3) };
+                    var celularexists = await SQLServerService.GetFirstByFields(source, "T_Telefone", filtrosCelular);
+                    var cd_celular = celularexists?["cd_telefone"];
                     if (!string.IsNullOrEmpty(model.Pessoa.celular))
                     {
-                        var filtrosCelular = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa), new("cd_tipo_telefone", 3) };
-                        var celularexists = await SQLServerService.GetFirstByFields(source, "T_Telefone", filtrosCelular);
                         var telefoneDictTelefone = new Dictionary<string, object>
                         {
                             { "cd_pessoa", cd_pessoa },
@@ -423,14 +438,20 @@ namespace Simjob.Framework.Services.Api.Controllers
                         };
                         if (celularexists != null)
                         {
-                            var cd_telefone = celularexists["cd_telefone"];
-                            var t_telefone_celular_insert = await SQLServerService.Update("T_TELEFONE", telefoneDictTelefone, source, "cd_telefone", cd_telefone);
+                            var t_telefone_celular_insert = await SQLServerService.Update("T_TELEFONE", telefoneDictTelefone, source, "cd_telefone", cd_celular);
                             if (!t_telefone_celular_insert.success) return BadRequest(t_telefone_celular_insert.error);
                         }
                         else
                         {
                             var t_telefone_celular_insert = await SQLServerService.Insert("T_TELEFONE", telefoneDictTelefone, source);
                             if (!t_telefone_celular_insert.success) return BadRequest(t_telefone_celular_insert.error);
+                        }
+                    }
+                    else
+                    {
+                        if(cd_celular != null)
+                        {
+                            var t_telefone_telefone_delete = await SQLServerService.Delete("T_TELEFONE", "cd_telefone", cd_celular.ToString(), source);
                         }
                     }
                     if (model.Pessoa.EnderecoPessoaPipeLine != null)
@@ -531,6 +552,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                         if (!string.IsNullOrEmpty(model.Pessoa.nm_cpf)) pessoa_fisicaDict.Add("nm_cpf", model.Pessoa.nm_cpf);
                         if (model.Pessoa.nm_sexo != null) pessoa_fisicaDict.Add("nm_sexo", model.Pessoa.nm_sexo);
                         if (model.Pessoa.cd_escolaridade != null) pessoa_fisicaDict.Add("cd_escolaridade", model.Pessoa.cd_escolaridade);
+                        if (model.Pessoa.dt_nascimento != null) pessoa_fisicaDict.Add("dt_nascimento", model.Pessoa.dt_nascimento);
 
                         var t_pessoa_fisica_insert = await SQLServerService.Update("T_PESSOA_FISICA", pessoa_fisicaDict, source, "cd_pessoa_fisica", cd_pessoa);
                         if (!t_pessoa_fisica_insert.success) return BadRequest(t_pessoa_fisica_insert.error);

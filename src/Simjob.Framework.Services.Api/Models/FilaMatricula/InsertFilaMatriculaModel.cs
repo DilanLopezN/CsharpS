@@ -19,6 +19,7 @@ namespace Simjob.Framework.Services.Api.Models.FilaMatricula
         public int? cd_produto { get; set; }
         public DateTime dt_programada_contato { get; set; }
         public int? cd_curso_recomendado { get; set; }
+        public double? nm_resultado_teste { get; set; }
         //public object no_responsavel { get; set; }      
         public List<Dia> dias { get; set; } = new List<Dia>();
         public List<Periodo> periodos { get; set; } = new List<Periodo>();     

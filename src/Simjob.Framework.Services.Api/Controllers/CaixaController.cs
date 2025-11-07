@@ -1665,6 +1665,7 @@ namespace Simjob.Framework.Services.Api.Controllers
             int? cd_pessoa = null, 
             string status = null,
             string dc_caixa = null,
+            string dc_movimentacao_financeira = null,
             DateTime? dt_inicio = null,
             DateTime? dt_fim = null,
             int? page = 1,
@@ -1680,14 +1681,24 @@ namespace Simjob.Framework.Services.Api.Controllers
 
             try
             {
-                // Construir query base
-                var query = @"
-                    SELECT c.*, 
-                           COUNT(*) OVER() as total_records
+                // Construir query interna com DISTINCT para evitar duplicatas devido aos JOINs
+                var innerQuery = @"
+                    SELECT DISTINCT c.cd_caixa, 
+                           c.dc_caixa, 
+                           c.id_status_caixa, 
+                           c.cd_local_movto, 
+                           c.dt_abertura, 
+                           c.dt_fechamento, 
+                           c.cd_empresa, 
+                           c.cd_pessoa_solicitacao_fechamento, 
+                           c.cd_pessoa_validacao, 
+                           c.vl_saldo_real, 
+                           c.id_caixa_central
                     FROM T_CAIXA c";
 
                 var whereConditions = new List<string>();
                 var parameters = new List<(string, object)>();
+                var joinAdded = false; // Controla se os JOINs já foram adicionados
 
                 // Filtro por empresa
                 if (cd_empresa.HasValue)
@@ -1699,7 +1710,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                 // Filtro por funcionário (pessoa)
                 if (cd_pessoa.HasValue)
                 {
-                    query += " INNER JOIN T_CAIXA_PESSOA cp ON cp.cd_caixa = c.cd_caixa";
+                    innerQuery += " INNER JOIN T_CAIXA_PESSOA cp ON cp.cd_caixa = c.cd_caixa";
                     whereConditions.Add("cp.cd_pessoa = @cd_pessoa");
                     parameters.Add(("@cd_pessoa", cd_pessoa.Value));
                 }
@@ -1733,11 +1744,27 @@ namespace Simjob.Framework.Services.Api.Controllers
                     }
                 }
 
-                // Filtro por dc_caixa
+                // Filtro por dc_caixa - busca apenas em T_CAIXA.dc_caixa
                 if (!string.IsNullOrWhiteSpace(dc_caixa))
                 {
                     whereConditions.Add("c.dc_caixa LIKE @dc_caixa");
                     parameters.Add(("@dc_caixa", $"%{dc_caixa}%"));
+                }
+
+                // Filtro por dc_movimentacao_financeira - busca em T_CONTA_CORRENTE.dc_obs_conta_corrente
+                if (!string.IsNullOrWhiteSpace(dc_movimentacao_financeira))
+                {
+                    // Adicionar JOINs necessários para buscar em T_CONTA_CORRENTE
+                    if (!joinAdded)
+                    {
+                        innerQuery += @"
+                            LEFT JOIN T_CAIXA_TITULO ct ON ct.cd_caixa = c.cd_caixa
+                            LEFT JOIN T_CONTA_CORRENTE cc ON cc.cd_conta_corrente = ct.cd_conta_corrente";
+                        joinAdded = true;
+                    }
+                    
+                    whereConditions.Add("cc.dc_obs_conta_corrente LIKE @dc_movimentacao_financeira");
+                    parameters.Add(("@dc_movimentacao_financeira", $"%{dc_movimentacao_financeira}%"));
                 }
 
                 // Filtro por data de início
@@ -1757,16 +1784,21 @@ namespace Simjob.Framework.Services.Api.Controllers
                 // Aplicar filtros WHERE
                 if (whereConditions.Any())
                 {
-                    query += " WHERE " + string.Join(" AND ", whereConditions);
+                    innerQuery += " WHERE " + string.Join(" AND ", whereConditions);
                 }
 
-                // Aplicar ordenação
+                // Envolver a query interna em uma query externa com COUNT e ORDER BY
                 var validSortFields = new[] { "cd_caixa", "dc_caixa", "dt_abertura", "dt_fechamento", "id_status_caixa" };
                 var mappedSortField = validSortFields.Contains(sortField) ? sortField : "dt_abertura";
                 var orderDirection = sortDesc ? "DESC" : "ASC";
                 
-                // Ordenação em três níveis: id_caixa_central, id_status_caixa (com status 2 por último), depois sortField
-                query += $" ORDER BY c.id_caixa_central DESC, CASE WHEN c.id_status_caixa = 2 THEN 999 ELSE c.id_status_caixa END ASC, c.{mappedSortField} {orderDirection}";
+                var query = $@"
+                    SELECT x.*, 
+                           COUNT(*) OVER() as total_records
+                    FROM ({innerQuery}) x
+                    ORDER BY x.id_caixa_central DESC, 
+                             CASE WHEN x.id_status_caixa = 2 THEN 999 ELSE x.id_status_caixa END ASC, 
+                             x.{mappedSortField} {orderDirection}";
 
                 // Aplicar paginação
                 if (page.HasValue && limit.HasValue && page > 0 && limit > 0)

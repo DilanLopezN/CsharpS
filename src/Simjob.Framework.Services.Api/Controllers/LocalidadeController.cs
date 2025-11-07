@@ -36,7 +36,7 @@ namespace Simjob.Framework.Services.Api.Controllers
             {
                 var schemaName = "V_Localidade";
                 if (schemaName.Contains("V_")) schemaName = schemaName.Replace("V_", "");
-                
+
                 var schema = _schemaRepository.GetSchemaByField("name", schemaName);
                 if (schema == null)
                     return BadRequest("Schema não encontrado");
@@ -50,6 +50,12 @@ namespace Simjob.Framework.Services.Api.Controllers
                     if (string.IsNullOrEmpty(sortField))
                     {
                         sortField = "no_bairro,no_localidade";
+                    }
+
+                    // Define limit padrão de 1000 se não informado para trazer todos os logradouros do CEP
+                    if (!limit.HasValue || limit.Value < 100)
+                    {
+                        limit = 1000;
                     }
 
                     var localidadeResult = await SQLServerService.GetList("V_LOCALIDADE_LOGRADOURO", page, limit, sortField, sortDesc, ids, searchFields, value, source, mode);

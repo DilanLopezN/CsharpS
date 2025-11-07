@@ -328,6 +328,72 @@ namespace Simjob.Framework.Services.Api.Controllers
 
       return ResponseDefault(resultado);
     }
+        
+    [Authorize]
+    [HttpGet("ProfessoresByTurma")]
+    public async Task<IActionResult> GetAllProfessoresByTurma(string? cd_turma = null, string? cd_empresa = null)
+    {
+        if (cd_empresa == null) return BadRequest("campo cd_empresa não informado");
+        if (cd_turma == null) return BadRequest("campo cd_turma não informado");
+
+        var schemaName = "T_Turma";
+        if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
+        var schema = _schemaRepository.GetSchemaByField("name", schemaName);
+        var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
+        var source = _sourceRepository.GetByField("description", schemaModel.Source);
+        if (source != null && source.Active != null && source.Active == true)
+        {
+            var fieldIn = "cd_turma";
+            var sortField = "no_professor";
+            var valueIn = cd_turma;
+            var turmasResult = await SQLServerService.GetListIn("vi_professor_turma", 1, 1000000, sortField, false, null, null, null, source, SearchModeEnum.Contains, "cd_pessoa_escola", cd_empresa, fieldIn, new List<string>() { valueIn });
+            if (turmasResult.success)
+            {
+                var turmas = turmasResult.data;
+
+                var retorno = new
+                {
+                    data = turmas.Select(x => new
+                    {
+                        cd_professor = x["cd_professor"],
+                        no_professor = x["no_professor"],
+                        cd_turma = x["cd_turma"],
+                        cd_turma_ppt = x["cd_turma_ppt"],
+                        no_turma = x["no_turma"],
+                        //tipo_funcionario = x["tipo_funcionario"],
+                        //tipo_funcionario_desc = x["tipo_funcionario_desc"],
+                        cd_pessoa_escola = x["cd_pessoa_escola"],
+                        id_turma_ativa = x["id_turma_ativa"],
+                        cd_curso = x["cd_curso"],
+                        cd_sala = x["cd_sala"],
+                        cd_duracao = x["cd_duracao"],
+                        cd_regime = x["cd_regime"],
+                        dt_inicio_aula = x["dt_inicio_aula"],
+                        dt_final_aula = x["dt_final_aula"],
+                        id_aula_externa = x["id_aula_externa"],
+                        nro_aulas_programadas = x["nro_aulas_programadas"],
+                        id_turma_ppt = x["id_turma_ppt"],
+                        cd_produto = x["cd_produto"],
+                        nm_turma = x["nm_turma"],
+                        no_apelido = x["no_apelido"],
+                        id_percentual_faltas = x["id_percentual_faltas"],
+                    }),
+                    turmasResult.total,
+                };
+
+                return ResponseDefault(retorno);
+            }
+            return BadRequest(new
+            {
+                sucess = false,
+                error = turmasResult.error
+            });
+        }
+        return BadRequest(new
+        {
+            error = "Fonte de dados não configurada ou inativa."
+        });
+    }
 
     #endregion
 

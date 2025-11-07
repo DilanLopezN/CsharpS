@@ -34,6 +34,7 @@ namespace Simjob.Framework.Services.Api.Models
         public string? nm_cpf { get; set; }
         public int? nm_sexo { get; set; }
         public int? cd_escolaridade { get; set; }
+        public DateTime? dt_nascimento { get; set; }
         public EnderecoPessoaPipeLine? EnderecoPessoaPipeLine { get; set; }
 
         public int? cd_acao { get; set; }

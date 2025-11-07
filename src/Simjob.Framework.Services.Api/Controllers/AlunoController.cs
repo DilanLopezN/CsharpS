@@ -1,13 +1,16 @@
-﻿using MediatR;
+﻿using DocumentFormat.OpenXml.EMMA;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Simjob.Framework.Application.Controllers;
 using Simjob.Framework.Domain.Core.Bus;
 using Simjob.Framework.Domain.Core.Notifications;
+using Simjob.Framework.Domain.Core.Utils;
 using Simjob.Framework.Domain.Interfaces.Repositories;
 using Simjob.Framework.Infra.Data.Context;
 using Simjob.Framework.Infra.Identity.Contexts;
@@ -168,7 +171,15 @@ namespace Simjob.Framework.Services.Api.Controllers
                 {
                     var filtros = new List<(string campo, object valor)> { new("nm_cpf", command.pessoa.nm_cpf) };
                     var cpfExist = await SQLServerService.GetFirstByFields(source, "T_PESSOA_FISICA", filtros);
-                    if (cpfExist != null) return (false, $"Já existe um registro com este CPF({command.pessoa.nm_cpf}) cadastrado", null);
+                    if (cpfExist != null)
+                    {
+                        //verifica se ja tem aluno cadastrado
+                        var cd_pessoa_cpf = cpfExist["cd_pessoa_fisica"];
+                        var filtrosAluno = new List<(string campo, object valor)> { new("cd_pessoa_aluno", cd_pessoa_cpf) };
+                        var alunoExist = await SQLServerService.GetFirstByFields(source, "T_ALUNO", filtrosAluno);
+                        if (alunoExist != null)
+                            return (false, $"Já existe um registro com este CPF({command.pessoa.nm_cpf}) cadastrado", null);
+                    }
                 }
 
                 //valida email
@@ -445,11 +456,8 @@ namespace Simjob.Framework.Services.Api.Controllers
 
                 if (cd_pessoa_escola > 0)
                 {
-                    var cd_atendente = "1";
+                    var cd_atendente =command.cd_usuario_atendente;
 
-                    var filtrosUsuario = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa) };
-                    var sys_usuario = await SQLServerService.GetFirstByFields(source, "T_SYS_USUARIO", filtrosUsuario);
-                    if (sys_usuario != null) cd_atendente = sys_usuario["cd_usuario"].ToString() ?? "1";
                     // T_ALUNO
                     var alunoDict = new Dictionary<string, object>
                     {
@@ -911,11 +919,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                     var alunoExists = await SQLServerService.GetFirstByFields(source, "T_ALUNO", filtrosAluno);
                     if (alunoExists != null)
                     {
-                        var cd_atendente = "1";
-
-                        var filtrosUsuario = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa) };
-                        var sys_usuario = await SQLServerService.GetFirstByFields(source, "T_SYS_USUARIO", filtrosUsuario);
-                        if (sys_usuario != null) cd_atendente = sys_usuario["cd_usuario"].ToString() ?? "1";
+                        var cd_usuario = command.cd_usuario_atendente;
 
                         var cd_aluno = int.Parse(alunoExists["cd_aluno"].ToString());
                         var alunoDict = new Dictionary<string, object>
@@ -924,7 +928,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                             { "cd_pessoa_escola", cd_pessoa_escola },
                             { "cd_midia", command.cd_midia },
                             { "cd_escolaridade", command.pessoa.cd_escolaridade },
-                            { "cd_usuario_atendente", cd_atendente },
+                            { "cd_usuario_atendente", cd_usuario },
                             { "id_aluno_ativo", 1 },
                             { "cd_contato", command.cd_contato }
                         };
@@ -1024,7 +1028,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                                 {
                                     { "cd_aluno", cd_aluno },
                                     { "cd_orgao_financeiro", restricao.cd_orgao_financeiro },
-                                    { "cd_usuario", cd_atendente },
+                                    { "cd_usuario", cd_usuario },
                                     { "dt_inicio_restricao", restricao.dt_inicio_restricao.ToString("yyyy-MM-ddTHH:mm:ss")},
                                     { "dt_final_restricao", restricao.dt_fim_restricao?.ToString("yyyy-MM-ddTHH:mm:ss")},
                                     { "dt_cadastro", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss") }
@@ -1059,7 +1063,177 @@ namespace Simjob.Framework.Services.Api.Controllers
         [Route("GetLogradouro")]
         public async Task<IActionResult> GetLogradouro(string cep)
         {
-            if (cep.IsNullOrEmpty()) return BadRequest("cep invalido");
+            try
+            {
+                // Console.WriteLine($"[GetLogradouro] Iniciando busca para CEP: {cep}");
+
+                if (cep.IsNullOrEmpty())
+                {
+                    // Console.WriteLine("[GetLogradouro] CEP inválido ou vazio");
+                    return BadRequest("cep invalido");
+                }
+
+                // Console.WriteLine("[GetLogradouro] Buscando schema T_Localidade...");
+                var schemaName = "T_Localidade";
+                if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
+
+                var schema = _schemaRepository.GetSchemaByField("name", schemaName);
+                if (schema == null)
+                {
+                    // Console.WriteLine("[GetLogradouro] ERRO: Schema não encontrado!");
+                    return BadRequest("Schema não encontrado");
+                }
+                // Console.WriteLine($"[GetLogradouro] Schema encontrado: {schema.Name}");
+
+                // Console.WriteLine("[GetLogradouro] Deserializando schema model...");
+                var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
+                if (schemaModel == null)
+                {
+                    // Console.WriteLine("[GetLogradouro] ERRO: Falha ao deserializar schema model!");
+                    return BadRequest("Erro ao deserializar schema");
+                }
+                // Console.WriteLine($"[GetLogradouro] Schema model source: {schemaModel.Source}");
+
+                // Console.WriteLine("[GetLogradouro] Buscando source...");
+                var source = _sourceRepository.GetByField("description", schemaModel.Source);
+                if (source == null)
+                {
+                    // Console.WriteLine("[GetLogradouro] ERRO: Source não encontrado!");
+                    return BadRequest("Source não encontrado");
+                }
+                // Console.WriteLine($"[GetLogradouro] Source encontrado: {source.Description}, Active: {source.Active}");
+
+                if (source != null && source.Active != null && source.Active == true)
+                {
+                    // Console.WriteLine("[GetLogradouro] Formatando CEP...");
+                    var cepTratado = cep.Replace(".", "").Replace("-", "");
+                    // Console.WriteLine($"[GetLogradouro] CEP sem pontuação: {cepTratado} (Length: {cepTratado.Length})");
+
+                    if (cepTratado.Length == 8)
+                    {
+                        cepTratado = cepTratado.Insert(5, "-");
+                        // Console.WriteLine($"[GetLogradouro] CEP formatado: {cepTratado}");
+                    }
+
+                    // Console.WriteLine("[GetLogradouro] Buscando logradouro no banco...");
+                    var filtrosCep = new List<(string campo, object valor)> { new("dc_num_cep", cepTratado) };
+                    var logradouro = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosCep);
+
+                    if (logradouro == null)
+                    {
+                        // Console.WriteLine("[GetLogradouro] Logradouro não encontrado para o CEP");
+                        return NotFound("cep");
+                    }
+                    // Console.WriteLine($"[GetLogradouro] Logradouro encontrado: cd_localidade={logradouro.GetValueOrDefault("cd_localidade")}, no_localidade={logradouro.GetValueOrDefault("no_localidade")}, cd_loc_relacionada={logradouro.GetValueOrDefault("cd_loc_relacionada")}");
+
+                    // Busca a hierarquia: bairro -> cidade -> estado -> país
+                    // Console.WriteLine("[GetLogradouro] Buscando bairro...");
+                    var cdLocRelacionadaBairro = logradouro.GetValueOrDefault("cd_loc_relacionada");
+                    // Console.WriteLine($"[GetLogradouro] cd_loc_relacionada do logradouro: {cdLocRelacionadaBairro}");
+
+                    Dictionary<string, object> bairro = null;
+                    if (cdLocRelacionadaBairro != null)
+                    {
+                        bairro = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE",
+                            new List<(string campo, object valor)> { new("cd_localidade", cdLocRelacionadaBairro) });
+                        // Console.WriteLine($"[GetLogradouro] Bairro encontrado: {(bairro != null ? $"cd_localidade={bairro.GetValueOrDefault("cd_localidade")}, no_localidade={bairro.GetValueOrDefault("no_localidade")}" : "NULL")}");
+                    }
+                    // else
+                    // {
+                    //     Console.WriteLine("[GetLogradouro] cd_loc_relacionada do logradouro é NULL, pulando busca do bairro");
+                    // }
+
+                    // Console.WriteLine("[GetLogradouro] Buscando cidade...");
+                    Dictionary<string, object> cidade = null;
+                    if (bairro != null && bairro.ContainsKey("cd_loc_relacionada") && bairro["cd_loc_relacionada"] != null)
+                    {
+                        // Console.WriteLine($"[GetLogradouro] cd_loc_relacionada do bairro: {bairro["cd_loc_relacionada"]}");
+                        cidade = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE",
+                            new List<(string campo, object valor)> { new("cd_localidade", bairro["cd_loc_relacionada"]) });
+                        // Console.WriteLine($"[GetLogradouro] Cidade encontrada: {(cidade != null ? $"cd_localidade={cidade.GetValueOrDefault("cd_localidade")}, no_localidade={cidade.GetValueOrDefault("no_localidade")}" : "NULL")}");
+                    }
+                    // else
+                    // {
+                    //     Console.WriteLine("[GetLogradouro] Bairro NULL ou sem cd_loc_relacionada, pulando busca da cidade");
+                    // }
+
+                    // Console.WriteLine("[GetLogradouro] Buscando estado...");
+                    Dictionary<string, object> estado = null;
+                    if (cidade != null && cidade.ContainsKey("cd_loc_relacionada") && cidade["cd_loc_relacionada"] != null)
+                    {
+                        // Console.WriteLine($"[GetLogradouro] cd_loc_relacionada da cidade: {cidade["cd_loc_relacionada"]}");
+                        estado = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE",
+                            new List<(string campo, object valor)> { new("cd_localidade", cidade["cd_loc_relacionada"]) });
+                        // Console.WriteLine($"[GetLogradouro] Estado encontrado: {(estado != null ? $"cd_localidade={estado.GetValueOrDefault("cd_localidade")}, no_localidade={estado.GetValueOrDefault("no_localidade")}" : "NULL")}");
+                    }
+                    // else
+                    // {
+                    //     Console.WriteLine("[GetLogradouro] Cidade NULL ou sem cd_loc_relacionada, pulando busca do estado");
+                    // }
+
+                    // Console.WriteLine("[GetLogradouro] Buscando país...");
+                    Dictionary<string, object> pais = null;
+                    if (estado != null && estado.ContainsKey("cd_loc_relacionada") && estado["cd_loc_relacionada"] != null)
+                    {
+                        // Console.WriteLine($"[GetLogradouro] cd_loc_relacionada do estado: {estado["cd_loc_relacionada"]}");
+                        pais = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE",
+                            new List<(string campo, object valor)> { new("cd_localidade", estado["cd_loc_relacionada"]) });
+                        // Console.WriteLine($"[GetLogradouro] País encontrado: {(pais != null ? $"cd_localidade={pais.GetValueOrDefault("cd_localidade")}, no_localidade={pais.GetValueOrDefault("no_localidade")}" : "NULL")}");
+                    }
+                    // else
+                    // {
+                    //     Console.WriteLine("[GetLogradouro] Estado NULL ou sem cd_loc_relacionada, pulando busca do país");
+                    // }
+
+                    // Console.WriteLine("[GetLogradouro] Montando retorno...");
+                    var retorno = new
+                    {
+                        cd_bairro = bairro?.GetValueOrDefault("cd_localidade"),
+                        cd_cidade = cidade?.GetValueOrDefault("cd_localidade"),
+                        cd_estado = estado?.GetValueOrDefault("cd_localidade"),
+                        cd_logradouro = logradouro.GetValueOrDefault("cd_localidade"),
+                        cd_pais = pais?.GetValueOrDefault("cd_localidade"),
+                        cd_tipo_logradouro = logradouro.GetValueOrDefault("cd_tipo_localidade"),
+                        dc_num_cep = cepTratado,
+                        no_bairro = bairro?.GetValueOrDefault("no_localidade"),
+                        no_cidade = cidade?.GetValueOrDefault("no_localidade"),
+                        no_estado = estado?.GetValueOrDefault("no_localidade"),
+                        no_logradouro = logradouro.GetValueOrDefault("no_localidade"),
+                        no_pais = pais?.GetValueOrDefault("no_localidade"),
+                        count = 1
+                    };
+
+                    // Console.WriteLine($"[GetLogradouro] Retorno montado com sucesso: {JsonConvert.SerializeObject(retorno)}");
+                    return ResponseDefault(retorno);
+                }
+
+                // Console.WriteLine("[GetLogradouro] Source inativo ou NULL");
+                return BadRequest(new
+                {
+                    error = "Fonte de dados não configurada ou inativa."
+                });
+            }
+            catch (Exception ex)
+            {
+                // Console.WriteLine($"[GetLogradouro] EXCEÇÃO: {ex.Message}");
+                // Console.WriteLine($"[GetLogradouro] StackTrace: {ex.StackTrace}");
+                // Console.WriteLine($"[GetLogradouro] InnerException: {ex.InnerException?.Message}");
+
+                return BadRequest(new
+                {
+                    error = $"Erro ao buscar logradouro: {ex.Message}",
+                    stackTrace = ex.StackTrace,
+                    innerException = ex.InnerException?.Message
+                });
+            }
+        }
+
+        [Authorize]
+        [HttpGet()]
+        [Route("GetLogradouroByCodigo")]
+        public async Task<IActionResult> GetLogradouroByCodigo(int cd_localidade)
+        {
+            if (cd_localidade <= 0) return BadRequest("cd_localidade invalido");
             var schemaName = "T_Localidade";
             if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
             var schema = _schemaRepository.GetSchemaByField("name", schemaName);
@@ -1067,17 +1241,11 @@ namespace Simjob.Framework.Services.Api.Controllers
             var source = _sourceRepository.GetByField("description", schemaModel.Source);
             if (source != null && source.Active != null && source.Active == true)
             {
-                var cepTratado = cep.Replace(".", "").Replace("-", "").Insert(5, "-");
+                var filtrosLogradouro = new List<(string campo, object valor)> { new("cd_localidade", cd_localidade) };
+                var logradouroExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosLogradouro);
+                if (logradouroExists == null) return NotFound("logradouro");
 
-                var filtrosCep = new List<(string campo, object valor)> { new("dc_num_cep", cepTratado) };
-                var cepExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosCep);
-                if (cepExists == null) return NotFound("cep");
-
-                // Busca a quantidade de registros com o mesmo CEP
-                var cepList = await SQLServerService.GetList("T_LOCALIDADE", null, "[dc_num_cep]", $"[{cepTratado}]", source, SearchModeEnum.Equals);
-                var count = cepList.success ? cepList.total : 0;
-
-                var filtroBairro = new List<(string campo, object valor)> { new("cd_localidade", cepExists["cd_loc_relacionada"].ToString()) };
+                var filtroBairro = new List<(string campo, object valor)> { new("cd_localidade", logradouroExists["cd_loc_relacionada"].ToString()) };
                 var bairroExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtroBairro);
                 if (bairroExists == null) return NotFound("bairro");
 
@@ -1091,26 +1259,22 @@ namespace Simjob.Framework.Services.Api.Controllers
 
                 var filtroPais = new List<(string campo, object valor)> { new("cd_localidade", estadoExists["cd_loc_relacionada"].ToString()) };
                 var paisExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtroPais);
-                if (paisExists == null) return NotFound("estado");
+                if (paisExists == null) return NotFound("pais");
 
                 var retorno = new
                 {
                     cd_bairro = bairroExists["cd_localidade"],
                     cd_cidade = cidadeExists["cd_localidade"],
                     cd_estado = estadoExists["cd_localidade"],
-                    cd_logradouro = cepExists["cd_localidade"],
+                    cd_logradouro = logradouroExists["cd_localidade"],
                     cd_pais = paisExists["cd_localidade"],
-                    cd_tipo_logradouro = cepExists["cd_tipo_localidade"],
-                    dc_num_cep = cep,
+                    cd_tipo_logradouro = logradouroExists["cd_tipo_localidade"],
+                    dc_num_cep = logradouroExists["dc_num_cep"],
                     no_bairro = bairroExists["no_localidade"],
                     no_cidade = cidadeExists["no_localidade"],
                     no_estado = estadoExists["no_localidade"],
-                    no_logradouro = cepExists["no_localidade"],
-                    no_pais = paisExists["no_localidade"],
-                    count = count
-                    //no_tipo_logradouro = "Rua",
-                    ///sg_estado = "SP",
-                    //sg_tipo_logradouro = "Rua"
+                    no_logradouro = logradouroExists["no_localidade"],
+                    no_pais = paisExists["no_localidade"]
                 };
 
                 return ResponseDefault(retorno);
@@ -1175,6 +1339,47 @@ namespace Simjob.Framework.Services.Api.Controllers
                     retorno.pessoa.endereco.dc_compl_endereco = enderecoExists["dc_compl_endereco"] != null ? enderecoExists["dc_compl_endereco"].ToString() : "";
                     retorno.pessoa.endereco.dc_num_cep = enderecoExists["dc_num_cep"] != null ? enderecoExists["dc_num_cep"].ToString() : "";
                     retorno.pessoa.endereco.dc_num_endereco = enderecoExists["dc_num_endereco"]?.ToString();
+
+                    // Buscar nomes das localidades
+                    var filtrosLogradouro = new List<(string campo, object valor)> { new("cd_localidade", retorno.pessoa.endereco.cd_loc_logradouro) };
+                    var logradouroExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosLogradouro);
+                    if (logradouroExists != null)
+                    {
+                        retorno.pessoa.endereco.no_logradouro = logradouroExists["no_localidade"]?.ToString();
+                        // Se dc_num_cep está vazio no endereço, pegar do logradouro
+                        if (string.IsNullOrEmpty(retorno.pessoa.endereco.dc_num_cep) && logradouroExists["dc_num_cep"] != null)
+                        {
+                            retorno.pessoa.endereco.dc_num_cep = logradouroExists["dc_num_cep"].ToString();
+                        }
+                    }
+
+                    var filtrosBairro = new List<(string campo, object valor)> { new("cd_localidade", retorno.pessoa.endereco.cd_loc_bairro) };
+                    var bairroExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosBairro);
+                    if (bairroExists != null)
+                    {
+                        retorno.pessoa.endereco.no_bairro = bairroExists["no_localidade"]?.ToString();
+                    }
+
+                    var filtrosCidade = new List<(string campo, object valor)> { new("cd_localidade", retorno.pessoa.endereco.cd_loc_cidade) };
+                    var cidadeExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosCidade);
+                    if (cidadeExists != null)
+                    {
+                        retorno.pessoa.endereco.no_cidade = cidadeExists["no_localidade"]?.ToString();
+                    }
+
+                    var filtrosEstado = new List<(string campo, object valor)> { new("cd_localidade", retorno.pessoa.endereco.cd_loc_estado) };
+                    var estadoExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosEstado);
+                    if (estadoExists != null)
+                    {
+                        retorno.pessoa.endereco.no_estado = estadoExists["no_localidade"]?.ToString();
+                    }
+
+                    var filtrosPais = new List<(string campo, object valor)> { new("cd_localidade", retorno.pessoa.endereco.cd_loc_pais) };
+                    var paisExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosPais);
+                    if (paisExists != null)
+                    {
+                        retorno.pessoa.endereco.no_pais = paisExists["no_localidade"]?.ToString();
+                    }
                 }
                 var filtrosPessoaFisica = new List<(string campo, object valor)> { new("cd_pessoa_fisica", cd_pessoa) };
                 var pessoaFisicaExists = await SQLServerService.GetFirstByFields(source, "T_PESSOA_FISICA", filtrosPessoaFisica);
@@ -1545,6 +1750,81 @@ namespace Simjob.Framework.Services.Api.Controllers
             return BadRequest(new
             {
                 error = "Fonte de dados não configurada ou inativa."
+            });
+        }
+
+        [Authorize]
+        [HttpDelete("{cd_pessoa}")]
+        public async Task<IActionResult> Delete(int cd_pessoa)
+        {
+            var schemaName = "T_Aluno";
+            if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
+            var schema = _schemaRepository.GetSchemaByField("name", schemaName);
+            var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
+            var source = _sourceRepository.GetByField("description", schemaModel.Source);
+            
+            if (source != null && source.Active != null && source.Active == true)
+            {
+                try
+                {
+                    // Verifica se o aluno existe
+                    var filtrosAluno = new List<(string campo, object valor)> { new("cd_pessoa_aluno", cd_pessoa) };
+                    var alunoExists = await SQLServerService.GetFirstByFields(source, "T_ALUNO", filtrosAluno);
+                    
+                    if (alunoExists == null)
+                    {
+                        return NotFound(new
+                        {
+                            succeeded = false,
+                            message = "Aluno não encontrado"
+                        });
+                    }
+
+                    // Tenta deletar o aluno
+                    var deleteResult = await SQLServerService.Delete("T_ALUNO", "cd_aluno", alunoExists["cd_aluno"].ToString(), source);
+                    
+                    if (!deleteResult.success)
+                    {
+                        // Verifica se é erro de constraint (relacionamento com outras tabelas)
+                        if (deleteResult.error != null && 
+                            (deleteResult.error.Contains("REFERENCE") || 
+                             deleteResult.error.Contains("DELETE") ||
+                             deleteResult.error.Contains("constraint")))
+                        {
+                            return BadRequest(new
+                            {
+                                succeeded = false,
+                                message = "Não foi possível excluir o aluno pois possui vínculos com outros registros (matrículas, turmas, etc.)"
+                            });
+                        }
+                        
+                        return BadRequest(new
+                        {
+                            succeeded = false,
+                            message = $"Erro ao excluir aluno: {deleteResult.error}"
+                        });
+                    }
+
+                    return ResponseDefault(new
+                    {
+                        succeeded = true,
+                        message = "Registro excluído com sucesso!"
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(new
+                    {
+                        succeeded = false,
+                        message = $"Erro ao excluir aluno: {ex.Message}"
+                    });
+                }
+            }
+
+            return BadRequest(new
+            {
+                succeeded = false,
+                message = "Fonte de dados não configurada ou inativa."
             });
         }
 

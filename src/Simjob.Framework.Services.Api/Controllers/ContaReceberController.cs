@@ -874,6 +874,8 @@ namespace Simjob.Framework.Services.Api.Controllers
                                 continue;
                             }
 
+                            
+
                             // Buscar cd_local_movto dos parâmetros
                             var cd_local_movto = await GetLocalMovto(cd_pessoa_empresa, source);
                             if (cd_local_movto == null)

@@ -20,6 +20,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 
+
 namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
 {
   /// <summary>
@@ -35,18 +36,23 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly SimulacaoBaixaService _simulacaoBaixaService;
 
+
+
+
     #endregion
 
     public MatriculaService(
       IRepository<SourceContext, Source> sourceRepository,
       IRepository<MongoDbContext, Schema> schemaRepository,
       IWebHostEnvironment webHostEnvironment,
-      SimulacaoBaixaService simulacaoBaixaService)
+      SimulacaoBaixaService simulacaoBaixaService
+       )
     {
       _sourceRepository = sourceRepository;
       _schemaRepository = schemaRepository;
       _webHostEnvironment = webHostEnvironment;
       _simulacaoBaixaService = simulacaoBaixaService;
+
     }
 
 
@@ -75,7 +81,15 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
 
 
         var cd_pessoa_escola = Convert.ToInt32(matriculaExists["cd_pessoa_escola"]);
-        string nomeContrato = await DeterminarNomeTemplate(matriculaExists, cd_pessoa_escola, source);
+        string nomeContrato = "";
+        try
+        {
+          nomeContrato = await DeterminarNomeTemplate(matriculaExists, cd_pessoa_escola, source);
+        }
+        catch (Exception ex)
+        {
+          throw new NotFoundException(ex.Message);
+        }
         #region ESCOLA
         //ESCOLA
         var pessoa_escola = await SQLServerService.GetFirstByFields(source, "T_PESSOA", new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa_escola) });
@@ -445,9 +459,9 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
     new("cd_contrato", cdContrato)
 });
 
-        if (taxaMatricula != null && taxaMatricula.ContainsKey("vl_taxa_matricula"))
+        if (taxaMatricula != null && taxaMatricula.ContainsKey("vl_matricula_taxa"))  // ✅ CORRETO
         {
-          matriculaRematricula = string.Format("{0:#,0.00}", taxaMatricula["vl_taxa_matricula"]);
+          matriculaRematricula = string.Format("{0:#,0.00}", taxaMatricula["vl_matricula_taxa"]);  // ✅ CORRETO
         }
         else if (matriculaExists["vl_matricula_contrato"] != null)
         {
@@ -772,26 +786,8 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
           };
         }
 
-        decimal parcelaLiquida = 0;
-        if (matriculaExists.ContainsKey("vl_parcela_liquida") && matriculaExists["vl_parcela_liquida"] != null)
-        {
-          parcelaLiquida = Convert.ToDecimal(matriculaExists["vl_parcela_liquida"]);
-        }
-
-        // Se estiver zerado, calcular:
-        if (parcelaLiquida == 0)
-        {
-          decimal vlParcela = Convert.ToDecimal(matriculaExists["vl_parcela_contrato"] ?? 0);
-          decimal pcDesconto = Convert.ToDecimal(matriculaExists["pc_desconto_contrato"] ?? 0);
-          decimal pcBolsa = Convert.ToDecimal(matriculaExists["pc_desconto_bolsa"] ?? 0);
-
-          // Aplicar descontos
-          decimal vlDesconto = (vlParcela * pcDesconto) / 100;
-          decimal vlBolsa = (vlParcela * pcBolsa) / 100;
-
-          parcelaLiquida = vlParcela - vlDesconto - vlBolsa;
-        }
-
+        decimal parcelaLiquida = await ObterValorParcelaLiquida(source, cdContrato);
+        Console.WriteLine($"Valor final líquido da parcela: R$ {parcelaLiquida:N2}");
 
 
         var replacements = new Dictionary<string, string>
@@ -856,7 +852,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
       { "«NroVencimentoComDesconto»", nroVencimentoComDesconto },
       { "«VencimentosTitulosComDesc»", vencimentosTitulosComDesc },
       { "«VencimentosTitulosSemDesc»", vencimentosTitulosSemDesc },
-{ "«TipoAdiantamento»", aditamento_nmPrevisaoInicial != null && aditamento_nmPrevisaoInicial.ContainsKey("id_tipo_aditamento") && aditamento_nmPrevisaoInicial["id_tipo_aditamento"] != null ? aditamento_nmPrevisaoInicial["id_tipo_aditamento"].ToString() : "" },
+{ "«TipoAditamento»", aditamento_nmPrevisaoInicial != null && aditamento_nmPrevisaoInicial.ContainsKey("id_tipo_aditamento") && aditamento_nmPrevisaoInicial["id_tipo_aditamento"] != null ? aditamento_nmPrevisaoInicial["id_tipo_aditamento"].ToString() : "" },
       { "«NroPrevisaoDias»", aditamento_nmPrevisaoInicial?["nm_previsao_inicial"]?.ToString() ?? "" },
       { "«Observacao»", aditamento_nmPrevisaoInicial?["tx_obs_aditamento"]?.ToString() ?? "" },
       { "«NumeroContrato»", matriculaExists["nm_contrato"]?.ToString() ?? "" },
@@ -864,7 +860,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
       { "«TipoFinanceiroTaxa»", tipoFinanceiro?["dc_tipo_financeiro"]?.ToString() ?? "" },
       { "«TipoMatricula»", tipoMatriculaTexto },
       { "«Modalidade»", regime?["no_regime"]?.ToString() ?? "" },
-      { "«BolsaMaterial»", decimal.Parse(matriculaExists["pc_bolsa_material"]?.ToString() ?? "0").ToString("N2") + "%" },
+      { "«BolsaMaterial»", Convert.ToDecimal(matriculaExists["pc_bolsa_material"] ?? 0).ToString("0.##") + "%" },
 
     };
 
@@ -893,6 +889,14 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
         {
           try
           {
+
+
+            var descontosContratoCalculado = await ObterDescontosContrato(source, cdContrato, cd_pessoa_escola);
+            PreencherGradeDescontosContrato(doc, descontosContratoCalculado);
+
+            // Valores líquidos
+            var parcelasComDesconto = await CalcularValoresLiquidos(source, parcelasTitulos, cdContrato, cd_pessoa_escola);
+            PreencherGradeValoresLiquidos(doc, parcelasComDesconto);
             // Preencher grade de cursos
             PreencherGradeCursos(doc, cursosContrato);
 
@@ -932,6 +936,105 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
       {
         Console.WriteLine("[GerarContratoMatriculaError]: " + ex);
         throw;
+      }
+    }
+
+    /// <summary>
+    /// Calcula o valor líquido da parcela (mensalidade), aplicando todos os descontos possíveis:
+    /// - Desconto base (pc_desconto_contrato)
+    /// - Bolsa (pc_desconto_bolsa)
+    /// - Descontos adicionais ativos da tabela T_DESCONTO_CONTRATO
+    /// </summary>
+    private async Task<decimal> ObterValorParcelaLiquida(Source source, int cdContrato)
+    {
+      try
+      {
+        Console.WriteLine($"[ObterValorParcelaLiquida] Iniciando cálculo para contrato {cdContrato}");
+
+        // 🔹 1. Buscar contrato completo
+        var matriculaExists = await SQLServerService.GetFirstByFields(
+            source,
+            "T_CONTRATO",
+            new List<(string campo, object valor)> { new("cd_contrato", cdContrato) }
+        );
+
+        if (matriculaExists == null)
+        {
+          Console.WriteLine($"[ObterValorParcelaLiquida] Contrato {cdContrato} não encontrado.");
+          return 0;
+        }
+
+        // 🔹 2. Tenta pegar o valor direto
+        decimal parcelaLiquida = Convert.ToDecimal(matriculaExists["vl_parcela_liquida"] ?? 0);
+
+        // 🔹 3. Se estiver zerado, calcular manualmente
+        if (parcelaLiquida == 0)
+        {
+          decimal vlParcela = Convert.ToDecimal(matriculaExists["vl_parcela_contrato"] ?? 0);
+          decimal pcDesconto = Convert.ToDecimal(matriculaExists["pc_desconto_contrato"] ?? 0);
+          decimal pcBolsa = Convert.ToDecimal(matriculaExists["pc_desconto_bolsa"] ?? 0);
+
+          // 🔹 Aplicar descontos base
+          decimal vlDesconto = (vlParcela * pcDesconto) / 100;
+          decimal vlBolsa = (vlParcela * pcBolsa) / 100;
+
+          parcelaLiquida = vlParcela - vlDesconto - vlBolsa;
+
+          Console.WriteLine($"[ObterValorParcelaLiquida] Base: {vlParcela:N2}, Desconto: {vlDesconto:N2}, Bolsa: {vlBolsa:N2} => Parcela líquida parcial: {parcelaLiquida:N2}");
+
+          // 🔹 4. Aplicar descontos adicionais ativos de T_DESCONTO_CONTRATO
+          var descontosContratoMensalidade = await SQLServerService.GetList(
+              "T_DESCONTO_CONTRATO",
+              null,
+              null,
+              null,
+              false,
+              null,
+              "cd_contrato,id_desconto_ativo,id_incide_matricula",
+              $"[{cdContrato}],[1],[0]", // Apenas descontos ativos que NÃO incidem sobre matrícula (mensalidade)
+              source,
+              SearchModeEnum.Equals,
+              null,
+              null
+          );
+
+          if (descontosContratoMensalidade.success &&
+              descontosContratoMensalidade.data != null &&
+              descontosContratoMensalidade.data.Any())
+          {
+            foreach (var desconto in descontosContratoMensalidade.data)
+            {
+              decimal pcDescontoAdicional = Convert.ToDecimal(desconto["pc_desconto_contrato"] ?? 0);
+              decimal vlDescontoAdicional = Convert.ToDecimal(desconto["vl_desconto_contrato"] ?? 0);
+
+              if (pcDescontoAdicional > 0)
+              {
+                decimal valorDescontoPerc = (parcelaLiquida * pcDescontoAdicional) / 100;
+                parcelaLiquida -= valorDescontoPerc;
+                Console.WriteLine($"[ObterValorParcelaLiquida] Desconto adicional {pcDescontoAdicional:N2}% aplicado => -R$ {valorDescontoPerc:N2}");
+              }
+              else if (vlDescontoAdicional > 0)
+              {
+                parcelaLiquida -= vlDescontoAdicional;
+                Console.WriteLine($"[ObterValorParcelaLiquida] Desconto adicional fixo -R$ {vlDescontoAdicional:N2} aplicado");
+              }
+            }
+          }
+
+          Console.WriteLine($"[ObterValorParcelaLiquida] Valor final líquido calculado: R$ {parcelaLiquida:N2}");
+        }
+        else
+        {
+          Console.WriteLine($"[ObterValorParcelaLiquida] Valor líquido já definido no contrato: R$ {parcelaLiquida:N2}");
+        }
+
+        return parcelaLiquida;
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"[ObterValorParcelaLiquida] ERRO: {ex.Message}");
+        Console.WriteLine($"[ObterValorParcelaLiquida] StackTrace: {ex.StackTrace}");
+        return 0;
       }
     }
 
@@ -1015,7 +1118,9 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
       return resultado;
     }
 
+#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     private (bool success, MemoryStream? arquivo, string? erro) GerarContrato(string nomeContrato, Dictionary<string, string> replacements, int? cd_pessoa_escola = null)
+#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     {
       try
       {
@@ -1329,7 +1434,6 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
             cd_nome_contrato != DBNull.Value &&
             Convert.ToInt32(cd_nome_contrato) > 0)
         {
-          Console.WriteLine($"[INFO] Buscando template pelo cd_nome_contrato: {cd_nome_contrato}");
 
           var nome_contrato = await SQLServerService.GetFirstByFields(
             source,
@@ -1347,126 +1451,16 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
             var nomeRelatorio = nome_contrato["no_relatorio"].ToString();
             if (!string.IsNullOrWhiteSpace(nomeRelatorio))
             {
-              Console.WriteLine($"[SUCESSO] Template encontrado: {nomeRelatorio}");
               return nomeRelatorio;
             }
           }
 
-          Console.WriteLine($"[AVISO] cd_nome_contrato {cd_nome_contrato} não possui no_relatorio válido");
         }
-        else
-        {
-          Console.WriteLine("[AVISO] Contrato sem cd_nome_contrato definido. Iniciando busca por template padrão...");
-        }
-
-        // ESTRATÉGIA 2: Template padrão ativo da escola específica
-        Console.WriteLine($"[INFO] Buscando template padrão ativo para escola {cd_pessoa_escola}...");
-
-        var templatesPadraoEscola = await SQLServerService.GetList(
-          "T_NOME_CONTRATO",
-          null,
-          "[cd_pessoa_escola],[id_nome_ativo]",
-          $"[{cd_pessoa_escola}],[1]",
-          source,
-          SearchModeEnum.Equals
-        );
-
-        if (templatesPadraoEscola.success &&
-            templatesPadraoEscola.data != null &&
-            templatesPadraoEscola.data.Any())
-        {
-          // Priorizar templates com nomes que indicam serem padrão
-          var templatesPrioritarios = templatesPadraoEscola.data
-            .Where(t => t.ContainsKey("no_relatorio") &&
-                        t["no_relatorio"] != null &&
-                        t["no_relatorio"] != DBNull.Value)
-            .OrderBy(t =>
-            {
-              var nome = t["no_contrato"]?.ToString()?.ToLower() ?? "";
-              var relatorio = t["no_relatorio"]?.ToString()?.ToLower() ?? "";
-
-              // Prioridade 1: Contém "padrão" ou "default"
-              if (nome.Contains("padrão") || nome.Contains("padrao") ||
-                  nome.Contains("default") || relatorio.Contains("padrao"))
-                return 0;
-
-              // Prioridade 2: Contém "contrato" genérico
-              if (nome.Contains("contrato") && !nome.Contains("teste"))
-                return 1;
-
-              // Prioridade 3: Contém "estágio" ou "estagio" (mais comum)
-              if (nome.Contains("estágio") || nome.Contains("estagio") ||
-                  relatorio.Contains("estagio"))
-                return 2;
-
-              // Prioridade 4: Qualquer outro ativo
-              return 3;
-            })
-            .ThenBy(t => Convert.ToInt32(t["cd_nome_contrato"])) // Mais antigo primeiro
-            .ToList();
-
-          if (templatesPrioritarios.Any())
-          {
-            var templateEscolhido = templatesPrioritarios.First();
-            var nomeRelatorio = templateEscolhido["no_relatorio"].ToString();
-            var nomeContrato = templateEscolhido["no_contrato"]?.ToString() ?? "N/A";
-
-            Console.WriteLine($"[INFO] Template padrão da escola encontrado:");
-            Console.WriteLine($"  - Nome: {nomeContrato}");
-            Console.WriteLine($"  - Arquivo: {nomeRelatorio}");
-            Console.WriteLine($"  - cd_nome_contrato: {templateEscolhido["cd_nome_contrato"]}");
-
-            return nomeRelatorio;
-          }
-        }
-
-        // ESTRATÉGIA 3: Buscar template com nome "Contrato_Padrao" da escola
-        Console.WriteLine("[INFO] Buscando template com nome 'Contrato_Padrao' da escola...");
-
-        var templateComNomePadrao = await SQLServerService.GetList(
-          "T_NOME_CONTRATO",
-          null,
-          "[cd_pessoa_escola]",
-          $"[{cd_pessoa_escola}]",
-          source,
-          SearchModeEnum.Equals
-        );
-
-        if (templateComNomePadrao.success &&
-            templateComNomePadrao.data != null &&
-            templateComNomePadrao.data.Any())
-        {
-          var padrao = templateComNomePadrao.data.FirstOrDefault(t =>
-          {
-            var noContrato = t["no_contrato"]?.ToString()?.ToLower() ?? "";
-            var noRelatorio = t["no_relatorio"]?.ToString()?.ToLower() ?? "";
-            return noContrato.Contains("padrao") ||
-                   noContrato.Contains("padrão") ||
-                   noRelatorio.Contains("padrao");
-          });
-
-          if (padrao != null &&
-              padrao.ContainsKey("no_relatorio") &&
-              padrao["no_relatorio"] != null)
-          {
-            var nomeRelatorio = padrao["no_relatorio"].ToString();
-            Console.WriteLine($"[INFO] Template 'Contrato_Padrao' encontrado: {nomeRelatorio}");
-            return nomeRelatorio;
-          }
-        }
-
-        // ESTRATÉGIA 4: Último recurso - nome fixo "Contrato_Padrao"
-        Console.WriteLine("[AVISO] Nenhum template específico encontrado.");
-        Console.WriteLine("[INFO] Usando nome de arquivo padrão: Contrato_Padrao");
-        Console.WriteLine("[INFO] O sistema buscará recursivamente o arquivo Contrato_Padrao.dotx na pasta da escola");
-
-        return "Contrato_Padrao";
+        throw new Exception("Contrato não possui layout definido.");
       }
       catch (Exception ex)
       {
-        Console.WriteLine($"[ERRO] Erro ao determinar template: {ex.Message}");
-        Console.WriteLine("[INFO] Usando fallback: Contrato_Padrao");
-        return "Contrato_Padrao";
+        throw new Exception("Erro ao determinar template do contrato: " + ex.Message);
       }
     }
 
@@ -1800,7 +1794,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
         List<Dictionary<string, object>> descontos)
     {
       var body = doc.MainDocumentPart.Document.Body;
-      string tag = "GradeDescontosAntecip"; // Tag usada no template
+      string tag = "GradeValoresDescontosAntecipa"; // Tag usada no template
       bool tabelaInserida = false;
 
       // Procura parágrafo com a TAG
@@ -2303,23 +2297,19 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
 
       if (paragrafoComTag != null)
       {
-        if (descontos == null || descontos.Count == 0)
-        {
-          var paragrafoMensagem = new Paragraph(new Run(new Text("Não há descontos aplicados.")));
-          paragrafoComTag.InsertAfterSelf(paragrafoMensagem);
-        }
-        else
+        // Se há descontos, cria a tabela
+        if (descontos != null && descontos.Count > 0)
         {
           var tabela = CriarTabelaDescontosContrato(descontos);
           paragrafoComTag.InsertAfterSelf(tabela);
         }
 
+        // SEMPRE remove a tag, independente se há ou não dados
         paragrafoComTag.Remove();
       }
 
       doc.MainDocumentPart.Document.Save();
     }
-
     private static Table CriarTabelaDescontosContrato(List<Dictionary<string, object>> descontos)
     {
       var table = new Table();
@@ -2371,6 +2361,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
       return table;
     }
 
+
     /// <summary>
     /// Preenche a grade de Valores Líquidos (VALORES COM DESCONTO)
     /// </summary>
@@ -2387,17 +2378,14 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
 
       if (paragrafoComTag != null)
       {
-        if (parcelas == null || parcelas.Count == 0)
-        {
-          var paragrafoMensagem = new Paragraph(new Run(new Text("Não há parcelas a exibir.")));
-          paragrafoComTag.InsertAfterSelf(paragrafoMensagem);
-        }
-        else
+        // Se há parcelas com desconto, cria a tabela
+        if (parcelas != null && parcelas.Count > 0)
         {
           var tabela = CriarTabelaValoresLiquidos(parcelas);
           paragrafoComTag.InsertAfterSelf(tabela);
         }
 
+        // SEMPRE remove a tag, independente se há ou não dados
         paragrafoComTag.Remove();
       }
 
@@ -2450,37 +2438,146 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
       return table;
     }
 
-    private async Task<List<Dictionary<string, object>>> BuscarTitulosAbertos(
-        Source source, int cdContrato, int cdPessoaEscola)
-    {
-      var query = @"
-        SELECT
-            T.cd_titulo,
-            T.cd_origem_titulo,
-            T.nm_parcela_titulo,
-            T.dc_tipo_titulo,
-            T.vl_titulo,
-            T.vl_saldo_titulo,
-            T.dt_vcto_titulo,
-            T.id_status_titulo,
-            T.id_status_cnab,
-            T.cd_pessoa_empresa
-        FROM T_TITULO T
-        WHERE T.cd_origem_titulo = @cdContrato
-          AND T.cd_pessoa_empresa = @cdPessoaEscola
-          AND T.id_status_titulo = 1  -- ABERTO
-          AND T.id_status_cnab IN (0, 1)  -- INICIAL ou CONFIRMADO_PEDIDO_BAIXA
-          AND T.vl_titulo = T.vl_saldo_titulo  -- Saldo total em aberto
-        ORDER BY T.dt_vcto_titulo, T.nm_parcela_titulo";
 
-      var parameters = new Dictionary<string, object>
+    /// <summary>
+    /// Obtém os descontos aplicados ao contrato (não confundir com descontos de antecipação)
+    /// Busca em T_DESCONTO_CONTRATO
+    /// </summary>
+    private async Task<List<Dictionary<string, object>>> ObterDescontosContrato(
+        Source source,
+        int cdContrato,
+        int cdPessoaEscola)
     {
-        { "@cdContrato", cdContrato },
-        { "@cdPessoaEscola", cdPessoaEscola }
+      try
+      {
+        Console.WriteLine($"[ObterDescontosContrato] Buscando descontos - Contrato: {cdContrato}");
+
+        // Query baseada no sistema legado (RelatorioController.cs linha ~68)
+        var query = @"
+      SELECT
+        dc.cd_desconto_contrato,
+        dc.cd_contrato,
+        dc.cd_aditamento,
+        dc.dc_desconto_contrato,
+        dc.pc_desconto_contrato,
+        dc.vl_desconto_contrato,
+        dc.nm_parcela_ini,
+        dc.nm_parcela_fim,
+        dc.id_desconto_ativo,
+        dc.id_incide_baixa
+      FROM T_DESCONTO_CONTRATO dc
+      INNER JOIN T_CONTRATO c ON dc.cd_contrato = c.cd_contrato
+      WHERE dc.cd_contrato = @cdContrato
+        AND c.cd_pessoa_escola = @cdPessoaEscola
+        AND dc.id_desconto_ativo = 1
+      ORDER BY dc.nm_parcela_ini";
+
+        var parameters = new Dictionary<string, object>
+    {
+      { "@cdContrato", cdContrato },
+      { "@cdPessoaEscola", cdPessoaEscola }
     };
 
-      var result = await SQLServerService.ExecuteQuery(source, query, parameters);
-      return result.Success ? result.Data : new List<Dictionary<string, object>>();
+        var result = await SQLServerService.ExecuteQuery(source, query, parameters);
+
+        if (!result.Success)
+        {
+          Console.WriteLine("[ObterDescontosContrato] Erro ao buscar descontos");
+          return new List<Dictionary<string, object>>();
+        }
+
+        Console.WriteLine($"[ObterDescontosContrato] {result.Data?.Count ?? 0} descontos encontrados");
+        return result.Data ?? new List<Dictionary<string, object>>();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"[ObterDescontosContrato] Erro: {ex.Message}");
+        return new List<Dictionary<string, object>>();
+      }
+    }
+    /// <summary>
+    /// Calcula os valores líquidos das parcelas aplicando os descontos
+    /// Retorna as parcelas com vl_saldo_titulo (valor líquido após descontos)
+    /// </summary>
+    private async Task<List<Dictionary<string, object>>> CalcularValoresLiquidos(
+        Source source,
+        List<Dictionary<string, object>> parcelasTitulos,
+        int cdContrato,
+        int cdPessoaEscola)
+    {
+      try
+      {
+        Console.WriteLine($"[CalcularValoresLiquidos] Calculando valores líquidos para {parcelasTitulos?.Count ?? 0} parcelas");
+
+        if (parcelasTitulos == null || !parcelasTitulos.Any())
+          return new List<Dictionary<string, object>>();
+
+        var parcelasComDesconto = new List<Dictionary<string, object>>();
+
+        // Buscar descontos do contrato
+        var descontosContrato = await ObterDescontosContrato(source, cdContrato, cdPessoaEscola);
+
+        // Consolidar parcelas por vencimento
+        var parcelasConsolidadas = ConsolidarTitulosPorVencimento(parcelasTitulos);
+
+        foreach (var parcela in parcelasConsolidadas)
+        {
+          var parcelaComDesconto = new Dictionary<string, object>(parcela);
+
+          // Valores brutos
+          decimal vlMaterial = Convert.ToDecimal(parcela["vl_material"] ?? 0);
+          decimal vlMensalidade = Convert.ToDecimal(parcela["vl_mensalidade"] ?? 0);
+          decimal vlTotal = vlMaterial + vlMensalidade;
+
+          // Número da parcela
+          int nmParcela = Convert.ToInt32(parcela["nm_parcela"] ?? 0);
+
+          // Aplicar descontos que incidem nesta parcela
+          decimal valorDesconto = 0;
+
+          foreach (var desconto in descontosContrato)
+          {
+            int parcelaIni = Convert.ToInt32(desconto["nm_parcela_ini"] ?? 0);
+            int parcelaFim = Convert.ToInt32(desconto["nm_parcela_fim"] ?? 999);
+
+            // Verificar se o desconto se aplica a esta parcela
+            if (nmParcela >= parcelaIni && nmParcela <= parcelaFim)
+            {
+              decimal pcDesconto = Convert.ToDecimal(desconto["pc_desconto_contrato"] ?? 0);
+              decimal vlDesconto = Convert.ToDecimal(desconto["vl_desconto_contrato"] ?? 0);
+
+              // Aplicar o desconto (percentual ou valor fixo)
+              if (pcDesconto > 0)
+              {
+                valorDesconto += vlTotal * (pcDesconto / 100);
+              }
+              else if (vlDesconto > 0)
+              {
+                valorDesconto += vlDesconto;
+              }
+            }
+          }
+
+          // Calcular valor líquido
+          decimal vlLiquido = vlTotal - valorDesconto;
+          if (vlLiquido < 0) vlLiquido = 0;
+
+          // Adicionar campos calculados
+          parcelaComDesconto["vl_desconto_aplicado"] = valorDesconto;
+          parcelaComDesconto["vl_saldo_titulo"] = vlLiquido;  // Campo usado pela grade
+          parcelaComDesconto["vl_liquido"] = vlLiquido;
+
+          parcelasComDesconto.Add(parcelaComDesconto);
+        }
+
+        Console.WriteLine($"[CalcularValoresLiquidos] {parcelasComDesconto.Count} parcelas com valores líquidos calculados");
+        return parcelasComDesconto;
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"[CalcularValoresLiquidos] Erro: {ex.Message}");
+        return parcelasTitulos; // Retorna originais em caso de erro
+      }
     }
 
   }

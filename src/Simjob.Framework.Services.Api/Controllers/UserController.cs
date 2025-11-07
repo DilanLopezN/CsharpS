@@ -133,21 +133,21 @@ namespace Simjob.Framework.Services.Api.Controllers
                     if (sys_usuarioExiste == null)
                     {
                         var usuario = new Dictionary<string, object>
-                    {
+                        {
 
-                        { "cd_pessoa", command.cd_pessoa },
-                        { "no_login", command.Name },
-                        { "dc_senha_usuario", UserService.GeraHashAntigo(command.Password) },
-                        { "id_master", 0 },
-                        { "id_manter_tela", 0 },
-                        { "id_usuario_ativo", 1 },
-                        { "nm_tentativa", 0 },
-                        { "id_bloqueado", 0 },
-                        { "id_trocar_senha", 0 },
-                        { "dt_expiracao_senha", new DateTime(2035, 05, 09, 0, 0, 0) },
-                        { "id_admin", command.ControlAccess },
-                        { "id_administrador", 0 }
-                    };
+                            { "cd_pessoa", command.cd_pessoa },
+                            { "no_login", command.Name },
+                            { "dc_senha_usuario", UserService.GeraHashAntigo(command.Password) },
+                            { "id_master", 0 },
+                            { "id_manter_tela", 0 },
+                            { "id_usuario_ativo", 1 },
+                            { "nm_tentativa", 0 },
+                            { "id_bloqueado", 0 },
+                            { "id_trocar_senha", 0 },
+                            { "dt_expiracao_senha", new DateTime(2035, 05, 09, 0, 0, 0) },
+                            { "id_admin", command.ControlAccess },
+                            { "id_administrador", 0 }
+                        };
 
                         var t_sys_usuario_result = await SQLServerService.InsertWithResult("T_SYS_USUARIO", usuario, source);
                         if (!t_sys_usuario_result.success) return BadRequest($"erro ao criar sys_usuario: {t_sys_usuario_result.error}");
@@ -319,13 +319,13 @@ namespace Simjob.Framework.Services.Api.Controllers
             var acesstoken = Request.Headers[HeaderNames.Authorization];
             var permissionUser = _permissionService.RetornPermission(acesstoken.ToString());
             var admin = _userService.GetUserById(permissionUser.UserID);
-            if (admin.Root == true)
+            if (admin.Root == true || admin.ControlAccess == true)
             {
                 var user = _userService.GetUserById(userId);
                 _userService.UpdatePasswordAdmin(user, newPassword);
                 return ResponseDefault(_userService.GetUserById(userId));
             }
-            return ResponseDefault(default);
+            return BadRequest("Usuário não possui permissão para alterar a senha.");
         }
 
         /// <summary>

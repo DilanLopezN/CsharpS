@@ -38,6 +38,7 @@ namespace Simjob.Framework.Services.Api.Models.Matricula
 
 
         // Desconto
+        public int? cd_tipo_desconto { get; set; }
         public double? pc_desconto_contrato { get; set; }
         public decimal? vl_desconto_contrato { get; set; }
         public bool? id_incide_matricula { get; set; }

@@ -451,6 +451,15 @@ namespace Simjob.Framework.Services.Api.Controllers
                             return BadRequest($"Título {baixa.cd_titulo}: {validacaoTituloAnterior.mensagemErro}");
                         }
 
+                    var validacaoDataEmissao = ValidacaoDataEmissaoService.ValidarDataBaixaVsEmissao(
+                        titulo,
+                        model.dt_baixa);
+
+                    if (!validacaoDataEmissao.sucesso)
+                    {
+                        return BadRequest($"Título {baixa.cd_titulo}: {validacaoDataEmissao.mensagemErro}");
+                    }
+
                         var titulo_baixa_dic = new Dictionary<string, object>();
                         var id_natureza_titulo = titulo["id_natureza_titulo"].ToString();
                         if (id_natureza_titulo == "1")

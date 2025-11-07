@@ -273,40 +273,6 @@ namespace Simjob.Framework.Services.Api.Controllers
             });
         }
 
-        /// <summary>
-        /// Exclusão fisica de pessoa.
-        /// </summary>
-        /// <param name="cd_pessoa"></param>
-        /// <returns></returns>
-        [Authorize]
-        [HttpDelete]
-        [Route("{cd_pessoa}")]
-        public async Task<IActionResult> DeletePessoa(int cd_pessoa)
-        {
-            var schemaName = "T_Pessoa";
-            if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
-            var schema = _schemaRepository.GetSchemaByField("name", schemaName);
-            var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
-            var source = _sourceRepository.GetByField("description", schemaModel.Source);
-            if (source != null && source.Active != null && source.Active == true)
-            {
-                var filtrosPessoa = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa) };
-                var pessoaExists = await SQLServerService.GetFirstByFields(source, "T_Pessoa", filtrosPessoa);
-                if (pessoaExists == null) return NotFound("pessoa");
-
-                var pessoas_dependentes = await SQLServerService.GetList("T_RELACIONAMENTO", null, "[cd_pessoa_pai]", $"[{cd_pessoa}]", source, SearchModeEnum.Equals);
-                if (pessoas_dependentes.success && pessoas_dependentes.data.Any()) return BadRequest("pessoa possui dependentes");
-
-                var delete = await SQLServerService.Delete("T_PESSOA", "cd_pessoa", cd_pessoa.ToString(), source);
-                if (!delete.success) return BadRequest(delete.error);
-                return ResponseDefault();
-
-            }
-            return BadRequest(new
-            {
-                error = "Fonte de dados não configurada ou inativa."
-            });
-        }
 
         [Authorize]
         [HttpPatch()]
@@ -413,7 +379,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                         var telefoneDictEmail = new Dictionary<string, object>
                         {
                             //{ "cd_telefone", null },
-                            { "cd_pessoa", dependente.cd_pessoa_filho },
+                            { "cd_pessoa", dependente.cd_pessoa_pai },
                             { "cd_tipo_telefone", 4 },
                             { "cd_classe_telefone", 1 },
                             { "dc_fone_mail", dependente.email_pessoa_filho },
@@ -422,7 +388,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                             { "cd_operadora", null }
                         };
                         var t_telefone_email_insert = await SQLServerService.Insert("T_TELEFONE", telefoneDictEmail, source);
-                        if (!t_telefone_email_insert.success) return BadRequest();
+                   if (!t_telefone_email_insert.success) return BadRequest(t_telefone_email_insert.error);
                     }
 
                 }

@@ -825,7 +825,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
             sortDesc:true,
             ids: null,
             searchFields:"[cd_situacao_aluno_turma]",
-            value:"[1]",
+            value:"[1,8]",
             source,
             mode,
             null,

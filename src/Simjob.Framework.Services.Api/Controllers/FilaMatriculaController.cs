@@ -366,21 +366,137 @@ namespace Simjob.Framework.Services.Api.Controllers
 
         private async Task<(bool sucess, string error)> ProcessaUpdate(int cd_fila_matricula,InsertFilaMatriculaModel command, Source source)
         {
-
             try
             {
-                
-                var cd_pessoa_escola = command.cd_pessoa_escola;
-
                 //valida se existe uma registro em fila
                 var filtroFila = new List<(string campo, object valor)> { new("cd_fila_matricula", cd_fila_matricula) };
                 var filaExist = await SQLServerService.GetFirstByFields(source, "T_FILA_MATRICULA", filtroFila);
                 if (filaExist == null) return (false, $"fila de matricula não encontrada");
-                var cd_pessoa = filaExist["cd_pessoa_fila"];             
+                var cd_pessoa = filaExist["cd_pessoa_fila"];
+
+                // Atualizar T_PESSOA
+                var pessoaDict = new Dictionary<string, object>
+                {
+                    { "no_pessoa", command.no_pessoa }
+                };
+                var t_pessoa_update = await SQLServerService.Update("T_PESSOA", pessoaDict, source, "cd_pessoa", cd_pessoa);
+                if (!t_pessoa_update.success) return new(t_pessoa_update.success, t_pessoa_update.error);
+
+                // Atualizar/Inserir EMAIL em T_TELEFONE
+                if (command.email != null)
+                {
+                    var filtrosEmail = new List<(string campo, object valor)> 
+                    { 
+                        new("cd_pessoa", cd_pessoa),
+                        new("cd_tipo_telefone", 4)
+                    };
+                    var emailExist = await SQLServerService.GetFirstByFields(source, "T_TELEFONE", filtrosEmail);
+                    
+                    var telefoneDictEmail = new Dictionary<string, object>
+                    {
+                        { "cd_pessoa", cd_pessoa },
+                        { "cd_tipo_telefone", 4 },
+                        { "cd_classe_telefone", 1 },
+                        { "dc_fone_mail", command.email },
+                        { "cd_endereco", null },
+                        { "id_telefone_principal", 1 },
+                        { "cd_operadora", null }
+                    };
+
+                    if (emailExist != null)
+                    {
+                        var cd_telefone = emailExist["cd_telefone"];
+                        var t_telefone_email_update = await SQLServerService.Update("T_TELEFONE", telefoneDictEmail, source, "cd_telefone", cd_telefone);
+                        if (!t_telefone_email_update.success) return new(t_telefone_email_update.success, t_telefone_email_update.error);
+                    }
+                    else
+                    {
+                        var t_telefone_email_insert = await SQLServerService.Insert("T_TELEFONE", telefoneDictEmail, source);
+                        if (!t_telefone_email_insert.success) return new(t_telefone_email_insert.success, t_telefone_email_insert.error);
+                    }
+                }
+
+                // Atualizar/Inserir TELEFONE em T_TELEFONE
+                if (command.telefone != null)
+                {
+                    var filtrosTelefone = new List<(string campo, object valor)> 
+                    { 
+                        new("cd_pessoa", cd_pessoa),
+                        new("cd_tipo_telefone", 1)
+                    };
+                    var telefoneExist = await SQLServerService.GetFirstByFields(source, "T_TELEFONE", filtrosTelefone);
+                    
+                    var telefoneDictTelefone = new Dictionary<string, object>
+                    {
+                        { "cd_pessoa", cd_pessoa },
+                        { "cd_tipo_telefone", 1 },
+                        { "cd_classe_telefone", 1 },
+                        { "dc_fone_mail", command.telefone },
+                        { "cd_endereco", null },
+                        { "id_telefone_principal", 1 },
+                        { "cd_operadora", null }
+                    };
+
+                    if (telefoneExist != null)
+                    {
+                        var cd_telefone = telefoneExist["cd_telefone"];
+                        var t_telefone_telefone_update = await SQLServerService.Update("T_TELEFONE", telefoneDictTelefone, source, "cd_telefone", cd_telefone);
+                        if (!t_telefone_telefone_update.success) return new(t_telefone_telefone_update.success, t_telefone_telefone_update.error);
+                    }
+                    else
+                    {
+                        var t_telefone_telefone_insert = await SQLServerService.Insert("T_TELEFONE", telefoneDictTelefone, source);
+                        if (!t_telefone_telefone_insert.success) return new(t_telefone_telefone_insert.success, t_telefone_telefone_insert.error);
+                    }
+                }
+
+                // Atualizar/Inserir TELEFONE em T_TELEFONE
+                if (command.celular != null)
+                {
+                    var filtrosTelefone = new List<(string campo, object valor)>
+                    {
+                        new("cd_pessoa", cd_pessoa),
+                        new("cd_tipo_telefone", 3)
+                    };
+                    var telefoneExist = await SQLServerService.GetFirstByFields(source, "T_TELEFONE", filtrosTelefone);
+
+                    var telefoneDictTelefone = new Dictionary<string, object>
+                    {
+                        { "cd_pessoa", cd_pessoa },
+                        { "cd_tipo_telefone", 3 },
+                        { "cd_classe_telefone", 1 },
+                        { "dc_fone_mail", command.celular },
+                        { "cd_endereco", null },
+                        { "cd_operadora", null }
+                    };
+
+                    if (telefoneExist != null)
+                    {
+                        var cd_telefone = telefoneExist["cd_telefone"];
+                        var t_telefone_telefone_update = await SQLServerService.Update("T_TELEFONE", telefoneDictTelefone, source, "cd_telefone", cd_telefone);
+                        if (!t_telefone_telefone_update.success) return new(t_telefone_telefone_update.success, t_telefone_telefone_update.error);
+                    }
+                    else
+                    {
+                        var t_telefone_telefone_insert = await SQLServerService.Insert("T_TELEFONE", telefoneDictTelefone, source);
+                        if (!t_telefone_telefone_insert.success) return new(t_telefone_telefone_insert.success, t_telefone_telefone_insert.error);
+                    }
+                }
+
+                // Atualizar T_PESSOA_FISICA
+                var pessoa_fisicaDict = new Dictionary<string, object>
+                {
+                    { "nm_sexo", command.nm_sexo },
+                    { "nm_cpf", command.nm_cpf }
+                };
+                var t_pessoa_fisica_update = await SQLServerService.Update("T_PESSOA_FISICA", pessoa_fisicaDict, source, "cd_pessoa_fisica", cd_pessoa);
+                if (!t_pessoa_fisica_update.success) return new(t_pessoa_fisica_update.success, t_pessoa_fisica_update.error);
+
+                var cd_pessoa_escola = command.cd_pessoa_escola;
 
                 if (cd_pessoa_escola > 0)
                 {
-                    //fila_matricula
+                    //Atualizar T_FILA_MATRICULA
                     var fila_matricula_dict = new Dictionary<string, object>
                     {
                         { "cd_pessoa_escola", cd_pessoa_escola },
@@ -388,11 +504,12 @@ namespace Simjob.Framework.Services.Api.Controllers
                         { "id_status_fila", command.id_status_fila },
                         { "dt_programada_contato", command.dt_programada_contato.ToString("yyyy-MM-ddTHH:mm:ss") },
                         { "cd_produto", command.cd_produto },                     
-                        //{ "cd_curso_recomendado", command.cd_curso_recomendado },           
-                        { "cd_acao", command.cd_acao }
+                        { "cd_acao", command.cd_acao },
+                        { "nm_resultado_teste", command.nm_resultado_teste },
+                        { "cd_curso_recomendado", command.cd_curso_recomendado },
                     };
-                    var fila_matricula_insert = await SQLServerService.Update("T_FILA_MATRICULA", fila_matricula_dict, source, "cd_fila_matricula", cd_fila_matricula);
-                    if (!fila_matricula_insert.success) return new(fila_matricula_insert.success, fila_matricula_insert.error);
+                    var fila_matricula_update = await SQLServerService.Update("T_FILA_MATRICULA", fila_matricula_dict, source, "cd_fila_matricula", cd_fila_matricula);
+                    if (!fila_matricula_update.success) return new(fila_matricula_update.success, fila_matricula_update.error);
 
                     //remove todos os registros de fila_dia e cadastra novamente.
                     await SQLServerService.Delete("T_FILA_DIA", "cd_fila_matricula", cd_fila_matricula.ToString(), source);
@@ -401,12 +518,13 @@ namespace Simjob.Framework.Services.Api.Controllers
                         //T_FILA_MATRICULA_DIA
                         var fila_matricula_dia_dict = new Dictionary<string, object>
                         {
-                            { "cd_fila_matricula",cd_fila_matricula },
+                            { "cd_fila_matricula", cd_fila_matricula },
                             { "id_dia_semana", d.id_dia_semana}
                         };
                         var fila_matricula_dia_insert = await SQLServerService.Insert("T_FILA_DIA", fila_matricula_dia_dict, source);
-                        if (!fila_matricula_insert.success) return new(fila_matricula_insert.success, fila_matricula_insert.error);
+                        if (!fila_matricula_dia_insert.success) return new(fila_matricula_dia_insert.success, fila_matricula_dia_insert.error);
                     }
+                    
                     //remove todos os registros de fila_periodo e cadastra novamente.
                     await SQLServerService.Delete("T_FILA_PERIODO", "cd_fila_matricula", cd_fila_matricula.ToString(), source);
                     foreach (var p in command.periodos)
@@ -414,22 +532,19 @@ namespace Simjob.Framework.Services.Api.Controllers
                         //T_FILA_MATRICULA_PERIODO
                         var fila_matricula_periodo_dict = new Dictionary<string, object>
                         {
-                            { "cd_fila_matricula",cd_fila_matricula },
+                            { "cd_fila_matricula", cd_fila_matricula },
                             { "id_periodo", p.id_periodo}
                         };
 
                         var fila_matricula_periodo_insert = await SQLServerService.Insert("T_FILA_PERIODO", fila_matricula_periodo_dict, source);
-                        if (!fila_matricula_insert.success) return new(fila_matricula_insert.success, fila_matricula_insert.error);
+                        if (!fila_matricula_periodo_insert.success) return new(fila_matricula_periodo_insert.success, fila_matricula_periodo_insert.error);
                     }
-
-
                 }
             }
             catch (Exception ex)
             {
                 return (false, $"Erro: {ex.Message}");
             }
-
 
             return (true, string.Empty);
         }
@@ -470,7 +585,6 @@ namespace Simjob.Framework.Services.Api.Controllers
                             Email = x["email"],
                             Celular = x["celular"],
                             Telefone = x["telefone"]
-            
                         }),
                         filasResult.total,
                         page,
@@ -521,6 +635,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                 retorno.cd_produto = fila_matriculaExistente["cd_produto"] != null ? (int)fila_matriculaExistente["cd_produto"] : null;
                 retorno.dt_programada_contato = fila_matriculaExistente["dt_programada_contato"] != null ? DateTime.Parse(fila_matriculaExistente["dt_programada_contato"].ToString()) : DateTime.MinValue;
                 retorno.cd_curso_recomendado = fila_matriculaExistente["cd_curso_recomendado"] != null ? (int)fila_matriculaExistente["cd_curso_recomendado"] : null;
+                retorno.nm_resultado_teste = (double)fila_matriculaExistente["nm_resultado_teste"];
 
                 var filtrosEmail = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa), new("cd_tipo_telefone", 4) };
                 var emailExists = await SQLServerService.GetFirstByFields(source, "T_Telefone", filtrosEmail);

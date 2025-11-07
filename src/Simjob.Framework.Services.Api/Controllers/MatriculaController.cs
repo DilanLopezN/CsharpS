@@ -35,6 +35,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xceed.Words.NET;
 
@@ -51,12 +52,13 @@ namespace Simjob.Framework.Services.Api.Controllers
     private readonly IUserService _userService;
     private readonly IGroupService _groupService;
 
-    public MatriculaController(IMediatorHandler bus, INotificationHandler<DomainNotification> notifications, IRepository<SourceContext, Source> sourceRepository, IRepository<MongoDbContext, Schema> schemaRepository, IWebHostEnvironment webHostEnvironment, MatriculaService matriculaService, IUserService userService, IGroupService groupService) : base(bus, notifications)
+    public MatriculaController(IMediatorHandler bus, INotificationHandler<DomainNotification> notifications, IRepository<SourceContext, Source> sourceRepository, IRepository<MongoDbContext, Schema> schemaRepository, IWebHostEnvironment webHostEnvironment, MatriculaService matriculaService, IUserService userService, IGroupService groupService, ILogger<MatriculaController> logger) : base(bus, notifications)
     {
       _sourceRepository = sourceRepository;
       _schemaRepository = schemaRepository;
       _webHostEnvironment = webHostEnvironment;
       _simulacaoBaixaService = new SimulacaoBaixaService();
+      _logger = logger;
       _matriculaService = matriculaService;
       _userService = userService;
       _groupService = groupService;
@@ -548,6 +550,23 @@ namespace Simjob.Framework.Services.Api.Controllers
 
         // ===== VALIDAÇÕES DE MATRÍCULA DUPLICADA =====
         // Implementando a lógica do sgf1-prod para evitar matrículas duplicadas no mesmo período/produto
+// ===== VALIDAÇÃO DE VALOR MATERIAL INCLUSO =====
+        if (model.CursoContrato != null && model.CursoContrato.Any())
+{
+  foreach (var curso in model.CursoContrato)
+  {
+    if (curso.id_valor_incluso && curso.vl_material_curso.HasValue && curso.vl_material_curso.Value > 0)
+    {
+      var valorContrato = curso.vl_curso_total;
+      var valorMaterial = curso.vl_material_curso.Value;
+      
+      if (valorMaterial > valorContrato)
+      {
+        return BadRequest($"Valor do material (R$ {valorMaterial:N2}) do tipo 'Incluso' não pode exceder o valor do contrato (R$ {valorContrato:N2}) para o curso {curso.cd_curso}");
+      }
+    }
+  }
+}
         try
         {
           await ValidarMatriculaDuplicada(model, source);
@@ -714,7 +733,7 @@ namespace Simjob.Framework.Services.Api.Controllers
           {
             var fila_matricula_update = new Dictionary<string, object>
                 {
-                    { "id_status_fila", 2 }, // 2 - Matrículado
+                    { "id_status_fila", 3 }, // 3 - Matrículado
                 };
             var fila_matricula_update_result = await SQLServerService.Update("T_FILA_MATRICULA", fila_matricula_update, source, "cd_fila_matricula", model.cd_fila_matricula);
             if (!fila_matricula_update_result.success) return BadRequest(fila_matricula_update_result.error);
@@ -1432,8 +1451,9 @@ namespace Simjob.Framework.Services.Api.Controllers
         //turma
         if (!model.Turmas.IsNullOrEmpty())
         {
-          foreach (var turma in model.Turmas)
+          for (int i = 0; i < model.Turmas.Count; i++)
           {
+            var turma = model.Turmas[i];
             var filtroTurma = new List<(string campo, object valor)> { new("cd_turma", turma.cd_turma) };
             var turmaExists = await SQLServerService.GetFirstByFields(source, "T_TURMA", filtroTurma);
             if (turmaExists == null) continue;
@@ -1443,113 +1463,202 @@ namespace Simjob.Framework.Services.Api.Controllers
             var cd_turma_original = turmaExists["cd_turma"];
             var original = no_turma?.ToString() ?? string.Empty;
 
-            var partes = original.Split('/', 2); // corta só na primeira barra
-            bool primeiroEhPERS = partes.Length == 2 &&
-                                  string.Equals(partes[0], "PERS", StringComparison.OrdinalIgnoreCase);
+            var partes = original.Split('-', 2); // corta só na primeira barra
 
             var situacao_aluno = model.id_tipo_matricula == 1 ? 1 :
                           model.id_tipo_matricula == 3 ? 10 :
                           model.id_tipo_matricula == 2 ? 8 : 9;
 
             var dt_inicio = model.dt_inicial_contrato > turma.dt_inicio_aula ? model.dt_inicial_contrato : turma.dt_inicio_aula;
-            if (primeiroEhPERS)
+            if ((bool)turmaExists["id_turma_ppt"])
             {
               //remove campos que não serão inseridos
               //comentando para funcionar o cadastro de turma personalizada
               //turmaExists.Remove("cd_turma");
               turmaExists.Remove("no_turma");
 
-              string novo_nome = primeiroEhPERS
-                  ? $"PERSF/{partes[1]}"   // troca PERS -> PERSF e mantém o resto
-                  : original;
+              //Busca a sigla do estagio
+              var filtroCurso = new List<(string campo, object valor)> { new("cd_curso", turma.cd_curso) };
+              var cursoExists = await SQLServerService.GetFirstByFields(source, "T_CURSO", filtroCurso);
+              var filtroEstagio = new List<(string campo, object valor)> { new("cd_estagio", cursoExists["cd_estagio"]) };
+              var estagioExists = await SQLServerService.GetFirstByFields(source, "T_ESTAGIO", filtroEstagio);
+
+              //Busca turmas irmas existentes
+              var ultima_turma_irma = await SQLServerService.GetList("T_TURMA", 1, 1, "cd_turma", true, null, "[cd_turma_ppt],[cd_curso]", $"[{cd_turma_original}],[{turma.cd_curso}]", source, SearchModeEnum.Equals, null, null);
+              string complemento_nome = partes[1];
+              complemento_nome = Regex.Replace(complemento_nome, @"\d+$", "");
+              var nm_turma = ultima_turma_irma.success && ultima_turma_irma.data.Count > 0 ? (int)ultima_turma_irma.data[0]["nm_turma"] + 1 : 1;
+              string novo_nome = $"PERSF/{estagioExists["no_estagio_abreviado"]}-{complemento_nome}{nm_turma}";
 
               // adiciona nome montado
               turmaExists.Add("no_turma", novo_nome);
+              turmaExists.Remove("cd_turma_ppt");
+              turmaExists.Add("cd_turma_ppt", cd_turma_original);
+              turmaExists.Remove("cd_curso");
+              turmaExists.Add("cd_curso", turma.cd_curso);
+              turmaExists.Remove("cd_turma");
+              turmaExists["id_turma_ppt"] = 0;
+              turmaExists["nm_turma"] = nm_turma;
 
               var t_turma_insert = await SQLServerService.Insert("T_TURMA", turmaExists, source);
-              if (!t_turma_insert.success) continue;
+              
+              if (!t_turma_insert.success)
+              {
+                string input = "PERSF/ESP1-SEG-17:00/21:00-2S/15-12";
+                Match match = Regex.Match(input, @"-(\d+)$");
+
+                if (match.Success)
+                {
+                    string lastNumber = match.Groups[1].Value;
+                    nm_turma = int.Parse(lastNumber) + 1;
+                    novo_nome = $"PERSF/{estagioExists["no_estagio_abreviado"]}-{complemento_nome}{nm_turma}";
+                    turmaExists["no_turma"] = novo_nome;
+                    turmaExists["nm_turma"] = nm_turma;
+
+                    t_turma_insert = await SQLServerService.Insert("T_TURMA", turmaExists, source);
+                    if (!t_turma_insert.success)
+                    {
+                        return BadRequest(t_turma_insert.error);
+                    }
+                }
+              }
 
               var turmaCadastradaGet = await SQLServerService.GetList("T_TURMA", 1, 1, "cd_turma", true, null, null, "", source, SearchModeEnum.Equals, null, null);
               var turmaCadastrada = turmaCadastradaGet.data.First();
               int cdTurmaId = (int)turmaCadastrada["cd_turma"];
 
-              var horario = await SQLServerService.GetList("T_HORARIO", 1, 10000000, "cd_horario", true, null, "[{cd_turma}]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
-              var turma_escola = await SQLServerService.GetList("T_TURMA_ESCOLA", 1, 10000000, "cd_turma_escola", true, null, "[{cd_turma}]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
-              var turma_professor = await SQLServerService.GetList("T_TURMA_PROFESSOR", 1, 10000000, "cd_turma_professor", true, null, "[{cd_turma}]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
-              var programacao_turma = await SQLServerService.GetList("T_PROGRAMACAO_TURMA", 1, 10000000, "cd_programacao_turma", true, null, "[{cd_turma}]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
-              var horario_professor_turma = await SQLServerService.GetList("T_HORARIO_PROFESSOR_TURMA", 1, 10000000, "cd_horario_professor_turma", true, null, "[{cd_turma}]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
+              var horario = await SQLServerService.GetList("T_HORARIO", 1, 10000000, "cd_horario", true, null, "[cd_registro]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
+              var turma_escola = await SQLServerService.GetList("T_TURMA_ESCOLA", 1, 10000000, "cd_turma_escola", true, null, "[cd_turma]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
+              var turma_professor = await SQLServerService.GetList("T_PROFESSOR_TURMA", 1, 10000000, "cd_turma", true, null, "[cd_turma]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
+              var programacao_turma = await SQLServerService.GetList("T_PROGRAMACAO_TURMA", 1, 10000000, "cd_programacao_turma", true, null, "[cd_turma]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
 
-              var feriado_desconsiderado = await SQLServerService.GetList("T_FERIADO_DESCONSIDERADO", 1, 10000000, "cd_feriado_desconsiderado", true, null, "[{cd_turma}]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
+              var feriado_desconsiderado = await SQLServerService.GetList("T_FERIADO_DESCONSIDERADO", 1, 10000000, "cd_feriado_desconsiderado", true, null, "[cd_turma]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
 
               //vinculos para nova turma criada
               foreach (var item in horario.data)
               {
                 item.Remove("cd_horario");
-                item["cd_turma"] = cdTurmaId;
-                var t_insert = await SQLServerService.Insert("T_HORARIO", item, source);
+                item["cd_registro"] = cdTurmaId;
+                var t_insert = await SQLServerService.InsertWithResult("T_HORARIO", item, source);
                 if (!t_insert.success) continue;
-              }
-              foreach (var item in turma_escola.data)
-              {
-                item.Remove("cd_turma_escola");
-                item["cd_turma"] = cdTurmaId;
-                var t_insert = await SQLServerService.Insert("T_TURMA_ESCOLA", item, source);
-                if (!t_insert.success) continue;
-              }
-              foreach (var item in turma_professor.data)
-              {
-                item.Remove("cd_turma_professor");
-                item["cd_turma"] = cdTurmaId;
-                var t_insert = await SQLServerService.Insert("T_TURMA_PROFESSOR", item, source);
-                if (!t_insert.success) continue;
-              }
-              foreach (var item in turma_professor.data)
-              {
-                item.Remove("cd_turma_professor");
-                item["cd_turma"] = cdTurmaId;
-                var t_insert = await SQLServerService.Insert("T_TURMA_PROFESSOR", item, source);
-                if (!t_insert.success) continue;
-              }
-              foreach (var item in programacao_turma.data)
-              {
-                item.Remove("cd_programacao_turma");
-                item["cd_turma"] = cdTurmaId;
-                var t_insert = await SQLServerService.Insert("T_PROGRAMACAO_TURMA", item, source);
-                if (!t_insert.success) continue;
-              }
-              foreach (var item in horario_professor_turma.data)
-              {
-                item.Remove("cd_horario_professor_turma");
-                item["cd_turma"] = cdTurmaId;
-                var t_insert = await SQLServerService.Insert("T_HORARIO_PROFESSOR_TURMA", item, source);
-                if (!t_insert.success) continue;
-              }
-              foreach (var item in feriado_desconsiderado.data)
-              {
-                item.Remove("cd_feriado_desconsiderado");
-                item["cd_turma"] = cdTurmaId;
-                var t_insert = await SQLServerService.Insert("T_FERIADO_DESCONSIDERADO", item, source);
-                if (!t_insert.success) continue;
-              }
-              foreach (var cursoContratoId in cursosContrato)
-              {
-                //cria vinculo entre aluno e turma
-                var alunoTurmaDict = new Dictionary<string, object>
+                var cd_horario = t_insert.inserted["cd_horario"];
+                
+                foreach(var professor in turma_professor.data)
                 {
+                    var horario_professor_turma = new Dictionary<string, object> 
+                    {
+                        { "cd_horario", cd_horario },
+                        { "cd_professor", professor["cd_professor"]}
+                    };
+                    var h_insert = await SQLServerService.Insert("T_HORARIO_PROFESSOR_TURMA", horario_professor_turma, source);
+                }
+              }
+              if (turma_escola.success)
+              {
+                foreach (var item in turma_escola.data)
+                {
+                    item.Remove("cd_turma_escola");
+                    item["cd_turma"] = cdTurmaId;
+                    var t_insert = await SQLServerService.Insert("T_TURMA_ESCOLA", item, source);
+                    if (!t_insert.success) continue;
+                }
+              }
+              
+              if (turma_professor.success)
+              {
+                  foreach (var item in turma_professor.data)
+                  {
+                    item.Remove("cd_professor_turma");
+                    item["cd_turma"] = cdTurmaId;
+                    var t_insert = await SQLServerService.Insert("T_PROFESSOR_TURMA", item, source);
+                    if (!t_insert.success) continue;
+                  }
+              }
+              
+              if (programacao_turma.success)
+              {
+                  foreach (var item in programacao_turma.data)
+                  {
+                    item.Remove("cd_programacao_turma");
+                    item["cd_turma"] = cdTurmaId;
+                    var t_insert = await SQLServerService.Insert("T_PROGRAMACAO_TURMA", item, source);
+                    if (!t_insert.success) continue;
+                  }
+              }
+              
+              if (feriado_desconsiderado.success)
+              {
+                  foreach (var item in feriado_desconsiderado.data)
+                  {
+                    item.Remove("cd_feriado_desconsiderado");
+                    item["cd_turma"] = cdTurmaId;
+                    var t_insert = await SQLServerService.Insert("T_FERIADO_DESCONSIDERADO", item, source);
+                    if (!t_insert.success) continue;
+                  }
+              }
+              //foreach (var cursoContratoId in cursosContrato)
+              //{
+              //  //cria vinculo entre aluno e turma
+              //  var alunoTurmaDict = new Dictionary<string, object>
+              //  {
+              //    ["cd_aluno"] = model.cd_aluno,
+              //    ["cd_turma"] = cdTurmaId,
+              //    ["cd_contrato"] = cd_contrato,
+              //    ["cd_situacao_aluno_turma"] = situacao_aluno,
+              //    ["dt_matricula"] = model.dt_matricula_contrato?.ToString("yyyy-MM-ddTHH:mm:ss") ?? null,
+              //    ["dt_inicio"] = dt_inicio.ToString("yyyy-MM-ddTHH:mm:ss"),
+              //    ["nm_matricula_turma"] = nm_matricula,
+              //    ["dt_movimento"] = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"),
+              //    ["cd_curso_contrato"] = cursoContratoId,
+              //    ["cd_curso"] = turma.cd_curso
+              //  };
+              //  var t_aluno_Result = await SQLServerService.Insert("T_ALUNO_TURMA", alunoTurmaDict, source);
+              //  if (!t_aluno_Result.success) return BadRequest(t_aluno_Result.error);
+              //}
+              var alunoTurmaDict = new Dictionary<string, object>
+              {
                   ["cd_aluno"] = model.cd_aluno,
-                  ["cd_turma"] = turma.cd_turma,
+                  ["cd_turma"] = cdTurmaId,
                   ["cd_contrato"] = cd_contrato,
                   ["cd_situacao_aluno_turma"] = situacao_aluno,
                   ["dt_matricula"] = model.dt_matricula_contrato?.ToString("yyyy-MM-ddTHH:mm:ss") ?? null,
                   ["dt_inicio"] = dt_inicio.ToString("yyyy-MM-ddTHH:mm:ss"),
                   ["nm_matricula_turma"] = nm_matricula,
                   ["dt_movimento"] = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"),
-                  ["cd_curso_contrato"] = cursoContratoId,
+                  ["cd_curso_contrato"] = cursosContrato[i],
                   ["cd_curso"] = turma.cd_curso
-                };
-                var t_aluno_Result = await SQLServerService.Insert("T_ALUNO_TURMA", alunoTurmaDict, source);
-                if (!t_aluno_Result.success) return BadRequest(t_aluno_Result.error);
+              };
+              var t_aluno_Result = await SQLServerService.Insert("T_ALUNO_TURMA", alunoTurmaDict, source);
+              if (!t_aluno_Result.success) return BadRequest(t_aluno_Result.error);
+
+              var id_tipo_movimento = situacao_aluno == 1 ? 0
+                                    : situacao_aluno == 8 ? 6
+                                    : 10;
+              //gera historico aluno
+              //obtem ultimo historico para atualizar quantidade
+              var ultimoHistorico = await SQLServerService.GetList("T_HISTORICO_ALUNO", 1, 1, "nm_sequencia", true, null, "[cd_aluno]", $"[{model.cd_aluno}]", source, SearchModeEnum.Equals, null, null);
+              var sequencia_historico = 0;
+              if (ultimoHistorico.success)
+              {
+                sequencia_historico = int.Parse(ultimoHistorico.data.FirstOrDefault()?["nm_sequencia"]?.ToString() ?? "0");
               }
+              sequencia_historico += 1;
+
+              var historicoAlunoDict = new Dictionary<string, object>
+              {
+                ["cd_aluno"] = model.cd_aluno,
+                ["cd_turma"] = cdTurmaId,
+                ["cd_contrato"] = cd_contrato,
+                ["id_situacao_historico"] = situacao_aluno,
+                ["cd_usuario"] = model.cd_usuario,
+                ["dt_cadastro"] = DateTime.Now.Date,
+                ["id_tipo_movimento"] = id_tipo_movimento,
+                ["cd_produto"] = model.cd_produto_atual,
+                ["dt_historico"] = dt_inicio,
+                ["nm_sequencia"] = sequencia_historico
+              };
+              var t_Historico_Result = await SQLServerService.Insert("T_HISTORICO_ALUNO", historicoAlunoDict, source);
+              if (!t_Historico_Result.success) return BadRequest(t_Historico_Result.error);
             }
             else
             {
@@ -1559,21 +1668,33 @@ namespace Simjob.Framework.Services.Api.Controllers
 
               if (alunoExists != null)
               {
-                foreach (var cursoContratoId in cursosContrato)
-                {
-                  //atualiza cd_contrato e situação aluno
+                //foreach (var cursoContratoId in cursosContrato)
+                //{
+                //  //atualiza cd_contrato e situação aluno
+                //  var aluno_atualizar = new Dictionary<string, object>
+                //  {
+                //    ["cd_contrato"] = cd_contrato,
+                //    ["cd_situacao_aluno_turma"] = situacao_aluno,
+                //    ["dt_matricula"] = model.dt_matricula_contrato?.ToString("yyyy-MM-ddTHH:mm:ss"),
+                //    ["nm_matricula_turma"] = nm_matricula,
+                //    ["cd_curso_contrato"] = cursoContratoId,
+                //    ["dt_inicio"] = dt_inicio.ToString("yyyy-MM-ddTHH:mm:ss"),
+                //  };
+                //  var t_aluno_Result = await SQLServerService.Update("T_ALUNO_TURMA", aluno_atualizar, source, "cd_aluno", model.cd_aluno);
+                //  if (!t_aluno_Result.success) return BadRequest(t_aluno_Result.error);
+                //}
+                                  //atualiza cd_contrato e situação aluno
                   var aluno_atualizar = new Dictionary<string, object>
                   {
                     ["cd_contrato"] = cd_contrato,
                     ["cd_situacao_aluno_turma"] = situacao_aluno,
                     ["dt_matricula"] = model.dt_matricula_contrato?.ToString("yyyy-MM-ddTHH:mm:ss"),
                     ["nm_matricula_turma"] = nm_matricula,
-                    ["cd_curso_contrato"] = cursoContratoId,
+                    ["cd_curso_contrato"] = cursosContrato[i],
                     ["dt_inicio"] = dt_inicio.ToString("yyyy-MM-ddTHH:mm:ss"),
                   };
                   var t_aluno_Result = await SQLServerService.Update("T_ALUNO_TURMA", aluno_atualizar, source, "cd_aluno", model.cd_aluno);
                   if (!t_aluno_Result.success) return BadRequest(t_aluno_Result.error);
-                }
               }
               else
               {
@@ -2441,10 +2562,10 @@ namespace Simjob.Framework.Services.Api.Controllers
             int? cd_aditamento = ad.cd_aditamento;
             if (ad.cd_aditamento == null)
             {
-              // Buscar aditamentos anteriores do mesmo tipo para gerar sequência
-              var aditamentos_tipo = await SQLServerService.GetList("T_ADITAMENTO", null, "[cd_contrato],[id_tipo_aditamento]", $"[{model.cd_contrato}],[{ad.id_tipo_aditamento}]", source);
-              var sequencia_tipo = aditamentos_tipo.success && aditamentos_tipo.data != null ? aditamentos_tipo.data.Count + 1 : 1;
-              dict["nm_sequencia_aditamento"] = sequencia_tipo.ToString();
+              // Buscar todos os aditamentos anteriores do contrato para gerar sequência contínua
+              var aditamentos_geral = await SQLServerService.GetList("T_ADITAMENTO", null, "[cd_contrato]", $"[{model.cd_contrato}]", source);
+              var sequencia_geral = aditamentos_geral.success && aditamentos_geral.data != null ? aditamentos_geral.data.Count + 1 : 1;
+              dict["nm_sequencia_aditamento"] = sequencia_geral.ToString();
 
               var t_aditamento_Result = await SQLServerService.InsertWithResult("T_ADITAMENTO", dict, source);
               if (!t_aditamento_Result.success) continue;
@@ -2951,8 +3072,9 @@ namespace Simjob.Framework.Services.Api.Controllers
         //turma
         if (!model.Turmas.IsNullOrEmpty())
         {
-          foreach (var turma in model.Turmas)
+          for (int i = 0; i < model.Turmas.Count; i++)
           {
+            var turma = model.Turmas[i];
             var filtroTurma = new List<(string campo, object valor)> { new("cd_turma", turma.cd_turma) };
             var turmaExists = await SQLServerService.GetFirstByFields(source, "T_TURMA", filtroTurma);
             if (turmaExists == null) continue;
@@ -2963,118 +3085,206 @@ namespace Simjob.Framework.Services.Api.Controllers
             var original = no_turma?.ToString() ?? string.Empty;
 
             var partes = original.Split('/', 2); // corta só na primeira barra
-            bool primeiroEhPERS = partes.Length == 2 &&
-                                  string.Equals(partes[0], "PERS", StringComparison.OrdinalIgnoreCase);
 
             var situacao_aluno = model.id_tipo_matricula == 1 ? 1 :
                           model.id_tipo_matricula == 3 ? 10 :
                           model.id_tipo_matricula == 2 ? 8 : 9;
 
             var dt_inicio = model.dt_inicial_contrato > turma.dt_inicio_aula ? model.dt_inicial_contrato : turma.dt_inicio_aula;
-            if (primeiroEhPERS)
+            if ((bool)turmaExists["id_turma_ppt"])
             {
               //remove campos que não serão inseridos
               //comentando para funcionar o cadastro de turma personalizada
               //turmaExists.Remove("cd_turma");
               turmaExists.Remove("no_turma");
 
-              string novo_nome = primeiroEhPERS
-                  ? $"PERSF/{partes[1]}"   // troca PERS -> PERSF e mantém o resto
-                  : original;
+              //Busca a sigla do estagio
+              var filtroCurso = new List<(string campo, object valor)> { new("cd_curso", turma.cd_curso) };
+              var cursoExists = await SQLServerService.GetFirstByFields(source, "T_CURSO", filtroCurso);
+              var filtroEstagio = new List<(string campo, object valor)> { new("cd_estagio", cursoExists["cd_estagio"]) };
+              var estagioExists = await SQLServerService.GetFirstByFields(source, "T_ESTAGIO", filtroEstagio);
+
+              //Busca turmas irmas existentes
+              var ultima_turma_irma = await SQLServerService.GetList("T_TURMA", 1, 1, "nm_turma", true, null, "[cd_turma_ppt],[cd_curso]", $"[{cd_turma_original}],[{turma.cd_curso}]", source, SearchModeEnum.Equals, null, null);
+              string complemento_nome = partes[1];
+              complemento_nome = Regex.Replace(complemento_nome, @"\d+$", "");
+              var nm_turma = ultima_turma_irma.success && ultima_turma_irma.data.Count > 0 ? (int)ultima_turma_irma.data[0]["nm_turma"] + 1 : 1;
+              string novo_nome = $"PERSF/{estagioExists["no_estagio_abreviado"]}-{complemento_nome}{nm_turma}";
 
               // adiciona nome montado
               turmaExists.Add("no_turma", novo_nome);
+              turmaExists.Remove("cd_turma_ppt");
+              turmaExists.Add("cd_turma_ppt", cd_turma_original);
+              turmaExists.Remove("cd_curso");
+              turmaExists.Add("cd_curso", turma.cd_curso);
+              turmaExists.Remove("cd_turma");
+              turmaExists["id_turma_ppt"] = 0;
+              turmaExists["nm_turma"] = nm_turma;
 
               var t_turma_insert = await SQLServerService.Insert("T_TURMA", turmaExists, source);
-              if (!t_turma_insert.success) continue;
+              if (!t_turma_insert.success)
+              {
+                string input = "PERSF/ESP1-SEG-17:00/21:00-2S/15-12";
+                Match match = Regex.Match(input, @"-(\d+)$");
+
+                if (match.Success)
+                {
+                    string lastNumber = match.Groups[1].Value;
+                    nm_turma = int.Parse(lastNumber) + 1;
+                    novo_nome = $"PERSF/{estagioExists["no_estagio_abreviado"]}-{complemento_nome}{nm_turma}";
+                    turmaExists["no_turma"] = novo_nome;
+                    turmaExists["nm_turma"] = nm_turma;
+
+                    t_turma_insert = await SQLServerService.Insert("T_TURMA", turmaExists, source);
+                    if (!t_turma_insert.success)
+                    {
+                        return BadRequest(t_turma_insert.error);
+                    }
+                }
+              }
 
               var turmaCadastradaGet = await SQLServerService.GetList("T_TURMA", 1, 1, "cd_turma", true, null, null, "", source, SearchModeEnum.Equals, null, null);
               var turmaCadastrada = turmaCadastradaGet.data.First();
               int cdTurmaId = (int)turmaCadastrada["cd_turma"];
 
-              var horario = await SQLServerService.GetList("T_HORARIO", 1, 10000000, "cd_horario", true, null, "[{cd_turma}]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
-              var turma_escola = await SQLServerService.GetList("T_TURMA_ESCOLA", 1, 10000000, "cd_turma_escola", true, null, "[{cd_turma}]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
-              var turma_professor = await SQLServerService.GetList("T_TURMA_PROFESSOR", 1, 10000000, "cd_turma_professor", true, null, "[{cd_turma}]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
-              var programacao_turma = await SQLServerService.GetList("T_PROGRAMACAO_TURMA", 1, 10000000, "cd_programacao_turma", true, null, "[{cd_turma}]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
-              var horario_professor_turma = await SQLServerService.GetList("T_HORARIO_PROFESSOR_TURMA", 1, 10000000, "cd_horario_professor_turma", true, null, "[{cd_turma}]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
+              var horario = await SQLServerService.GetList("T_HORARIO", 1, 10000000, "cd_horario", true, null, "[cd_registro]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
+              var turma_escola = await SQLServerService.GetList("T_TURMA_ESCOLA", 1, 10000000, "cd_turma_escola", true, null, "[cd_turma]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
+              var turma_professor = await SQLServerService.GetList("T_PROFESSOR_TURMA", 1, 10000000, "cd_turma", true, null, "[cd_turma]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
+              var programacao_turma = await SQLServerService.GetList("T_PROGRAMACAO_TURMA", 1, 10000000, "cd_programacao_turma", true, null, "[cd_turma]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
 
-              var feriado_desconsiderado = await SQLServerService.GetList("T_FERIADO_DESCONSIDERADO", 1, 10000000, "cd_feriado_desconsiderado", true, null, "[{cd_turma}]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
+              var feriado_desconsiderado = await SQLServerService.GetList("T_FERIADO_DESCONSIDERADO", 1, 10000000, "cd_feriado_desconsiderado", true, null, "[cd_turma]", $"[{cd_turma_original}]", source, SearchModeEnum.Equals, null, null);
 
               //vinculos para nova turma criada
               foreach (var item in horario.data)
               {
                 item.Remove("cd_horario");
-                item["cd_turma"] = cdTurmaId;
-                var t_insert = await SQLServerService.Insert("T_HORARIO", item, source);
+                item["cd_registro"] = cdTurmaId;
+                var t_insert = await SQLServerService.InsertWithResult("T_HORARIO", item, source);
                 if (!t_insert.success) continue;
-              }
-              foreach (var item in turma_escola.data)
-              {
-                item.Remove("cd_turma_escola");
-                item["cd_turma"] = cdTurmaId;
-                var t_insert = await SQLServerService.Insert("T_TURMA_ESCOLA", item, source);
-                if (!t_insert.success) continue;
-              }
-              foreach (var item in turma_professor.data)
-              {
-                item.Remove("cd_turma_professor");
-                item["cd_turma"] = cdTurmaId;
-                var t_insert = await SQLServerService.Insert("T_TURMA_PROFESSOR", item, source);
-                if (!t_insert.success) continue;
-              }
-              foreach (var item in turma_professor.data)
-              {
-                item.Remove("cd_turma_professor");
-                item["cd_turma"] = cdTurmaId;
-                var t_insert = await SQLServerService.Insert("T_TURMA_PROFESSOR", item, source);
-                if (!t_insert.success) continue;
-              }
-              foreach (var item in programacao_turma.data)
-              {
-                item.Remove("cd_programacao_turma");
-                item["cd_turma"] = cdTurmaId;
-                var t_insert = await SQLServerService.Insert("T_PROGRAMACAO_TURMA", item, source);
-                if (!t_insert.success) continue;
-              }
-              foreach (var item in horario_professor_turma.data)
-              {
-                item.Remove("cd_horario_professor_turma");
-                item["cd_turma"] = cdTurmaId;
-                var t_insert = await SQLServerService.Insert("T_HORARIO_PROFESSOR_TURMA", item, source);
-                if (!t_insert.success) continue;
-              }
-              foreach (var item in feriado_desconsiderado.data)
-              {
-                item.Remove("cd_feriado_desconsiderado");
-                item["cd_turma"] = cdTurmaId;
-                var t_insert = await SQLServerService.Insert("T_FERIADO_DESCONSIDERADO", item, source);
-                if (!t_insert.success) continue;
-              }
-
-              foreach (var cursoContratoId in cursosContrato)
-              {
-                var cursoContratoAtualizar = new Dictionary<string, object>
+                var cd_horario = t_insert.inserted["cd_horario"];
+                
+                foreach(var professor in turma_professor.data)
                 {
-                  ["cd_turma"] = cdTurmaId
-                };
-
-                //cria vinculo entre aluno e turma
-                var alunoTurmaDict = new Dictionary<string, object>
+                    var horario_professor_turma = new Dictionary<string, object> 
+                    {
+                        { "cd_horario", cd_horario },
+                        { "cd_professor", professor["cd_professor"]}
+                    };
+                    var h_insert = await SQLServerService.Insert("T_HORARIO_PROFESSOR_TURMA", horario_professor_turma, source);
+                }
+              }
+              if (turma_escola.success)
+              {
+                foreach (var item in turma_escola.data)
                 {
+                    item.Remove("cd_turma_escola");
+                    item["cd_turma"] = cdTurmaId;
+                    var t_insert = await SQLServerService.Insert("T_TURMA_ESCOLA", item, source);
+                    if (!t_insert.success) continue;
+                }
+              }
+              
+              if (turma_professor.success)
+              {
+                  foreach (var item in turma_professor.data)
+                  {
+                    item.Remove("cd_professor_turma");
+                    item["cd_turma"] = cdTurmaId;
+                    var t_insert = await SQLServerService.Insert("T_PROFESSOR_TURMA", item, source);
+                    if (!t_insert.success) continue;
+                  }
+              }
+              
+              if (programacao_turma.success)
+              {
+                  foreach (var item in programacao_turma.data)
+                  {
+                    item.Remove("cd_programacao_turma");
+                    item["cd_turma"] = cdTurmaId;
+                    var t_insert = await SQLServerService.Insert("T_PROGRAMACAO_TURMA", item, source);
+                    if (!t_insert.success) continue;
+                  }
+              }
+              
+              if (feriado_desconsiderado.success)
+              {
+                  foreach (var item in feriado_desconsiderado.data)
+                  {
+                    item.Remove("cd_feriado_desconsiderado");
+                    item["cd_turma"] = cdTurmaId;
+                    var t_insert = await SQLServerService.Insert("T_FERIADO_DESCONSIDERADO", item, source);
+                    if (!t_insert.success) continue;
+                  }
+              }
+              //foreach (var cursoContratoId in cursosContrato)
+              //{
+              //  var cursoContratoAtualizar = new Dictionary<string, object>
+              //  {
+              //    ["cd_turma"] = cdTurmaId
+              //  };
+
+              //  //cria vinculo entre aluno e turma
+              //  var alunoTurmaDict = new Dictionary<string, object>
+              //  {
+              //    ["cd_aluno"] = model.cd_aluno,
+              //    ["cd_turma"] = cdTurmaId,
+              //    ["cd_contrato"] = model.cd_contrato,
+              //    ["cd_situacao_aluno_turma"] = situacao_aluno,
+              //    ["dt_matricula"] = model.dt_matricula_contrato?.ToString("yyyy-MM-ddTHH:mm:ss") ?? null,
+              //    ["dt_inicio"] = dt_inicio.ToString("yyyy-MM-ddTHH:mm:ss"),
+              //    ["nm_matricula_turma"] = nm_matricula,
+              //    ["dt_movimento"] = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"),
+              //    ["cd_curso_contrato"] = cursoContratoId,
+              //    ["cd_curso"] = turma.cd_curso
+              //  };
+              //  var t_aluno_Result = await SQLServerService.Insert("T_ALUNO_TURMA", alunoTurmaDict, source);
+              //  if (!t_aluno_Result.success) return BadRequest(t_aluno_Result.error);
+              //}
+            //cria vinculo entre aluno e turma
+              var alunoTurmaDict = new Dictionary<string, object>
+              {
                   ["cd_aluno"] = model.cd_aluno,
-                  ["cd_turma"] = turma.cd_turma,
+                  ["cd_turma"] = cdTurmaId,
                   ["cd_contrato"] = model.cd_contrato,
                   ["cd_situacao_aluno_turma"] = situacao_aluno,
                   ["dt_matricula"] = model.dt_matricula_contrato?.ToString("yyyy-MM-ddTHH:mm:ss") ?? null,
                   ["dt_inicio"] = dt_inicio.ToString("yyyy-MM-ddTHH:mm:ss"),
                   ["nm_matricula_turma"] = nm_matricula,
                   ["dt_movimento"] = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"),
-                  ["cd_curso_contrato"] = cursoContratoId,
+                  ["cd_curso_contrato"] = cursosContrato[i],
                   ["cd_curso"] = turma.cd_curso
-                };
-                var t_aluno_Result = await SQLServerService.Insert("T_ALUNO_TURMA", alunoTurmaDict, source);
-                if (!t_aluno_Result.success) return BadRequest(t_aluno_Result.error);
+              };
+              var t_aluno_Result = await SQLServerService.Insert("T_ALUNO_TURMA", alunoTurmaDict, source);
+              if (!t_aluno_Result.success) return BadRequest(t_aluno_Result.error);
+              
+              var id_tipo_movimento = situacao_aluno == 1 ? 0
+                                    : situacao_aluno == 8 ? 6
+                                    : 10;
+              //gera historico aluno
+              //obtem ultimo historico para atualizar quantidade
+              var ultimoHistorico = await SQLServerService.GetList("T_HISTORICO_ALUNO", 1, 1, "nm_sequencia", true, null, "[cd_aluno]", $"[{model.cd_aluno}]", source, SearchModeEnum.Equals, null, null);
+              var sequencia_historico = 0;
+              if (ultimoHistorico.success)
+              {
+                sequencia_historico = int.Parse(ultimoHistorico.data.FirstOrDefault()?["nm_sequencia"]?.ToString() ?? "0");
               }
+              sequencia_historico += 1;
+
+              var historicoAlunoDict = new Dictionary<string, object>
+              {
+                ["cd_aluno"] = model.cd_aluno,
+                ["cd_turma"] = cdTurmaId,
+                ["cd_contrato"] = model.cd_contrato,
+                ["id_situacao_historico"] = situacao_aluno,
+                ["cd_usuario"] = model.cd_usuario,
+                ["dt_cadastro"] = DateTime.Now.Date,
+                ["id_tipo_movimento"] = id_tipo_movimento,
+                ["cd_produto"] = model.cd_produto_atual,
+                ["dt_historico"] = dt_inicio,
+                ["nm_sequencia"] = sequencia_historico
+              };
+              var t_Historico_Result = await SQLServerService.Insert("T_HISTORICO_ALUNO", historicoAlunoDict, source);
+              if (!t_Historico_Result.success) return BadRequest(t_Historico_Result.error);
             }
             else
             {
@@ -3084,21 +3294,33 @@ namespace Simjob.Framework.Services.Api.Controllers
 
               if (alunoExists != null)
               {
-                foreach (var cursoContratoId in cursosContrato)
-                {
-                  //atualiza cd_contrato e situação aluno
+                //foreach (var cursoContratoId in cursosContrato)
+                //{
+                //  //atualiza cd_contrato e situação aluno
+                //  var aluno_atualizar = new Dictionary<string, object>
+                //  {
+                //    ["cd_contrato"] = model.cd_contrato,
+                //    ["cd_situacao_aluno_turma"] = situacao_aluno,
+                //    ["dt_matricula"] = model.dt_matricula_contrato?.ToString("yyyy-MM-ddTHH:mm:ss"),
+                //    ["nm_matricula_turma"] = nm_matricula,
+                //    ["cd_curso_contrato"] = cursoContratoId,
+                //    ["dt_inicio"] = dt_inicio.ToString("yyyy-MM-ddTHH:mm:ss"),
+                //  };
+                //  var t_aluno_Result = await SQLServerService.Update("T_ALUNO_TURMA", aluno_atualizar, source, "cd_aluno", model.cd_aluno);
+                //  if (!t_aluno_Result.success) return BadRequest(t_aluno_Result.error);
+                //}
+                                  //atualiza cd_contrato e situação aluno
                   var aluno_atualizar = new Dictionary<string, object>
                   {
                     ["cd_contrato"] = model.cd_contrato,
                     ["cd_situacao_aluno_turma"] = situacao_aluno,
                     ["dt_matricula"] = model.dt_matricula_contrato?.ToString("yyyy-MM-ddTHH:mm:ss"),
                     ["nm_matricula_turma"] = nm_matricula,
-                    ["cd_curso_contrato"] = cursoContratoId,
+                    ["cd_curso_contrato"] = cursosContrato[i],
                     ["dt_inicio"] = dt_inicio.ToString("yyyy-MM-ddTHH:mm:ss"),
                   };
                   var t_aluno_Result = await SQLServerService.Update("T_ALUNO_TURMA", aluno_atualizar, source, "cd_aluno", model.cd_aluno);
                   if (!t_aluno_Result.success) return BadRequest(t_aluno_Result.error);
-                }
               }
               else
               {
@@ -3676,11 +3898,11 @@ namespace Simjob.Framework.Services.Api.Controllers
 
             var dict_bolsa = new Dictionary<string, object>();
 
-            if (ad.pc_bolsa != null && ad.pc_bolsa > 0) dict_contrato.Add("pc_desconto_bolsa", ad.pc_bolsa);
+            if (ad.pc_bolsa != null && ad.pc_bolsa > 0) dict_contrato["pc_desconto_bolsa"] = ad.pc_bolsa;
 
-            if (ad.pc_desconto_contrato != null && ad.pc_desconto_contrato > 0) dict_contrato.Add("pc_desconto_contrato", ad.pc_desconto_contrato);
+            if (ad.pc_desconto_contrato != null && ad.pc_desconto_contrato > 0) dict_contrato["pc_desconto_contrato"] = ad.pc_desconto_contrato;
 
-            if (ad.pc_bolsa_material != null && ad.pc_bolsa_material > 0) dict_contrato.Add("pc_bolsa_material", ad.pc_bolsa_material);
+            if (ad.pc_bolsa_material != null && ad.pc_bolsa_material > 0) dict_contrato["pc_bolsa_material"] = ad.pc_bolsa_material;
 
             if (ad.dt_comunicado_bolsa != null) dict_bolsa["dt_comunicado_bolsa"] = ad.dt_comunicado_bolsa?.ToString("yyyy-MM-ddTHH:mm:ss");
 
@@ -3689,8 +3911,8 @@ namespace Simjob.Framework.Services.Api.Controllers
 
             if (ad.cd_motivo_bolsa != null) dict_bolsa["cd_motivo_bolsa"] = ad.cd_motivo_bolsa;
 
-            //buscar aditamentos antes de cadastrar o novo
-            var aditamentos_contrato = await SQLServerService.GetList("T_ADITAMENTO", null, "[cd_contrato],[id_tipo_aditamento]", $"[{cd_contrato}],[{ad.id_tipo_aditamento}]", source);
+            //buscar todos os aditamentos do contrato antes de cadastrar o novo
+            var aditamentos_contrato = await SQLServerService.GetList("T_ADITAMENTO", null, "[cd_contrato]", $"[{cd_contrato}]", source);
 
             // Gerar sequência automática se não foi informada
             if (string.IsNullOrEmpty(ad.nm_sequencia_aditamento))
@@ -4115,28 +4337,81 @@ namespace Simjob.Framework.Services.Api.Controllers
 
               var result = await SQLServerService.Delete("T_DESCONTO_CONTRATO", "cd_contrato", cd_contrato.ToString(), source);
               if (!result.success) return BadRequest(result.error);
+
+              // BUSCAR TODOS OS TÍTULOS DO CONTRATO diretamente no banco
+              // Isso garante que atualizamos todos os títulos, não apenas os enviados no payload
+              var todosTitulosResult = await SQLServerService.GetList("T_TITULO", null, "[cd_origem_titulo]", $"[{cd_contrato}]", source, SearchModeEnum.Equals);
+
+              if (todosTitulosResult.success && todosTitulosResult.data != null && todosTitulosResult.data.Any())
+              {
+                Console.WriteLine($"[INFO] Tipo 2 - Encontrados {todosTitulosResult.data.Count} títulos para zerar bolsa/desconto");
+
+                foreach (var tituloDb in todosTitulosResult.data)
+                {
+                  var cd_titulo = tituloDb["cd_titulo"];
+                  var dictTituloZerar = new Dictionary<string, object>
+                  {
+                    { "pc_bolsa", 0 },
+                    { "vl_bolsa", 0 },
+                    { "pc_bolsa_material", 0 },
+                    { "vl_bolsa_material", 0 },
+                    { "pc_desconto_mensalidade", 0 },
+                    { "vl_desconto_mensalidade", 0 },
+                    { "pc_desconto_material", 0 },
+                    { "vl_desconto_material", 0 }
+                  };
+
+                  var updateResult = await SQLServerService.Update("T_TITULO", dictTituloZerar, source, "cd_titulo", cd_titulo);
+                  if (!updateResult.success)
+                  {
+                    Console.WriteLine($"[ERROR] Falha ao atualizar título {cd_titulo}: {updateResult.error}");
+                  }
+                  else
+                  {
+                    Console.WriteLine($"[SUCCESS] Título {cd_titulo} atualizado com sucesso");
+                  }
+                }
+              }
+              else
+              {
+                Console.WriteLine($"[WARNING] Tipo 2 - Nenhum título encontrado para o contrato {cd_contrato}");
+              }
             }
 
             //concessão desconto
             if (ad.id_tipo_aditamento == 3)
             {
+              Console.WriteLine($"[DEBUG] Tipo 3 detectado - pc_desconto_contrato: {ad.pc_desconto_contrato}, vl_desconto_contrato: {ad.vl_desconto_contrato}");
               if ((ad.pc_desconto_contrato != null || ad.vl_desconto_contrato != null) && ad.id_tipo_aditamento == 3)
               {
+                Console.WriteLine($"[DEBUG] Entrando no bloco de inserção T_DESCONTO_CONTRATO");
+                Console.WriteLine($"[DEBUG] Valores - nm_parcela_inicial: {ad.nm_parcela_inicial}, nm_parcela_final: {ad.nm_parcela_final}, id_incide_baixa: {ad.id_incide_baixa}");
                 var desconto_contrato = new Dictionary<string, object>
                             {
+                                { "cd_tipo_desconto", ad.cd_tipo_desconto ?? 146 },
                                 { "pc_desconto_contrato", ad.pc_desconto_contrato??0 },
                                 { "id_desconto_ativo", 1 },
                                 { "vl_desconto_contrato", ad.vl_desconto_contrato ??0 },
-                                { "id_incide_baixa", ad.id_incide_baixa },
-                                { "nm_parcela_ini", ad.nm_parcela_inicial },
-                                { "nm_parcela_fim", ad.nm_parcela_final },
+                                { "id_incide_baixa", ad.id_incide_baixa ?? false },
+                                { "nm_parcela_ini", ad.nm_parcela_inicial ?? 1 },
+                                { "nm_parcela_fim", ad.nm_parcela_final ?? 1 },
                                 { "id_incide_parcela_1", 0 },
                                 { "id_aditamento", 1 },
-                                { "cd_contrato",cd_contrato }
+                                { "cd_contrato",cd_contrato },
+                                { "cd_aditamento", cd_aditamento }
                             };
-                desconto_contrato.Add("cd_aditamento", cd_aditamento);
+                Console.WriteLine($"[DEBUG] Dictionary criado com {desconto_contrato.Count} campos");
                 var t_desconto_contrato_Result = await SQLServerService.Insert("T_DESCONTO_CONTRATO", desconto_contrato, source);
-                if (!t_desconto_contrato_Result.success) continue;
+                Console.WriteLine($"[DEBUG] INSERT result - success: {t_desconto_contrato_Result.success}, error: {t_desconto_contrato_Result.error}");
+                if (!t_desconto_contrato_Result.success)
+                {
+                  Console.WriteLine($"[ERROR] Falha ao inserir em T_DESCONTO_CONTRATO: {t_desconto_contrato_Result.error}");
+                  return BadRequest($"Erro ao criar desconto no contrato: {t_desconto_contrato_Result.error}");
+                }
+              }
+              else
+              {
+                Console.WriteLine($"[DEBUG] NÃO entrou no bloco de inserção - condição falhou");
               }
 
             }
@@ -4361,8 +4636,14 @@ namespace Simjob.Framework.Services.Api.Controllers
       }
       catch (Exception ex)
       {
-        _logger.LogError(ex, "Erro ao gerar contrato para cd_contrato: {cd_contrato}", cd_contrato);
         Console.WriteLine(ex);
+        
+        // Verificar se é um erro de "layout não definido" e retornar NotFound
+        if (ex.Message.Contains("Contrato não possui layout definido"))
+        {
+          return NotFound(new { error = ex.Message });
+        }
+        
         return BadRequest(new
         {
           error = ex.Message,
@@ -4502,19 +4783,20 @@ namespace Simjob.Framework.Services.Api.Controllers
       var nm_recibo = int.Parse(parametroExists["nm_ultimo_recibo"].ToString());
       foreach (var t in titulos)
       {
+        // Nesse caso, nao deve aplicar o parametro pois deve permitir baixar em todos os titulos
         // Validar se existem títulos anteriores em aberto
-        var validacaoTituloAnterior = await ValidacaoTituloAnteriorService.ValidarTituloAnteriorAberto(
-            t,
-            Convert.ToInt32(cd_pessoa_empresa),
-            source,
-            userId,
-            _userService,
-            _groupService);
+        //var validacaoTituloAnterior = await ValidacaoTituloAnteriorService.ValidarTituloAnteriorAberto(
+        //    t,
+        //    Convert.ToInt32(cd_pessoa_empresa),
+        //    source,
+        //    userId,
+        //    _userService,
+        //    _groupService);
 
-        if (!validacaoTituloAnterior.sucesso)
-        {
-          return (false, $"Título {t["cd_titulo"]}: {validacaoTituloAnterior.mensagemErro}");
-        }
+        //if (!validacaoTituloAnterior.sucesso)
+        //{
+        //  return (false, $"Título {t["cd_titulo"]}: {validacaoTituloAnterior.mensagemErro}");
+        //}
 
         var vl_liquidacao = t["dc_tipo_titulo"].ToString() == "ME" ? vl_desconto_bolsa : vl_desconto_bolsa_material;
         nm_recibo++;

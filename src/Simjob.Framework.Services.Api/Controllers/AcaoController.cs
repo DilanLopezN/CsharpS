@@ -169,7 +169,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                     acaoModel.Complemento = worksheet.Cells[row, 16].Text.Trim();
                     acaoModel.TipoLogradouro = worksheet.Cells[row, 13].Text.Trim();
                     if (string.IsNullOrEmpty(acaoModel.Nome)) errosLinha.Add($"Linha {row}: Nome não pode ser vazio.");
-                    if (string.IsNullOrEmpty(acaoModel.Cpf)) errosLinha.Add($"Linha {row}: CPF não pode ser vazio.");
+                    //if (string.IsNullOrEmpty(acaoModel.Cpf)) errosLinha.Add($"Linha {row}: CPF não pode ser vazio.");
                     if (errosLinha.Any())
                     {
                         errosLeitura.AddRange(errosLinha);
