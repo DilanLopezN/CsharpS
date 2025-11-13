@@ -410,10 +410,17 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
         List<Dictionary<string, object>> horariosData = new List<Dictionary<string, object>>();
         var filtroAlunoTurma = new List<(string campo, object valor)> { new("cd_aluno", cd_aluno) };
         var alunoTurma = await SQLServerService.GetFirstByFields(source, "T_ALUNO_TURMA", filtroAlunoTurma);
-
+        var cdTurma = Convert.ToInt32(alunoTurma["cd_turma"]);
         if (alunoTurma != null && alunoTurma.ContainsKey("cd_turma") && alunoTurma["cd_turma"] != null)
         {
-          var horariosResult = await SQLServerService.GetList("vi_horario_turma", null, "[cd_turma]", $"[{alunoTurma["cd_turma"]}]", source, SearchModeEnum.Equals);
+          var horariosResult = await SQLServerService.GetList(
+                      "T_HORARIO",
+                      null,
+                      "[cd_registro],[id_origem]",
+                      $"[{cdTurma}],[19]",  // 19 = origem TURMA
+                      source,
+                      SearchModeEnum.Equals
+                  );
 
           if (horariosResult.success && horariosResult.data != null && horariosResult.data.Any())
           {
@@ -876,6 +883,8 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
         var descontosAntecipacao = await ObterDescontosAntecipacao(source, cdContrato, cd_pessoa_escola);
         var parcelasTitulos = await ObterTitulosContrato(source, cdContrato, cd_pessoa_escola);
 
+
+        Console.WriteLine("[DESCONTOS ANTECIPAÇÃO]", descontosAntecipacao);
         // Criar um novo MemoryStream que não será fechado automaticamente
         var novoArquivo = new MemoryStream();
 
@@ -1541,20 +1550,22 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
       if (!result.Success) Console.WriteLine($"[ObterCursosDoContratoError]");
       return result.Data;
     }
-
-
     /// <summary>
-    /// Obtém os descontos de antecipação simulando as baixas dos títulos
-    /// Baseado na lógica do sistema legado (RelatorioController.cs)
+    /// Obtém os descontos de antecipação - COM LOGS COMPLETOS
     /// </summary>
     private async Task<List<Dictionary<string, object>>> ObterDescontosAntecipacao(
         Source source, int cdContrato, int cdPessoaEscola)
     {
       try
       {
-        Console.WriteLine($"[ObterDescontosAntecipacao] Início - Contrato: {cdContrato}, Escola: {cdPessoaEscola}");
+        Console.WriteLine("==========================================================");
+        Console.WriteLine($"[ObterDescontosAntecipacao] INÍCIO");
+        Console.WriteLine($"[ObterDescontosAntecipacao] Contrato: {cdContrato}");
+        Console.WriteLine($"[ObterDescontosAntecipacao] Escola: {cdPessoaEscola}");
+        Console.WriteLine("==========================================================");
 
-        // 1. Buscar dados do contrato
+        // 1. Buscar contrato
+        Console.WriteLine("[ObterDescontosAntecipacao] STEP 1: Buscando contrato...");
         var contrato = await SQLServerService.GetFirstByFields(
             source,
             "T_CONTRATO",
@@ -1563,93 +1574,197 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
 
         if (contrato == null)
         {
-          Console.WriteLine("[ObterDescontosAntecipacao] Contrato não encontrado");
+          Console.WriteLine("[ObterDescontosAntecipacao] ❌ ERRO: Contrato não encontrado!");
           return new List<Dictionary<string, object>>();
         }
+        Console.WriteLine($"[ObterDescontosAntecipacao] ✓ Contrato encontrado");
+        Console.WriteLine($"[ObterDescontosAntecipacao] - cd_aluno: {contrato.GetValueOrDefault("cd_aluno", "NULL")}");
+        Console.WriteLine($"[ObterDescontosAntecipacao] - vl_desconto_contrato: {contrato.GetValueOrDefault("vl_desconto_contrato", 0)}");
 
-        // Verificar se o contrato tem política de desconto configurada
-        var cdPoliticaDesconto = contrato.ContainsKey("cd_politica_desconto") && contrato["cd_politica_desconto"] != null
-            ? Convert.ToInt32(contrato["cd_politica_desconto"])
-            : 0;
-
-        if (cdPoliticaDesconto == 0)
+        // 2. Validar desconto
+        Console.WriteLine("[ObterDescontosAntecipacao] STEP 2: Validando desconto do contrato...");
+        var vlDescontoContrato = Convert.ToDecimal(contrato.GetValueOrDefault("vl_desconto_contrato", 0));
+        if (vlDescontoContrato <= 0)
         {
-          Console.WriteLine("[ObterDescontosAntecipacao] Contrato sem política de desconto configurada");
+          Console.WriteLine($"[ObterDescontosAntecipacao] ❌ Contrato sem desconto (valor: {vlDescontoContrato})");
+          return new List<Dictionary<string, object>>();
+        }
+        Console.WriteLine($"[ObterDescontosAntecipacao] ✓ Contrato tem desconto: R$ {vlDescontoContrato:N2}");
+
+        var cdAluno = Convert.ToInt32(contrato["cd_aluno"]);
+
+        // 3. Buscar política
+        Console.WriteLine("[ObterDescontosAntecipacao] STEP 3: Buscando política de desconto...");
+        int? cdPoliticaDesconto = null;
+
+        // 3.1 Tentar política do aluno
+        Console.WriteLine("[ObterDescontosAntecipacao] - Tentando T_POLITICA_ALUNO...");
+        var politicaAluno = await SQLServerService.GetFirstByFields(
+            source,
+            "T_POLITICA_ALUNO",
+            new List<(string campo, object valor)> { new("cd_aluno", cdAluno) }
+        );
+
+        if (politicaAluno != null && politicaAluno.ContainsKey("cd_politica_desconto"))
+        {
+          cdPoliticaDesconto = Convert.ToInt32(politicaAluno["cd_politica_desconto"]);
+          Console.WriteLine($"[ObterDescontosAntecipacao] ✓ Política do aluno encontrada: {cdPoliticaDesconto}");
+        }
+        else
+        {
+          Console.WriteLine("[ObterDescontosAntecipacao] - Política do aluno não encontrada");
+        }
+
+        // 3.2 Se não tem política do aluno, buscar da escola
+        if (!cdPoliticaDesconto.HasValue)
+        {
+          Console.WriteLine("[ObterDescontosAntecipacao] - Tentando T_POLITICA_DESCONTO (escola)...");
+          var query = @"
+        SELECT TOP 1 cd_politica_desconto
+        FROM T_POLITICA_DESCONTO
+        WHERE cd_pessoa_escola = @cdEscola
+          AND id_ativo = 1
+          AND dt_inicial_politica <= GETDATE()
+        ORDER BY dt_inicial_politica DESC";
+
+          var parameters = new Dictionary<string, object>
+      {
+        { "@cdEscola", cdPessoaEscola }
+      };
+
+          var result = await SQLServerService.ExecuteQuery(source, query, parameters);
+
+          if (result.Success && result.Data != null && result.Data.Any())
+          {
+            cdPoliticaDesconto = Convert.ToInt32(result.Data[0]["cd_politica_desconto"]);
+            Console.WriteLine($"[ObterDescontosAntecipacao] ✓ Política da escola encontrada: {cdPoliticaDesconto}");
+          }
+          else
+          {
+            Console.WriteLine("[ObterDescontosAntecipacao] - Política da escola não encontrada");
+          }
+        }
+
+        if (!cdPoliticaDesconto.HasValue)
+        {
+          Console.WriteLine("[ObterDescontosAntecipacao] ❌ NENHUMA política de desconto encontrada");
           return new List<Dictionary<string, object>>();
         }
 
-        // 2. Buscar parâmetros da escola
+        // 4. Buscar parâmetros
+        Console.WriteLine("[ObterDescontosAntecipacao] STEP 4: Buscando parâmetros da escola...");
         var parametrosEscola = await BuscarParametrosEscola(cdPessoaEscola, source);
         if (parametrosEscola == null)
         {
-          Console.WriteLine("[ObterDescontosAntecipacao] Parâmetros da escola não encontrados");
+          Console.WriteLine("[ObterDescontosAntecipacao] ❌ Parâmetros não encontrados");
           return new List<Dictionary<string, object>>();
         }
+        Console.WriteLine("[ObterDescontosAntecipacao] ✓ Parâmetros encontrados");
 
-        // 3. Buscar títulos abertos do contrato
+        // 5. Buscar títulos
+        Console.WriteLine("[ObterDescontosAntecipacao] STEP 5: Buscando títulos abertos...");
         var titulosAbertos = await BuscarTitulosAbertosParaSimulacao(source, cdContrato, cdPessoaEscola);
+
+        Console.WriteLine($"[ObterDescontosAntecipacao] Total títulos retornados: {titulosAbertos.Count}");
+
         if (!titulosAbertos.Any())
         {
-          Console.WriteLine("[ObterDescontosAntecipacao] Nenhum título aberto encontrado");
+          Console.WriteLine("[ObterDescontosAntecipacao] ❌ Nenhum título aberto encontrado");
+          Console.WriteLine("[ObterDescontosAntecipacao] FINALIZANDO SEM DADOS");
+          Console.WriteLine("==========================================================");
           return new List<Dictionary<string, object>>();
         }
 
-        Console.WriteLine($"[ObterDescontosAntecipacao] {titulosAbertos.Count} títulos abertos encontrados");
+        Console.WriteLine($"[ObterDescontosAntecipacao] ✓ {titulosAbertos.Count} títulos abertos encontrados");
+        foreach (var tit in titulosAbertos)
+        {
+          Console.WriteLine($"  - Título {tit.GetValueOrDefault("cd_titulo", "?")} | " +
+                           $"Tipo: {tit.GetValueOrDefault("dc_tipo_titulo", "?")} | " +
+                           $"Parcela: {tit.GetValueOrDefault("nm_parcela_titulo", "?")} | " +
+                           $"Saldo: R$ {Convert.ToDecimal(tit.GetValueOrDefault("vl_saldo_titulo", 0)):N2}");
+        }
 
-        // 4. Simular baixa dos títulos para obter os descontos de política
+        // 6. Simular baixas
+        Console.WriteLine("[ObterDescontosAntecipacao] STEP 6: Simulando baixas dos títulos...");
         var descontosPoliticaTitulos = new List<Dictionary<string, object>>();
 
+        int tituloIndex = 0;
         foreach (var titulo in titulosAbertos)
         {
-          // Simular baixa do título na data atual
+          tituloIndex++;
+          Console.WriteLine($"[ObterDescontosAntecipacao] - Simulando título {tituloIndex}/{titulosAbertos.Count} (cd: {titulo["cd_titulo"]})...");
+
           var simulacaoBaixa = await _simulacaoBaixaService.SimularBaixaTitulo(
               titulo,
               DateTime.Now,
               parametrosEscola,
               source
           );
-          Console.WriteLine("Valor baixa com desconto simulado2: " + simulacaoBaixa);
 
-          if (simulacaoBaixa.ExtraData.ContainsKey("diasPoliticaAntecipacao"))
+          if (simulacaoBaixa.ExtraData != null && simulacaoBaixa.ExtraData.ContainsKey("diasPoliticaAntecipacao"))
           {
             var diasPolitica = simulacaoBaixa.ExtraData["diasPoliticaAntecipacao"] as List<Dictionary<string, object>>;
-            if (diasPolitica != null)
+            if (diasPolitica != null && diasPolitica.Any())
             {
+              Console.WriteLine($"[ObterDescontosAntecipacao]   ✓ {diasPolitica.Count} dias de política retornados");
               descontosPoliticaTitulos.AddRange(diasPolitica);
             }
+            else
+            {
+              Console.WriteLine($"[ObterDescontosAntecipacao]   - Nenhum dia de política retornado");
+            }
           }
-
+          else
+          {
+            Console.WriteLine($"[ObterDescontosAntecipacao]   - ExtraData não contém diasPoliticaAntecipacao");
+          }
         }
 
-        // Se não retornou dias de política da simulação, buscar diretamente
-        if (!descontosPoliticaTitulos.Any() && cdPoliticaDesconto > 0)
-        {
-          Console.WriteLine($"[ObterDescontosAntecipacao] Buscando dias da política {cdPoliticaDesconto}");
+        Console.WriteLine($"[ObterDescontosAntecipacao] Total de registros de política coletados: {descontosPoliticaTitulos.Count}");
 
-          // Buscar dias da política
+        // 7. Se não retornou dados da simulação, buscar diretamente
+        if (!descontosPoliticaTitulos.Any())
+        {
+          Console.WriteLine("[ObterDescontosAntecipacao] STEP 7: Simulações não retornaram dados. Buscando dias da política diretamente...");
+          Console.WriteLine($"[ObterDescontosAntecipacao] - cd_politica_desconto: {cdPoliticaDesconto}");
+
           var diasPoliticaResult = await SQLServerService.GetList(
               "T_DIAS_POLITICA",
               null,
               "[cd_politica_desconto]",
-              $"[{cdPoliticaDesconto}]",
+              $"[{cdPoliticaDesconto.Value}]",
               source
           );
 
+          Console.WriteLine($"[ObterDescontosAntecipacao] - Query T_DIAS_POLITICA success: {diasPoliticaResult.success}");
+          Console.WriteLine($"[ObterDescontosAntecipacao] - Registros retornados: {diasPoliticaResult.data?.Count ?? 0}");
+
           if (diasPoliticaResult.success && diasPoliticaResult.data != null && diasPoliticaResult.data.Any())
           {
+            Console.WriteLine("[ObterDescontosAntecipacao] ✓ Dias de política encontrados:");
+
+            foreach (var dia in diasPoliticaResult.data)
+            {
+              var nmDia = dia.GetValueOrDefault("nm_dia_limite_politica", "?");
+              var pcDesc = dia.GetValueOrDefault("pc_desconto", "?");
+              Console.WriteLine($"  - Dia {nmDia}: {pcDesc}%");
+            }
+
+            // Calcular valores manualmente
             var nmDiaVcto = Convert.ToInt32(contrato.GetValueOrDefault("nm_dia_vcto", 5));
             var nmMesVcto = Convert.ToInt32(contrato.GetValueOrDefault("nm_mes_vcto", DateTime.Now.Month));
             var nmAnoVcto = Convert.ToInt32(contrato.GetValueOrDefault("nm_ano_vcto", DateTime.Now.Year));
 
-            // Calcular data de vencimento da matrícula
             DateTime dataVencimentoMatricula;
             try
             {
               dataVencimentoMatricula = new DateTime(nmAnoVcto, nmMesVcto, nmDiaVcto);
+              Console.WriteLine($"[ObterDescontosAntecipacao] Data vencimento matrícula: {dataVencimentoMatricula:dd/MM/yyyy}");
             }
             catch
             {
               dataVencimentoMatricula = DateTime.Now;
+              Console.WriteLine($"[ObterDescontosAntecipacao] ⚠ Erro ao calcular data vcto, usando hoje: {dataVencimentoMatricula:dd/MM/yyyy}");
             }
 
             foreach (var diaPolitica in diasPoliticaResult.data)
@@ -1657,27 +1772,39 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
               var nmDiaLimite = Convert.ToInt32(diaPolitica["nm_dia_limite_politica"]);
               var pcDesconto = Convert.ToDecimal(diaPolitica["pc_desconto"]);
 
-              // Calcular data da política
               var dataPolitica = CalcularDataPolitica(dataVencimentoMatricula, nmDiaLimite);
-
-              // Se a data da política for anterior ao vencimento da matrícula, usar o vencimento
               if (dataPolitica < dataVencimentoMatricula)
                 dataPolitica = dataVencimentoMatricula;
 
               descontosPoliticaTitulos.Add(new Dictionary<string, object>
-                    {
-                        { "cd_politica_desconto", cdPoliticaDesconto },
-                        { "nm_dia_limite_politica", nmDiaLimite },
-                        { "pc_desconto", pcDesconto },
-                        { "pc_pontualidade", pcDesconto }, // Compatibilidade
-                        { "dt_limite_desconto", dataPolitica },
-                        { "Data_politica", dataPolitica }
-                    });
+          {
+            { "cd_politica_desconto", cdPoliticaDesconto.Value },
+            { "nm_dia_limite_politica", nmDiaLimite },
+            { "pc_desconto", pcDesconto },
+            { "pc_pontualidade", pcDesconto },
+            { "Data_politica", dataPolitica },
+            { "dt_limite_desconto", dataPolitica }
+          });
             }
+
+            Console.WriteLine($"[ObterDescontosAntecipacao] ✓ {descontosPoliticaTitulos.Count} registros criados manualmente");
+          }
+          else
+          {
+            Console.WriteLine("[ObterDescontosAntecipacao] ❌ Nenhum dia de política encontrado em T_DIAS_POLITICA");
           }
         }
 
-        // 5. Agrupar descontos por política e dia limite (igual ao sistema legado)
+        if (!descontosPoliticaTitulos.Any())
+        {
+          Console.WriteLine("[ObterDescontosAntecipacao] ❌ NENHUM desconto de política disponível");
+          Console.WriteLine("[ObterDescontosAntecipacao] FINALIZANDO SEM DADOS");
+          Console.WriteLine("==========================================================");
+          return new List<Dictionary<string, object>>();
+        }
+
+        // 8. Agrupar
+        Console.WriteLine("[ObterDescontosAntecipacao] STEP 8: Agrupando descontos...");
         var grupoDescontosAntecipacao = descontosPoliticaTitulos
             .GroupBy(x => new
             {
@@ -1687,36 +1814,73 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
             .Select(g =>
             {
               var primeiro = g.First();
+              var dataPolitica = primeiro.ContainsKey("Data_politica")
+                  ? Convert.ToDateTime(primeiro["Data_politica"])
+                  : (primeiro.ContainsKey("dt_limite_desconto")
+                      ? Convert.ToDateTime(primeiro["dt_limite_desconto"])
+                      : DateTime.Now);
+
+              var pcPontualidade = primeiro.ContainsKey("pc_pontualidade")
+                  ? Convert.ToDecimal(primeiro["pc_pontualidade"])
+                  : (primeiro.ContainsKey("pc_desconto")
+                      ? Convert.ToDecimal(primeiro["pc_desconto"])
+                      : 0m);
+
               return new Dictionary<string, object>
-                {
-                    { "cd_politica_desconto", primeiro["cd_politica_desconto"] },
-                    { "nm_dia_limite_politica", primeiro["nm_dia_limite_politica"] },
-                    { "pc_desconto", primeiro.ContainsKey("pc_desconto") ? primeiro["pc_desconto"] : primeiro["pc_pontualidade"] },
-                    { "dt_limite_desconto", primeiro.ContainsKey("dt_limite_desconto") ? primeiro["dt_limite_desconto"] : primeiro["Data_politica"] }
-                };
+              {
+            { "cd_politica_desconto", primeiro["cd_politica_desconto"] },
+            { "nm_dia_limite_politica", primeiro["nm_dia_limite_politica"] },
+            { "Data_politica", dataPolitica },
+            { "pc_pontualidade", pcPontualidade },
+            { "dt_limite_desconto", dataPolitica }
+              };
             })
             .OrderBy(d => Convert.ToInt32(d["nm_dia_limite_politica"]))
             .ToList();
 
-        Console.WriteLine($"[ObterDescontosAntecipacao] Total de {grupoDescontosAntecipacao.Count} descontos agrupados");
+        Console.WriteLine($"[ObterDescontosAntecipacao] ✓ Agrupados em {grupoDescontosAntecipacao.Count} registros únicos");
+
+        Console.WriteLine("[ObterDescontosAntecipacao] RESULTADO FINAL:");
+        foreach (var desc in grupoDescontosAntecipacao)
+        {
+          Console.WriteLine($"  - Dia {desc["nm_dia_limite_politica"]}: " +
+                           $"até {Convert.ToDateTime(desc["Data_politica"]):dd/MM/yyyy} - " +
+                           $"{desc["pc_pontualidade"]}%");
+        }
+
+        Console.WriteLine("[ObterDescontosAntecipacao] FINALIZADO COM SUCESSO");
+        Console.WriteLine("==========================================================");
 
         return grupoDescontosAntecipacao;
       }
       catch (Exception ex)
       {
-        Console.WriteLine($"[ObterDescontosAntecipacaoError]: {ex.Message}");
-        Console.WriteLine($"[StackTrace]: {ex.StackTrace}");
+        Console.WriteLine("==========================================================");
+        Console.WriteLine($"[ObterDescontosAntecipacao] ❌❌❌ EXCEÇÃO CAPTURADA ❌❌❌");
+        Console.WriteLine($"[ObterDescontosAntecipacao] Mensagem: {ex.Message}");
+        Console.WriteLine($"[ObterDescontosAntecipacao] StackTrace: {ex.StackTrace}");
+        Console.WriteLine("==========================================================");
         return new List<Dictionary<string, object>>();
       }
     }
 
+
+
+
     /// <summary>
-    /// Busca títulos abertos para simulação (baseado no sistema legado)
+    /// Busca títulos abertos - COM LOGS COMPLETOS
     /// </summary>
     private async Task<List<Dictionary<string, object>>> BuscarTitulosAbertosParaSimulacao(
         Source source, int cdContrato, int cdPessoaEscola)
     {
-      var query = @"
+      try
+      {
+        Console.WriteLine("----------------------------------------------------------");
+        Console.WriteLine($"[BuscarTitulosAbertosParaSimulacao] INÍCIO");
+        Console.WriteLine($"[BuscarTitulosAbertosParaSimulacao] Contrato: {cdContrato}");
+        Console.WriteLine($"[BuscarTitulosAbertosParaSimulacao] Escola: {cdPessoaEscola}");
+
+        var query = @"
         SELECT
             t.cd_titulo,
             t.nm_parcela_titulo,
@@ -1732,30 +1896,69 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
             t.id_status_cnab
         FROM T_TITULO t
         WHERE t.cd_origem_titulo = @cdContrato
-            AND t.id_origem_titulo = 1 -- Origem Contrato
+            AND t.id_origem_titulo = 22
             AND t.cd_pessoa_empresa = @cdEscola
             AND t.vl_saldo_titulo > 0
-            AND t.id_status_titulo IN (1, 2) -- Aberto ou Parcialmente Baixado
-            AND t.dc_tipo_titulo = 'ME' -- Mensalidade
+            AND t.id_status_titulo IN (1, 2)
         ORDER BY t.dt_vcto_titulo";
 
-      var parameters = new Dictionary<string, object>
+        Console.WriteLine($"[BuscarTitulosAbertosParaSimulacao] Query montada:");
+        Console.WriteLine(query);
+        Console.WriteLine($"[BuscarTitulosAbertosParaSimulacao] Parâmetros:");
+        Console.WriteLine($"  @cdContrato = {cdContrato}");
+        Console.WriteLine($"  @cdEscola = {cdPessoaEscola}");
+
+        var parameters = new Dictionary<string, object>
     {
         { "@cdContrato", cdContrato },
         { "@cdEscola", cdPessoaEscola }
     };
 
-      var result = await SQLServerService.ExecuteQuery(source, query, parameters);
+        var result = await SQLServerService.ExecuteQuery(source, query, parameters);
 
-      if (result.Success && result.Data != null)
-      {
-        Console.WriteLine($"[BuscarTitulosAbertosParaSimulacao] {result.Data.Count} títulos encontrados");
-        return result.Data;
+        Console.WriteLine($"[BuscarTitulosAbertosParaSimulacao] Query executada");
+        Console.WriteLine($"[BuscarTitulosAbertosParaSimulacao] Success: {result.Success}");
+        Console.WriteLine($"[BuscarTitulosAbertosParaSimulacao] Data Count: {result.Data?.Count ?? 0}");
+
+        if (result.Success && result.Data != null && result.Data.Any())
+        {
+          Console.WriteLine($"[BuscarTitulosAbertosParaSimulacao] ✓ {result.Data.Count} títulos encontrados");
+
+          var tipos = result.Data
+              .Select(t => t.ContainsKey("dc_tipo_titulo") ? t["dc_tipo_titulo"]?.ToString() : "NULL")
+              .Distinct()
+              .ToList();
+
+          Console.WriteLine($"[BuscarTitulosAbertosParaSimulacao] Tipos de título encontrados: {string.Join(", ", tipos)}");
+
+          Console.WriteLine($"[BuscarTitulosAbertosParaSimulacao] Detalhes dos títulos:");
+          foreach (var t in result.Data)
+          {
+            Console.WriteLine($"  cd_titulo: {t.GetValueOrDefault("cd_titulo", "?")} | " +
+                             $"tipo: {t.GetValueOrDefault("dc_tipo_titulo", "?")} | " +
+                             $"parcela: {t.GetValueOrDefault("nm_parcela_titulo", "?")} | " +
+                             $"status: {t.GetValueOrDefault("id_status_titulo", "?")} | " +
+                             $"saldo: {t.GetValueOrDefault("vl_saldo_titulo", 0)}");
+          }
+
+          Console.WriteLine("----------------------------------------------------------");
+          return result.Data;
+        }
+
+        Console.WriteLine($"[BuscarTitulosAbertosParaSimulacao] ❌ Nenhum título encontrado");
+        Console.WriteLine("----------------------------------------------------------");
+        return new List<Dictionary<string, object>>();
       }
-
-      return new List<Dictionary<string, object>>();
+      catch (Exception ex)
+      {
+        Console.WriteLine("----------------------------------------------------------");
+        Console.WriteLine($"[BuscarTitulosAbertosParaSimulacao] ❌ EXCEÇÃO:");
+        Console.WriteLine($"  Mensagem: {ex.Message}");
+        Console.WriteLine($"  StackTrace: {ex.StackTrace}");
+        Console.WriteLine("----------------------------------------------------------");
+        return new List<Dictionary<string, object>>();
+      }
     }
-
 
     /// <summary>
     /// Calcula a data da política com base no dia limite
@@ -1786,50 +1989,65 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
     }
 
     /// <summary>
-    /// Preenche a grade de descontos de antecipação no documento
-    /// Baseado no sistema legado: GradeValoresDescontosAntecipa
+    /// Preenche grade - COM LOGS COMPLETOS
     /// </summary>
     public static void PreencherGradeDescontosAntecipacao(
         WordprocessingDocument doc,
         List<Dictionary<string, object>> descontos)
     {
-      var body = doc.MainDocumentPart.Document.Body;
-      string tag = "GradeValoresDescontosAntecipa"; // Tag usada no template
-      bool tabelaInserida = false;
+      Console.WriteLine("**********************************************************");
+      Console.WriteLine("[PreencherGradeDescontosAntecipacao] INÍCIO");
+      Console.WriteLine($"[PreencherGradeDescontosAntecipacao] Descontos recebidos: {descontos?.Count ?? 0}");
 
-      // Procura parágrafo com a TAG
+      if (descontos != null && descontos.Any())
+      {
+        Console.WriteLine("[PreencherGradeDescontosAntecipacao] Detalhes dos descontos:");
+        foreach (var d in descontos)
+        {
+          Console.WriteLine($"  - Dia: {d.GetValueOrDefault("nm_dia_limite_politica", "?")} | " +
+                           $"Data: {d.GetValueOrDefault("Data_politica", "?")} | " +
+                           $"%: {d.GetValueOrDefault("pc_pontualidade", "?")}");
+        }
+      }
+
+      var body = doc.MainDocumentPart.Document.Body;
+      string tag = "GradeValoresDescontosAntecipa";
+
+      Console.WriteLine($"[PreencherGradeDescontosAntecipacao] Procurando tag: {tag}");
+
       var paragrafoComTag = body.Descendants<Paragraph>()
           .FirstOrDefault(p => p.InnerText.Contains($"«{tag}»") || p.InnerText.Contains($"<{tag}>"));
 
       if (paragrafoComTag != null)
       {
+        Console.WriteLine("[PreencherGradeDescontosAntecipacao] ✓ Tag encontrada no documento");
+
         if (descontos == null || descontos.Count == 0)
         {
-          // Se não há descontos, adiciona mensagem "Não informado"
+          Console.WriteLine("[PreencherGradeDescontosAntecipacao] Inserindo 'Não informado'");
           var paragrafoMensagem = new Paragraph(new Run(new Text("Não informado")));
           paragrafoComTag.InsertAfterSelf(paragrafoMensagem);
         }
         else
         {
-          // Cria a tabela de descontos de antecipação
+          Console.WriteLine("[PreencherGradeDescontosAntecipacao] Criando tabela...");
           var tabela = CriarTabelaDescontosAntecipacao(descontos);
           paragrafoComTag.InsertAfterSelf(tabela);
+          Console.WriteLine("[PreencherGradeDescontosAntecipacao] ✓ Tabela inserida");
         }
 
-        // Remove a tag
         paragrafoComTag.Remove();
-        tabelaInserida = true;
+        Console.WriteLine("[PreencherGradeDescontosAntecipacao] Tag removida");
       }
-
-      // Se não encontrou a tag, adiciona no final
-      if (!tabelaInserida && descontos != null && descontos.Count > 0)
+      else
       {
-        var tabela = CriarTabelaDescontosAntecipacao(descontos);
-        body.AppendChild(new Paragraph(new Run(new Text(""))));
-        body.AppendChild(tabela);
+        Console.WriteLine("[PreencherGradeDescontosAntecipacao] ❌ Tag NÃO encontrada no documento");
       }
 
       doc.MainDocumentPart.Document.Save();
+      Console.WriteLine("[PreencherGradeDescontosAntecipacao] Documento salvo");
+      Console.WriteLine("[PreencherGradeDescontosAntecipacao] FINALIZADO");
+      Console.WriteLine("**********************************************************");
     }
     /// <summary>
     /// Cria a tabela de descontos de antecipação (baseada no sistema legado)
@@ -2071,15 +2289,13 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
     {
       try
       {
-        Console.WriteLine("[PreencherGradeValoresParcelas] Iniciando...");
-        Console.WriteLine($"[PreencherGradeValoresParcelas] Parcelas recebidas: {parcelas?.Count ?? 0}");
 
         var body = doc.MainDocumentPart.Document.Body;
         string tag = "GradeValoresParcelas";
 
         // Log de todos os parágrafos para debug
         var todosParagrafos = body.Descendants<Paragraph>().ToList();
-        Console.WriteLine($"[PreencherGradeValoresParcelas] Total de parágrafos no documento: {todosParagrafos.Count}");
+
 
         // MÉTODO 1: Procurar pela tag como texto simples
         var paragrafoComTag = body.Descendants<Paragraph>()
@@ -2090,7 +2306,6 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
         // MÉTODO 2: Se não encontrou, procurar em SimpleFields (campos do Word)
         if (paragrafoComTag == null)
         {
-          Console.WriteLine($"[PreencherGradeValoresParcelas] Tag não encontrada como texto, buscando em campos...");
 
           // Buscar em SimpleField
           var campoSimples = body.Descendants<SimpleField>()
@@ -2098,7 +2313,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
 
           if (campoSimples != null)
           {
-            Console.WriteLine($"[PreencherGradeValoresParcelas] Tag encontrada em SimpleField: {campoSimples.Instruction?.Value}");
+
             paragrafoComTag = campoSimples.Ancestors<Paragraph>().FirstOrDefault();
           }
         }
@@ -2106,14 +2321,15 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
         // MÉTODO 3: Se ainda não encontrou, procurar em FieldCode (campos complexos)
         if (paragrafoComTag == null)
         {
-          Console.WriteLine($"[PreencherGradeValoresParcelas] Tag não encontrada em SimpleField, buscando em FieldCode...");
+
+
 
           var campoComplexo = body.Descendants<FieldCode>()
               .FirstOrDefault(f => f.Text?.Contains(tag) == true);
 
           if (campoComplexo != null)
           {
-            Console.WriteLine($"[PreencherGradeValoresParcelas] Tag encontrada em FieldCode: {campoComplexo.Text}");
+
             paragrafoComTag = campoComplexo.Ancestors<Paragraph>().FirstOrDefault();
           }
         }
@@ -2121,47 +2337,46 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
         // MÉTODO 4: Busca case-insensitive em todo o texto
         if (paragrafoComTag == null)
         {
-          Console.WriteLine($"[PreencherGradeValoresParcelas] Buscando case-insensitive...");
+
 
           paragrafoComTag = body.Descendants<Paragraph>()
               .FirstOrDefault(p => p.InnerText.ToLower().Contains(tag.ToLower()));
 
           if (paragrafoComTag != null)
           {
-            Console.WriteLine($"[PreencherGradeValoresParcelas] Tag encontrada (case-insensitive): {paragrafoComTag.InnerText}");
+
           }
         }
 
         if (paragrafoComTag != null)
         {
-          Console.WriteLine($"[PreencherGradeValoresParcelas] Tag encontrada!");
-          Console.WriteLine($"[PreencherGradeValoresParcelas] Conteúdo do parágrafo: {paragrafoComTag.InnerText.Substring(0, Math.Min(100, paragrafoComTag.InnerText.Length))}");
+
 
           if (parcelas == null || parcelas.Count == 0)
           {
-            Console.WriteLine("[PreencherGradeValoresParcelas] Nenhuma parcela para exibir");
+
             var paragrafoMensagem = new Paragraph(new Run(new Text("Não há parcelas a exibir.")));
             paragrafoComTag.InsertAfterSelf(paragrafoMensagem);
           }
           else
           {
-            Console.WriteLine($"[PreencherGradeValoresParcelas] Criando tabela com {parcelas.Count} parcelas...");
+
             var tabela = CriarTabelaValoresParcelas(parcelas);
             paragrafoComTag.InsertAfterSelf(tabela);
-            Console.WriteLine("[PreencherGradeValoresParcelas] Tabela inserida com sucesso!");
+
           }
 
           // Remover o parágrafo inteiro (incluindo campos)
           paragrafoComTag.Remove();
-          Console.WriteLine("[PreencherGradeValoresParcelas] Tag removida");
+
         }
         else
         {
-          Console.WriteLine($"[PreencherGradeValoresParcelas] AVISO: Tag '{tag}' NÃO encontrada no documento!");
+
 
           // Log de debug dos primeiros parágrafos
           var primeiros = todosParagrafos.Take(20).Select(p => p.InnerText).ToList();
-          Console.WriteLine("[PreencherGradeValoresParcelas] Primeiros 20 parágrafos:");
+
           for (int i = 0; i < primeiros.Count; i++)
           {
             var texto = primeiros[i];
@@ -2172,12 +2387,11 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
           // Log de campos encontrados
           var todosSimpleFields = body.Descendants<SimpleField>().ToList();
           var todosFieldCodes = body.Descendants<FieldCode>().ToList();
-          Console.WriteLine($"[PreencherGradeValoresParcelas] Total de SimpleFields: {todosSimpleFields.Count}");
-          Console.WriteLine($"[PreencherGradeValoresParcelas] Total de FieldCodes: {todosFieldCodes.Count}");
+
 
           if (todosSimpleFields.Any())
           {
-            Console.WriteLine("[PreencherGradeValoresParcelas] Primeiros SimpleFields:");
+
             foreach (var sf in todosSimpleFields.Take(10))
             {
               Console.WriteLine($"  - {sf.Instruction?.Value}");
@@ -2186,7 +2400,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
         }
 
         doc.MainDocumentPart.Document.Save();
-        Console.WriteLine("[PreencherGradeValoresParcelas] Documento salvo");
+
       }
       catch (Exception ex)
       {
@@ -2199,7 +2413,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
     {
       try
       {
-        Console.WriteLine($"[CriarTabelaValoresParcelas] Criando tabela com {parcelas.Count} parcelas");
+
 
         var table = new Table();
 
@@ -2226,7 +2440,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
           CriarCelula("TOTAL (R$)", true)
         );
         table.Append(headerRow);
-        Console.WriteLine("[CriarTabelaValoresParcelas] Cabeçalho criado");
+
 
         // Dados
         int linhaCount = 0;
@@ -2240,21 +2454,19 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
           decimal vlMensalidade = 0;
 
           string tipoParcela = parcela["dc_tipo_titulo"]?.ToString() ?? "DESCONHECIDO";
-          Console.WriteLine($"[CriarTabelaValoresParcelas] Linha {linhaCount + 1}: Tipo={tipoParcela}, Data={dtVcto:dd/MM/yyyy}");
-
           if (tipoParcela == "CONSOLIDADO")
           {
             // Dados já consolidados
             vlMaterial = Convert.ToDecimal(parcela["vl_material"] ?? 0);
             vlMensalidade = Convert.ToDecimal(parcela["vl_mensalidade"] ?? 0);
-            Console.WriteLine($"[CriarTabelaValoresParcelas]   Material: {vlMaterial:N2}, Mensalidade: {vlMensalidade:N2}");
+
           }
           else
           {
             // Dados individuais (mantém compatibilidade)
             vlMaterial = tipoParcela == "MT" ? Convert.ToDecimal(parcela["vl_titulo"] ?? 0) : 0;
             vlMensalidade = tipoParcela == "ME" ? Convert.ToDecimal(parcela["vl_titulo"] ?? 0) : 0;
-            Console.WriteLine($"[CriarTabelaValoresParcelas]   Material: {vlMaterial:N2}, Mensalidade: {vlMensalidade:N2} (Individual)");
+
           }
 
           decimal vlTotal = vlMaterial + vlMensalidade;
@@ -2271,7 +2483,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
           linhaCount++;
         }
 
-        Console.WriteLine($"[CriarTabelaValoresParcelas] Tabela criada com sucesso! Total de linhas de dados: {linhaCount}");
+
         return table;
       }
       catch (Exception ex)
@@ -2450,7 +2662,8 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
     {
       try
       {
-        Console.WriteLine($"[ObterDescontosContrato] Buscando descontos - Contrato: {cdContrato}");
+
+
 
         // Query baseada no sistema legado (RelatorioController.cs linha ~68)
         var query = @"
@@ -2482,11 +2695,10 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
 
         if (!result.Success)
         {
-          Console.WriteLine("[ObterDescontosContrato] Erro ao buscar descontos");
+
           return new List<Dictionary<string, object>>();
         }
 
-        Console.WriteLine($"[ObterDescontosContrato] {result.Data?.Count ?? 0} descontos encontrados");
         return result.Data ?? new List<Dictionary<string, object>>();
       }
       catch (Exception ex)
@@ -2507,7 +2719,6 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
     {
       try
       {
-        Console.WriteLine($"[CalcularValoresLiquidos] Calculando valores líquidos para {parcelasTitulos?.Count ?? 0} parcelas");
 
         if (parcelasTitulos == null || !parcelasTitulos.Any())
           return new List<Dictionary<string, object>>();
@@ -2570,7 +2781,7 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
           parcelasComDesconto.Add(parcelaComDesconto);
         }
 
-        Console.WriteLine($"[CalcularValoresLiquidos] {parcelasComDesconto.Count} parcelas com valores líquidos calculados");
+
         return parcelasComDesconto;
       }
       catch (Exception ex)
