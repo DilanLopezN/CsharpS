@@ -1325,60 +1325,92 @@ namespace Simjob.Framework.Services.Api.Controllers
                 var celularExists = await SQLServerService.GetFirstByFields(source, "T_Telefone", filtrosCelular);
                 if (celularExists != null) retorno.pessoa.celular = celularExists["dc_fone_mail"].ToString();
 
-                var filtrosEndereco = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa) };
-                var enderecoExists = await SQLServerService.GetFirstByFields(source, "T_ENDERECO", filtrosEndereco);
+                int? cdEnderecoPrincipal = null;
+                if (pessoaExists.ContainsKey("cd_endereco_principal") && pessoaExists["cd_endereco_principal"] != null)
+                {
+                    if (int.TryParse(pessoaExists["cd_endereco_principal"].ToString(), out var cdEndereco))
+                        cdEnderecoPrincipal = cdEndereco;
+                }
+
+                Dictionary<string, object>? enderecoExists = null;
+                if (cdEnderecoPrincipal.HasValue && cdEnderecoPrincipal.Value > 0)
+                {
+                    var filtrosEnderecoPrincipal = new List<(string campo, object valor)> { new("cd_endereco", cdEnderecoPrincipal.Value) };
+                    enderecoExists = await SQLServerService.GetFirstByFields(source, "T_ENDERECO", filtrosEnderecoPrincipal);
+                }
+
+                if (enderecoExists == null)
+                {
+                    var filtrosEndereco = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa) };
+                    enderecoExists = await SQLServerService.GetFirstByFields(source, "T_ENDERECO", filtrosEndereco);
+                }
                 if (enderecoExists != null)
                 {
-                    retorno.pessoa.endereco.cd_loc_pais = (int)enderecoExists["cd_loc_pais"];
-                    retorno.pessoa.endereco.cd_loc_estado = (int)enderecoExists["cd_loc_estado"];
-                    retorno.pessoa.endereco.cd_loc_cidade = (int)enderecoExists["cd_loc_cidade"];
-                    retorno.pessoa.endereco.cd_tipo_endereco = (int)enderecoExists["cd_tipo_endereco"];
-                    retorno.pessoa.endereco.cd_loc_bairro = (int)enderecoExists["cd_loc_bairro"];
-                    retorno.pessoa.endereco.cd_tipo_logradouro = (int)enderecoExists["cd_tipo_logradouro"];
-                    retorno.pessoa.endereco.cd_loc_logradouro = (int)enderecoExists["cd_loc_logradouro"];
+                    retorno.pessoa.endereco.cd_loc_pais = enderecoExists["cd_loc_pais"] != null ? Convert.ToInt32(enderecoExists["cd_loc_pais"]) : 0;
+                    retorno.pessoa.endereco.cd_loc_estado = enderecoExists["cd_loc_estado"] != null ? Convert.ToInt32(enderecoExists["cd_loc_estado"]) : 0;
+                    retorno.pessoa.endereco.cd_loc_cidade = enderecoExists["cd_loc_cidade"] != null ? Convert.ToInt32(enderecoExists["cd_loc_cidade"]) : 0;
+                    retorno.pessoa.endereco.cd_tipo_endereco = enderecoExists["cd_tipo_endereco"] != null ? Convert.ToInt32(enderecoExists["cd_tipo_endereco"]) : 0;
+                    retorno.pessoa.endereco.cd_loc_bairro = enderecoExists["cd_loc_bairro"] != null ? Convert.ToInt32(enderecoExists["cd_loc_bairro"]) : 0;
+                    retorno.pessoa.endereco.cd_tipo_logradouro = enderecoExists["cd_tipo_logradouro"] != null ? Convert.ToInt32(enderecoExists["cd_tipo_logradouro"]) : 0;
+                    retorno.pessoa.endereco.cd_loc_logradouro = enderecoExists["cd_loc_logradouro"] != null ? Convert.ToInt32(enderecoExists["cd_loc_logradouro"]) : 0;
                     retorno.pessoa.endereco.dc_compl_endereco = enderecoExists["dc_compl_endereco"] != null ? enderecoExists["dc_compl_endereco"].ToString() : "";
                     retorno.pessoa.endereco.dc_num_cep = enderecoExists["dc_num_cep"] != null ? enderecoExists["dc_num_cep"].ToString() : "";
                     retorno.pessoa.endereco.dc_num_endereco = enderecoExists["dc_num_endereco"]?.ToString();
 
                     // Buscar nomes das localidades
-                    var filtrosLogradouro = new List<(string campo, object valor)> { new("cd_localidade", retorno.pessoa.endereco.cd_loc_logradouro) };
-                    var logradouroExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosLogradouro);
-                    if (logradouroExists != null)
+                    if (retorno.pessoa.endereco.cd_loc_logradouro > 0)
                     {
-                        retorno.pessoa.endereco.no_logradouro = logradouroExists["no_localidade"]?.ToString();
-                        // Se dc_num_cep está vazio no endereço, pegar do logradouro
-                        if (string.IsNullOrEmpty(retorno.pessoa.endereco.dc_num_cep) && logradouroExists["dc_num_cep"] != null)
+                        var filtrosLogradouro = new List<(string campo, object valor)> { new("cd_localidade", retorno.pessoa.endereco.cd_loc_logradouro) };
+                        var logradouroExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosLogradouro);
+                        if (logradouroExists != null)
                         {
-                            retorno.pessoa.endereco.dc_num_cep = logradouroExists["dc_num_cep"].ToString();
+                            retorno.pessoa.endereco.no_logradouro = logradouroExists["no_localidade"]?.ToString();
+                            // Se dc_num_cep está vazio no endereço, pegar do logradouro
+                            if (string.IsNullOrEmpty(retorno.pessoa.endereco.dc_num_cep) && logradouroExists["dc_num_cep"] != null)
+                            {
+                                retorno.pessoa.endereco.dc_num_cep = logradouroExists["dc_num_cep"].ToString();
+                            }
                         }
                     }
 
-                    var filtrosBairro = new List<(string campo, object valor)> { new("cd_localidade", retorno.pessoa.endereco.cd_loc_bairro) };
-                    var bairroExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosBairro);
-                    if (bairroExists != null)
+                    if (retorno.pessoa.endereco.cd_loc_bairro > 0)
                     {
-                        retorno.pessoa.endereco.no_bairro = bairroExists["no_localidade"]?.ToString();
+                        var filtrosBairro = new List<(string campo, object valor)> { new("cd_localidade", retorno.pessoa.endereco.cd_loc_bairro) };
+                        var bairroExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosBairro);
+                        if (bairroExists != null)
+                        {
+                            retorno.pessoa.endereco.no_bairro = bairroExists["no_localidade"]?.ToString();
+                        }
                     }
 
-                    var filtrosCidade = new List<(string campo, object valor)> { new("cd_localidade", retorno.pessoa.endereco.cd_loc_cidade) };
-                    var cidadeExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosCidade);
-                    if (cidadeExists != null)
+                    if (retorno.pessoa.endereco.cd_loc_cidade > 0)
                     {
-                        retorno.pessoa.endereco.no_cidade = cidadeExists["no_localidade"]?.ToString();
+                        var filtrosCidade = new List<(string campo, object valor)> { new("cd_localidade", retorno.pessoa.endereco.cd_loc_cidade) };
+                        var cidadeExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosCidade);
+                        if (cidadeExists != null)
+                        {
+                            retorno.pessoa.endereco.no_cidade = cidadeExists["no_localidade"]?.ToString();
+                        }
                     }
 
-                    var filtrosEstado = new List<(string campo, object valor)> { new("cd_localidade", retorno.pessoa.endereco.cd_loc_estado) };
-                    var estadoExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosEstado);
-                    if (estadoExists != null)
+                    if (retorno.pessoa.endereco.cd_loc_estado > 0)
                     {
-                        retorno.pessoa.endereco.no_estado = estadoExists["no_localidade"]?.ToString();
+                        var filtrosEstado = new List<(string campo, object valor)> { new("cd_localidade", retorno.pessoa.endereco.cd_loc_estado) };
+                        var estadoExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosEstado);
+                        if (estadoExists != null)
+                        {
+                            retorno.pessoa.endereco.no_estado = estadoExists["no_localidade"]?.ToString();
+                        }
                     }
 
-                    var filtrosPais = new List<(string campo, object valor)> { new("cd_localidade", retorno.pessoa.endereco.cd_loc_pais) };
-                    var paisExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosPais);
-                    if (paisExists != null)
+                    if (retorno.pessoa.endereco.cd_loc_pais > 0)
                     {
-                        retorno.pessoa.endereco.no_pais = paisExists["no_localidade"]?.ToString();
+                        var filtrosPais = new List<(string campo, object valor)> { new("cd_localidade", retorno.pessoa.endereco.cd_loc_pais) };
+                        var paisExists = await SQLServerService.GetFirstByFields(source, "T_LOCALIDADE", filtrosPais);
+                        if (paisExists != null)
+                        {
+                            retorno.pessoa.endereco.no_pais = paisExists["no_localidade"]?.ToString();
+                        }
                     }
                 }
                 var filtrosPessoaFisica = new List<(string campo, object valor)> { new("cd_pessoa_fisica", cd_pessoa) };
