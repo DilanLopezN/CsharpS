@@ -2735,28 +2735,33 @@ namespace Simjob.Framework.Services.Api.Modules.TurmaModule.Services
         {
           var parcelaComDesconto = new Dictionary<string, object>(parcela);
 
-          // Valores brutos
-          decimal vlMaterial = Convert.ToDecimal(parcela["vl_material"] ?? 0);
-          decimal vlMensalidade = Convert.ToDecimal(parcela["vl_mensalidade"] ?? 0);
+          decimal vlMaterial = parcela["vl_material"] == null || parcela["vl_material"] == DBNull.Value
+       ? 0m : Convert.ToDecimal(parcela["vl_material"]);
+          decimal vlMensalidade = parcela["vl_mensalidade"] == null || parcela["vl_mensalidade"] == DBNull.Value
+              ? 0m : Convert.ToDecimal(parcela["vl_mensalidade"]);
           decimal vlTotal = vlMaterial + vlMensalidade;
 
           // Número da parcela
-          int nmParcela = Convert.ToInt32(parcela["nm_parcela"] ?? 0);
+          int nmParcela = parcela["nm_parcela"] == null || parcela["nm_parcela"] == DBNull.Value
+              ? 0 : Convert.ToInt32(parcela["nm_parcela"]);
 
           // Aplicar descontos que incidem nesta parcela
           decimal valorDesconto = 0;
 
           foreach (var desconto in descontosContrato)
           {
-            int parcelaIni = Convert.ToInt32(desconto["nm_parcela_ini"] ?? 0);
-            int parcelaFim = Convert.ToInt32(desconto["nm_parcela_fim"] ?? 999);
+            int parcelaIni = desconto["nm_parcela_ini"] == null || desconto["nm_parcela_ini"] == DBNull.Value
+                ? 0 : Convert.ToInt32(desconto["nm_parcela_ini"]);
+            int parcelaFim = desconto["nm_parcela_fim"] == null || desconto["nm_parcela_fim"] == DBNull.Value
+                ? 999 : Convert.ToInt32(desconto["nm_parcela_fim"]);
 
             // Verificar se o desconto se aplica a esta parcela
             if (nmParcela >= parcelaIni && nmParcela <= parcelaFim)
             {
-              decimal pcDesconto = Convert.ToDecimal(desconto["pc_desconto_contrato"] ?? 0);
-              decimal vlDesconto = Convert.ToDecimal(desconto["vl_desconto_contrato"] ?? 0);
-
+              decimal pcDesconto = desconto["pc_desconto_contrato"] == null || desconto["pc_desconto_contrato"] == DBNull.Value
+                  ? 0m : Convert.ToDecimal(desconto["pc_desconto_contrato"]);
+              decimal vlDesconto = desconto["vl_desconto_contrato"] == null || desconto["vl_desconto_contrato"] == DBNull.Value
+                  ? 0m : Convert.ToDecimal(desconto["vl_desconto_contrato"]);
               // Aplicar o desconto (percentual ou valor fixo)
               if (pcDesconto > 0)
               {

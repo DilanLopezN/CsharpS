@@ -19,6 +19,7 @@ using Simjob.Framework.Services.Api.Models.Contas;
 using Simjob.Framework.Services.Api.Services;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -761,6 +762,262 @@ namespace Simjob.Framework.Services.Api.Controllers
 
                 var t_titulo_insert = await SQLServerService.Update("T_TITULO", tituloDict, source, "cd_titulo", cd_titulo);
                 if (!t_titulo_insert.success) return BadRequest(t_titulo_insert.error);
+                return ResponseDefault();
+            }
+            return BadRequest(new
+            {
+                error = "Fonte de dados não configurada ou inativa."
+            });
+        }
+
+        [Authorize]
+        [HttpPatch()]
+        [Route("baixaTitulo")]
+        public async Task<IActionResult> Baixa(BaixaContaModel model)
+        {
+            var accessToken = Request.Headers[HeaderNames.Authorization];
+            var tokenInfo = Util.GetUserInfoFromToken(accessToken);
+
+            var schemaName = "T_Titulo";
+            if (schemaName.Contains("T_")) schemaName = schemaName.Replace("T_", "");
+            var schema = _schemaRepository.GetSchemaByField("name", schemaName);
+            var schemaModel = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schema.JsonValue);
+            var source = _sourceRepository.GetByField("description", schemaModel.Source);
+            if (source != null && source.Active != null && source.Active == true)
+            {
+                //validação de token
+                var cd_pessoa_logada = "";
+                var cd_usuario = "0";
+                var userId = "";
+                if (tokenInfo.Count > 0)
+                {
+                    cd_pessoa_logada = tokenInfo["cd_pessoa"];
+                    userId = tokenInfo["userid"];
+                }
+
+                if (string.IsNullOrEmpty(cd_pessoa_logada)) return BadRequest("cd_pessoa não configurado");
+
+                var filtrosUsuario = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa_logada) };
+                var sys_usuario = await SQLServerService.GetFirstByFields(source, "T_SYS_USUARIO", filtrosUsuario);
+                if (sys_usuario != null) cd_usuario = sys_usuario["cd_usuario"].ToString() ?? "0";
+
+                var filtroParametro = new List<(string campo, object valor)> { new("cd_pessoa_escola", model.cd_pessoa_empresa) };
+                var parametroExists = await SQLServerService.GetFirstByFields(source, "T_PARAMETRO", filtroParametro);
+                if (parametroExists == null) return NotFound("parametros não encontratos para esta escola");
+
+                var nm_recibo = int.Parse(parametroExists["nm_ultimo_recibo"].ToString());
+
+                //validação de cd_tranferencia
+                if (model.cd_tran_finan != null)
+                {
+                    var filtrosTranFin = new List<(string campo, object valor)> { new("cd_tran_finan", model.cd_tran_finan) };
+                    var tranFinExists = await SQLServerService.GetFirstByFields(source, "T_TRAN_FINAN", filtrosTranFin);
+                    if (tranFinExists != null) return Conflict("Já existe um registro com este ID cadastrado, tente alterá-lo");
+                }
+
+                // Determinar cd_local_movto baseado no tipo de liquidação
+                int? cd_local_movto_final;
+                if (model.cd_tipo_liquidacao == 6) // Cancelamento
+                {
+                    cd_local_movto_final = await GetLocalMovto(model.cd_pessoa_empresa, source);
+                    if (cd_local_movto_final == null)
+                    {
+                        return BadRequest($"Parâmetro cd_local_movto não encontrado para a empresa {model.cd_pessoa_empresa}");
+                    }
+                }
+                else
+                {
+                    cd_local_movto_final = model.cd_local_movto;
+                }
+
+                //gera T_TRANS_FINAN
+                var tranFinDict = new Dictionary<string, object>
+                {
+                    { "cd_pessoa_empresa", model.cd_pessoa_empresa },
+                    { "cd_local_movto", cd_local_movto_final },
+                    { "dt_tran_finan", model.dt_baixa.ToString("yyyy-MM-ddTHH:mm:ss") },
+                    { "cd_tipo_liquidacao", model.cd_tipo_liquidacao },
+                    { "vl_total_baixa", model.gridBaixaEfetuada.Sum(x=>x.vl_liquidacao_baixa)}
+                };
+                var t_tranFin_insert = await SQLServerService.InsertWithResult("T_TRAN_FINAN", tranFinDict, source);
+                if (!t_tranFin_insert.success) return BadRequest(t_tranFin_insert.error);
+                var cd_tran_fin = t_tranFin_insert.inserted["cd_tran_finan"];
+                var cd_tipo_liquidacao = model.cd_tipo_liquidacao;
+
+                if (model.gridBaixaEfetuada != null && model.gridBaixaEfetuada.Length > 0)
+                {
+                    foreach (var baixa in model.gridBaixaEfetuada)
+                    {
+                        nm_recibo++;
+
+                        var titulo = await SQLServerService.GetFirstByFields(source, "T_TITULO", new List<(string campo, object valor)> { new("cd_titulo", baixa.cd_titulo) });
+
+                        // Validar data retroativa
+                        var validacaoData = await ValidacaoDataRetroativaService.ValidarDataRetroativa(
+                            model.dt_baixa,
+                            model.cd_pessoa_empresa,
+                            source,
+                            userId,
+                            _userService,
+                            _groupService);
+
+                        if (!validacaoData.sucesso)
+                        {
+                            return BadRequest($"Título {baixa.cd_titulo}: {validacaoData.mensagemErro}");
+                        }
+
+                        // Validar se existem títulos anteriores em aberto
+                        var validacaoTituloAnterior = await ValidacaoTituloAnteriorService.ValidarTituloAnteriorAberto(
+                            titulo,
+                            model.cd_pessoa_empresa,
+                            source,
+                            userId,
+                            _userService,
+                            _groupService);
+
+                        if (!validacaoTituloAnterior.sucesso)
+                        {
+                            return BadRequest($"Título {baixa.cd_titulo}: {validacaoTituloAnterior.mensagemErro}");
+                        }
+
+                        var validacaoDataEmissao = ValidacaoDataEmissaoService.ValidarDataBaixaVsEmissao(
+                            titulo,
+                            model.dt_baixa);
+
+                        if (!validacaoDataEmissao.sucesso)
+                        {
+                            return BadRequest($"Título {baixa.cd_titulo}: {validacaoDataEmissao.mensagemErro}");
+                        }
+
+                        var titulo_baixa_dic = new Dictionary<string, object>();
+                        var id_natureza_titulo = titulo["id_natureza_titulo"].ToString();
+                        if (id_natureza_titulo == "1")
+                        {
+                            var simulacao_baixa = await SimularBaixaTitulo(titulo, model.dt_baixa, parametroExists, source);
+                            titulo_baixa_dic = new Dictionary<string, object>
+                            {
+                                { "cd_titulo", baixa.cd_titulo },
+                                { "cd_tran_finan", cd_tran_fin },
+                                { "cd_tipo_liquidacao", baixa.cd_tipo_liquidacao },
+                                { "cd_local_movto", model.cd_tipo_liquidacao == 6 ? cd_local_movto_final : baixa.cd_local_movto },
+                                { "dt_baixa_titulo", model.dt_baixa.ToString("yyyy-MM-ddTHH:mm:ss") },
+                                { "id_baixa_processada", 0 },
+                                { "id_baixa_parcial", baixa.id_baixa_parcial },
+                                { "nm_dias_float", 0 },
+                                { "vl_liquidacao_baixa", baixa.vl_liquidacao_baixa },
+                                { "vl_juros_baixa", simulacao_baixa.vl_juros_baixa },
+                                { "vl_desconto_baixa", baixa.vl_desconto_baixa },
+                                { "vl_principal_baixa", baixa.vl_principal_baixa },
+                                { "vl_juros_calculado", simulacao_baixa.vl_juros_calculado },
+                                { "vl_multa_calculada", simulacao_baixa.vl_multa_calculada },
+                                { "vl_desc_multa_baixa", baixa.vl_desc_multa_baixa },
+                                { "vl_desc_juros_baixa", baixa.vl_desc_juros_baixa },
+                                { "vl_multa_baixa", simulacao_baixa.vl_multa_baixa },
+                                { "pc_pontualidade", simulacao_baixa.pc_pontualidade },
+                                { "tx_obs_baixa", baixa.txt_obs_baixa },
+                                { "vl_desconto_baixa_calculado", baixa.vl_desconto_baixa_calculado },
+                                { "vl_baixa_saldo_titulo", baixa.vl_baixa_saldo_titulo + baixa.vl_desconto_baixa },
+                                { "cd_politica_desconto", baixa.cd_politica_desconto },
+                                { "cd_usuario", cd_usuario},
+                                { "vl_taxa_cartao", baixa.vl_taxa_cartao },
+                                { "vl_acr_liquidacao", baixa.vl_acr_liquidacao },
+                                { "vl_liquidacao_calculado", baixa.vl_liquidacao_calculado },
+                                { "nm_recibo", nm_recibo }
+                            };
+                        }
+                        else
+                        {
+                            titulo_baixa_dic = new Dictionary<string, object>
+                            {
+                                { "cd_titulo", baixa.cd_titulo },
+                                { "cd_tran_finan", cd_tran_fin },
+                                { "cd_tipo_liquidacao", baixa.cd_tipo_liquidacao },
+                                { "cd_local_movto", model.cd_tipo_liquidacao == 6 ? cd_local_movto_final : baixa.cd_local_movto },
+                                { "dt_baixa_titulo", model.dt_baixa.ToString("yyyy-MM-ddTHH:mm:ss") },
+                                { "id_baixa_processada", 0 },
+                                { "id_baixa_parcial", baixa.id_baixa_parcial },
+                                { "nm_dias_float", 0 },
+                                { "vl_liquidacao_baixa", baixa.vl_liquidacao_baixa },
+                                { "vl_juros_baixa", baixa.vl_juros_baixa },
+                                { "vl_desconto_baixa", baixa.vl_desconto_baixa },
+                                { "vl_principal_baixa", baixa.vl_principal_baixa },
+                                { "vl_juros_calculado", baixa.vl_juros_calculado },
+                                { "vl_multa_calculada", baixa.vl_multa_calculada },
+                                { "vl_desc_multa_baixa", baixa.vl_desc_multa_baixa },
+                                { "vl_desc_juros_baixa", baixa.vl_desc_juros_baixa },
+                                { "vl_multa_baixa", baixa.vl_multa_baixa },
+                                { "pc_pontualidade", baixa.pc_pontualidade },
+                                { "tx_obs_baixa", baixa.txt_obs_baixa },
+                                { "vl_desconto_baixa_calculado", baixa.vl_desconto_baixa_calculado },
+                                { "vl_baixa_saldo_titulo", baixa.vl_baixa_saldo_titulo + baixa.vl_desconto_baixa },
+                                { "cd_politica_desconto", baixa.cd_politica_desconto },
+                                { "cd_usuario", cd_usuario},
+                                { "vl_taxa_cartao", baixa.vl_taxa_cartao },
+                                { "vl_acr_liquidacao", baixa.vl_acr_liquidacao },
+                                { "vl_liquidacao_calculado", baixa.vl_liquidacao_calculado },
+                                { "nm_recibo", nm_recibo }
+                            };
+                        }
+
+                        var t_titulo_baixa = await SQLServerService.Insert("T_BAIXA_TITULO", titulo_baixa_dic, source);
+                        if (!t_titulo_baixa.success) return BadRequest(t_titulo_baixa.error);
+                        var titulo_baixa_CadastradaGet = await SQLServerService.GetList("T_BAIXA_TITULO", 1, 1, "cd_baixa_titulo", true, null, null, "", source, SearchModeEnum.Equals, null, null);
+                        var titulo_baixa_Cadastrada = titulo_baixa_CadastradaGet.data.First();
+                        int cd_baixa_titulo = (int)titulo_baixa_Cadastrada["cd_baixa_titulo"];
+
+                        var atualizaDependentes = await AtualizarDependentesBaixa(cd_baixa_titulo, source);
+
+                        if (model.cd_caixa != null)
+                        {
+                            List<(string campo, object valor)> filtrosContaCorrente = new List<(string campo, object valor)>
+                            {
+                                new("cd_baixa_titulo", cd_baixa_titulo)
+                            };
+                            var contaCorrente = await SQLServerService.GetFirstByFields(source, "T_CONTA_CORRENTE", filtrosContaCorrente);
+                            if (contaCorrente != null)
+                            {
+                                var caixaTituloDict = new Dictionary<string, object>
+                                {
+                                    { "cd_caixa", model.cd_caixa },
+                                    { "cd_titulo", baixa.cd_titulo },
+                                    { "cd_conta_corrente", contaCorrente["cd_conta_corrente"] },
+                                    { "dt_recebimento", model.dt_baixa.ToString("yyyy-MM-ddTHH:mm:ss") }
+                                };
+                                var insertCaixaTitulo = await SQLServerService.Insert("T_CAIXA_TITULO", caixaTituloDict, source);
+                                if (!insertCaixaTitulo.success) return BadRequest(insertCaixaTitulo.error);
+                            }
+                        }
+
+                        //atualiza status renegociação do aditamento se houver
+                        var titulo_aditamento = await SQLServerService.GetFirstByFields(source, "v_titulos_aditamentos", new List<(string campo, object valor)> { new("cd_titulo", baixa.cd_titulo) });
+                        if(titulo_aditamento != null)
+                        {
+                            var cd_aditamento = titulo_aditamento["cd_aditamento"];
+                            var titulos_pagar = await SQLServerService.GetList("v_titulos_aditamentos", null, "[cd_aditamento],[id_status_titulo]", $"[{cd_aditamento}],[1]",source,SearchModeEnum.Equals);
+                            if(titulos_pagar.success)
+                            {
+                                var id_status_renegociacao = titulos_pagar.data.Count == 0 ? 2 : 1;
+
+                                var aditamentoUpdate = new Dictionary<string, object>
+                                {
+                                    { "id_status_renegociacao", id_status_renegociacao }
+                                };
+                                var updateAditamento = await SQLServerService.Update("T_ADITAMENTO", aditamentoUpdate, source, "cd_aditamento", cd_aditamento);
+                                if (!updateAditamento.success) return BadRequest(updateAditamento.error);
+                                await AddHistoricoAditamento(int.Parse(cd_aditamento.ToString()), int.Parse(cd_usuario), id_status_renegociacao, source);
+                            }
+                        }
+                    }
+                }
+
+                //atualizando ultimo recibo
+                var parametroUpdate = new Dictionary<string, object>
+                {
+                    { "nm_ultimo_recibo", nm_recibo }
+                };
+                var parametroResult = await SQLServerService.Update("T_PARAMETRO", parametroUpdate, source, "cd_pessoa_escola", model.cd_pessoa_empresa);
+                if (!parametroResult.success) return BadRequest(parametroResult.error);
+
                 return ResponseDefault();
             }
             return BadRequest(new
@@ -1932,6 +2189,233 @@ namespace Simjob.Framework.Services.Api.Controllers
         //        return new List<Dictionary<string, object>>();
         //    }
         //}
+
+        private async Task<(bool success, string error)> AtualizarDependentesBaixa(int cd_baixa_titulo, Source source)
+        {
+            string connectionString = $"Server={source.Host};Database={source.DbName};User Id={source.User};Password={source.Password};MultipleActiveResultSets=True;";
+            string msg = null;
+
+            try
+            {
+                int cd_tipo_liquidacao = 0, cd_plano_conta = 0, cd_titulo = 0;
+                DateTime? dt_baixa_titulo = null;
+                decimal vl_juros = 0, vl_multa = 0;
+
+                // Buscar dados principais
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    // Buscar dados da baixa
+                    var selectCmd = new SqlCommand(@"
+                    SELECT
+                        b.cd_tipo_liquidacao,
+                        ISNULL(p.cd_plano_conta_taxbco, 0) as cd_plano_conta,
+                        b.cd_titulo,
+                        b.dt_baixa_titulo,
+                        b.vl_juros_calculado,
+                        b.vl_multa_calculada
+                    FROM T_BAIXA_TITULO b
+                    INNER JOIN T_TITULO t ON b.cd_titulo = t.cd_titulo
+                    INNER JOIN T_PARAMETRO p ON p.cd_pessoa_escola = t.cd_pessoa_empresa
+                    WHERE b.cd_baixa_titulo = @cd_baixa_titulo", connection);
+
+                    selectCmd.Parameters.AddWithValue("@cd_baixa_titulo", Math.Abs(cd_baixa_titulo));
+                    using (var reader = await selectCmd.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            cd_tipo_liquidacao = Convert.ToInt32(reader["cd_tipo_liquidacao"]);
+                            cd_plano_conta = Convert.ToInt32(reader["cd_plano_conta"]);
+                            cd_titulo = Convert.ToInt32(reader["cd_titulo"]);
+                            dt_baixa_titulo = reader["dt_baixa_titulo"] as DateTime?;
+                            vl_juros = Convert.ToDecimal(reader["vl_juros_calculado"]);
+                            vl_multa = Convert.ToDecimal(reader["vl_multa_calculada"]);
+
+                            await reader.CloseAsync();
+                        }
+                        else
+                        {
+                            return (false, "Baixa não encontrada.");
+                        }
+                    }
+
+                    // Excluir T_CONTA_CORRENTE relacionado
+                    var deleteContaCorrente = new SqlCommand("DELETE FROM T_CONTA_CORRENTE WHERE cd_baixa_titulo = @cd_baixa_titulo", connection);
+                    deleteContaCorrente.Parameters.AddWithValue("@cd_baixa_titulo", Math.Abs(cd_baixa_titulo));
+                    await deleteContaCorrente.ExecuteNonQueryAsync();
+
+                    if (cd_baixa_titulo > 0)
+                    {
+                        // Atualizar T_TITULO com os cálculos
+
+                        //TODO: AQUI REALMENTE DEVERIA SER O vl_baixa_saldo_titulo?
+                        //t.vl_saldo_titulo = t.vl_titulo - ISNULL((SELECT SUM(vl_baixa_saldo_titulo) FROM T_BAIXA_TITULO b WHERE b.cd_titulo = t.cd_titulo),0),
+                        var updateTitulo = new SqlCommand(@"
+                        UPDATE t SET
+                            t.dt_liquidacao_titulo = @dt_baixa_titulo,
+                            t.vl_saldo_titulo = CASE
+                            WHEN (t.vl_titulo - ISNULL((SELECT SUM(vl_baixa_saldo_titulo)
+                                                        FROM T_BAIXA_TITULO b
+                                                        WHERE b.cd_titulo = t.cd_titulo), 0)) < 0
+                            THEN 0
+                            ELSE (t.vl_titulo - ISNULL((SELECT SUM(vl_baixa_saldo_titulo)
+                                                        FROM T_BAIXA_TITULO b
+                                                        WHERE b.cd_titulo = t.cd_titulo), 0))
+                            END,
+                            t.vl_juros_titulo = t.vl_juros_titulo + (@vl_juros + t.vl_juros_liquidado - t.vl_juros_titulo),
+                            t.vl_multa_titulo = t.vl_multa_titulo + (@vl_multa + t.vl_multa_liquidada - t.vl_multa_titulo),
+                            t.vl_desconto_titulo = ISNULL((SELECT SUM(vl_desconto_baixa) FROM T_BAIXA_TITULO b WHERE b.cd_titulo = t.cd_titulo),0),
+                            t.vl_juros_liquidado = ISNULL((SELECT SUM(vl_juros_baixa) FROM T_BAIXA_TITULO b WHERE b.cd_titulo = t.cd_titulo),0),
+                            t.vl_multa_liquidada = ISNULL((SELECT SUM(vl_multa_baixa) FROM T_BAIXA_TITULO b WHERE b.cd_titulo = t.cd_titulo),0),
+                            t.vl_desconto_multa = ISNULL((SELECT SUM(vl_desc_multa_baixa) FROM T_BAIXA_TITULO b WHERE b.cd_titulo = t.cd_titulo),0),
+                            t.vl_desconto_juros = ISNULL((SELECT SUM(vl_desc_juros_baixa) FROM T_BAIXA_TITULO b WHERE b.cd_titulo = t.cd_titulo),0),
+                            t.vl_liquidacao_titulo = ISNULL((SELECT SUM(vl_baixa_saldo_titulo) FROM T_BAIXA_TITULO b WHERE b.cd_titulo = t.cd_titulo),0)
+                        FROM T_TITULO t
+                        WHERE t.cd_titulo = @cd_titulo", connection);
+
+                        updateTitulo.Parameters.AddWithValue("@dt_baixa_titulo", (object)dt_baixa_titulo ?? DBNull.Value);
+                        updateTitulo.Parameters.AddWithValue("@vl_juros", vl_juros);
+                        updateTitulo.Parameters.AddWithValue("@vl_multa", vl_multa);
+                        updateTitulo.Parameters.AddWithValue("@cd_titulo", cd_titulo);
+                        await updateTitulo.ExecuteNonQueryAsync();
+
+                        // Atualizar status do título baseado no saldo remanescente
+                        var updateStatus = new SqlCommand(@"
+                            UPDATE t SET
+                                t.id_status_titulo = CASE
+                                    WHEN t.vl_saldo_titulo <= 0 THEN 2
+                                    ELSE 1
+                                END
+                            FROM T_TITULO t
+                            WHERE t.cd_titulo = @cd_titulo", connection);
+                        updateStatus.Parameters.AddWithValue("@cd_titulo", cd_titulo);
+                        await updateStatus.ExecuteNonQueryAsync();
+
+                        // Gerar T_CONTA_CORRENTE se necessário
+                        if (!new[] { 6, 101, 110 }.Contains(cd_tipo_liquidacao))
+                        {
+                            // Buscar dados necessários para o insert
+                            var selectDados = new SqlCommand(@"
+                                SELECT
+                                    tf.cd_local_movto,
+                                    tf.dt_tran_finan,
+                                    tf.cd_pessoa_empresa,
+                                    tf.cd_tipo_liquidacao,
+                                    b.cd_baixa_titulo,
+                                    t.cd_titulo,
+                                    t.nm_titulo,
+                                    t.nm_parcela_titulo,
+                                    t.dt_vcto_titulo,
+                                    r.no_pessoa,
+                                    pt.cd_plano_conta,
+                                    pt.vl_plano_titulo,
+                                    t.vl_titulo,
+                                    b.vl_liquidacao_baixa,
+                                    b.nm_recibo
+                                FROM T_BAIXA_TITULO b
+                                INNER JOIN T_TRAN_FINAN tf ON b.cd_tran_finan = tf.cd_tran_finan
+                                INNER JOIN T_TITULO t ON b.cd_titulo = t.cd_titulo
+                                INNER JOIN T_PLANO_TITULO pt ON t.cd_titulo = pt.cd_titulo
+                                INNER JOIN T_PESSOA r ON t.cd_pessoa_responsavel = r.cd_pessoa
+                                WHERE b.cd_baixa_titulo = @cd_baixa_titulo", connection);
+
+                            selectDados.Parameters.AddWithValue("@cd_baixa_titulo", cd_baixa_titulo);
+
+                            using (var reader = await selectDados.ExecuteReaderAsync())
+                            {
+                                if (await reader.ReadAsync())
+                                {
+                                    // Calcule o valor proporcional
+                                    decimal vl_liquidacao_baixa = Convert.ToDecimal(reader["vl_liquidacao_baixa"]);
+                                    decimal vl_plano_titulo = Convert.ToDecimal(reader["vl_plano_titulo"]);
+                                    decimal vl_titulo = Convert.ToDecimal(reader["vl_titulo"]);
+                                    decimal valorContaCorrente = Math.Round(vl_liquidacao_baixa * vl_plano_titulo / vl_titulo, 2);
+
+                                    // Montar a descrição
+                                    string descricao = $"Recebimento do titulo Nº: {reader["nm_titulo"]}-{reader["nm_parcela_titulo"]}. Recibo Nº{reader["nm_recibo"]}, vcto.:{Convert.ToDateTime(reader["dt_vcto_titulo"]).ToString("dd/MM/yyyy")} - {reader["no_pessoa"]}.";
+
+                                    var cd_local_movto = reader["cd_local_movto"];
+                                    var cd_baixa_titulo_new = reader["cd_baixa_titulo"];
+                                    var dt_tran_finan = reader["dt_tran_finan"];
+                                    var cd_pessoa_empresa = reader["cd_pessoa_empresa"];
+                                    var cd_plano_conta_new = reader["cd_plano_conta"];
+                                    var cd_tipo_liquidacao_new = reader["cd_tipo_liquidacao"];
+
+                                    // Fechar o reader antes do insert
+                                    await reader.CloseAsync();
+
+                                    // Insert na T_CONTA_CORRENTE
+                                    var insertContaCorrente = new SqlCommand(@"
+                                    INSERT INTO T_CONTA_CORRENTE
+                                    (cd_local_origem, cd_movimentacao_financeira, cd_baixa_titulo, dta_conta_corrente, id_tipo_movimento,
+                                     cd_pessoa_empresa, cd_plano_conta, vl_conta_corrente, cd_tipo_liquidacao, dc_obs_conta_corrente)
+                                    VALUES
+                                    (@cd_local_origem, @cd_movimentacao_financeira, @cd_baixa_titulo, @dta_conta_corrente, @id_tipo_movimento,
+                                     @cd_pessoa_empresa, @cd_plano_conta, @vl_conta_corrente, @cd_tipo_liquidacao, @dc_obs_conta_corrente)", connection);
+
+                                    insertContaCorrente.Parameters.AddWithValue("@cd_local_origem", cd_local_movto);
+                                    insertContaCorrente.Parameters.AddWithValue("@cd_movimentacao_financeira", 2);
+                                    insertContaCorrente.Parameters.AddWithValue("@cd_baixa_titulo", cd_baixa_titulo_new);
+                                    insertContaCorrente.Parameters.AddWithValue("@dta_conta_corrente", dt_tran_finan);
+                                    insertContaCorrente.Parameters.AddWithValue("@id_tipo_movimento", 1);
+                                    insertContaCorrente.Parameters.AddWithValue("@cd_pessoa_empresa", cd_pessoa_empresa);
+                                    insertContaCorrente.Parameters.AddWithValue("@cd_plano_conta", cd_plano_conta_new);
+                                    insertContaCorrente.Parameters.AddWithValue("@vl_conta_corrente", valorContaCorrente);
+                                    insertContaCorrente.Parameters.AddWithValue("@cd_tipo_liquidacao", cd_tipo_liquidacao_new);
+                                    insertContaCorrente.Parameters.AddWithValue("@dc_obs_conta_corrente", descricao);
+
+                                    try
+                                    {
+                                        int linhasAfetadas = await insertContaCorrente.ExecuteNonQueryAsync();
+                                        Console.WriteLine($"Insert T_CONTA_CORRENTE: {linhasAfetadas} linha(s) afetada(s)");
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine($"Erro no insert: {ex}");
+                                        msg = ex.ToString();
+                                        return (false, msg);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+                return (false, msg);
+            }
+
+            return (true, null);
+        }
+
+        private async Task<(bool success, string? error)> AddHistoricoAditamento(int cd_aditamento, int cd_usuario, int id_status_renegociacao, Source source)
+        {
+            var dc_historico_aditamento = id_status_renegociacao switch
+            {
+                0 => "Cadastro de renegociação efetuada.",
+                1 => "O contrato está formalizado, porém foi dado início aos pagamentos de títulos.",
+                2 => "A renegociação foi concluída com todos os pagamentos realizados.",
+                3 => "O acordo foi firmado, mas houve atraso ou falta de pagamento.",
+                4 => "A renegociação perdeu validade por descumprimento, desistência ou acordo entre as partes.",
+                _ => "Status desconhecido."
+            };
+
+            var dict = new Dictionary<string, object>
+            {
+                { "dt_aditamento_historico", DateTime.Now },
+                { "id_status_renegociacao", id_status_renegociacao },
+                { "dc_historico_aditamento", dc_historico_aditamento },
+                { "cd_usuario", cd_usuario },
+                { "cd_aditamento", cd_aditamento }
+            };
+
+            var t_aditamento_historico_Result = await SQLServerService.Insert("T_ADITAMENTO_HISTORICO", dict, source);
+            if (!t_aditamento_historico_Result.success) return (false, t_aditamento_historico_Result.error);
+            return (true, null);
+        }
 
         public class SimulacaoBaixaResult
         {

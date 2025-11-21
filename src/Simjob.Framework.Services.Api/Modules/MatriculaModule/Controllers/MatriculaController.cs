@@ -206,6 +206,7 @@ namespace Simjob.Framework.Services.Api.Controllers
         var gridTurma_result = await SQLServerService.GetList("vi_contrato_grid_turma", null, "[cd_contrato]", $"[{cd_contrato}]", source, SearchModeEnum.Equals);
         var gridTurma = gridTurma_result.data;
 
+        // MODIFICADO: Buscar todos os descontos do contrato (incluindo múltiplos descontos por aditamento)
         var gridDesconto_result = await SQLServerService.GetList("T_DESCONTO_CONTRATO", null, "[cd_contrato]", $"[{cd_contrato}]", source, SearchModeEnum.Equals);
         List<Dictionary<string, object>>? gridDesconto = null;
         if (gridDesconto_result.success)
@@ -255,7 +256,16 @@ namespace Simjob.Framework.Services.Api.Controllers
               // Adicionar títulos dos aditamentos à lista de títulos do contrato
               if (titulos_result.success && titulos_result.data != null)
               {
-                titulos_result.data.AddRange(titulos_dos_aditamentos.data);
+                // Deduplica títulos usando cd_titulo como chave única
+                var existingCdTitulos = titulos_result.data
+                  .Select(t => t["cd_titulo"]?.ToString())
+                  .ToHashSet();
+
+                var novosTitulos = titulos_dos_aditamentos.data
+                  .Where(t => !existingCdTitulos.Contains(t["cd_titulo"]?.ToString()))
+                  .ToList();
+
+                titulos_result.data.AddRange(novosTitulos);
               }
               else
               {
@@ -478,8 +488,32 @@ namespace Simjob.Framework.Services.Api.Controllers
         var t_aditamento_bolsa = await SQLServerService.GetFirstByFields(source, "T_ADITAMENTO_BOLSA", new List<(string campo, object valor)> { new("cd_aditamento", cd_aditamento) });
         aditamentoExists.Add("bolsa", t_aditamento_bolsa);
 
-        var t_desconto_contrato = await SQLServerService.GetFirstByFields(source, "T_DESCONTO_CONTRATO", new List<(string campo, object valor)> { new("cd_aditamento", cd_aditamento) });
-        aditamentoExists.Add("desconto", t_desconto_contrato);
+        // MODIFICADO: Buscar TODOS os descontos do aditamento (suporte a múltiplos descontos)
+        var t_descontos_result = await SQLServerService.GetList("T_DESCONTO_CONTRATO", null, "[cd_aditamento]", $"[{cd_aditamento}]", source, SearchModeEnum.Equals);
+
+        // Se houver múltiplos descontos, retornar array; senão, manter retrocompatibilidade
+        if (t_descontos_result.success && t_descontos_result.data != null && t_descontos_result.data.Any())
+        {
+          if (t_descontos_result.data.Count > 1)
+          {
+            // Múltiplos descontos: retornar array
+            aditamentoExists.Add("descontos", t_descontos_result.data);
+            // Manter campo "desconto" com o primeiro para retrocompatibilidade
+            aditamentoExists.Add("desconto", t_descontos_result.data.First());
+          }
+          else
+          {
+            // Desconto único: manter formato legado
+            aditamentoExists.Add("desconto", t_descontos_result.data.First());
+            aditamentoExists.Add("descontos", t_descontos_result.data);
+          }
+        }
+        else
+        {
+          // Sem descontos
+          aditamentoExists.Add("desconto", null);
+          aditamentoExists.Add("descontos", new List<Dictionary<string, object>>());
+        }
 
         var t_contrato = await SQLServerService.GetFirstByFields(source, "vi_contrato", new List<(string campo, object valor)> { new("cd_contrato", aditamentoExists["cd_contrato"]) });
         aditamentoExists.Add("cd_aluno", t_contrato["cd_aluno"]);
@@ -700,9 +734,33 @@ namespace Simjob.Framework.Services.Api.Controllers
         var cd_escola = model.cd_pessoa_escola;
         var cd_contrato = matricula["cd_contrato"];
 
-        // ❌ REMOVIDO: O LEGADO não cria aditamento vazio ao criar matrícula
-        // O aditamento só é criado quando o usuário preenche dados na aba "Aditamento" do formulário
-        // Ver investigação: montarAditamento() retorna null se campos vazios
+        // ✅ RESTAURADO: O LEGADO cria aditamento vazio (id_tipo_aditamento = NULL) ao criar matrícula
+        // Esse aditamento vazio é necessário para o sistema antigo funcionar corretamente
+        // Filtrar apenas aditamentos COM id_tipo_aditamento (excluir o aditamento vazio criado na matrícula)
+        var aditamentos_anteriores = await SQLServerService.GetList("T_ADITAMENTO", null, "[cd_contrato]", $"[{cd_contrato}]", source);
+        var sequencia_aditamento = aditamentos_anteriores.success && aditamentos_anteriores.data != null ? aditamentos_anteriores.data.Count + 1 : 1;
+
+        var dict_aditamento = new Dictionary<string, object>
+        {
+          ["cd_contrato"] = cd_contrato,
+          ["vl_aula_hora"] = 0,
+          ["nm_titulos_aditamento"] = 0,
+          ["cd_usuario"] = model.cd_usuario,
+          ["vl_aditivo"] = 0,
+          ["vl_parcela_titulo_aditamento"] = 0,
+          ["id_ajuste_manual"] = 0,
+          ["dt_aditamento"] = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"),
+          ["cd_tipo_financeiro"] = model.cd_tipo_financeiro,
+          ["cd_nome_contrato"] = model.cd_nome_contrato == 0 ? null : model.cd_nome_contrato,
+          ["nm_sequencia_aditamento"] = sequencia_aditamento.ToString(),
+          ["dt_inicio_aditamento"] = model.dt_inicio_aditamento,
+          ["id_tipo_data_inicio"] = model.id_tipo_data_inicio ?? 0,
+          ["nm_previsao_inicial"] = model.nm_previsao_inicial,
+          ["nm_dia_vcto_desconto"] = model.nm_dia_vcto_desconto
+          // ⚠️ NOTE: id_tipo_aditamento é deixado em NULL intencional (aditamento vazio para compatibilidade com legado)
+        };
+        var result_aditamento = await SQLServerService.Insert("T_ADITAMENTO", dict_aditamento, source);
+        if (!result_aditamento.success) return BadRequest(result_aditamento.error);
 
         //atualizar crm
         if (!string.IsNullOrEmpty(model.cd_fila_matricula))
@@ -3920,11 +3978,37 @@ namespace Simjob.Framework.Services.Api.Controllers
             //Adicionar Parcelas/material
             if (ad.id_tipo_aditamento == 5 || ad.id_tipo_aditamento == 8)
             {
+              // Validar parcelas inicial e final para desconto
+              var parcelaInicial = ad.nm_parcela_inicial ?? 1;
+              var parcelaFinal = ad.nm_parcela_final ?? 1;
 
               if (!ad.TitulosMensalidade.IsNullOrEmpty())
               {
                 foreach (var titulo in ad.TitulosMensalidade)
                 {
+                  // Converter nm_parcela_titulo para int para comparação
+                  var numeroParcela = int.TryParse(titulo.nm_parcela_titulo?.ToString(), out var result) ? result : 0;
+
+                  // VALIDAÇÃO CRÍTICA: Aplicar desconto apenas se a parcela está no intervalo [nm_parcela_inicial, nm_parcela_final]
+                  var deveAplicarDesconto = numeroParcela >= parcelaInicial && numeroParcela <= parcelaFinal;
+                  
+                  // Se a parcela NÃO está no intervalo, ZERAR os descontos
+                  if (!deveAplicarDesconto)
+                  {
+                    titulo.pc_desconto_mensalidade = 0;
+                    titulo.vl_desconto_mensalidade = 0;
+                    titulo.pc_desconto_material = 0;
+                    titulo.vl_desconto_material = 0;
+                    titulo.pc_desconto_total = 0;
+                    titulo.vl_desconto_total = 0;
+                    
+                    Console.WriteLine($"[DESCONTO BLOQUEADO] Mensalidade Parcela {numeroParcela}: Fora do intervalo [{parcelaInicial}, {parcelaFinal}]");
+                  }
+                  else
+                  {
+                    Console.WriteLine($"[DESCONTO APLICADO] Mensalidade Parcela {numeroParcela}: Dentro do intervalo [{parcelaInicial}, {parcelaFinal}]");
+                  }
+
                   // Validação e fallback para cd_pessoa_titulo e cd_pessoa_responsavel
                   var pessoaTitulo = titulo.cd_pessoa_titulo.HasValue && titulo.cd_pessoa_titulo.Value != 0 ? titulo.cd_pessoa_titulo.Value :
                                      (titulo.cd_pessoa_responsavel.HasValue && titulo.cd_pessoa_responsavel.Value != 0 ? titulo.cd_pessoa_responsavel.Value :
@@ -3979,7 +4063,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                     ["dh_cadastro_titulo"] = DateTime.Now.Date.ToString("yyyy-MM-ddTHH:mm:ss"),
                     ["vl_titulo"] = titulo.vl_titulo,
                     ["vl_saldo_titulo"] = titulo.vl_saldo_titulo,
-                    ["dc_tipo_titulo"] = titulo.dc_tipo_titulo,
+                     ["dc_tipo_titulo"] = "AD", // ✅ FORÇAR: Títulos de mensalidade em aditamento sempre são tipo "AD" 
                     ["dc_num_documento_titulo"] = titulo.dc_num_documento_titulo,
                     ["nm_titulo"] = nm_contrato,
                     ["nm_parcela_titulo"] = titulo.nm_parcela_titulo,
@@ -4025,8 +4109,10 @@ namespace Simjob.Framework.Services.Api.Controllers
                   if (!result_titulo_aditamento.success) return BadRequest(result_titulo_aditamento.error);
 
                   var id_origem_titulo = titulo_inserido["id_origem_titulo"]?.ToString() ?? "0";
+                  var dc_tipo_titulo_salvo = titulo_inserido["dc_tipo_titulo"]?.ToString() ?? "";
 
-                  if (id_origem_titulo == "22" && titulo.dc_tipo_titulo == "ME")
+                  // ✅ Títulos de aditamento (AD) devem ser associados ao plano de contas de mensalidade
+                  if (id_origem_titulo == "22" && (dc_tipo_titulo_salvo == "ME" || dc_tipo_titulo_salvo == "AD"))
                   {
                     //T_plano_titulo
                     var dict_plano = new Dictionary<string, object>
@@ -4039,7 +4125,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                     if (!t_plano_titulo_Result.success) return BadRequest(t_plano_titulo_Result.error);
                   }
 
-                  if (id_origem_titulo == "22" && titulo.dc_tipo_titulo == "ME" && titulo.vl_material_titulo > 0)
+                  if (id_origem_titulo == "22" && (dc_tipo_titulo_salvo == "ME" || dc_tipo_titulo_salvo == "AD") && titulo.vl_material_titulo > 0)
                   {
                     //T_plano_titulo
                     var dict_plano = new Dictionary<string, object>
@@ -4058,6 +4144,29 @@ namespace Simjob.Framework.Services.Api.Controllers
               {
                 foreach (var titulo in ad.TitulosMaterial)
                 {
+                  // Converter nm_parcela_titulo para int para comparação
+                  var numeroParcela = int.TryParse(titulo.nm_parcela_titulo?.ToString(), out var result) ? result : 0;
+
+                  // VALIDAÇÃO CRÍTICA: Aplicar desconto apenas se a parcela está no intervalo [nm_parcela_inicial, nm_parcela_final]
+                  var deveAplicarDesconto = numeroParcela >= parcelaInicial && numeroParcela <= parcelaFinal;
+                  
+                  // Se a parcela NÃO está no intervalo, ZERAR os descontos
+                  if (!deveAplicarDesconto)
+                  {
+                    titulo.pc_desconto_mensalidade = 0;
+                    titulo.vl_desconto_mensalidade = 0;
+                    titulo.pc_desconto_material = 0;
+                    titulo.vl_desconto_material = 0;
+                    titulo.pc_desconto_total = 0;
+                    titulo.vl_desconto_total = 0;
+                    
+                    Console.WriteLine($"[DESCONTO BLOQUEADO] Material Parcela {numeroParcela}: Fora do intervalo [{parcelaInicial}, {parcelaFinal}]");
+                  }
+                  else
+                  {
+                    Console.WriteLine($"[DESCONTO APLICADO] Material Parcela {numeroParcela}: Dentro do intervalo [{parcelaInicial}, {parcelaFinal}]");
+                  }
+
                   // Validação e fallback para cd_pessoa_titulo e cd_pessoa_responsavel
                   // Para títulos de MATERIAL, usar responsavel_material como fallback
                   var pessoaTitulo = titulo.cd_pessoa_titulo.HasValue && titulo.cd_pessoa_titulo.Value != 0 ? titulo.cd_pessoa_titulo.Value :
@@ -4106,7 +4215,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                     ["dh_cadastro_titulo"] = DateTime.Now.Date,
                     ["vl_titulo"] = titulo.vl_titulo,
                     ["vl_saldo_titulo"] = titulo.vl_saldo_titulo,
-                    ["dc_tipo_titulo"] = titulo.dc_tipo_titulo,
+                     ["dc_tipo_titulo"] = "AD", // ✅ FORÇAR: Títulos de material em aditamento sempre são tipo "AD"
                     ["dc_num_documento_titulo"] = titulo.dc_num_documento_titulo,
                     ["nm_titulo"] = nm_contrato,
                     ["nm_parcela_titulo"] = titulo.nm_parcela_titulo,
@@ -4151,8 +4260,10 @@ namespace Simjob.Framework.Services.Api.Controllers
                   if (!result_titulo_aditamento.success) return BadRequest(result_titulo_aditamento.error);
 
                   var id_origem_titulo = titulo_inserido["id_origem_titulo"]?.ToString() ?? "0";
+                  var dc_tipo_titulo_salvo = titulo_inserido["dc_tipo_titulo"]?.ToString() ?? "";
 
-                  if (id_origem_titulo == "22" && titulo.dc_tipo_titulo == "MT")
+                  // ✅ Títulos de aditamento (AD) de material devem ser associados ao plano de contas de material
+                  if (id_origem_titulo == "22" && (dc_tipo_titulo_salvo == "MT" || dc_tipo_titulo_salvo == "AD"))
                   {
                     //T_plano_titulo
                     var dict_plano = new Dictionary<string, object>
@@ -4171,6 +4282,48 @@ namespace Simjob.Framework.Services.Api.Controllers
               {
                 foreach (var titulo in ad.TitulosTaxa)
                 {
+                  // ⚠️ CRÍTICO: TAXA NUNCA DEVE RECEBER DESCONTO!
+                  // Zerar TODOS os descontos para títulos de taxa
+                  titulo.pc_desconto_mensalidade = 0;
+                  titulo.vl_desconto_mensalidade = 0;
+                  titulo.pc_desconto_material = 0;
+                  titulo.vl_desconto_material = 0;
+                  titulo.pc_desconto_total = 0;
+                  titulo.vl_desconto_total = 0;
+                  
+                  Console.WriteLine($"[BLOQUEIO TAXA] Parcela {titulo.nm_parcela_titulo}: Todos os descontos zerados (Taxa nunca deve ter desconto)");
+
+                  // ✅ VERIFICAÇÃO DE DUPLICAÇÃO: Não inserir títulos TX que já existem
+                  var tituloExistenteResult = await SQLServerService.GetList(
+                    "T_TITULO",
+                    null,
+                    "[cd_origem_titulo],[dc_tipo_titulo],[nm_parcela_titulo],[cd_pessoa_empresa]",
+                    $"[{cd_contrato}],[TX],[{titulo.nm_parcela_titulo}],[{cd_escola}]",
+                    source,
+                    SearchModeEnum.Equals
+                  );
+
+                  if (tituloExistenteResult.success && tituloExistenteResult.data != null && tituloExistenteResult.data.Any())
+                  {
+                    var tituloExistente = tituloExistenteResult.data.First();
+                    var cd_titulo_existente = tituloExistente["cd_titulo"];
+                    Console.WriteLine($"[DUPLICAÇÃO EVITADA] Título TX parcela {titulo.nm_parcela_titulo} já existe (cd_titulo: {cd_titulo_existente}). Pulando inserção e vinculando ao aditamento.");
+
+                    // Apenas vincular o título existente ao aditamento
+                    var dict_aditamento_titulo_existente = new Dictionary<string, object>
+                    {
+                      ["cd_aditamento"] = cd_aditamento,
+                      ["cd_titulo"] = cd_titulo_existente
+                    };
+                    var result_titulo_aditamento_existente = await SQLServerService.Insert("T_TITULO_ADITAMENTO", dict_aditamento_titulo_existente, source);
+                    if (!result_titulo_aditamento_existente.success)
+                    {
+                      Console.WriteLine($"[AVISO] Não foi possível vincular título existente {cd_titulo_existente} ao aditamento {cd_aditamento}: {result_titulo_aditamento_existente.error}");
+                    }
+
+                    continue; // Pular para o próximo título
+                  }
+
                   // Validação e fallback para cd_pessoa_titulo e cd_pessoa_responsavel
                   var pessoaTitulo = titulo.cd_pessoa_titulo.HasValue && titulo.cd_pessoa_titulo.Value != 0 ? titulo.cd_pessoa_titulo.Value :
                                      (titulo.cd_pessoa_responsavel.HasValue && titulo.cd_pessoa_responsavel.Value != 0 ? titulo.cd_pessoa_responsavel.Value :
@@ -4216,7 +4369,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                     ["dh_cadastro_titulo"] = DateTime.Now.Date,
                     ["vl_titulo"] = titulo.vl_titulo,
                     ["vl_saldo_titulo"] = titulo.vl_saldo_titulo,
-                    ["dc_tipo_titulo"] = titulo.dc_tipo_titulo,
+                     ["dc_tipo_titulo"] = titulo.dc_tipo_titulo, // ✅ CORRIGIDO: Títulos de aditamento devem ser "AD", não "TX"
                     ["dc_num_documento_titulo"] = titulo.dc_num_documento_titulo,
                     ["nm_titulo"] = nm_contrato,
                     ["nm_parcela_titulo"] = titulo.nm_parcela_titulo,
@@ -4382,39 +4535,154 @@ namespace Simjob.Framework.Services.Api.Controllers
             //concessão desconto
             if (ad.id_tipo_aditamento == 3)
             {
-              Console.WriteLine($"[DEBUG] Tipo 3 detectado - pc_desconto_contrato: {ad.pc_desconto_contrato}, vl_desconto_contrato: {ad.vl_desconto_contrato}");
-              if ((ad.pc_desconto_contrato != null || ad.vl_desconto_contrato != null) && ad.id_tipo_aditamento == 3)
+              Console.WriteLine($"[DEBUG] Tipo 3 detectado - Processando múltiplos descontos");
+
+              // Lista de descontos a processar (com suporte a múltiplos descontos ou desconto único)
+              var descontosParaProcessar = new List<Models.Matricula.MatriculaUpdateAditamentosModel.DescontoModel>();
+
+              // Verificar se há múltiplos descontos no novo formato
+              if (ad.Descontos != null && ad.Descontos.Any())
               {
-                Console.WriteLine($"[DEBUG] Entrando no bloco de inserção T_DESCONTO_CONTRATO");
-                Console.WriteLine($"[DEBUG] Valores - nm_parcela_inicial: {ad.nm_parcela_inicial}, nm_parcela_final: {ad.nm_parcela_final}, id_incide_baixa: {ad.id_incide_baixa}");
+                Console.WriteLine($"[DEBUG] Encontrados {ad.Descontos.Count} descontos no formato novo (array Descontos)");
+                descontosParaProcessar.AddRange(ad.Descontos);
+              }
+              // Retrocompatibilidade: se não houver array Descontos, usar campos legados
+              else if (ad.pc_desconto_contrato != null || ad.vl_desconto_contrato != null)
+              {
+                Console.WriteLine($"[DEBUG] Usando formato legado (campos únicos de desconto)");
+                descontosParaProcessar.Add(new Models.Matricula.MatriculaUpdateAditamentosModel.DescontoModel
+                {
+                  cd_tipo_desconto = ad.cd_tipo_desconto,
+                  pc_desconto_contrato = ad.pc_desconto_contrato,
+                  vl_desconto_contrato = ad.vl_desconto_contrato,
+                  id_incide_matricula = ad.id_incide_matricula,
+                  id_incide_material = ad.id_incide_material,
+                  id_incide_baixa = ad.id_incide_baixa,
+                  nm_parcela_inicial = ad.nm_parcela_inicial,
+                  nm_parcela_final = ad.nm_parcela_final
+                });
+              }
+
+              // Processar cada desconto
+              foreach (var desconto in descontosParaProcessar)
+              {
+                Console.WriteLine($"[DEBUG] Processando desconto: {desconto.pc_desconto_contrato}% nas parcelas {desconto.nm_parcela_inicial} a {desconto.nm_parcela_final}");
+
+                // Inserir na tabela T_DESCONTO_CONTRATO
                 var desconto_contrato = new Dictionary<string, object>
-                            {
-                                { "cd_tipo_desconto", ad.cd_tipo_desconto ?? 146 },
-                                { "pc_desconto_contrato", ad.pc_desconto_contrato??0 },
-                                { "id_desconto_ativo", 1 },
-                                { "vl_desconto_contrato", ad.vl_desconto_contrato ??0 },
-                                { "id_incide_baixa", ad.id_incide_baixa ?? false },
-                                { "nm_parcela_ini", ad.nm_parcela_inicial ?? 1 },
-                                { "nm_parcela_fim", ad.nm_parcela_final ?? 1 },
-                                { "id_incide_parcela_1", 0 },
-                                { "id_aditamento", 1 },
-                                { "cd_contrato",cd_contrato },
-                                { "cd_aditamento", cd_aditamento }
-                            };
-                Console.WriteLine($"[DEBUG] Dictionary criado com {desconto_contrato.Count} campos");
+                {
+                  { "cd_tipo_desconto", desconto.cd_tipo_desconto ?? 146 },
+                  { "pc_desconto_contrato", desconto.pc_desconto_contrato ?? 0 },
+                  { "id_desconto_ativo", 1 },
+                  { "vl_desconto_contrato", desconto.vl_desconto_contrato ?? 0 },
+                  { "id_incide_baixa", desconto.id_incide_baixa ?? false },
+                  { "nm_parcela_ini", desconto.nm_parcela_inicial ?? 1 },
+                  { "nm_parcela_fim", desconto.nm_parcela_final ?? 1 },
+                  { "id_incide_parcela_1", 0 },
+                  { "id_aditamento", 1 },
+                  { "cd_contrato", cd_contrato },
+                  { "cd_aditamento", cd_aditamento }
+                };
+
                 var t_desconto_contrato_Result = await SQLServerService.Insert("T_DESCONTO_CONTRATO", desconto_contrato, source);
                 Console.WriteLine($"[DEBUG] INSERT result - success: {t_desconto_contrato_Result.success}, error: {t_desconto_contrato_Result.error}");
+
                 if (!t_desconto_contrato_Result.success)
                 {
                   Console.WriteLine($"[ERROR] Falha ao inserir em T_DESCONTO_CONTRATO: {t_desconto_contrato_Result.error}");
                   return BadRequest($"Erro ao criar desconto no contrato: {t_desconto_contrato_Result.error}");
                 }
               }
+
+              // Atualizar títulos NÃO PAGOS com os descontos aplicados (acumulados)
+              Console.WriteLine($"[INFO] Tipo 3 - Buscando títulos NÃO PAGOS para aplicar descontos");
+              var titulosNaoPagosResult = await SQLServerService.GetList("T_TITULO", null, "[cd_origem_titulo],[id_status_titulo]", $"[{cd_contrato}],[1]", source, SearchModeEnum.Equals);
+
+              if (titulosNaoPagosResult.success && titulosNaoPagosResult.data != null && titulosNaoPagosResult.data.Any())
+              {
+                Console.WriteLine($"[INFO] Tipo 3 - Encontrados {titulosNaoPagosResult.data.Count} títulos NÃO PAGOS");
+
+                // Agrupar descontos por parcela para acumular percentuais
+                var descontosPorParcela = new Dictionary<int, decimal>();
+
+                foreach (var desconto in descontosParaProcessar)
+                {
+                  if (desconto.pc_desconto_contrato == null || desconto.pc_desconto_contrato <= 0) continue;
+
+                  int nm_parcela_ini = desconto.nm_parcela_inicial ?? 1;
+                  int nm_parcela_fim = desconto.nm_parcela_final ?? int.MaxValue;
+
+                  for (int parcela = nm_parcela_ini; parcela <= nm_parcela_fim; parcela++)
+                  {
+                    if (!descontosPorParcela.ContainsKey(parcela))
+                      descontosPorParcela[parcela] = 0;
+
+                    descontosPorParcela[parcela] += Convert.ToDecimal(desconto.pc_desconto_contrato);
+                  }
+                }
+
+                Console.WriteLine($"[DEBUG] Mapa de descontos acumulados por parcela:");
+                foreach (var kvp in descontosPorParcela)
+                {
+                  Console.WriteLine($"  Parcela {kvp.Key}: {kvp.Value}% acumulado");
+                }
+
+                // Aplicar descontos acumulados nos títulos
+                foreach (var titulo in titulosNaoPagosResult.data)
+                {
+                  var nm_parcela_titulo = Convert.ToInt32(titulo["nm_parcela_titulo"]);
+
+                  // Verificar se há desconto para esta parcela
+                  if (!descontosPorParcela.ContainsKey(nm_parcela_titulo))
+                  {
+                    Console.WriteLine($"[INFO] Título {titulo["cd_titulo"]} (parcela {nm_parcela_titulo}) sem desconto - pulado");
+                    continue;
+                  }
+
+                  // Respeitar tipo do título
+                  var tipoTitulo = (titulo.ContainsKey("dc_tipo_titulo") && titulo["dc_tipo_titulo"] != null)
+                    ? titulo["dc_tipo_titulo"].ToString().ToUpperInvariant()
+                    : string.Empty;
+
+                  // TAXA (TX) nunca deve receber desconto
+                  if (tipoTitulo == "TX")
+                  {
+                    Console.WriteLine($"[INFO] Título {titulo["cd_titulo"]} (tipo TX) não permite desconto - pulado");
+                    continue;
+                  }
+
+                  var cd_titulo = titulo["cd_titulo"];
+                  var vl_titulo = Convert.ToDecimal(titulo["vl_titulo"]);
+                  var vl_material_titulo = Convert.ToDecimal(titulo["vl_material_titulo"] ?? 0);
+                  var pc_desconto_acumulado = descontosPorParcela[nm_parcela_titulo];
+
+                  // FÓRMULA: vl_desconto = (vl_titulo - vl_material) * pc_desconto_acumulado / 100
+                  var vl_desconto_mensalidade = decimal.Round((vl_titulo - vl_material_titulo) * pc_desconto_acumulado / 100, 2);
+                  var vl_saldo_titulo = vl_titulo - vl_desconto_mensalidade;
+
+                  var dictTituloAtualizar = new Dictionary<string, object>
+                  {
+                    { "pc_desconto_mensalidade", pc_desconto_acumulado },
+                    { "vl_desconto_mensalidade", vl_desconto_mensalidade },
+                    { "vl_saldo_titulo", vl_saldo_titulo }
+                  };
+
+                  var updateResult = await SQLServerService.Update("T_TITULO", dictTituloAtualizar, source, "cd_titulo", cd_titulo);
+
+                  if (updateResult.success)
+                  {
+                    Console.WriteLine($"[SUCCESS] Título {cd_titulo} (parcela {nm_parcela_titulo}) atualizado - vl_saldo: {vl_saldo_titulo}, pc_desconto: {pc_desconto_acumulado}%");
+                  }
+                  else
+                  {
+                    Console.WriteLine($"[ERROR] Falha ao atualizar título {cd_titulo}: {updateResult.error}");
+                  }
+                }
+              }
               else
               {
-                Console.WriteLine($"[DEBUG] NÃO entrou no bloco de inserção - condição falhou");
+                Console.WriteLine($"[WARNING] Tipo 3 - Nenhum título NÃO PAGO encontrado para o contrato {cd_contrato}");
               }
-
             }
             //bolsa
             if (ad.id_tipo_aditamento == 7)

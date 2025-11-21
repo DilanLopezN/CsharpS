@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyModel;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
@@ -443,14 +442,23 @@ namespace Simjob.Framework.Services.Api.Controllers
 
         var cd_pessoa_escola = command.cd_pessoa_escola;
 
-        //atualiza cd_telefone_principal e cd_endereco_principal na T_PESSOA
         var pessoaUpdateDict = new Dictionary<string, object>
-                {
-                    { "cd_telefone_principal", cd_telefone_principal },
-                    { "cd_endereco_principal", cd_endereco_principal }
-                };
-        var t_pessoa_update = await SQLServerService.Update("T_PESSOA", pessoaUpdateDict, source, "cd_pessoa", cd_pessoa);
+{
+    { "cd_telefone_principal", cd_telefone_principal },
+    { "cd_endereco_principal", cd_endereco_principal }
+};
 
+        // Adicionar cd_atividade_principal se fornecido
+        if (command.pessoa.cd_atividade_principal != 0)
+        {
+          pessoaUpdateDict.Add("cd_atividade_principal", command.pessoa.cd_atividade_principal);
+        }
+        else
+        {
+          pessoaUpdateDict.Add("cd_atividade_principal", null);
+        }
+
+        var t_pessoa_update = await SQLServerService.Update("T_PESSOA", pessoaUpdateDict, source, "cd_pessoa", cd_pessoa);
         if (command.Raf != null)
         {
           var dict_raf = new Dictionary<string, object?>
@@ -1023,33 +1031,34 @@ namespace Simjob.Framework.Services.Api.Controllers
               }
             }
 
-            if (command.alunoBolsas != null)
-            {
-              //remover todas as bolsas
-              var resDeleteAlunoBolsa = await SQLServerService.Delete("T_ALUNO_BOLSA", "cd_aluno", cd_aluno.ToString(), source);
-              if (!resDeleteAlunoBolsa.success) return resDeleteAlunoBolsa;
+            // SEMPRE processar bolsas, mesmo que a lista venha vazia (para permitir exclusão)
+            // Remover todas as bolsas existentes
+            var resDeleteAlunoBolsa = await SQLServerService.Delete("T_ALUNO_BOLSA", "cd_aluno", cd_aluno.ToString(), source);
+            if (!resDeleteAlunoBolsa.success) return resDeleteAlunoBolsa;
 
+            // Inserir novas bolsas apenas se houver alguma
+            if (command.alunoBolsas != null && command.alunoBolsas.Any())
+            {
               foreach (var bolsa in command.alunoBolsas)
               {
                 var bolsaDict = new Dictionary<string, object>
-                                {
-                                    {"cd_produto",bolsa.cd_produto },
-                                    { "cd_aluno", cd_aluno },
-                                    { "pc_bolsa", bolsa.pc_bolsa ??0},
-                                    { "dt_inicio_bolsa", bolsa.dt_inicio_bolsa.ToString("yyyy-MM-ddTHH:mm:ss") },
-                                    { "dc_validade_bolsa", bolsa.dc_validade_bolsa },
-                                    { "dt_cancelamento_bolsa", bolsa.dt_cancelamento_bolsa?.ToString("yyyy-MM-ddTHH:mm:ss") },
-                                    { "cd_motivo_bolsa", bolsa.cd_motivo_bolsa },
-                                    { "id_bolsa_material", bolsa.id_bolsa_material },
-                                    { "pc_bolsa_material", bolsa.pc_bolsa_material }
-                                };
+        {
+            {"cd_produto", bolsa.cd_produto },
+            { "cd_aluno", cd_aluno },
+            { "pc_bolsa", bolsa.pc_bolsa ?? 0},
+            { "dt_inicio_bolsa", bolsa.dt_inicio_bolsa.ToString("yyyy-MM-ddTHH:mm:ss") },
+            { "dc_validade_bolsa", bolsa.dc_validade_bolsa },
+            { "dt_cancelamento_bolsa", bolsa.dt_cancelamento_bolsa?.ToString("yyyy-MM-ddTHH:mm:ss") },
+            { "cd_motivo_bolsa", bolsa.cd_motivo_bolsa },
+            { "id_bolsa_material", bolsa.id_bolsa_material },
+            { "pc_bolsa_material", bolsa.pc_bolsa_material }
+        };
                 if (bolsa.dt_comunicado_bolsa != null) bolsaDict.Add("dt_comunicado_bolsa", bolsa.dt_comunicado_bolsa?.ToString("yyyy-MM-ddTHH:mm:ss"));
                 var t_aluno_bolsa = await SQLServerService.Insert("T_ALUNO_BOLSA", bolsaDict, source);
 
                 if (!t_aluno_bolsa.success) return new(t_aluno_bolsa.success, t_aluno_bolsa.error);
               }
             }
-
             if (command.restricoes != null && command.restricoes.Count() > 0)
             {
               var resDeleteAlunoRestricao = await SQLServerService.Delete("T_ALUNO_RESTRICAO", "cd_aluno", cd_aluno.ToString(), source);
@@ -1503,7 +1512,14 @@ namespace Simjob.Framework.Services.Api.Controllers
 
           var bolsas = await SQLServerService.GetList("vi_aluno_bolsa", null, "[cd_aluno]", $"[{alunoExists["cd_aluno"].ToString()}]", source, SearchModeEnum.Equals);
 
-          var relacionamentos_query = await SQLServerService.GetList("vi_relacionamento", null, "[cd_pessoa_pai]", $"[{cd_pessoa}]", source, SearchModeEnum.Equals);
+          // Busca relacionamentos bidirecional (onde é PAI ou FILHO)
+          var relacionamentos_como_pai = await SQLServerService.GetList("vi_relacionamento", null, "[cd_pessoa_pai]", $"[{cd_pessoa}]", source, SearchModeEnum.Equals);
+          var relacionamentos_como_filho = await SQLServerService.GetList("vi_relacionamento", null, "[cd_pessoa_filho]", $"[{cd_pessoa}]", source, SearchModeEnum.Equals);
+
+          // Combina ambos os resultados
+          var relacionamentos_combinados = new List<Dictionary<string, object>>();
+          if (relacionamentos_como_pai.data != null) relacionamentos_combinados.AddRange(relacionamentos_como_pai.data);
+          if (relacionamentos_como_filho.data != null) relacionamentos_combinados.AddRange(relacionamentos_como_filho.data);
 
           var filtrosRaf = new List<(string campo, object valor)> { new("cd_pessoa", cd_pessoa) };
           var pessoaRaf = await SQLServerService.GetFirstByFields(source, "T_PESSOA_RAF", filtrosRaf);
@@ -1523,7 +1539,7 @@ namespace Simjob.Framework.Services.Api.Controllers
           id_permitir_matricula = ultimo_curso != null && ultimo_curso.ContainsKey("id_permitir_matricula") && ultimo_curso["id_permitir_matricula"] != null ? (bool?)ultimo_curso["id_permitir_matricula"] : null;
           aluno.bolsas = bolsas.data;
           aluno.restricoes = restricoes.data;
-          aluno.relacionamentos = relacionamentos_query.data;
+          aluno.relacionamentos = relacionamentos_combinados;
           aluno.existeMatricula = alunoExistsView["existeMatricula"];
           aluno.Raf = pessoaRaf;
           aluno.cd_ultimo_curso = cd_ultimo_curso;

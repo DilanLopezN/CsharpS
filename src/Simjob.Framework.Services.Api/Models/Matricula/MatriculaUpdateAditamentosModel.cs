@@ -37,7 +37,7 @@ namespace Simjob.Framework.Services.Api.Models.Matricula
         public double? pc_bolsa_material { get; set; }
 
 
-        // Desconto
+        // Desconto (mantido para retrocompatibilidade)
         public int? cd_tipo_desconto { get; set; }
         public double? pc_desconto_contrato { get; set; }
         public decimal? vl_desconto_contrato { get; set; }
@@ -47,13 +47,26 @@ namespace Simjob.Framework.Services.Api.Models.Matricula
         public int? nm_parcela_inicial { get; set; }
         public int? nm_parcela_final { get; set; }
 
+        // Múltiplos Descontos - Novo campo para suportar vários descontos no mesmo aditamento
+        public List<DescontoModel>? Descontos { get; set; }
+
 
 
         public List<TituloModelAditamento>? TitulosMensalidade { get; set; }
         public List<TituloModelAditamento>? TitulosMaterial { get; set; }
         public List<TituloModelAditamento>? TitulosTaxa { get; set; }
 
-
+        public class DescontoModel
+        {
+            public int? cd_tipo_desconto { get; set; }
+            public double? pc_desconto_contrato { get; set; }
+            public decimal? vl_desconto_contrato { get; set; }
+            public bool? id_incide_matricula { get; set; }
+            public bool? id_incide_material { get; set; }
+            public bool? id_incide_baixa { get; set; } = false;
+            public int? nm_parcela_inicial { get; set; }
+            public int? nm_parcela_final { get; set; }
+        }
 
         public class TituloModelAditamento
         {

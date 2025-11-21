@@ -240,9 +240,40 @@ namespace Simjob.Framework.Services.Api.Controllers
             var source = _sourceRepository.GetByField("description", schemaModel.Source);
             if (source != null && source.Active != null && source.Active == true && schemaModel.Alias != null)
             {
+                var joins = new List<(string tabela, string alias, string tabelaCampo, string fkCampo, string fkCampoAlias, string descCampo)>();
+                if (schemaModel.InnerJoin == null)
+                {
+                    //buscar relationSchemas nas propriedades
+                    var propsRelation = schemaModel.Properties.Where(x => !string.IsNullOrEmpty(x.Value.RelationSchema));
+                    var schemasRelation = _schemaRepository.GetSchemasByNames("name", propsRelation.Select(x => x.Value.RelationSchema).ToList());
+                    foreach (var prop in propsRelation)
+                    {
+                        var schemaRelation = schemasRelation.FirstOrDefault(x => x.Name == prop.Value.RelationSchema);
+                        var schemaModelRelation = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(schemaRelation.JsonValue);
+                        var pk_relation = schemaModelRelation.PrimaryKey;
+                        var field_relation = schemaModelRelation.Descriptor;
+                        var relationAlias = schemaModelRelation.Alias;
+                        if (schemaRelation.Name == "CompanySite")
+                        {
+                            pk_relation = "cd_pessoa";
+                            field_relation = "dc_reduzido_pessoa";
+                            relationAlias = "T_PESSOA";
+                        }
+                        if (!string.IsNullOrEmpty(schemaModelRelation.Descriptor) && !string.IsNullOrEmpty(relationAlias) && !string.IsNullOrEmpty(field_relation) && !string.IsNullOrEmpty(pk_relation))
+                        {
+                            var aliasTabela = schemaRelation.Name;
+                            var index = 1;
+                            while (joins.Any(x => x.alias == aliasTabela))
+                            {
+                                aliasTabela = $"{aliasTabela}_{index}";
+                            }
+                            joins.Add((relationAlias, aliasTabela, pk_relation, prop.Key, $"{prop.Key}_desc", field_relation));
+                        }
+                    }
+                }
                 if (sortField == null && schemaModel.PrimaryKey != null) sortField = schemaModel.PrimaryKey;
-                var result = await SQLServerService.GetListEntity(schemaModel.Alias, schemaModel.PrimaryKey, page, limit, sortField, sortDesc, ids, searchFields, value, source, mode, schemaModel.CompanySiteId, companySiteId,schemaModel);
-                if(!result.success) return BadRequest(result.error);
+                var result = await SQLServerService.GetListEntity(schemaModel.Alias, schemaModel.PrimaryKey, page, limit, sortField, sortDesc, ids, searchFields, value, source, mode, schemaModel.CompanySiteId, companySiteId, schemaModel, joins);
+                if (!result.success) return BadRequest(result.error);
                 var resultReturn = new
                 {
                     result.data,
@@ -1164,7 +1195,6 @@ namespace Simjob.Framework.Services.Api.Controllers
             var source = _sourceRepository.GetByField("description", schemaModel.Source);
             if (source != null && source.Active != null && source.Active == true && schemaModel.Alias != null)
             {
-
                 var result = await SQLServerService.GetById(schemaModel.Alias, schemaModel.PrimaryKey, id, source);
                 var resultReturn = result.data;
                 return ResponseDefault(resultReturn);
@@ -1880,13 +1910,21 @@ namespace Simjob.Framework.Services.Api.Controllers
             var source = _sourceRepository.GetByField("description", schemaModel.Source);
             if (source != null && source.Active != null && source.Active == true && schemaModel.Alias != null)
             {
+                var schemasAutoInc = new List<string> { "SituacaoTributaria" };
+                if (schemasAutoInc.Contains(schemaName))
+                {
+                    var get_ultimo_item = await SQLServerService.GetList(schemaModel.Alias, 1, 1, schemaModel.PrimaryKey, true, null, null, "", source, SearchModeEnum.Equals, null, null);
+                    var ultimo_item = get_ultimo_item.data.First();
+
+                    data.Add(schemaModel.PrimaryKey, int.Parse(ultimo_item[schemaModel.PrimaryKey].ToString()) + 1);
+                }
                 var dataSql = new Dictionary<string, object>(data);
                 //add mirrors sql
                 var dataSqlWithMirros = await _entityService.AddMirrorsSql(schemaName, dataSql);
                 if (dataSqlWithMirros == null) return BadRequest();
-                var result = await SQLServerService.InsertWithResult(schemaModel.Alias, dataSqlWithMirros, source);
+                var result = await SQLServerService.Insert(schemaModel.Alias, dataSqlWithMirros, source);
                 if (!result.success) return BadRequest(result.error);
-                return ResponseDefault(result.inserted);
+                return ResponseDefault();
             }
 
             string quote = "\"";
@@ -2788,12 +2826,9 @@ namespace Simjob.Framework.Services.Api.Controllers
             var source = _sourceRepository.GetByField("description", schemaModel.Source);
             if (source != null && source.Active != null && source.Active == true && schemaModel.Alias != null)
             {
-                var resultDelete = await SQLServerService.Delete(schemaModel.Alias, id, source);
-                var resultReturn = new
-                {
-                    result = resultDelete.deleted
-                };
-                return ResponseDefault(resultReturn);
+                var resultDelete = await SQLServerService.Delete(schemaModel.Alias, schemaModel.PrimaryKey, id, source);
+                if (!resultDelete.success) return BadRequest(resultDelete.error);
+                return ResponseDefault();
             }
 
             var beforeSave = JsonConvert.DeserializeObject<Infra.Domain.Models.SchemaModel>(json).BeforeSave;

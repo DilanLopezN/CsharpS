@@ -257,9 +257,15 @@ namespace Simjob.Framework.Services.Api.Controllers
             pessoa.Add("nm_cnpj_cgc", pessoaJuridicaExists["dc_num_cgc"]?.ToString() ?? "");
           }
         }
-        //dependentes
-        var dependentes_query = await SQLServerService.GetList("vi_relacionamento", null, "[cd_pessoa_pai]", $"[{cd_pessoa}]", source, SearchModeEnum.Contains);
-        var dependentes = dependentes_query.data;
+        //dependentes - busca bidirecional (onde é PAI ou FILHO)
+        var dependentes_como_pai = await SQLServerService.GetList("vi_relacionamento", null, "[cd_pessoa_pai]", $"[{cd_pessoa}]", source, SearchModeEnum.Contains);
+        var dependentes_como_filho = await SQLServerService.GetList("vi_relacionamento", null, "[cd_pessoa_filho]", $"[{cd_pessoa}]", source, SearchModeEnum.Contains);
+
+        // Combina ambos os resultados
+        var dependentes = new List<Dictionary<string, object>>();
+        if (dependentes_como_pai.data != null) dependentes.AddRange(dependentes_como_pai.data);
+        if (dependentes_como_filho.data != null) dependentes.AddRange(dependentes_como_filho.data);
+
         pessoa.Add("dependentes", dependentes);
 
         // Adiciona a pessoa ao retorno
@@ -379,7 +385,7 @@ namespace Simjob.Framework.Services.Api.Controllers
             var telefoneDictEmail = new Dictionary<string, object>
                         {
                             //{ "cd_telefone", null },
-                            { "cd_pessoa", dependente.cd_pessoa_filho },
+                            { "cd_pessoa", dependente.cd_pessoa_pai },
                             { "cd_tipo_telefone", 4 },
                             { "cd_classe_telefone", 1 },
                             { "dc_fone_mail", dependente.email_pessoa_filho },
@@ -844,7 +850,7 @@ namespace Simjob.Framework.Services.Api.Controllers
                         { "cd_escolaridade", command.cd_escolaridade },
                         { "dt_emis_expedidor", command.pessoa.dt_emis_expedidor?.ToString("yyyy-MM-ddTHH:mm:ss") }
                     };
-          if (command.pessoa.dt_nascimento != null) pessoa_fisicaDict.Add("dt_nascimento", command.pessoa.dt_nascimento?.ToString("yyyy-MM-ddTHH:mm:ss"));
+          if (command.pessoa.dt_nascimento != null) pessoa_fisicaDict.Add("dt_nascimento", command.pessoa.dt_nascimento?.ToString("yyyy-MM-dd"));
           var t_pessoa_fisica_insert = await SQLServerService.Insert("T_PESSOA_FISICA", pessoa_fisicaDict, source);
           if (!t_pessoa_fisica_insert.success) return new(t_pessoa_fisica_insert.success, t_pessoa_fisica_insert.error, null);
         }
@@ -888,14 +894,17 @@ namespace Simjob.Framework.Services.Api.Controllers
         {
           foreach (var dependente in command.Dependentes)
           {
+            // REGRA: Aluno é sempre PAI, Pessoa Relacionada é sempre FILHO
+            // dependente.cd_pessoa_filho contém o cd_pessoa do ALUNO (que já existe)
+            // cd_pessoa contém o cd_pessoa da PESSOA NOVA (sendo criada agora)
             var relacionamento_dict = new Dictionary<string, object>
                         {
-                            { "cd_pessoa_filho", dependente.cd_pessoa_filho },
-                            { "cd_pessoa_pai", cd_pessoa },
-                            { "cd_papel_filho", dependente.cd_papel_filho }
+                            { "cd_pessoa_pai", dependente.cd_pessoa_filho },      // Aluno (já existe)
+                            { "cd_pessoa_filho", cd_pessoa },                     // Pessoa nova (sendo criada)
+                            { "cd_papel_pai", 9 },                                // Fixo: ALUNORESPONSAVEL
+                            { "cd_papel_filho", dependente.cd_papel_filho }       // Cônjuge (4) ou Contato (6)
                         };
             if (dependente.cd_qualif_relacionamento != null) relacionamento_dict.Add("cd_qualif_relacionamento", dependente.cd_qualif_relacionamento);
-            if (dependente.cd_papel_pai != null) relacionamento_dict.Add("cd_papel_pai", dependente.cd_papel_pai);
 
             if (relacionamento_dict.Any())
             {
@@ -972,7 +981,7 @@ namespace Simjob.Framework.Services.Api.Controllers
         var pessoa_fisicaDict = new Dictionary<string, object>
                     {
                         { "cd_pessoa_fisica", cd_pessoa },
-                        { "dt_nascimento", model.dt_nascimento?.ToString("yyyy-MM-ddTHH:mm:ss") },
+                        { "dt_nascimento", model.dt_nascimento?.ToString("yyyy-MM-dd") },
                         { "id_exportado", 0 },
                         { "cd_escolaridade", model.cd_escolaridade },
                         { "nm_cpf", model.nm_cpf },
@@ -1134,7 +1143,7 @@ namespace Simjob.Framework.Services.Api.Controllers
       //Cadastrar pessoa fisica
       var pessoa_fisicaDict = new Dictionary<string, object>
             {
-                { "dt_nascimento", model.dt_nascimento?.ToString("yyyy-MM-ddTHH:mm:ss") },
+                { "dt_nascimento", model.dt_nascimento?.ToString("yyyy-MM-dd") },
                 { "id_exportado", 0 },
                 { "cd_escolaridade", model.cd_escolaridade },
                 { "nm_sexo", model.nm_sexo},
@@ -1554,19 +1563,22 @@ namespace Simjob.Framework.Services.Api.Controllers
 
         if (!command.Dependentes.IsNullOrEmpty())
         {
-          //remove relacionamentos e cadastra novamente.
-          await SQLServerService.Delete("T_RELACIONAMENTO", "cd_pessoa_pai", cd_pessoa.ToString(), source);
+          //remove relacionamentos onde a pessoa é FILHO (porque pessoa relacionada é sempre filho)
+          await SQLServerService.Delete("T_RELACIONAMENTO", "cd_pessoa_filho", cd_pessoa.ToString(), source);
 
           foreach (var dependente in command.Dependentes)
           {
+            // REGRA: Aluno é sempre PAI, Pessoa Relacionada é sempre FILHO
+            // dependente.cd_pessoa_filho contém o cd_pessoa do ALUNO (que já existe)
+            // cd_pessoa contém o cd_pessoa da PESSOA sendo editada
             var relacionamento_dict = new Dictionary<string, object>
                         {
-                            { "cd_pessoa_filho", dependente.cd_pessoa_filho },
-                            { "cd_pessoa_pai", cd_pessoa },
-                            { "cd_papel_filho", dependente.cd_papel_filho }
+                            { "cd_pessoa_pai", dependente.cd_pessoa_filho },      // Aluno (já existe)
+                            { "cd_pessoa_filho", cd_pessoa },                     // Pessoa relacionada (sendo editada)
+                            { "cd_papel_pai", 9 },                                // Fixo: ALUNORESPONSAVEL
+                            { "cd_papel_filho", dependente.cd_papel_filho }       // Cônjuge (4) ou Contato (6)
                         };
             if (dependente.cd_qualif_relacionamento != null) relacionamento_dict.Add("cd_qualif_relacionamento", dependente.cd_qualif_relacionamento);
-            if (dependente.cd_papel_pai != null) relacionamento_dict.Add("cd_papel_pai", dependente.cd_papel_pai);
 
             if (relacionamento_dict.Any())
             {
